@@ -5,32 +5,52 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 export default function LoginPage() {
+    const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        setSuccessMsg(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-
-        if (error) {
-            setError(error.message);
+        try {
+            if (isSignUp) {
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            role: 'client' // Default role
+                        }
+                    }
+                });
+                if (error) throw error;
+                setSuccessMsg("Account created! Please check your email to confirm.");
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                router.push("/portal");
+                router.refresh();
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
             setLoading(false);
-        } else {
-            router.push("/portal");
-            router.refresh();
         }
     };
 
@@ -39,8 +59,14 @@ export default function LoginPage() {
             <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
                 <div className="p-8">
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-serif font-bold text-brand-navy">Client Portal Login</h1>
-                        <p className="text-sm text-gray-500 mt-2">Secure access to your case files and updates.</p>
+                        <h1 className="text-2xl font-serif font-bold text-brand-navy">
+                            {isSignUp ? "Create Account" : "Client Portal Login"}
+                        </h1>
+                        <p className="text-sm text-gray-500 mt-2">
+                            {isSignUp
+                                ? "Join RVR Inc. for secure legal management."
+                                : "Secure access to your case files and updates."}
+                        </p>
                     </div>
 
                     {error && (
@@ -50,7 +76,27 @@ export default function LoginPage() {
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-4">
+                    {successMsg && (
+                        <div className="bg-green-50 text-green-600 p-3 rounded-md mb-6 flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="w-4 h-4" />
+                            {successMsg}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleAuth} className="space-y-4">
+                        {isSignUp && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:border-transparent outline-none transition-all"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                        )}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <input
@@ -67,6 +113,7 @@ export default function LoginPage() {
                             <input
                                 type="password"
                                 required
+                                minLength={6}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-brand-gold focus:border-transparent outline-none transition-all"
@@ -79,14 +126,34 @@ export default function LoginPage() {
                             className="w-full"
                             disabled={loading}
                         >
-                            {loading ? "Signing in..." : "Sign In"}
+                            {loading
+                                ? (isSignUp ? "Creating Account..." : "Signing in...")
+                                : (isSignUp ? "Create Account" : "Sign In")}
                         </Button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm">
-                        <Link href="/forgot-password" className="text-brand-navy underline hover:text-brand-gold">
-                            Forgot your password?
-                        </Link>
+                    <div className="mt-6 text-center space-y-2">
+                        <div className="text-sm text-gray-600">
+                            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+                            <button
+                                onClick={() => {
+                                    setIsSignUp(!isSignUp);
+                                    setError(null);
+                                    setSuccessMsg(null);
+                                }}
+                                className="text-brand-gold font-medium hover:underline focus:outline-none"
+                            >
+                                {isSignUp ? "Sign In" : "Sign Up"}
+                            </button>
+                        </div>
+
+                        {!isSignUp && (
+                            <div className="text-xs">
+                                <Link href="/forgot-password" className="text-gray-400 hover:text-brand-navy underline">
+                                    Forgot your password?
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="bg-gray-50 p-4 text-center text-xs text-gray-400 border-t">
