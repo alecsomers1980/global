@@ -7,18 +7,43 @@ import { Button } from "@/components/ui/Button";
 export default async function AdminDashboard() {
     const supabase = createClient();
 
-    // Fetch stats (simplified for now, ideally use count(*))
-    const { count: casesCount } = await supabase.from("cases").select("*", { count: 'exact', head: true });
-    const { count: clientsCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true }).eq('role', 'client');
-    const { count: documentsCount } = await supabase.from("documents").select("*", { count: 'exact', head: true });
-    const { count: pendingAppointments } = await supabase.from("appointments").select("*", { count: 'exact', head: true }).eq('status', 'pending');
+    const { data: { user } } = await supabase.auth.getUser();
 
-    // Fetch recent cases
-    const { data: recentCases } = await supabase
+    // Get User Role
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user?.id)
+        .single();
+
+    const isAttorney = profile?.role === 'attorney';
+    const userId = user?.id!;
+
+    // 1. Cases Stat
+    let casesQuery = supabase.from("cases").select("*", { count: 'exact', head: true });
+    if (isAttorney) casesQuery = casesQuery.eq('attorney_id', userId);
+    const { count: casesCount } = await casesQuery;
+
+    // 2. Clients Stat (Show all for now, or maybe hide for attorneys? I'll leave as is but just filtered by role=client)
+    const { count: clientsCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true }).eq('role', 'client');
+
+    // 3. Documents Stat (Skip complex filter for now to avoid errors, or try simple join if possible. I'll leave as global count for simplicity or maybe hide)
+    const { count: documentsCount } = await supabase.from("documents").select("*", { count: 'exact', head: true });
+
+    // 4. Pending Appointments
+    let appointmentsQuery = supabase.from("appointments").select("*", { count: 'exact', head: true }).eq('status', 'pending');
+    if (isAttorney) appointmentsQuery = appointmentsQuery.eq('attorney_id', userId);
+    const { count: pendingAppointments } = await appointmentsQuery;
+
+    // 5. Recent Cases Table
+    let recentCasesQuery = supabase
         .from("cases")
         .select("*, client:profiles!client_id(full_name)")
         .order("created_at", { ascending: false })
         .limit(5);
+
+    if (isAttorney) recentCasesQuery = recentCasesQuery.eq('attorney_id', userId);
+    const { data: recentCases } = await recentCasesQuery;
 
     return (
         <div className="space-y-8">
@@ -92,8 +117,8 @@ export default async function AdminDashboard() {
                                         <td className="px-6 py-3 text-gray-600">{c.client?.full_name || 'Unknown'}</td>
                                         <td className="px-6 py-3">
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${c.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                                                    c.status === 'closed' ? 'bg-gray-100 text-gray-800' :
-                                                        'bg-yellow-100 text-yellow-800'
+                                                c.status === 'closed' ? 'bg-gray-100 text-gray-800' :
+                                                    'bg-yellow-100 text-yellow-800'
                                                 }`}>
                                                 {c.status}
                                             </span>

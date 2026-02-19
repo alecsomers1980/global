@@ -17,7 +17,7 @@ export default async function AdminLayout({
     // Check Role
     const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("full_name, email, role")
         .eq("id", user.id)
         .single();
 
@@ -28,7 +28,7 @@ export default async function AdminLayout({
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <AdminSidebar />
+            <AdminSidebar user={profile} />
             <div className="flex-1 md:ml-0 flex flex-col">
                 <main className="flex-1 p-8 overflow-y-auto">
                     {children}

@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { PracticeArea } from "@/types";
@@ -30,6 +31,17 @@ export default async function PracticeAreaDetail({ params }: { params: { slug: s
 
                 {/* Banner */}
                 <section className="bg-brand-navy py-20 text-white relative overflow-hidden">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/images/header3.jpg"
+                            alt="Law Office"
+                            fill
+                            className="object-cover object-right opacity-20 mix-blend-overlay"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
+                    </div>
                     <div className="container relative z-10">
                         <Link href="/practice-areas" className="inline-flex items-center text-brand-gold hover:underline mb-6 text-sm font-medium">
                             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Practice Areas

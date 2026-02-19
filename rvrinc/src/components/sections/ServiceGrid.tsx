@@ -48,8 +48,8 @@ export function ServiceGrid() {
                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-navy">
                         Our Practice Areas
                     </h2>
-                    <p className="text-muted-foreground">
-                        We offer specialized legal services tailored to the unique needs of South African individuals and businesses.
+                    <p className="text-muted-foreground text-lg">
+                        We surpass expectations in Road Accident Fund matters and assist correspondents in all kinds of legal matters.
                     </p>
                 </div>
 

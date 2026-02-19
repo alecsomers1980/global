@@ -10,8 +10,19 @@ export default function ContactPage() {
             <Header />
             <main className="flex-1">
 
-                <section className="bg-brand-navy py-16 text-center text-white">
-                    <div className="container">
+                <section className="bg-brand-navy py-16 text-center text-white relative overflow-hidden">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/images/header3.jpg"
+                            alt="Law Office"
+                            fill
+                            className="object-cover object-right opacity-20 mix-blend-overlay"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
+                    </div>
+                    <div className="container relative z-10">
                         <h1 className="text-4xl font-serif font-bold mb-4">Contact Us</h1>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Get in touch to schedule a consultation. We are here to assist you with your legal needs.
@@ -30,17 +41,19 @@ export default function ContactPage() {
                                     <div className="flex items-start">
                                         <MapPin className="w-6 h-6 text-brand-gold mr-4 mt-1" />
                                         <div>
-                                            <h3 className="font-semibold text-gray-900">Pretoria (Head Office)</h3>
-                                            <p className="text-gray-600">123 Justice Avenue, Brooklyn</p>
-                                            <p className="text-gray-600">Pretoria, 0181</p>
+                                            <h3 className="font-semibold text-gray-900">Centurion (Head Office)</h3>
+                                            <p className="text-gray-600">40 Van Ryneveld Avenue</p>
+                                            <p className="text-gray-600">Pierre van Ryneveld</p>
+                                            <p className="text-gray-600">Tel: 087 150 5683</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
                                         <MapPin className="w-6 h-6 text-brand-gold mr-4 mt-1" />
                                         <div>
                                             <h3 className="font-semibold text-gray-900">Marble Hall</h3>
-                                            <p className="text-gray-600">45 Main Street</p>
-                                            <p className="text-gray-600">Marble Hall, 0450</p>
+                                            <p className="text-gray-600">144 2nd Avenue</p>
+                                            <p className="text-gray-600">Marble Hall</p>
+                                            <p className="text-gray-600">Tel: 013 261 2187</p>
                                         </div>
                                     </div>
                                 </div>
@@ -66,14 +79,40 @@ export default function ContactPage() {
 
 
 
-                            {/* Map / Office Image */}
-                            <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden relative shadow-lg">
-                                <Image
-                                    src="/images/Ptagroup.png"
-                                    alt="Roets & Van Rensburg Offices"
-                                    fill
-                                    className="object-cover"
-                                />
+                            {/* Maps */}
+                            <div className="grid sm:grid-cols-2 gap-4 pt-4">
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold text-brand-navy text-sm uppercase tracking-wide">Centurion Office</h3>
+                                    <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-md relative border border-gray-100">
+                                        <iframe
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3590.224816174826!2d28.2393!3d-25.8456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDUwJzQ0LjIiUyAyOMKwMTQnMjEuNSJF!5e0!3m2!1sen!2sza!4v1645512345678!5m2!1sen!2sza"
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            title="Centurion Office Map"
+                                            className="absolute inset-0"
+                                        ></iframe>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold text-brand-navy text-sm uppercase tracking-wide">Marble Hall Office</h3>
+                                    <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-md relative border border-gray-100">
+                                        <iframe
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3609.123456789012!2d29.2956!3d-24.9705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDU4JzEzLjgiUyAyOcKwMTcnNDQuMiJF!5e0!3m2!1sen!2sza!4v1645512345679!5m2!1sen!2sza"
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            title="Marble Hall Office Map"
+                                            className="absolute inset-0"
+                                        ></iframe>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

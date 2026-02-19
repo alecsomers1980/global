@@ -6,11 +6,27 @@ import { Button } from "@/components/ui/Button";
 export default async function AdminCasesPage() {
     const supabase = createClient();
 
-    // Fetch all cases with client and attorney details
-    const { data: cases } = await supabase
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Get User Role
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user?.id)
+        .single();
+
+    // Start Query
+    let query = supabase
         .from("cases")
-        .select("*, client:profiles!client_id(full_name), attorney:profiles!attorney_id(full_name)")
-        .order("updated_at", { ascending: false });
+        .select("*, client:profiles!client_id(full_name), attorney:profiles!attorney_id(full_name)");
+
+    // Apply Filter for Attorneys
+    if (profile?.role === 'attorney') {
+        query = query.eq('attorney_id', user?.id!);
+    }
+
+    // Execute with Order
+    const { data: cases } = await query.order("updated_at", { ascending: false });
 
     return (
         <div className="space-y-8">
@@ -69,9 +85,9 @@ export default async function AdminCasesPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${c.status === 'open' ? 'bg-blue-100 text-blue-800' :
-                                                c.status === 'closed' ? 'bg-gray-100 text-gray-800' :
-                                                    c.status === 'litigation' ? 'bg-red-100 text-red-800' :
-                                                        'bg-yellow-100 text-yellow-800'
+                                            c.status === 'closed' ? 'bg-gray-100 text-gray-800' :
+                                                c.status === 'litigation' ? 'bg-red-100 text-red-800' :
+                                                    'bg-yellow-100 text-yellow-800'
                                             }`}>
                                             {c.status}
                                         </span>

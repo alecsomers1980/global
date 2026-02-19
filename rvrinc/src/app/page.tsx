@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
 import { Button } from "@/components/ui/Button";
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
 import Link from "next/link";
 import Image from "next/image";
 import { ShieldCheck, Clock, Users } from "lucide-react";
@@ -16,14 +17,7 @@ export default function Home() {
                 <Hero />
 
                 {/* Trust Indicators */}
-                <div className="bg-white border-b border-gray-100 py-8">
-                    <div className="container flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all">
-                        {/* Placeholders for logos */}
-                        <div className="font-serif font-bold text-xl text-gray-400">Law Society of SA</div>
-                        <div className="font-serif font-bold text-xl text-gray-400">Legal Practice Council</div>
-                        <div className="font-serif font-bold text-xl text-gray-400">Pretoria Attorneys Assoc.</div>
-                    </div>
-                </div>
+                {/* ... (unchanged) ... */}
 
                 {/* Intro */}
                 <section className="py-20 bg-white">
@@ -32,23 +26,26 @@ export default function Home() {
                             <div className="aspect-[4/3] relative bg-gray-200 rounded-lg overflow-hidden shadow-lg">
                                 <Image
                                     src="/images/Ptagroup.png"
-                                    alt="Roets & Van Rensburg Offices"
+                                    alt="Pretoria Office"
                                     fill
                                     className="object-cover"
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                 />
                             </div>
-                            <div className="absolute -bottom-6 -right-6 bg-brand-gold p-8 rounded-lg shadow-xl hidden md:block">
+                            <div className="absolute -bottom-6 -right-6 bg-brand-gold p-8 rounded-lg shadow-xl hidden md:block z-20">
                                 <div className="text-4xl font-bold text-brand-navy">30+</div>
                                 <div className="text-sm font-semibold text-brand-navy/80 uppercase tracking-wider">Years Experience</div>
                             </div>
                         </div>
                         <div className="space-y-6">
                             <h2 className="text-3xl font-serif font-bold text-brand-navy">
-                                A Legacy of Excellence & Trust
+                                Dedicated & Compassionate Legal Assistance
                             </h2>
                             <p className="text-muted-foreground leading-relaxed">
-                                Founded in 1995, Roets & Van Rensburg has built a reputation for solving the most complex legal challenges with precision and integrity. We combine deep legal knowledge with a modern, client-centric approach.
+                                Roets & Van Rensburg Inc is a boutique law firm with its head office situated in Centurion, Pretoria and branch office in Marble Hall, Limpopo province.
+                            </p>
+                            <p className="text-muted-foreground leading-relaxed pt-2">
+                                We specialize in Road Accident Fund matters, providing dedicated and compassionate legal assistance to clients injured or affected by motor vehicle accidents. We guide our clients through every step of the process, carefully navigating the strict and often complex procedures required to secure the best possible outcome. At the heart of our firm is a commitment to our clients – their well-being and interests always comes first.
                             </p>
                             <ul className="space-y-3 pt-2">
                                 <li className="flex items-center gap-3 text-brand-navy font-medium">

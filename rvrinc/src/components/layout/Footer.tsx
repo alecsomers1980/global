@@ -24,8 +24,8 @@ export function Footer() {
                 <div className="space-y-4">
                     <h4 className="text-sm font-bold uppercase tracking-wider text-brand-gold">Contact</h4>
                     <ul className="space-y-2 text-sm text-gray-300">
-                        <li>123 Justice Avenue, Pretoria</li>
-                        <li>+27 (0) 12 345 6789</li>
+                        <li>40 Van Ryneveld Ave, Centurion</li>
+                        <li>087 150 5683</li>
                         <li>info@rvrinc.co.za</li>
                     </ul>
                 </div>
@@ -36,6 +36,11 @@ export function Footer() {
                     <Link href="/portal" className="inline-block px-4 py-2 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-navy transition-colors rounded-md text-sm">
                         Access Portal
                     </Link>
+                    <div className="pt-2">
+                        <Link href="/login" className="text-xs text-brand-gold/60 hover:text-brand-gold transition-colors">
+                            Admin Login
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -43,8 +48,9 @@ export function Footer() {
                 <p>&copy; {new Date().getFullYear()} Roets & Van Rensburg Attorneys. All rights reserved.</p>
                 <p className="hidden md:block">v1.2 - deployed</p>
                 <div className="flex gap-4 mt-4 md:mt-0">
-                    <Link href="/privacy" className="hover:text-gray-300">Privacy Policy</Link>
-                    <Link href="/terms" className="hover:text-gray-300">Terms of Service</Link>
+                    <Link href="/privacy-policy" className="hover:text-gray-300">Privacy Policy</Link>
+                    <span className="hidden md:inline">|</span>
+                    <Link href="/paia-manual" className="hover:text-gray-300">PAIA Manual</Link>
                 </div>
             </div>
         </footer>

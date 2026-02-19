@@ -24,7 +24,15 @@ const navItems = [
     { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+    user?: {
+        full_name: string | null;
+        email: string | null;
+        role: string | null;
+    };
+}
+
+export function AdminSidebar({ user }: AdminSidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const supabase = createClient();
@@ -36,7 +44,7 @@ export function AdminSidebar() {
 
     return (
         <aside className="w-64 bg-slate-900 text-white flex-col hidden md:flex h-screen sticky top-0 border-r border-slate-800">
-            <div className="p-6 border-b border-slate-800 flex items-center gap-2">
+            <div className="p-6 border-b border-slate-800 flex items-center gap-3">
                 <div className="bg-brand-gold p-1.5 rounded">
                     <Shield className="w-5 h-5 text-slate-900" />
                 </div>
@@ -68,7 +76,17 @@ export function AdminSidebar() {
                 })}
             </nav>
 
-            <div className="p-4 border-t border-slate-800">
+            <div className="p-4 border-t border-slate-800 space-y-4">
+                {user && (
+                    <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-800">
+                        <p className="text-sm font-medium text-white truncate">{user.full_name || 'Admin User'}</p>
+                        <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                        <div className="mt-2 text-xs font-bold uppercase tracking-wider text-brand-gold bg-brand-gold/10 inline-block px-2 py-0.5 rounded border border-brand-gold/20">
+                            {user.role}
+                        </div>
+                    </div>
+                )}
+
                 <Button
                     variant="ghost"
                     className="w-full justify-start text-red-400 hover:bg-red-950/30 hover:text-red-300"

@@ -11,13 +11,13 @@ export function Hero() {
                     src="/images/header3.jpg"
                     alt="Law Office"
                     fill
-                    className="object-cover opacity-20 mix-blend-overlay"
+                    className="object-cover object-right opacity-20 mix-blend-overlay"
                     priority
                 />
                 <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
             </div>
 
-            <div className="container relative z-10 flex flex-col items-center text-center lg:text-left lg:items-start lg:grid lg:grid-cols-2 gap-12">
+            <div className="container relative z-10 flex flex-col items-center text-center gap-12 max-w-4xl mx-auto">
                 <div className="space-y-6">
                     <div className="inline-block px-3 py-1 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-semibold tracking-wider uppercase">
                         EST. 1995 • Pretoria, South Africa
@@ -26,17 +26,17 @@ export function Hero() {
                         Upholding Justice. <br />
                         <span className="text-brand-gold">Protecting Your Future.</span>
                     </h1>
-                    <p className="text-lg text-gray-300 max-w-xl leading-relaxed">
+                    <p className="text-lg text-gray-300 max-w-xl mx-auto leading-relaxed">
                         Roets & Van Rensburg Attorneys provides authoritative legal counsel in Civil Litigation, Family Law, and Commercial Disputes. We fight for your rights with unwavering commitment.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
                         <Link href="/login?mode=signup">
-                            <Button size="lg" variant="brand" className="w-full sm:w-auto">
+                            <Button size="lg" variant="brand" className="w-full sm:w-auto font-normal">
                                 Book a Consultation
                             </Button>
                         </Link>
                         <Link href="/portal">
-                            <Button size="lg" variant="outline" className="w-full sm:w-auto text-brand-navy bg-brand-gold border-brand-gold hover:bg-brand-gold/90">
+                            <Button size="lg" variant="outline" className="w-full sm:w-auto text-brand-navy bg-brand-gold border-brand-gold hover:bg-brand-gold/90 font-normal">
                                 Track Your Case
                             </Button>
                         </Link>
@@ -44,21 +44,6 @@ export function Hero() {
                     <p className="text-sm text-gray-500 pt-2">
                         Trusted by over 2,000 clients across South Africa.
                     </p>
-                </div>
-
-                <div className="hidden lg:block relative">
-                    {/* Abstract Law Representation */}
-                    {/* Hero Feature Image */}
-                    <div className="relative w-full h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-                        <Image
-                            src="/images/header3.jpg"
-                            alt="Roets & Van Rensburg Attorneys"
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                            priority
-                        />
-                    </div>
                 </div>
             </div>
         </section>
