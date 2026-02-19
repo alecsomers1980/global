@@ -48,11 +48,16 @@ export function Hero() {
 
                 <div className="hidden lg:block relative">
                     {/* Abstract Law Representation */}
-                    <div className="relative w-full h-[500px] bg-gradient-to-tr from-brand-gold/20 to-brand-navy border border-white/10 rounded-2xl p-8 flex items-center justify-center">
-                        <div className="absolute inset-0 bg-brand-navy/50 backdrop-blur-sm rounded-2xl flex items-center justify-center text-white/20 text-9xl font-serif">
-                            R&VR
-                        </div>
-                        {/* This would be an actual image in production */}
+                    {/* Hero Feature Image */}
+                    <div className="relative w-full h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                        <Image
+                            src="/images/header3.jpg"
+                            alt="Roets & Van Rensburg Attorneys"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                            priority
+                        />
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { ServiceGrid } from "@/components/sections/ServiceGrid";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Image from "next/image";
 import { ShieldCheck, Clock, Users } from "lucide-react";
 
 export default function Home() {
@@ -28,11 +29,14 @@ export default function Home() {
                 <section className="py-20 bg-white">
                     <div className="container grid md:grid-cols-2 gap-12 items-center">
                         <div className="relative">
-                            <div className="aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
-                                {/* Image Placeholder */}
-                                <div className="w-full h-full bg-brand-navy/10 flex items-center justify-center text-brand-navy/20">
-                                    Office Image
-                                </div>
+                            <div className="aspect-[4/3] relative bg-gray-200 rounded-lg overflow-hidden shadow-lg">
+                                <Image
+                                    src="/images/Ptagroup.png"
+                                    alt="Roets & Van Rensburg Offices"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                />
                             </div>
                             <div className="absolute -bottom-6 -right-6 bg-brand-gold p-8 rounded-lg shadow-xl hidden md:block">
                                 <div className="text-4xl font-bold text-brand-navy">30+</div>
