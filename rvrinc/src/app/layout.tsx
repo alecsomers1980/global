@@ -35,6 +35,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            <head>
+                <link rel="icon" href="/images/favicon.png" />
+            </head>
             <body className={cn(inter.variable, playfair.variable, "min-h-screen bg-background font-sans antialiased")}>
                 {children}
             </body>

@@ -1,11 +1,21 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 export function Hero() {
     return (
         <section className="relative w-full py-20 lg:py-32 bg-brand-navy overflow-hidden">
-            {/* Background Pattern / Image Overlay would go here */}
-            <div className="absolute inset-0 bg-[url('/assets/hero-pattern.svg')] opacity-5 mix-blend-overlay"></div>
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0">
+                <Image
+                    src="/images/header3.jpg"
+                    alt="Law Office"
+                    fill
+                    className="object-cover opacity-20 mix-blend-overlay"
+                    priority
+                />
+                <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
+            </div>
 
             <div className="container relative z-10 flex flex-col items-center text-center lg:text-left lg:items-start lg:grid lg:grid-cols-2 gap-12">
                 <div className="space-y-6">
@@ -26,7 +36,7 @@ export function Hero() {
                             </Button>
                         </Link>
                         <Link href="/portal">
-                            <Button size="lg" variant="outline" className="w-full sm:w-auto text-white border-white/20 hover:bg-white/10">
+                            <Button size="lg" variant="outline" className="w-full sm:w-auto text-brand-navy bg-brand-gold border-brand-gold hover:bg-brand-gold/90">
                                 Track Your Case
                             </Button>
                         </Link>

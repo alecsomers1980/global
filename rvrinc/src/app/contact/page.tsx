@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import Image from "next/image";
 
 export default function ContactPage() {
     return (
@@ -63,11 +64,16 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Map Placeholder */}
-                            <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden relative">
-                                <div className="absolute inset-0 bg-brand-navy/5 flex items-center justify-center text-gray-400 font-medium">
-                                    Map Integration
-                                </div>
+
+
+                            {/* Map / Office Image */}
+                            <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden relative shadow-lg">
+                                <Image
+                                    src="/images/Ptagroup.png"
+                                    alt="Roets & Van Rensburg Offices"
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
                         </div>
 
