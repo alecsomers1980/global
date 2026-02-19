@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+// Force Vercel Re-deploy
 const nextConfig = {
     headers: async () => {
         return [
