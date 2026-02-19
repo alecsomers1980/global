@@ -30,7 +30,7 @@ export function Hero() {
                         Roets & Van Rensburg Attorneys provides authoritative legal counsel in Civil Litigation, Family Law, and Commercial Disputes. We fight for your rights with unwavering commitment.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                        <Link href="/contact">
+                        <Link href="/login?mode=signup">
                             <Button size="lg" variant="brand" className="w-full sm:w-auto">
                                 Book a Consultation
                             </Button>

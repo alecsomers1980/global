@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
+    const searchParams = useSearchParams();
     const [isSignUp, setIsSignUp] = useState(false);
+
+    useEffect(() => {
+        if (searchParams.get("mode") === "signup") {
+            setIsSignUp(true);
+        }
+    }, [searchParams]);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
@@ -161,5 +170,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }

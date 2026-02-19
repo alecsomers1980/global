@@ -37,7 +37,7 @@ export function Header() {
                             Client Portal
                         </Button>
                     </Link>
-                    <Link href="/contact">
+                    <Link href="/login?mode=signup">
                         <Button variant="brand" size="sm">
                             Book Consultation
                         </Button>

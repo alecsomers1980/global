@@ -41,6 +41,7 @@ export function Footer() {
 
             <div className="container border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
                 <p>&copy; {new Date().getFullYear()} Roets & Van Rensburg Attorneys. All rights reserved.</p>
+                <p className="hidden md:block">v1.2 - deployed</p>
                 <div className="flex gap-4 mt-4 md:mt-0">
                     <Link href="/privacy" className="hover:text-gray-300">Privacy Policy</Link>
                     <Link href="/terms" className="hover:text-gray-300">Terms of Service</Link>
