@@ -10,7 +10,11 @@ import {
     Users,
     Settings,
     LogOut,
-    Shield
+    Shield,
+    ShieldCheck,
+    CalendarDays,
+    Globe,
+    BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
@@ -19,8 +23,11 @@ import { useRouter } from "next/navigation";
 const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Case Manager", href: "/admin/cases", icon: Briefcase },
+    { name: "Bookings", href: "/admin/bookings", icon: CalendarDays },
     { name: "Documents", href: "/admin/documents", icon: FileText },
+    { name: "Reports", href: "/admin/reports", icon: BarChart3 },
     { name: "Clients", href: "/admin/clients", icon: Users },
+    { name: "User Management", href: "/admin/users", icon: ShieldCheck },
     { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -86,6 +93,11 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                         </div>
                     </div>
                 )}
+
+                <Link href="/" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800">
+                    <Globe className="w-4 h-4" />
+                    Back to Website
+                </Link>
 
                 <Button
                     variant="ghost"

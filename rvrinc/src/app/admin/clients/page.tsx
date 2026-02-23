@@ -48,14 +48,9 @@ export default async function AdminClientsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex flex-col gap-1 text-slate-600">
-                                            {/* Email isn't in profiles by default schema, usually in auth, forcing manual join or assumption. 
-                                       However, let's assume for MVP we fetch email or use placeholder if not sync'd to profile. 
-                                       Ideally we sync auth.users email to profiles on signup. */}
-                                            <div className="flex items-center gap-2">
-                                                <Mail className="w-3 h-3" />
-                                                <span>Click to view email</span>
-                                            </div>
+                                        <div className="flex items-center gap-2 text-slate-600">
+                                            <Mail className="w-3 h-3" />
+                                            <span>{client.email || 'No email'}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-slate-500">
@@ -65,7 +60,9 @@ export default async function AdminClientsPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <Button variant="ghost" size="sm">View Profile</Button>
+                                        <Link href={`/admin/clients/${client.id}`}>
+                                            <Button variant="ghost" size="sm">View Profile</Button>
+                                        </Link>
                                     </td>
                                 </tr>
                             ))}

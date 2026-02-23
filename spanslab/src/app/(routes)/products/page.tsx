@@ -4,7 +4,7 @@ import { products } from "@/lib/data";
 
 export const metadata = {
     title: "Our Products | Spanslab",
-    description: "Browse our range of high-quality concrete products including Rib & Block slabs, Paving, and Ready Mix concrete in Nelspruit.",
+    description: "Browse our range of high-quality concrete products including Rib & Block slabs and Paving in Nelspruit.",
 };
 
 export default function ProductsPage() {

@@ -14,9 +14,26 @@ export default async function PortalLayout({
         redirect("/login");
     }
 
+    // Fetch profile data for sidebar
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, email, role")
+        .eq("id", user.id)
+        .single();
+
+    const userInfo = profile ? {
+        full_name: profile.full_name,
+        email: profile.email || user.email || null,
+        role: profile.role,
+    } : {
+        full_name: null,
+        email: user.email || null,
+        role: null,
+    };
+
     return (
         <div className="flex min-h-screen bg-gray-50">
-            <PortalSidebar />
+            <PortalSidebar user={userInfo} />
             <div className="flex-1 md:ml-0 flex flex-col">
                 {/* Mobile Header would go here */}
                 <main className="flex-1 p-8 overflow-y-auto">

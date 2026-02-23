@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Spanslab - Professional Concrete Products & Construction Materials",
-  description: "Nelspruit's trusted supplier of Rib & Block slabs, Paving, and Ready Mix concrete. Quality construction materials delivered with precision.",
+  description: "Nelspruit's trusted supplier of Rib & Block slabs and Paving. Quality construction materials delivered with precision.",
   openGraph: {
     type: "website",
     locale: "en_ZA",

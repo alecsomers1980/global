@@ -4,7 +4,7 @@ export interface Product {
     name: string;
     description: string;
     category: string;
-    categoryId: "rib-and-block" | "paving" | "ready-mix" | "building-materials";
+    categoryId: "rib-and-block" | "paving" | "building-materials";
     image: string;
     images: string[];
     features: string[];
@@ -83,21 +83,7 @@ export const products: Product[] = [
             { label: "Strength", value: "35 MPa" },
         ],
     },
-    {
-        id: "5",
-        slug: "ready-mix-25mpa",
-        name: "25 MPa Standard Concrete",
-        description: "General purpose ready-mix concrete suitable for house foundations, surface beds, and sturdy footpaths.",
-        category: "Ready Mix",
-        categoryId: "ready-mix",
-        image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=800&auto=format&fit=crop",
-        images: [],
-        features: ["Consistent quality mix", "Delivered to site", "Workable slump"],
-        specs: [
-            { label: "Strength", value: "25 MPa at 28 days" },
-            { label: "Stone Size", value: "19mm" },
-        ],
-    },
+
     {
         id: "6",
         slug: "plaster-sand",
@@ -153,7 +139,7 @@ export const projects: Project[] = [
         id: "4",
         title: "N4 Highway Upgrade",
         location: "Mpumalanga",
-        description: "Supply of 30MPa Ready Mix concrete for drainage channels and culverts along the N4 route.",
+        description: "Supply of high-strength concrete paving and structural components along the N4 route.",
         image: "https://images.unsplash.com/photo-1590644365607-1c5aef933181?q=80&w=2670&auto=format&fit=crop",
         category: "Infrastructure",
     },

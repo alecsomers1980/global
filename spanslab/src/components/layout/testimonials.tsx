@@ -23,7 +23,7 @@ export function Testimonials() {
                             role: "Project Manager, Venter Construction",
                         },
                         {
-                            quote: "Reliable Ready Mix delivery is critical for us. Spanslab is the only supplier that consistently hits our tight windows.",
+                            quote: "Reliable delivery is critical for us. Spanslab is the only supplier that consistently hits our tight windows.",
                             author: "Sipho Nkosi",
                             role: "Site Foreman, Civil Civils",
                         },

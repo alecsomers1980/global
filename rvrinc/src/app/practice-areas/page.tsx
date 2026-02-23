@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Scale, Briefcase, Heart, Home, AlertCircle, Gavel } from "lucide-react";
 import { PracticeArea } from "@/types";
 
@@ -18,10 +19,21 @@ export default function PracticeAreasPage() {
             <main className="flex-1">
 
                 {/* Page Header */}
-                <section className="bg-brand-navy py-16 text-white text-center">
-                    <div className="container">
-                        <h1 className="text-4xl font-serif font-bold mb-4">Our Practice Areas</h1>
-                        <p className="text-gray-300 max-w-2xl mx-auto">
+                <section className="bg-brand-navy py-16 text-white text-center relative overflow-hidden">
+                    {/* Background Image */}
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/images/header3.jpg"
+                            alt="Law Office"
+                            fill
+                            className="object-cover object-right opacity-20 mix-blend-overlay"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
+                    </div>
+                    <div className="container relative z-10">
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Our Practice Areas</h1>
+                        <p className="text-gray-300 max-w-2xl mx-auto text-lg">
                             Comprehensive legal expertise tailored to your personal and business needs.
                         </p>
                     </div>

@@ -17,7 +17,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="text-slate-light text-sm leading-relaxed max-w-xs">
-                            Nelspruit&apos;s trusted supplier of Rib & Block slabs, Paving, and Ready Mix concrete. Building strong foundations for over 15 years.
+                            Nelspruit&apos;s trusted supplier of Rib & Block slabs and Paving. Building strong foundations for over 15 years.
                         </p>
                         <div className="flex space-x-4 pt-2">
                             <a href="#" className="text-slate-light hover:text-orange-DEFAULT transition-colors">
@@ -71,11 +71,6 @@ export function Footer() {
                             <li>
                                 <Link href="/products?category=paving" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
                                     Bevel Paving
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/products?category=ready-mix" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
-                                    Ready Mix Concrete
                                 </Link>
                             </li>
                             <li>

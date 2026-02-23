@@ -1,64 +1,40 @@
-import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
-import { Calendar, User, ArrowRight } from "lucide-react";
-import { BlogPost } from "@/types";
+import { Construction } from "lucide-react";
+import Image from "next/image";
 
-export default async function InsightsPage() {
-    const supabase = createClient();
-    const { data: blogPosts } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .order("published_date", { ascending: false });
+export default function InsightsPage() {
     return (
         <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">
-
-                <section className="bg-brand-navy py-16 text-center text-white">
-                    <div className="container">
-                        <h1 className="text-4xl font-serif font-bold mb-4">Legal Insights</h1>
-                        <p className="text-gray-300 max-w-2xl mx-auto">
-                            Stay informed with the latest legal news, analysis, and updates from our expert team.
-                        </p>
+                {/* Hero */}
+                <section className="bg-brand-navy py-20 text-center text-white relative overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <Image src="/images/header3.jpg" alt="Law Office" fill className="object-cover object-right opacity-15 mix-blend-overlay" priority />
+                        <div className="absolute inset-0 bg-brand-navy/70 mix-blend-multiply" />
+                    </div>
+                    <div className="container relative z-10">
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Insights</h1>
+                        <p className="text-gray-300 max-w-2xl mx-auto text-lg">Stay informed with the latest legal insights.</p>
                     </div>
                 </section>
 
-                <section className="py-20">
-                    <div className="container grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {blogPosts?.map((post: BlogPost) => (
-                            <div key={post.id} className="group bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 flex flex-col">
-                                {/* Image Placeholder */}
-                                <div className="h-48 bg-gray-200 w-full relative">
-                                    <div className="absolute inset-0 bg-brand-navy/10 flex items-center justify-center text-brand-navy/20 font-bold">
-                                        {post.category}
-                                    </div>
-                                </div>
-
-                                <div className="p-6 flex-1 flex flex-col">
-                                    <div className="flex items-center text-xs text-gray-500 mb-3 space-x-3">
-                                        <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" /> {post.published_date}</span>
-                                        <span className="flex items-center"><User className="w-3 h-3 mr-1" /> {post.author}</span>
-                                    </div>
-
-                                    <h2 className="text-xl font-bold text-brand-navy mb-3 line-clamp-2 group-hover:text-brand-gold transition-colors">
-                                        {post.title}
-                                    </h2>
-
-                                    <p className="text-muted-foreground mb-6 line-clamp-3 text-sm flex-1">
-                                        {post.excerpt}
-                                    </p>
-
-                                    <Link href={`/insights/${post.slug}`} className="mt-auto">
-                                        <Button variant="ghost" className="p-0 h-auto hover:bg-transparent text-brand-navy font-semibold hover:text-brand-gold hover:underline justify-start">
-                                            Read Full Article <ArrowRight className="w-4 h-4 ml-1" />
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </div>
-                        ))}
+                {/* Under Construction */}
+                <section className="py-32 text-center">
+                    <div className="container max-w-lg mx-auto space-y-6">
+                        <div className="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mx-auto">
+                            <Construction className="w-10 h-10 text-brand-gold" />
+                        </div>
+                        <h2 className="text-2xl font-serif font-bold text-brand-navy">Coming Soon</h2>
+                        <p className="text-gray-500 leading-relaxed">
+                            We are currently building our Insights section where we will share expert commentary on RAF legislation, case studies, and legal updates. Check back soon.
+                        </p>
+                        <div className="flex items-center justify-center gap-3 pt-4">
+                            <div className="h-px w-12 bg-brand-gold/30" />
+                            <span className="text-brand-gold text-xs font-semibold tracking-[0.3em] uppercase">Under Construction</span>
+                            <div className="h-px w-12 bg-brand-gold/30" />
+                        </div>
                     </div>
                 </section>
 

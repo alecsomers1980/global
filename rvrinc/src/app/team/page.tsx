@@ -71,7 +71,7 @@ export default function TeamPage() {
             <Header />
             <main className="flex-1 bg-gray-50/50">
 
-                <section className="bg-brand-navy py-20 text-center text-white relative overflow-hidden">
+                <section className="bg-brand-navy py-16 text-center text-white relative overflow-hidden">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                         <Image
@@ -84,8 +84,8 @@ export default function TeamPage() {
                         <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
                     </div>
                     <div className="container relative z-10">
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-6">Our Team</h1>
-                        <p className="text-gray-300 max-w-2xl mx-auto text-lg leading-relaxed">
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Our Team</h1>
+                        <p className="text-gray-300 max-w-2xl mx-auto text-lg">
                             A dedicated team of legal professionals committed to upholding justice and serving our clients with integrity across our Pretoria and Marble Hall branches.
                         </p>
                     </div>

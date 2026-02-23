@@ -14,7 +14,6 @@ const categories = [
     { id: "all", label: "All Products" },
     { id: "rib-and-block", label: "Rib & Block" },
     { id: "paving", label: "Paving" },
-    { id: "ready-mix", label: "Ready Mix" },
     { id: "building-materials", label: "Building Materials" },
 ];
 

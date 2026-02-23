@@ -19,12 +19,6 @@ const categories = [
         href: "/products?category=paving",
     },
     {
-        title: "Ready Mix Concrete",
-        description: "High-strength, custom-mix concrete delivered to your site.",
-        image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=800&auto=format&fit=crop",
-        href: "/products?category=ready-mix",
-    },
-    {
         title: "Building Materials",
         description: "Sand, stone, cement, and mesh for all construction needs.",
         image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",

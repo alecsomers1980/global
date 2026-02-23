@@ -54,7 +54,6 @@ export default function ContactPage() {
                                         <option value="">Select a product...</option>
                                         <option value="rib-and-block">Rib & Block Slabs</option>
                                         <option value="paving">Paving</option>
-                                        <option value="ready-mix">Ready Mix Concrete</option>
                                         <option value="other">General Inquiry</option>
                                     </select>
                                 </div>

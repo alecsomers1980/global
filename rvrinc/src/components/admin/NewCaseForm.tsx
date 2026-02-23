@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { caseSchema } from "@/lib/schemas";
 
 export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys: any[] }) {
@@ -21,6 +21,19 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
+
+    const generateCaseNumber = () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const random = Math.floor(1000 + Math.random() * 9000);
+        return `RVR-${year}${month}${day}-${random}`;
+    };
+
+    useEffect(() => {
+        setCaseNumber(generateCaseNumber());
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,12 +97,23 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                 </div>
                 <div className="space-y-2">
                     <Label>Case Number</Label>
-                    <Input
-                        required
-                        placeholder="e.g. CAS-2024-001"
-                        value={caseNumber}
-                        onChange={(e) => setCaseNumber(e.target.value)}
-                    />
+                    <div className="flex gap-2">
+                        <Input
+                            required
+                            placeholder="e.g. RVR-20240219-1234"
+                            value={caseNumber}
+                            onChange={(e) => setCaseNumber(e.target.value)}
+                        />
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setCaseNumber(generateCaseNumber())}
+                            title="Generate new number"
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
+                    </div>
                 </div>
             </div>
 

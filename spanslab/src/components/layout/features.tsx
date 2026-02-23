@@ -11,7 +11,7 @@ const features = [
     {
         icon: Truck,
         title: "Reliable Delivery",
-        description: "Our fleet ensures consistent, on-time delivery of Ready Mix and materials across Mpumalanga.",
+        description: "Our fleet ensures consistent, on-time delivery of materials across Mpumalanga.",
     },
     {
         icon: Ruler,

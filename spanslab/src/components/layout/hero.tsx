@@ -37,7 +37,7 @@ export function HeroSection() {
                         </h1>
 
                         <p className="text-lg md:text-xl text-slate-200 mb-8 leading-relaxed max-w-2xl">
-                            From Rib & Block slabs to Ready Mix concrete, Spanslab delivers industrial-grade quality for residential and commercial projects across Mpumalanga.
+                            From Rib & Block slabs to paving, Spanslab delivers industrial-grade quality for residential and commercial projects across Mpumalanga.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-12">

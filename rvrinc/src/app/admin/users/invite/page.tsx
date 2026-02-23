@@ -9,9 +9,9 @@ export default function InviteUserPage() {
     return (
         <div className="max-w-2xl mx-auto space-y-8">
             <div>
-                <Link href="/admin/clients">
+                <Link href="/admin/users">
                     <Button variant="ghost" className="mb-4 pl-0 hover:bg-transparent hover:text-brand-gold">
-                        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Clients
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Users
                     </Button>
                 </Link>
                 <h1 className="text-3xl font-bold text-slate-800">Invite New User</h1>

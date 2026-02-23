@@ -5,12 +5,14 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, X } from "lucide-react";
 import { Suspense } from "react";
 
 function LoginForm() {
     const searchParams = useSearchParams();
     const [isSignUp, setIsSignUp] = useState(false);
+    const redirectTo = searchParams.get("redirect") || "/portal";
+    const isAdminLogin = redirectTo.startsWith("/admin");
 
     useEffect(() => {
         if (searchParams.get("mode") === "signup") {
@@ -53,7 +55,7 @@ function LoginForm() {
                     password,
                 });
                 if (error) throw error;
-                router.push("/portal");
+                router.push(redirectTo);
                 router.refresh();
             }
         } catch (err: any) {
@@ -65,16 +67,24 @@ function LoginForm() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-brand-navy p-4">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden relative">
+                {/* Close button */}
+                <Link
+                    href="/"
+                    className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors z-10"
+                    aria-label="Close and return to website"
+                >
+                    <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </Link>
                 <div className="p-8">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-serif font-bold text-brand-navy">
-                            {isSignUp ? "Create Account" : "Client Portal Login"}
+                            {isSignUp ? "Create Account" : isAdminLogin ? "Admin Login" : "Client Portal Login"}
                         </h1>
                         <p className="text-sm text-gray-500 mt-2">
                             {isSignUp
                                 ? "Join RVR Inc. for secure legal management."
-                                : "Secure access to your case files and updates."}
+                                : isAdminLogin ? "Authorized personnel only." : "Secure access to your case files and updates."}
                         </p>
                     </div>
 
