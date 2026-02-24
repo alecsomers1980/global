@@ -3,9 +3,10 @@ export const metadata = {
     description: "Apply to become an Everest Motoring affiliate and start earning competitive commissions on premium pre-owned vehicle sales.",
 };
 
-export default function RegisterPage({ searchParams }) {
-    const error = searchParams?.error;
-    const message = searchParams?.message;
+export default async function RegisterPage({ searchParams }) {
+    const params = await searchParams;
+    const error = params?.error;
+    const message = params?.message;
 
     return (
         <div className="min-h-[calc(100vh-80px)] bg-slate-50 flex items-center justify-center p-4 py-12">
