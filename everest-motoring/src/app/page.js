@@ -1,6 +1,18 @@
 import Image from "next/image";
+import HomeSearchWidget from "@/components/HomeSearchWidget";
+import { createClient } from "@/utils/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: cars } = await supabase
+    .from("cars")
+    .select("make")
+    .eq("status", "available");
+
+  const uniqueMakes = cars
+    ? Array.from(new Set(cars.map(c => c.make).filter(Boolean))).sort()
+    : undefined;
+
   return (
     <>
 
@@ -43,7 +55,7 @@ export default function Home() {
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
               <button className="flex items-center justify-center gap-2 rounded-lg bg-secondary px-8 py-3.5 text-base font-bold text-white shadow-md transition-transform hover:-translate-y-0.5 hover:bg-slate-800">
-                Instantly Value My Car
+                Value my car
               </button>
             </div>
           </div>
@@ -53,47 +65,7 @@ export default function Home() {
       {/* Floating Search Widget */}
       <div className="relative z-30 -mt-16 w-full px-4 lg:px-12">
         <div className="mx-auto max-w-5xl rounded-2xl bg-white p-6 shadow-xl border border-slate-100">
-          <form className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div className="relative">
-              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">Make</label>
-              <select className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pr-8 text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                <option>Any Make</option>
-                <option>BMW</option>
-                <option>Mercedes-Benz</option>
-                <option>Audi</option>
-                <option>Toyota</option>
-              </select>
-              <div className="pointer-events-none absolute bottom-3.5 right-3 text-slate-400">
-                <span className="material-symbols-outlined text-lg">expand_more</span>
-              </div>
-            </div>
-            <div className="relative">
-              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">Model</label>
-              <select className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pr-8 text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                <option>Any Model</option>
-              </select>
-              <div className="pointer-events-none absolute bottom-3.5 right-3 text-slate-400">
-                <span className="material-symbols-outlined text-lg">expand_more</span>
-              </div>
-            </div>
-            <div className="relative">
-              <label className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">Max Price</label>
-              <select className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 pr-8 text-slate-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                <option>No Limit</option>
-                <option>R 200,000</option>
-                <option>R 500,000</option>
-                <option>R 1,000,000</option>
-              </select>
-              <div className="pointer-events-none absolute bottom-3.5 right-3 text-slate-400">
-                <span className="material-symbols-outlined text-lg">expand_more</span>
-              </div>
-            </div>
-            <div className="flex items-end">
-              <button className="flex h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold text-white shadow-lg shadow-primary/25 transition-colors hover:bg-primary-dark" type="button">
-                <span className="material-symbols-outlined">search</span> Search Vehicles
-              </button>
-            </div>
-          </form>
+          <HomeSearchWidget makes={uniqueMakes && uniqueMakes.length > 0 ? uniqueMakes : undefined} />
         </div>
       </div>
 

@@ -3,17 +3,18 @@ export const metadata = {
     description: "Learn about the Everest Way. Our 100-point checks, selective vehicle sourcing, and commitment to integrity in the South African used car market.",
 };
 
+import PageBanner from "@/components/PageBanner";
+
 export default function AboutPage() {
     return (
         <div className="bg-background-alt min-h-screen">
             {/* Hero Section */}
-            <section className="bg-slate-900 py-24 px-4 text-center lg:px-12 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center"></div>
-                <div className="relative z-10 max-w-4xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">The Everest Way</h1>
-                    <p className="text-lg text-slate-300 md:text-xl">Redefining the pre-owned vehicle experience in Mpumalanga and across South Africa through uncompromising quality and integrity.</p>
-                </div>
-            </section>
+            <PageBanner
+                title="The Everest Way"
+                subtitle="Redefining the pre-owned vehicle experience in Mpumalanga and across South Africa through uncompromising quality and integrity."
+                bgImageUrl="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2671&auto=format&fit=crop"
+                overlayOpacity="opacity-20"
+            />
 
             {/* Content Section */}
             <section className="py-20 px-4 lg:px-12">

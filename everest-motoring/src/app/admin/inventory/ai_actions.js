@@ -73,10 +73,10 @@ async function processCinematicPipeline(carId, carPayload) {
     } catch (error) {
         console.error("[AI Cinematic Pipeline] Background Fatal Error:", error);
 
-        // Revert status on failure so it doesn't get stuck
-        const supabase = await createAdminClient();
-        await supabase.from('cars').update({
-            video_url: null
+        // Revert status on failure so it doesn't get stuck and pass the error message to the UI
+        const supabaseErrorClient = await createAdminClient();
+        await supabaseErrorClient.from('cars').update({
+            video_url: 'error: ' + (error.message || 'Unknown processing failure')
         }).eq('id', carId);
     }
 }
@@ -88,7 +88,11 @@ export async function checkHeyGenVideoStatus(carId) {
         const supabase = await createAdminClient();
         const { data } = await supabase.from('cars').select('video_url').eq('id', carId).single();
 
-        if (!data || !data.video_url) return { status: 'failed' };
+        if (!data || !data.video_url) return { status: 'failed', error: 'No video requested.' };
+
+        if (data.video_url.startsWith('error: ')) {
+            return { status: 'failed', error: data.video_url.replace('error: ', '') };
+        }
 
         if (data.video_url.startsWith('mux:')) {
             return { status: 'ready', playbackId: data.video_url.split(':')[1] };
@@ -99,7 +103,7 @@ export async function checkHeyGenVideoStatus(carId) {
             return { status: 'processing', phase: data.video_url };
         }
 
-        return { status: 'failed' };
+        return { status: 'failed', error: 'Unknown state' };
 
     } catch (err) {
         return { status: 'error' };

@@ -3,15 +3,15 @@ export const metadata = {
     description: "Get in touch with Everest Motoring. Find our dealership in White River, Mpumalanga, or reach out to our team of experts.",
 };
 
+import PageBanner from "@/components/PageBanner";
+
 export default function ContactPage() {
     return (
         <div className="bg-background-light min-h-screen">
-            <section className="bg-slate-900 py-20 px-4 text-center lg:px-12 relative">
-                <div className="relative z-10 max-w-3xl mx-auto">
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Contact Us</h1>
-                    <p className="text-lg text-slate-300">We are ready to assist you. Visit our showroom in White River or contact us digitally.</p>
-                </div>
-            </section>
+            <PageBanner
+                title="Contact Us"
+                subtitle="We are ready to assist you. Visit our showroom in White River or contact us digitally."
+            />
 
             <section className="py-20 px-4 lg:px-12">
                 <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">

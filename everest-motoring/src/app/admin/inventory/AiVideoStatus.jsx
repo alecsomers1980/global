@@ -22,13 +22,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
 
         if (videoUrl.startsWith('ai_') || videoUrl === 'mux_ingesting') {
             setIsActive(true);
-            switch (videoUrl) {
-                case 'ai_processing': setStatusText('Planning Scenes...'); break;
-                case 'ai_rendering_clips': setStatusText('Generating Veo B-Roll...'); break;
-                case 'ai_stitching_video': setStatusText('Stitching Video...'); break;
-                case 'mux_ingesting': setStatusText('Optimizing for Web...'); break;
-                default: setStatusText('Processing AI Video...');
-            }
+            setStatusText('Rendering...');
         }
     }, [videoUrl]);
 
@@ -57,10 +51,10 @@ export default function AiVideoStatus({ carId, videoUrl }) {
                 // Refresh page to get latest DB string state
                 window.location.reload();
             } else {
-                setStatusText("Generation failed.");
+                setStatusText("Generation failed: " + (result.error || "Unknown Error"));
             }
         } catch (error) {
-            setStatusText("Error checking status.");
+            setStatusText("Error checking status: " + error.message);
         } finally {
             setIsChecking(false);
         }
