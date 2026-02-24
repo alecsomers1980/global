@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import HomeSearchWidget from "@/components/HomeSearchWidget";
 import { createClient } from "@/utils/supabase/server";
 
@@ -12,6 +13,14 @@ export default async function Home() {
   const uniqueMakes = cars
     ? Array.from(new Set(cars.map(c => c.make).filter(Boolean))).sort()
     : undefined;
+
+  const { data: featuredCars } = await supabase
+    .from("cars")
+    .select("*")
+    .eq("status", "available")
+    .order("is_featured", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(8);
 
   return (
     <>
@@ -83,82 +92,44 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
-            {/* Car Card 1 */}
-            <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">Used</div>
-                <img alt="BMW" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=2670&auto=format&fit=crop" />
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">2021 • Automatic</div>
-                <h4 className="mb-2 text-lg font-bold text-slate-900">BMW 320d M Sport</h4>
-                <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
-                  <div>
-                    <span className="block text-xs font-medium text-slate-500">45,000 km</span>
-                    <span className="block text-xs font-medium text-slate-500">Diesel</span>
+            {featuredCars && featuredCars.map((car) => (
+              <Link key={car.id} href={`/inventory/${car.id}`} className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">
+                    {car.is_featured ? 'Featured' : 'Used'}
                   </div>
-                  <div className="text-xl font-bold text-primary">R 649,900</div>
+                  {car.status !== 'available' && (
+                    <div className="absolute top-3 left-3 z-10 rounded bg-red-500 px-2 py-1 text-xs font-bold uppercase text-white shadow-lg animate-pulse">
+                      {car.status.toUpperCase()}
+                    </div>
+                  )}
+                  {car.main_image_url ? (
+                    <Image
+                      src={car.main_image_url}
+                      alt={`${car.make} ${car.model}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400">
+                      <span className="material-symbols-outlined text-4xl">directions_car</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
-
-            {/* Car Card 2 */}
-            <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">Demo</div>
-                <div className="absolute top-3 left-3 z-10 rounded bg-red-500 px-2 py-1 text-xs font-bold uppercase text-white shadow-lg animate-pulse">🔥 High Interest</div>
-                <img alt="Mercedes" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2670&auto=format&fit=crop" />
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">2023 • Automatic</div>
-                <h4 className="mb-2 text-lg font-bold text-slate-900">Mercedes-Benz C200</h4>
-                <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
-                  <div>
-                    <span className="block text-xs font-medium text-slate-500">12,500 km</span>
-                    <span className="block text-xs font-medium text-slate-500">Petrol Hybrid</span>
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">{car.year} • {car.transmission}</div>
+                  <h4 className="mb-2 text-lg font-bold text-slate-900">{car.make} {car.model}</h4>
+                  <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
+                    <div>
+                      <span className="block text-xs font-medium text-slate-500">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km</span>
+                      <span className="block text-xs font-medium text-slate-500">{car.fuel_type || 'Fuel'}</span>
+                    </div>
+                    <div className="text-xl font-bold text-primary">R {new Intl.NumberFormat('en-ZA').format(car.price)}</div>
                   </div>
-                  <div className="text-xl font-bold text-primary">R 895,000</div>
                 </div>
-              </div>
-            </div>
-
-            {/* Car Card 3 */}
-            <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">Used</div>
-                <img alt="Toyota" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1581540222194-0def2dda95b8?q=80&w=2670&auto=format&fit=crop" />
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">2020 • Automatic</div>
-                <h4 className="mb-2 text-lg font-bold text-slate-900">Toyota Fortuner 2.8 GD-6</h4>
-                <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
-                  <div>
-                    <span className="block text-xs font-medium text-slate-500">88,000 km</span>
-                    <span className="block text-xs font-medium text-slate-500">Diesel</span>
-                  </div>
-                  <div className="text-xl font-bold text-primary">R 589,900</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Car Card 4 */}
-            <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">Used</div>
-                <img alt="Audi" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?q=80&w=2674&auto=format&fit=crop" />
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-400">2022 • Automatic</div>
-                <h4 className="mb-2 text-lg font-bold text-slate-900">Audi A5 Sportback 40TFSI</h4>
-                <div className="mt-auto flex items-end justify-between border-t border-slate-100 pt-4">
-                  <div>
-                    <span className="block text-xs font-medium text-slate-500">32,000 km</span>
-                    <span className="block text-xs font-medium text-slate-500">Petrol</span>
-                  </div>
-                  <div className="text-xl font-bold text-primary">R 725,000</div>
-                </div>
-              </div>
-            </div>
+              </Link>
+            ))}
 
           </div>
           <div className="mt-8 flex justify-center md:hidden">

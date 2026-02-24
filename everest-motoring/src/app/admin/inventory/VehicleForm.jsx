@@ -91,6 +91,7 @@ export default function VehicleForm({ initialData = null }) {
                 video_url: formData.get("video_url") || null,
                 description: formData.get("description") || null,
                 features: formData.getAll("features"),
+                is_featured: formData.get("is_featured") === "on",
             };
 
             // AI Optimization
@@ -184,6 +185,21 @@ export default function VehicleForm({ initialData = null }) {
                         <option value="reserved">Reserved</option>
                         <option value="sold">Sold</option>
                     </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Featured Vehicle</label>
+                    <label className="flex items-center gap-3 cursor-pointer group mt-4">
+                        <div className="relative flex items-center justify-center">
+                            <input
+                                type="checkbox"
+                                name="is_featured"
+                                defaultChecked={initialData?.is_featured || false}
+                                className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded cursor-pointer checked:bg-amber-500 checked:border-amber-500 transition-colors"
+                            />
+                            <span className="material-symbols-outlined absolute text-white text-[18px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">star</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Show on Home Page</span>
+                    </label>
                 </div>
             </div>
 
