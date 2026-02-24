@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { triggerAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
+import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
 
 const CAR_FEATURES = {
     "Safety & Security": ["ABS", "Airbags", "Alarm System", "ISOFIX", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor"],
@@ -114,11 +114,10 @@ export default function VehicleForm({ initialData = null }) {
                 if (dbError) throw dbError;
 
                 // Step 4: Autonomous AI Video Generation!
-                // If they didn't provide a manual YouTube link, we immediately trigger the AI Avatar pipeline
+                // If they didn't provide a manual YouTube link, we queue it
                 if (!carPayload.video_url) {
-                    // Update progress text for better UX
                     setUploadProgress(95);
-                    await triggerAiWalkaround(insertedData.id, carPayload);
+                    await queueAiWalkaround(insertedData.id);
                 }
             }
 

@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import VideoRenderManager from "@/components/VideoRenderManager";
 
 export default async function AdminLayout({ children }) {
     const supabase = await createClient();
@@ -45,6 +46,8 @@ export default async function AdminLayout({ children }) {
             <main className="flex-1 w-full flex flex-col">
                 {children}
             </main>
+
+            <VideoRenderManager />
         </div>
     );
 }
