@@ -124,7 +124,7 @@ export default async function CarDetailsPage({ params }) {
 
                                 <div className="mt-8 pt-6 border-t border-white/10">
                                     <h4 className="text-white font-bold mb-3">Ready to start financing?</h4>
-                                    <a href={`/client-register?car_id=${car.id}`} className="block w-full text-center bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors py-3 rounded-lg font-bold">
+                                    <a href={`/login?register=client&car_id=${car.id}`} className="block w-full text-center bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors py-3 rounded-lg font-bold">
                                         Create Client Account
                                     </a>
                                 </div>
