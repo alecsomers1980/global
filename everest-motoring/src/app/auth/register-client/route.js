@@ -30,8 +30,11 @@ export async function POST(request) {
     });
 
     if (authError) {
+        if (request.headers.get('accept')?.includes('application/json')) {
+            return NextResponse.json({ error: authError.message }, { status: 400 });
+        }
         return NextResponse.redirect(
-            `${requestUrl.origin}/client-register?error=${encodeURIComponent(authError.message)}`,
+            `${requestUrl.origin}/login?register=client&error=${encodeURIComponent(authError.message)}`,
             { status: 303 }
         );
     }

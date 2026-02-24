@@ -14,12 +14,12 @@ export async function POST(request) {
     });
 
     if (error) {
-        // If login fails, redirect back to login page with an error parameter
+        if (request.headers.get('accept')?.includes('application/json')) {
+            return NextResponse.json({ error: "Invalid Credentials" }, { status: 400 });
+        }
         return NextResponse.redirect(
             `${requestUrl.origin}/login?error=Invalid Credentials`,
-            {
-                status: 301,
-            }
+            { status: 301 }
         );
     }
 
