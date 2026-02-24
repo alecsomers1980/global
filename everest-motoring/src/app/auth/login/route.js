@@ -43,6 +43,10 @@ export async function POST(request) {
     }
 
     // If login succeeds, send them to their specific dashboard
+    if (request.headers.get('accept')?.includes('application/json')) {
+        return NextResponse.json({ redirect: redirectPath });
+    }
+
     return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`, {
         status: 301,
     });

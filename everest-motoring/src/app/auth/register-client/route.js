@@ -71,8 +71,14 @@ export async function POST(request) {
     }
 
     // Registration succeeded. Tell them to check their email before logging in.
+    const successMessage = "Account created! Please check your email to verify your address.";
+
+    if (request.headers.get('accept')?.includes('application/json')) {
+        return NextResponse.json({ message: successMessage });
+    }
+
     return NextResponse.redirect(
-        `${requestUrl.origin}/login?message=${encodeURIComponent("Account created! Please check your email to verify your address.")}`,
+        `${requestUrl.origin}/login?message=${encodeURIComponent(successMessage)}`,
         { status: 303 }
     );
 }
