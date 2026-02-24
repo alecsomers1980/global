@@ -40,13 +40,8 @@ export default async function AffiliateDashboard() {
     const financingLeads = leads?.filter(l => ['document_collection', 'finance_pending'].includes(l.status)) || [];
     const completedLeads = leads?.filter(l => l.status === 'closed_won') || [];
 
-    // Calculate Exact Commissions (1% of closed_won deals)
-    const exactCommissionOwed = completedLeads.reduce((sum, currentLead) => {
-        if (currentLead.cars?.price) {
-            return sum + (currentLead.cars.price * 0.01);
-        }
-        return sum;
-    }, 0);
+    // Calculate Exact Commissions (R1000 flat fee per completed deal)
+    const exactCommissionOwed = completedLeads.length * 1000;
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto px-4 lg:px-12 py-8">
@@ -78,7 +73,7 @@ export default async function AffiliateDashboard() {
                 <div className="bg-slate-900 p-6 rounded-xl shadow-md border-t-4 border-t-emerald-500 relative overflow-hidden">
                     <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2 relative z-10 flex items-center gap-1">
                         Commissions Owed
-                        <span className="material-symbols-outlined text-[14px] text-emerald-400" title="1% of completed vehicle sales">info</span>
+                        <span className="material-symbols-outlined text-[14px] text-emerald-400" title="R1000 per completed vehicle sale">info</span>
                     </p>
                     <span className="text-3xl font-bold text-white relative z-10">R {new Intl.NumberFormat('en-ZA').format(exactCommissionOwed)}</span>
                     <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-6xl text-white/10 rotate-12">payments</span>
@@ -96,7 +91,7 @@ export default async function AffiliateDashboard() {
             <div className="space-y-8">
 
                 <PipelineStageCard
-                    title="Stage 1: Inquiry & Callback"
+                    title="Stage 1: Call Back Request"
                     description="Clients who have registered interest and are being contacted by our sales team."
                     leads={inquiryLeads}
                     icon="phone_in_talk"
@@ -104,7 +99,7 @@ export default async function AffiliateDashboard() {
                 />
 
                 <PipelineStageCard
-                    title="Stage 2: Processing Finance"
+                    title="Stage 2: Financing"
                     description="Clients actively collecting documents or awaiting bank approval."
                     leads={financingLeads}
                     icon="description"
@@ -112,7 +107,7 @@ export default async function AffiliateDashboard() {
                 />
 
                 <PipelineStageCard
-                    title="Stage 3: Completed Deals"
+                    title="Stage 3: Completed"
                     description="Successfully closed deals where referral commissions are guaranteed."
                     leads={completedLeads}
                     icon="task_alt"
