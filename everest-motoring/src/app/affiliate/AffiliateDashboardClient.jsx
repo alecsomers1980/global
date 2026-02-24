@@ -80,8 +80,15 @@ export default function AffiliateDashboardClient({ profile, leads }) {
                 </div>
             </div>
 
+            {/* Bank Details Secure Form */}
+            <BankDetailsForm
+                initialBankName={profile.bank_name}
+                initialAccountNumber={profile.account_number}
+                initialBranchCode={profile.branch_code}
+            />
+
             {/* Search Bar */}
-            <div className="mb-8 max-w-2xl relative">
+            <div className="mb-8 mt-8 max-w-2xl relative">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
                 <input
                     type="text"
@@ -99,13 +106,6 @@ export default function AffiliateDashboardClient({ profile, leads }) {
                     </button>
                 )}
             </div>
-
-            {/* Bank Details Secure Form */}
-            <BankDetailsForm
-                initialBankName={profile.bank_name}
-                initialAccountNumber={profile.account_number}
-                initialBranchCode={profile.branch_code}
-            />
 
             {/* Pipeline Stages */}
             <div className="space-y-8">
