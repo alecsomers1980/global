@@ -69,7 +69,7 @@ export default function LoginPage({ searchParams }) {
 
                     <div className="mt-8 text-center">
                         <p className="text-sm text-slate-500">
-                            New Affiliate? <a href="/register" className="text-primary font-bold hover:underline">Apply Here</a>
+                            New Client? <a href="/register" className="text-primary font-bold hover:underline">Apply Here</a>
                         </p>
                     </div>
                 </div>

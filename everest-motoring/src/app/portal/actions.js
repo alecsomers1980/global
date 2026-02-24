@@ -57,3 +57,55 @@ export async function uploadClientDocument(formData) {
         return { error: "An unexpected error occurred during upload." };
     }
 }
+
+export async function saveFinancingDetailsAction(formData) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { error: "Unauthorized" };
+    }
+
+    const lead_id = formData.get("lead_id");
+    const employment_status = formData.get("employment_status");
+    const monthly_income = formData.get("monthly_income");
+    const financing_period = formData.get("financing_period");
+
+    if (!lead_id || !employment_status || !monthly_income || !financing_period) {
+        return { error: "All fields are required" };
+    }
+
+    // Verify the lead belongs to the user
+    const { data: existingLead } = await supabase
+        .from("leads")
+        .select("id")
+        .eq("id", lead_id)
+        .eq("client_id", user.id)
+        .single();
+
+    if (!existingLead) {
+        return { error: "Lead not found or unauthorized access" };
+    }
+
+    // Update the lead with financing details and advance them to Step 2 (Documents)
+    const { error } = await supabase
+        .from("leads")
+        .update({
+            employment_status,
+            monthly_income: parseFloat(monthly_income),
+            financing_period: parseInt(financing_period, 10),
+            onboarding_step: 2, // Manually flag them to Step 2
+            status: 'document_collection' // Also update the CRM status for the sales team
+        })
+        .eq("id", lead_id);
+
+    if (error) {
+        console.error("Failed to save financing details:", error);
+        return { error: "Database error. Please try again." };
+    }
+
+    // Revalidate the portal to show Step 2
+    revalidatePath("/portal");
+    return { success: true };
+}

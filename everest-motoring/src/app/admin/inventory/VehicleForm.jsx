@@ -257,24 +257,9 @@ export default function VehicleForm({ initialData = null }) {
                     />
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <div className="flex-1 h-px bg-slate-200"></div>
-                    <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">OR USE EXTERNAL LINK</span>
-                    <div className="flex-1 h-px bg-slate-200"></div>
-                </div>
-
                 <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Main Image URL</label>
-                    <input type="url" name="main_image_url" defaultValue={initialData?.main_image_url} placeholder="https://..." className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">YouTube Video URL (Optional Demo Walkaround)</label>
-                    <input type="url" name="video_url" defaultValue={initialData?.video_url} placeholder="https://www.youtube.com/..." className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Detailed Description</label>
-                    <textarea name="description" defaultValue={initialData?.description} rows="5" placeholder="List key features, 100-point check notes, and condition..." className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none resize-none"></textarea>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Extra or unique feature</label>
+                    <textarea name="description" defaultValue={initialData?.description} rows="5" placeholder="List key specific features and condition..." className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none resize-none"></textarea>
                 </div>
             </div>
 

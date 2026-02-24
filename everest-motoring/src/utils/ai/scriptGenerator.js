@@ -77,9 +77,32 @@ export async function optimizeVehicleDescription(car, manualDescription) {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Using gemini-1.5-flash as it robustly supports multimodal (vision + text) inputs natively.
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const prompt = `
+        let imagePart = null;
+        if (car.main_image_url) {
+            try {
+                // Fetch the image from Supabase (or external URL)
+                const response = await fetch(car.main_image_url);
+                if (response.ok) {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const base64Image = Buffer.from(arrayBuffer).toString('base64');
+                    const mimeType = response.headers.get('content-type') || 'image/jpeg';
+
+                    imagePart = {
+                        inlineData: {
+                            data: base64Image,
+                            mimeType: mimeType
+                        }
+                    };
+                }
+            } catch (imgErr) {
+                console.warn("Could not fetch image for AI optimization:", imgErr);
+            }
+        }
+
+        const promptText = `
 You are an expert automotive copywriter specializing in SEO and high-conversion sales copy for Everest Motoring.
 Write a short, punchy, and highly attractive description for the following vehicle.
 
@@ -92,18 +115,25 @@ Mileage: ${car.mileage} km
 Transmission: ${car.transmission || 'Unknown'}
 Fuel Type: ${car.fuel_type || 'Unknown'}
 Features: ${car.features && car.features.length > 0 ? car.features.join(', ') : 'Standard features'}
-User's Draft Notes: ${manualDescription || 'None provided'}
+User's Extra/Unique Features: ${manualDescription || 'None provided'}
 
 Strict Instructions:
 1. Keep it concise but persuasive (2-3 short paragraphs max).
 2. It must be optimized for Google SEO (use relevant keywords implicitly).
 3. Important: When mentioning the price, spell out the currency. For example, do not write "R 800,000", you MUST write it as "800,000 South African Rand".
-4. Highlight the best features and the value proposition.
-5. End with a strong Call to Action to book a test drive or inquire for finance.
-6. Do not include markdown headers or unnecessary formatting. Just return the clean text ready to be displayed on the website.
+4. Highlight the best features, the condition, and the overall value proposition.
+5. If an image is provided in the prompt, scan the photo to determine the exact color of the car and integrate that color naturally into the description.
+6. Use all the information provided, from the make to the features to the extra/unique features, to write a compelling narrative.
+7. End with a strong Call to Action to book a test drive or inquire for finance.
+8. Do not include markdown headers or unnecessary formatting. Just return the clean text ready to be displayed on the website.
 `;
 
-        const result = await model.generateContent(prompt);
+        const requestParts = [promptText];
+        if (imagePart) {
+            requestParts.push(imagePart);
+        }
+
+        const result = await model.generateContent(requestParts);
         return result.response.text().trim();
     } catch (error) {
         console.error("Error optimizing description with Gemini:", error);

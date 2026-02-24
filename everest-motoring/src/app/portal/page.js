@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import UploadCard from "./UploadCard";
+import FinancingDetailsForm from "./FinancingDetailsForm";
 
 export const metadata = { title: "Dashboard | Client Portal" };
 
@@ -55,10 +56,55 @@ export default async function PortalDashboard() {
 
     const totalRequired = REQUIRED_DOCS.length;
     const totalUploaded = REQUIRED_DOCS.filter(d => ['uploaded', 'approved'].includes(docStatusMap[d.type])).length;
-    const progressPercent = Math.round((totalUploaded / totalRequired) * 100);
+
+    // Overall Progress calculation incorporates the onboarding steps
+    let progressPercent = 0;
+    if (lead.onboarding_step === 1) {
+        progressPercent = 10; // Started
+    } else if (lead.onboarding_step >= 2) {
+        // Step 1 completed gives 30% base. Remaining 70% is documents.
+        const docProgress = (totalUploaded / totalRequired) * 70;
+        progressPercent = Math.round(30 + docProgress);
+    }
+
+    // Default to Step 1 if null
+    const currentStep = lead.onboarding_step || 1;
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto py-8">
+
+            {/* Visual Stepper */}
+            <div className="mb-8 hidden md:block">
+                <div className="flex items-center justify-between relative">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 rounded-full z-0"></div>
+                    <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary rounded-full z-0 transition-all duration-1000"
+                        style={{ width: currentStep === 1 ? '0%' : currentStep === 2 && progressPercent < 100 ? '50%' : '100%' }}
+                    ></div>
+
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 1 ? 'text-primary' : 'text-slate-400'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${currentStep >= 1 ? 'border-primary' : 'border-slate-300'}`}>
+                            {currentStep > 1 ? <span className="material-symbols-outlined">check</span> : '1'}
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider">Details</span>
+                    </div>
+
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 2 ? 'text-primary' : 'text-slate-400'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${currentStep >= 2 ? 'border-primary' : 'border-slate-300'}`}>
+                            {progressPercent === 100 ? <span className="material-symbols-outlined">check</span> : '2'}
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider">Documents</span>
+                    </div>
+
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${progressPercent === 100 ? 'text-primary' : 'text-slate-400'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${progressPercent === 100 ? 'border-primary' : 'border-slate-300'}`}>
+                            {progressPercent === 100 ? <span className="material-symbols-outlined">check</span> : '3'}
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider">Approval</span>
+                    </div>
+                </div>
+            </div>
+
             {/* Header / Car Intro */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8 flex flex-col md:flex-row">
                 {lead.cars?.main_image_url ? (
@@ -109,7 +155,7 @@ export default async function PortalDashboard() {
 
                     <div className="mt-auto">
                         <div className="flex justify-between text-sm font-bold mb-3">
-                            <span className="text-slate-700 uppercase tracking-wider text-xs">Finance Application Progress</span>
+                            <span className="text-slate-700 uppercase tracking-wider text-xs">Application Progress</span>
                             <span className="text-primary">{progressPercent}%</span>
                         </div>
                         <div className="w-full bg-slate-100 rounded-full h-3">
@@ -117,29 +163,44 @@ export default async function PortalDashboard() {
                         </div>
                         <p className="text-slate-500 mt-4 text-sm bg-slate-50 p-3 rounded border border-slate-100">
                             {progressPercent === 100
-                                ? "🎉 All documents received. We are processing your finance application with the banks. We will be in touch shortly!"
-                                : `Please upload the ${totalRequired - totalUploaded} remaining documents below to proceed with your application.`}
+                                ? "🎉 All information received. We are processing your finance application with the banks. We will be in touch shortly!"
+                                : currentStep === 1
+                                    ? "Please complete your financing details below to proceed."
+                                    : `Please upload the ${totalRequired - totalUploaded} remaining documents below.`}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 mb-6 mt-12">
-                <span className="material-symbols-outlined text-slate-400">lock</span>
-                <h2 className="text-xl font-bold text-slate-900">Required Finance Documents</h2>
-            </div>
+            {/* Step Content */}
+            {currentStep === 1 ? (
+                <FinancingDetailsForm leadId={lead.id} />
+            ) : (
+                <>
+                    <div className="flex items-center gap-2 mb-6 mt-12 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary shrink-0">
+                            <span className="material-symbols-outlined">lock</span>
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-900">Required Finance Documents</h2>
+                            <p className="text-sm text-slate-500">Upload clear, readable copies of the documents below to secure your financing.</p>
+                        </div>
+                    </div>
 
-            <div className="space-y-4 mb-20">
-                {REQUIRED_DOCS.map(doc => (
-                    <UploadCard
-                        key={doc.type}
-                        leadId={lead.id}
-                        documentType={doc.type}
-                        label={doc.label}
-                        status={docStatusMap[doc.type] || 'pending'}
-                    />
-                ))}
-            </div>
+                    <div className="space-y-4 mb-20">
+                        {REQUIRED_DOCS.map(doc => (
+                            <UploadCard
+                                key={doc.type}
+                                leadId={lead.id}
+                                documentType={doc.type}
+                                label={doc.label}
+                                status={docStatusMap[doc.type] || 'pending'}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
+
         </div>
     );
 }

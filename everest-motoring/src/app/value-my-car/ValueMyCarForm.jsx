@@ -4,17 +4,106 @@ import { useState } from "react";
 import { submitValueMyCar } from "./actions";
 
 export default function ValueMyCarForm() {
+    const [step, setStep] = useState(1);
     const [status, setStatus] = useState("idle");
 
-    async function handleAction(formData) {
+    // Form data state
+    const [formData, setFormData] = useState({
+        category: "Vehicle", // Hardcoded to Vehicle for the backend
+        make: "",
+        model: "",
+        year: "",
+        fuel_type: "",
+        transmission: "",
+        condition: "",
+        additional_notes: "",
+        client_name: "",
+        client_phone: "",
+        client_email: "",
+        client_suburb: "",
+        client_province: ""
+    });
+
+    const [files, setFiles] = useState({
+        image_front: null,
+        image_left: null,
+        image_right: null,
+        image_back: null,
+        image_roof: null
+    });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = (e) => {
+        const { name, files: fileList } = e.target;
+        if (fileList && fileList.length > 0) {
+            setFiles(prev => ({ ...prev, [name]: fileList[0] }));
+        }
+    };
+
+    const nextStep = (e) => {
+        if (e) e.preventDefault();
+
+        // Basic validation for Step 1
+        if (step === 1) {
+            if (!formData.make || !formData.model || !formData.year || !formData.fuel_type || !formData.transmission || !formData.condition) {
+                alert("Please fill in all required vehicle details before continuing.");
+                return;
+            }
+        }
+
+        // Basic validation for Step 2
+        if (step === 2) {
+            if (!files.image_front || !files.image_left || !files.image_right || !files.image_back) {
+                alert("Please upload the 4 required photos (Front, Left, Right, Back) before continuing.");
+                return;
+            }
+        }
+
+        setStep(prev => prev + 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const prevStep = () => {
+        setStep(prev => prev - 1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    async function handleAction(e) {
+        e.preventDefault();
+
+        // Final validation
+        if (!formData.client_name || !formData.client_phone || !formData.client_email) {
+            alert("Please provide your name, phone number, and email.");
+            return;
+        }
+
         setStatus("submitting");
-        const result = await submitValueMyCar(formData);
+
+        // Convert state to FormData to reuse the server action structure easily
+        const submissionData = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+            submissionData.append(key, value);
+        });
+
+        // Append files
+        Object.entries(files).forEach(([key, file]) => {
+            if (file) {
+                submissionData.append(key, file);
+            }
+        });
+
+        const result = await submitValueMyCar(submissionData);
 
         if (result?.error) {
             setStatus("error");
             alert("Failed to submit inquiry. Please try again or call us directly.");
         } else {
             setStatus("success");
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
     }
 
@@ -24,10 +113,12 @@ export default function ValueMyCarForm() {
                 <span className="material-symbols-outlined text-green-500 text-6xl mb-4">task_alt</span>
                 <h2 className="text-3xl font-bold text-slate-900 mb-4">Request Received!</h2>
                 <p className="text-slate-600 text-lg max-w-lg mx-auto mb-8">
-                    Thank you for submitting your vehicle details. Our procurement team will review your information and contact you shortly with an indicative offer.
+                    Thank you for submitting your details. Our procurement team will review your information and contact you shortly with an indicative offer.
                 </p>
                 <button
-                    onClick={() => setStatus("idle")}
+                    onClick={() => {
+                        window.location.reload();
+                    }}
                     className="text-primary font-bold hover:text-primary-dark transition-colors"
                 >
                     Submit another vehicle
@@ -37,64 +128,257 @@ export default function ValueMyCarForm() {
     }
 
     return (
-        <form action={handleAction} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Registration Number</label>
-                    <input type="text" name="registration_number" placeholder="e.g. ABC 123 MP" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" />
+        <form onSubmit={handleAction} className="space-y-8">
+            {/* Step Progress Indicator */}
+            <div className="mb-10">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                    <div className="flex items-center gap-2">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>1</div>
+                        <div className={`h-1 w-8 rounded ${step >= 2 ? 'bg-primary' : 'bg-slate-100'}`}></div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>2</div>
+                        <div className={`h-1 w-8 rounded ${step >= 3 ? 'bg-primary' : 'bg-slate-100'}`}></div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 3 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>3</div>
+                    </div>
+                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                        Step {step} of 3
+                    </div>
                 </div>
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Current Mileage</label>
-                    <input type="text" name="mileage" placeholder="e.g. 45,000 km" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" />
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Make & Model</label>
-                    <input type="text" name="make_model" placeholder="e.g. Toyota Fortuner 2.8 GD-6" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" />
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Year</label>
-                    <select name="year" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all bg-white disabled:opacity-50">
-                        <option value="">Select Year</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
-                        <option value="2020">2020</option>
-                        <option value="Older">Older</option>
-                    </select>
+
+                {/* Step Descriptions to set expectations */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left md:text-center">
+                    <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 1 ? 'border-primary bg-primary/5 shadow-sm' : step > 1 ? 'border-green-500/30 bg-green-500/5' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                        <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
+                            {step > 1 && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                            1. Vehicle Details
+                        </div>
+                        <div className="text-xs text-slate-500">Make, model, year, and condition.</div>
+                    </div>
+                    <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 2 ? 'border-primary bg-primary/5 shadow-sm' : step > 2 ? 'border-green-500/30 bg-green-500/5' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                        <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
+                            {step > 2 && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                            2. Upload Photos
+                        </div>
+                        <div className="text-xs text-slate-500">4 exterior shots of your car.</div>
+                    </div>
+                    <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 3 ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                        <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
+                            3. Contact Info
+                        </div>
+                        <div className="text-xs text-slate-500">Where we can send your valuation.</div>
+                    </div>
                 </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-100 mt-12 pt-8">Contact Information</h2>
+            {/* STEP 1: VEHICLE DETAILS */}
+            {step === 1 && (
+                <div className="animate-fade-in-up space-y-8">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-100">Tell us about your vehicle</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Full Name</label>
-                    <input type="text" name="client_name" placeholder="John Doe" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" />
-                </div>
-                <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Phone Number</label>
-                    <input type="tel" name="client_phone" placeholder="082 123 4567" required disabled={status === "submitting"} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" />
-                </div>
-            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Make *</label>
+                            <input type="text" name="make" value={formData.make} onChange={handleChange} placeholder="e.g. Toyota" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Model *</label>
+                            <input type="text" name="model" value={formData.model} onChange={handleChange} placeholder="e.g. Fortuner" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Year *</label>
+                            <select name="year" value={formData.year} onChange={handleChange} required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all bg-white">
+                                <option value="">Select Year</option>
+                                {Array.from({ length: 30 }, (_, i) => 2025 - i).map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                                <option value="Older">Older</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div className="pt-8">
-                <button
-                    type="submit"
-                    disabled={status === "submitting"}
-                    className="w-full bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2"
-                >
-                    {status === "submitting" ? (
-                        <>
-                            <span className="material-symbols-outlined animate-spin">refresh</span>
-                            Processing...
-                        </>
-                    ) : (
-                        'Request Free Valuation'
-                    )}
-                </button>
-            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                        {/* Fuel Type */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Fuel Type *</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(type => (
+                                    <button
+                                        key={type} type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, fuel_type: type }))}
+                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.fuel_type === type ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Transmission */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Transmission *</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {['Automatic', 'Manual'].map(type => (
+                                    <button
+                                        key={type} type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, transmission: type }))}
+                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.transmission === type ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Condition */}
+                    <div className="pt-4">
+                        <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Overall Condition *</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                            {['Excellent', 'Good', 'Average', 'Poor', 'Non-runner'].map(cond => (
+                                <button
+                                    key={cond} type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, condition: cond }))}
+                                    className={`py-3 px-2 rounded-xl border text-sm font-bold transition-all ${formData.condition === cond ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                >
+                                    {cond}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-4">
+                        <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Additional Notes (Optional)</label>
+                        <textarea
+                            name="additional_notes"
+                            value={formData.additional_notes}
+                            onChange={handleChange}
+                            placeholder="Anything else we should know? e.g. Full service history, accident damage, modifications..."
+                            rows="4"
+                            className="w-full px-5 py-4 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div className="flex gap-4 pt-4 border-t border-slate-100">
+                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
+                            Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* STEP 2: UPLOAD PHOTOS */}
+            {step === 2 && (
+                <div className="animate-fade-in-up space-y-8">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-100">Upload Photos</h2>
+
+                    <p className="text-slate-600">Please provide clear photos of your vehicle. Ensure the vehicle is fully visible in good lighting.</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Front */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front View *</label>
+                            <input type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Left Side */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Left Side *</label>
+                            <input type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_left && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Right Side */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Right Side *</label>
+                            <input type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_right && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Back View */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back View *</label>
+                            <input type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Roof */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Roof (Optional)</label>
+                            <input type="file" name="image_roof" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_roof && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-4 border-t border-slate-100">
+                        <button type="button" onClick={prevStep} className="px-8 py-4 rounded-lg font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Back</button>
+                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
+                            Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* STEP 3: CONTACT DETAILS */}
+            {step === 3 && (
+                <div className="animate-fade-in-up space-y-8">
+                    <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-100">About You</h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Full Name *</label>
+                            <input type="text" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="John Doe" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Email Address *</label>
+                            <input type="email" name="client_email" value={formData.client_email} onChange={handleChange} placeholder="john@example.com" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Phone Number *</label>
+                            <input type="tel" name="client_phone" value={formData.client_phone} onChange={handleChange} placeholder="082 123 4567" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Province</label>
+                            <select name="client_province" value={formData.client_province} onChange={handleChange} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all bg-white">
+                                <option value="">Select Province</option>
+                                <option value="Gauteng">Gauteng</option>
+                                <option value="Western Cape">Western Cape</option>
+                                <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                <option value="Eastern Cape">Eastern Cape</option>
+                                <option value="Free State">Free State</option>
+                                <option value="Mpumalanga">Mpumalanga</option>
+                                <option value="Limpopo">Limpopo</option>
+                                <option value="North West">North West</option>
+                                <option value="Northern Cape">Northern Cape</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Suburb / Town</label>
+                            <input type="text" name="client_suburb" value={formData.client_suburb} onChange={handleChange} placeholder="e.g. Sandton" className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-4 pt-8 border-t border-slate-100">
+                        <button type="button" disabled={status === "submitting"} onClick={prevStep} className="px-8 py-4 rounded-lg font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50">Back</button>
+                        <button
+                            type="submit"
+                            disabled={status === "submitting"}
+                            className="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-secondary/30 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {status === "submitting" ? (
+                                <>
+                                    <span className="material-symbols-outlined animate-spin">refresh</span>
+                                    Uploading and Submitting...
+                                </>
+                            ) : (
+                                <>Submit for Free Valuation <span className="material-symbols-outlined text-sm">check_circle</span></>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
         </form>
     );
 }

@@ -178,12 +178,13 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-xl md:p-12 border border-blue-100 text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">Trade in or Sell your car today</h2>
           <p className="mb-8 text-lg text-slate-600">Get an instant, obligation-free valuation for your vehicle. We pay top market rates.</p>
-          <form className="mx-auto flex max-w-2xl flex-col gap-4 sm:flex-row">
-            <input className="flex-1 rounded-xl border border-slate-300 bg-white px-5 py-4 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Enter Registration Number" type="text" />
-            <input className="flex-1 rounded-xl border border-slate-300 bg-white px-5 py-4 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Current Mileage" type="text" />
-            <button className="rounded-xl bg-primary px-8 py-4 font-bold text-white transition-colors hover:bg-primary-dark shadow-lg shadow-primary/30">Get Valuation</button>
-          </form>
-          <p className="mt-4 text-sm text-slate-500 uppercase tracking-wider font-bold">Safe • Secure • Instant Cash</p>
+          <div className="mx-auto flex justify-center mt-6">
+            <Link href="/value-my-car" className="rounded-xl bg-primary px-12 py-5 text-lg font-bold text-white transition-all hover:bg-primary-dark hover:-translate-y-1 shadow-lg shadow-primary/30 flex items-center gap-3">
+              Get Valuation
+              <span className="material-symbols-outlined text-xl">arrow_forward</span>
+            </Link>
+          </div>
+          <p className="mt-8 text-sm text-slate-500 uppercase tracking-wider font-bold">Safe • Secure • Instant Cash</p>
         </div>
       </section>
 

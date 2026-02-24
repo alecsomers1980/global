@@ -26,11 +26,13 @@ export default function Header({ siteConfig }) {
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/inventory">Buy a Car</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/value-my-car">Value My Car</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/about">About</Link>
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-white/10">
+                    <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/admin">Admin</Link>
+                    <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/login">Client</Link>
+                    <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/register">Affiliate</Link>
+                </div>
             </nav>
             <div className="flex items-center gap-4">
-                <Link href="/book-test-drive" className="hidden rounded-lg border-2 border-primary bg-transparent px-5 py-2 text-sm font-bold text-white transition-colors hover:bg-primary border-transparent md:block bg-primary">
-                    Book a Test Drive
-                </Link>
                 <button
                     className="block md:hidden text-white"
                     onClick={toggleMobileMenu}
@@ -74,13 +76,12 @@ export default function Header({ siteConfig }) {
                         >
                             About
                         </Link>
-                        <Link
-                            href="/book-test-drive"
-                            className="mt-2 rounded-lg border-2 border-primary bg-primary px-5 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-transparent"
-                            onClick={closeMobileMenu}
-                        >
-                            Book a Test Drive
-                        </Link>
+
+                        <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
+                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/admin" onClick={closeMobileMenu}>Admin</Link>
+                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/login" onClick={closeMobileMenu}>Client</Link>
+                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/register" onClick={closeMobileMenu}>Affiliate</Link>
+                        </div>
                     </nav>
                 </div>
             )}
