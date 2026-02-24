@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 export const metadata = {
     title: "Client Registration | Everest Motoring Secure Portal",
     description: "Create your secure Everest Motoring client account to track your vehicle finance and upload documents.",
