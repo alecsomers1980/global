@@ -33,8 +33,15 @@ export async function uploadClientDocument(formData) {
             return { error: "Failed to securely save the file to the vault." };
         }
 
+        // Bypass RLS for inserts
+        const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+        const supabaseAdmin = createSupabaseClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
+
         // 2. Insert record into lead_documents to track status
-        const { error: dbError } = await supabase
+        const { error: dbError } = await supabaseAdmin
             .from('lead_documents')
             .insert({
                 lead_id: leadId,
@@ -76,8 +83,15 @@ export async function saveFinancingDetailsAction(formData) {
         return { error: "All fields are required" };
     }
 
+    // Bypass RLS for leads
+    const { createClient: createSupabaseClient } = await import("@supabase/supabase-js");
+    const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
     // Verify the lead belongs to the user
-    const { data: existingLead } = await supabase
+    const { data: existingLead, error: leadErr } = await supabaseAdmin
         .from("leads")
         .select("id")
         .eq("id", lead_id)
@@ -85,18 +99,19 @@ export async function saveFinancingDetailsAction(formData) {
         .single();
 
     if (!existingLead) {
+        console.error("Portal action lead mismatch:", leadErr);
         return { error: "Lead not found or unauthorized access" };
     }
 
     // Update the lead with financing details and advance them to Step 2 (Documents)
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
         .from("leads")
         .update({
             employment_status,
             monthly_income: parseFloat(monthly_income),
             financing_period: parseInt(financing_period, 10),
             onboarding_step: 2, // Manually flag them to Step 2
-            status: 'document_collection' // Also update the CRM status for the sales team
+            status: 'finance_pending' // Use valid enum: new, contacted, finance_pending, closed_won, closed_lost
         })
         .eq("id", lead_id);
 

@@ -26,10 +26,10 @@ export default async function AdminAffiliatesPage() {
         const totalLeads = affiliateLeads.length;
         const closedWon = affiliateLeads.filter(l => l.status === 'closed_won').length;
 
-        // Estimated pending commissions (Assuming 1% for presentation)
+        // Estimated pending commissions (Flat R1000 per potential sale)
         const estPending = affiliateLeads.reduce((sum, lead) => {
-            if (['new', 'contacted', 'finance_pending'].includes(lead.status) && lead.cars?.price) {
-                return sum + (lead.cars.price * 0.01);
+            if (['new', 'contacted', 'finance_pending'].includes(lead.status)) {
+                return sum + 1000;
             }
             return sum;
         }, 0);

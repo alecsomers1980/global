@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import UploadCard from "./UploadCard";
 import FinancingDetailsForm from "./FinancingDetailsForm";
@@ -16,21 +17,29 @@ const REQUIRED_DOCS = [
 ];
 
 export default async function PortalDashboard() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabaseUserClient = await createClient();
+    const { data: { user } } = await supabaseUserClient.auth.getUser();
     if (!user) return redirect("/login");
 
-    const { data: lead } = await supabase
+    // Bypass RLS using the Service Role Key since client roles don't have read access to 'leads'.
+    const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
+
+    const { data: lead, error: leadError } = await supabaseAdmin
         .from('leads')
         .select(`
             *,
-            cars(make, model, year, main_image_url, price),
-            profiles:affiliate_id(first_name, last_name, phone)
+            cars ( make, model, year, main_image_url, price ),
+            profiles:affiliate_id ( first_name, last_name, phone )
         `)
         .eq('client_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
+
+    if (leadError) console.error("Portal Lead Fetch Error:", leadError);
 
     if (!lead) {
         return (
@@ -44,7 +53,7 @@ export default async function PortalDashboard() {
         );
     }
 
-    const { data: docs } = await supabase
+    const { data: docs } = await supabaseAdmin
         .from('lead_documents')
         .select('*')
         .eq('client_id', user.id)

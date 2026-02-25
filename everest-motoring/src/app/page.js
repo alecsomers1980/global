@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import HomeSearchWidget from "@/components/HomeSearchWidget";
+import NewsletterForm from "@/components/NewsletterForm";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function Home() {
@@ -193,10 +194,7 @@ export default async function Home() {
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-4 text-3xl font-bold">Don&apos;t miss the perfect deal.</h2>
           <p className="mb-8 text-blue-100">Subscribe to our weekly alerts and be the first to know about new arrivals.</p>
-          <form className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row">
-            <input className="flex-1 rounded-lg border-0 bg-white px-5 py-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-300" placeholder="Enter your email address" type="email" />
-            <button className="rounded-lg bg-slate-900 px-6 py-3 font-bold text-white transition-colors hover:bg-slate-800">Subscribe</button>
-          </form>
+          <NewsletterForm variant="home" />
         </div>
       </section>
 

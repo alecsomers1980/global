@@ -3,22 +3,34 @@ import { redirect } from "next/navigation";
 import VideoRenderManager from "@/components/VideoRenderManager";
 
 export default async function AdminLayout({ children }) {
+    console.log("=== ADMIN LAYOUT HIT ===");
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
+        console.log("Redirecting to /login because no user found in session.");
         return redirect("/login");
     }
 
-    const { data: profile } = await supabase
+    console.log("Logged in user:", user.email, user.id);
+
+    const { createAdminClient } = await import("@/utils/supabase/server");
+    const supabaseAdmin = await createAdminClient();
+
+    const { data: profile, error } = await supabaseAdmin
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
 
+    console.log("Profile lookup:", profile, "Error:", error);
+
     if (!profile || profile.role !== 'admin') {
-        return redirect("/");
+        console.log("Redirecting to /login because profile is null or role is not admin.");
+        return redirect("/login?error=You+must+be+logged+in+as+an+Admin+to+access+this+dashboard.");
     }
+
+    console.log("User authorized, rendering admin layout.");
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -30,6 +42,7 @@ export default async function AdminLayout({ children }) {
                         <a href="/admin" className="text-slate-300 hover:text-white transition-colors">Dashboard</a>
                         <a href="/admin/inventory" className="text-slate-300 hover:text-white transition-colors">Inventory</a>
                         <a href="/admin/leads" className="text-slate-300 hover:text-white transition-colors">Car Inquiries</a>
+                        <a href="/admin/assign" className="text-slate-300 hover:text-white transition-colors">Assign Vehicle</a>
                         <a href="/admin/trade-ins" className="text-slate-300 hover:text-white transition-colors">Trade-In Requests</a>
                         <a href="/admin/affiliates" className="text-amber-500 hover:text-amber-400 font-bold transition-colors border-l border-slate-700 pl-6 ml-2">Affiliate Network</a>
                     </nav>

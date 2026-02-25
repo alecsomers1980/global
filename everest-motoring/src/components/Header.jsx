@@ -26,13 +26,13 @@ export default function Header({ siteConfig }) {
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/inventory">Buy a Car</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/value-my-car">Value My Car</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/about">About</Link>
-                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-white/10">
+            </nav>
+            <div className="flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-4">
                     <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/admin">Admin</Link>
                     <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/login">Client</Link>
                     <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/register">Affiliate</Link>
                 </div>
-            </nav>
-            <div className="flex items-center gap-4">
                 <button
                     className="block md:hidden text-white"
                     onClick={toggleMobileMenu}
