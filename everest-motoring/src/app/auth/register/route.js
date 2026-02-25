@@ -24,7 +24,7 @@ export async function POST(request) {
                 first_name: firstName,
                 last_name: lastName,
                 phone: phone,
-                role: 'affiliate', // Hardcode role for public registrations
+                role: affiliateCode ? 'affiliate' : 'client', // Conditionally assign role
                 affiliate_code: affiliateCode?.toUpperCase().trim() || null,
             }
         },
