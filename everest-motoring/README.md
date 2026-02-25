@@ -1,4 +1,9 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Everest Motoring
+
+This is the flagship automotive niche project for **Ember Automation**. It features an AI-powered video engine for vehicle listings and integrated customer portals.
+
+## 🚀 Part of Ember Automation
+This project follows the agency standards defined in the root [HANDOVER.md](file:///c:/Users/info/OneDrive/Documents/Antigravity/HANDOVER.md).
 
 ## Getting Started
 

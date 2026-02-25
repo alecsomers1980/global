@@ -3,11 +3,9 @@
 Welcome to the **Antigravity** AI-powered development workspace. This repository contains multiple legal and professional website projects, all managed with a standardized set of AI skills and agency workflows.
 
 ## 🚀 Projects
-- **[rvrinc](file:///c:/Users/info/OneDrive/Documents/Antigravity/rvrinc)**: Roets & Van Rensburg Attorneys (Primary legal site)
-- **[spanslab](file:///c:/Users/info/OneDrive/Documents/Antigravity/spanslab)**: Spanslab pre-cast concrete solutions
-- **[everest-motoring](file:///c:/Users/info/OneDrive/Documents/Antigravity/everest-motoring)**: Automotive services
-- **[aloe-signs-website](file:///c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website)**: Aloe Signs & Graphics
 - **[ooskus-gimnasium](file:///c:/Users/info/OneDrive/Documents/Antigravity/ooskus-gimnasium)**: School website
+- **[everest-motoring](file:///c:/Users/info/OneDrive/Documents/Antigravity/everest-motoring)**: Automotive SaaS (Ember Automation Niche)
+- **[Ember Automation Handover](file:///c:/Users/info/OneDrive/Documents/Antigravity/HANDOVER.md)**: Business strategy and setup for the automation agency.
 
 ## 🛠️ Shared Resources
 - **[Design System](file:///c:/Users/info/OneDrive/Documents/Antigravity/DESIGN.md)**: Standardized UI/UX guidelines.
