@@ -1,61 +1,42 @@
-# Business Strategy: Ember Automation
+# Everest Motoring: Admin Car Assignment Feature
 
-This plan outlines the setup for **Ember Automation**, a SaaS-style agency focused on rebuilding websites and automating business processes for clients across South Africa.
+## Goal Description
+Add a new feature in the Everest Admin portal allowing administrators to explicitly assign an available vehicle from inventory to a registered client. This assignment will populate the client's Dashboard (Client Portal) with the vehicle tracking and finance forms.
 
-## 🏷️ Brand Name: Ember Automation
-*   **Theme**: Fire (connects to Fire Wire IT).
-*   **Depth**: "Fan into flame the gift of God" (2 Timothy 1:6).
-*   **Vibe**: Reliable, lasting, and transformative.
+## Proposed Changes
 
-## 🎨 Visual Identity
-- **Colors**: 
-    - **Primary**: Ember Orange (#FF4D00) - Represents energy and the flame.
-    - **Secondary**: Deep Charcoal (#1A1A1A) - Represents the solid foundation/coal.
-    - **Accent**: Soft Gold (#FFD700) - Represents the "refining" process and premium quality.
-- **Logo Concept**: 
-    - A stylized, minimalist ember (a small glowing diamond or flame shape) contained within a hexagonal or circular gear (automation).
-    - The typography should be bold and professional (e.g., `Inter` Medium or `Montserrat`).
-- **Typography**: 
-    - **Headings**: `Outfit` (Modern, geometric, tech-focused).
-    - **Body**: `Inter` (Clean, highly legible, professional).
+### Everest Motoring Application
+#### [NEW] `src/app/admin/assign/page.js`
+1.  **Data Fetching:**
+    *   Fetch all users from `profiles` where `role = 'client'`.
+    *   Fetch all vehicles from `cars` where `status = 'available'`.
+2.  **UI Construction:** Create a dedicated "Assign Vehicle" page containing a list of clients and an "Add New Client" section.
+    *   **Client Searchable List:** Instead of a simple dropdown, build a searchable data table (similar to `TradeInsTable` or `LeadsTable`) where the admin can search for existing clients by name or phone/email.
+    *   **Vehicle Dropdown:** Once a client is selected, provide a dropdown to select an available vehicle.
+    *   **Add Client Functionality:** Include a form to add a new client (Name, Surname, Email, Phone).
 
-## Proposed Service Tiers (Monthly SaaS Model)
-Clients pay $0 setup and a monthly fee.
+#### [NEW] `src/app/admin/assign/AssignClientUI.jsx`
+1.  **Client Component:** This will hold the interactive state for searching clients, selecting a vehicle, and the "Add New Client" form.
+2.  **WhatsApp Integration:** When adding a new client, include an option to send a WhatsApp message containing a specialized registration link pre-filled with their details (`/auth/register-client?first_name=X&last_name=Y&email=Z&phone=W`).
+3.  **Action Handlers:** Connect the UI buttons to the server actions.
 
-| Feature | **Bronze (Presence)** | **Silver (Engagement)** | **Gold (Optimization)** |
-| :--- | :--- | :--- | :--- |
-| **Website** | Standard 5-page site | Up to 12 pages + Blog | Custom Portal / Web App |
-| **Automation** | Basic Form -> Email | Lead Nurturing + Social Posting | Custom Business Workflows |
-| **SEO** | Basic Keywords | Monthly Content + Tech SEO | Competitive/Advanced SEO |
-| **Support** | Email Support | Priority Support | Dedicated Slack/WhatsApp |
-| **Niche Package**| General | Industry Standard | Bespoke Systems |
+#### [NEW] `src/app/admin/assign/actions.js`
+1.  **Server Action (`assignCarAction`):** Handle the form submission for assigning a car.
+    *   Insert a new row into the `leads` table, mapping the selected `client_id` and `car_id`, populating the client's name and details automatically, and setting the status to `'finance_pending'`.
+    *   Trigger `revalidatePath` to update the Leads and Portal data caches.
+2.  **Server Action (`inviteNewClientAction`):** (Optional, if we want to send invite emails from the server). The admin can invite the user utilizing Supabase's `auth.admin.inviteUserByEmail`, or simply rely on the WhatsApp link. Let's stick to the WhatsApp pre-filled link for immediate client interaction as requested, as the existing invite works similarly.
 
-### Special "First in Niche" Price
-For the first client in each niche (e.g., `Riverview Prep` for education):
-- **Special Rate**: 40% discount on the monthly fee.
-- **Updates**: Free system updates for life (excluding external API costs).
-
-## 💎 Value Proposition
-"**Ember Automation** doesn't just build websites; we fuel your business engine. We fan the small sparks of your potential into a roaring flame through precision automation, modern design, and niche-specific systems that improve accuracy and speed to completion."
-
-## Legal & Compliance (South Africa)
-1. **POPIA Compliance**:
-    - Every client system MUST have a Data Processing Agreement (DPA).
-    - Appoint an Information Officer (you or a designate).
-    - Implement "Privacy by Design" in all automations.
-2. **Copyright & Ownership**:
-    - **Contract Clause**: "The Company retains ownership of the underlying software architecture and custom code. The Client retains ownership of all content, data, and business-specific intellectual property."
-    - This allows you to improve your core SaaS systems using learnings/data while protecting the client's information.
-3. **ECTA & CPA**:
-    - Use clear, plain-language digital contracts for the SaaS subscription.
-    - Include a simple "opt-out" clause for the subscription (e.g., 30-day notice).
+#### [MODIFY] [layout.js](file:///c:/Users/info/OneDrive/Documents/Antigravity/everest-motoring/src/app/admin/layout.js)
+1.  **Navigation Links:** Add a new link `<a href="/admin/assign">Assign Vehicle</a>` into the top navigation bar next to "Car Inquiries".
 
 ## Verification Plan
-### Review Cycle
-1. **Consultation**: Present these ideas to you (User) for feedback.
-2. **Refinement**: Adjust pricing and naming based on your preference.
-3. **MVP Launch**: Build your own agency website based on the chosen brand.
+
+### Automated Tests
+*   Run the Next.js dev server. No build errors should occur.
 
 ### Manual Verification
-1. Review name availability (CIPC/Domains).
-2. Validate pricing against local competitors (Wix/Local Agencies vs. high-end custom dev).
+*   Log in as an admin and navigate to the new "Assign Vehicle" page.
+*   Search for the `everest@clients.co.za` test user.
+*   Assign an available vehicle to the test user.
+*   Log in as the test user and verify that their Portal clearly displays the assigned vehicle and requests them to upload their finance documents.
+*   Test the "Add Client" feature to ensure the WhatsApp link generates correctly with pre-filled parameters.
