@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "stitch": {
+            "command": "node",
+            "args": [
+                "C:\\Users\\info\\OneDrive\\Documents\\Antigravity\\.agent\\mcp-servers\\stitch\\index.js"
+            ],
+            "env": {
+                "STITCH_API_KEY": "<USER_MUST_REPLACE_LOCALLY>"
+            }
+        }
+    }
+}
