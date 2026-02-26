@@ -48,7 +48,7 @@ export default function ImageGrid() {
                                 <div className="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-300 pointer-events-none z-10" />
                                 <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-2 group-hover:translate-y-0 transition-transform">
                                     <div className="w-10 h-1 bg-aloe-green mb-3"></div>
-                                    <h3 className="text-white font-bold text-2xl uppercase">{img.label}</h3>
+                                    <h3 className="text-white font-bold text-lg md:text-2xl uppercase">{img.label}</h3>
                                 </div>
                             </div>
                         </div>
