@@ -28,7 +28,7 @@
 # ── Configuration ────────────────────────────────────────────
 $RemoteName = "supabase-aloe"
 $BucketName = "client-uploads"
-$LocalFolder = "C:\AloeSignsIncoming"   # Change to your preferred local folder
+$LocalFolder = "C:\C:\Users\files\OneDrive\Desktop\SHARE\Client-Uploads"   # Change to your preferred local folder
 # ─────────────────────────────────────────────────────────────
 
 # Create local folder if it doesn't exist

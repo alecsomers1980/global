@@ -1,86 +1,14 @@
 -- ============================================================
--- Aloe Signs Client Upload Portal – Supabase Setup Script
--- Run this in: Supabase Dashboard → SQL Editor
+-- Aloe Signs – MIGRATION ONLY (run AFTER the original setup)
+-- Adds: company/contact_number to profiles, print_jobs,
+--        print_job_files, proofs, proof_comments
 -- ============================================================
 
--- 1. Create the storage bucket
--- (You can also do this via the UI: Storage → New Bucket → "client-uploads", Private)
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('client-uploads', 'client-uploads', false)
-ON CONFLICT (id) DO NOTHING;
+-- 1. Add new columns to profiles
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS company TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS contact_number TEXT;
 
-
--- ============================================================
--- 2. Row Level Security (RLS) — Storage Policies
--- ============================================================
-
--- Policy: Clients can UPLOAD to their own folder only
-CREATE POLICY "Clients can upload to their own folder"
-ON storage.objects FOR INSERT
-TO authenticated
-WITH CHECK (
-  bucket_id = 'client-uploads'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
-
--- Policy: Clients can VIEW (download) their own files only
-CREATE POLICY "Clients can view their own files"
-ON storage.objects FOR SELECT
-TO authenticated
-USING (
-  bucket_id = 'client-uploads'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
-
--- Policy: Clients can DELETE their own files only
-CREATE POLICY "Clients can delete their own files"
-ON storage.objects FOR DELETE
-TO authenticated
-USING (
-  bucket_id = 'client-uploads'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
-
--- Policy: Admins can manage ALL files in the bucket
-CREATE POLICY "Admins can manage all files"
-ON storage.objects FOR ALL
-TO authenticated
-USING (
-  bucket_id = 'client-uploads'
-  AND (auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za'
-);
-
-
--- ============================================================
--- 3. Profiles table
--- ============================================================
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  full_name TEXT,
-  email TEXT,
-  company TEXT,
-  contact_number TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enable RLS on profiles
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
--- Users can only see and edit their own profile
-CREATE POLICY "Users can view their own profile"
-  ON public.profiles FOR SELECT TO authenticated
-  USING (auth.uid() = id);
-
-CREATE POLICY "Users can update their own profile"
-  ON public.profiles FOR UPDATE TO authenticated
-  USING (auth.uid() = id);
-
--- Admins can view all profiles
-CREATE POLICY "Admins can view all profiles"
-  ON public.profiles FOR SELECT TO authenticated
-  USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
-
--- Auto-create profile when a new user signs up
+-- Update the trigger function to populate new fields on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -96,15 +24,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger the function on signup
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+-- Admins can view all profiles
+CREATE POLICY "Admins can view all profiles"
+  ON public.profiles FOR SELECT TO authenticated
+  USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
+
+-- Clients can delete their own files (storage)
+CREATE POLICY "Clients can delete their own files"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (
+  bucket_id = 'client-uploads'
+  AND (storage.foldername(name))[1] = auth.uid()::text
+);
 
 
 -- ============================================================
--- 4. Print Jobs table
+-- 2. Print Jobs table
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.print_jobs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -117,22 +53,18 @@ CREATE TABLE IF NOT EXISTS public.print_jobs (
 
 ALTER TABLE public.print_jobs ENABLE ROW LEVEL SECURITY;
 
--- Clients can see their own jobs
 CREATE POLICY "Clients can view their own jobs"
   ON public.print_jobs FOR SELECT TO authenticated
   USING (auth.uid() = user_id);
 
--- Clients can create jobs
 CREATE POLICY "Clients can create jobs"
   ON public.print_jobs FOR INSERT TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
--- Clients can update their own jobs (limited by app logic)
 CREATE POLICY "Clients can update their own jobs"
   ON public.print_jobs FOR UPDATE TO authenticated
   USING (auth.uid() = user_id);
 
--- Admins can do everything on jobs
 CREATE POLICY "Admins can manage all jobs"
   ON public.print_jobs FOR ALL TO authenticated
   USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
@@ -146,14 +78,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS set_updated_at ON public.print_jobs;
 CREATE TRIGGER set_updated_at
   BEFORE UPDATE ON public.print_jobs
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 
 -- ============================================================
--- 5. Print Job Files table
+-- 3. Print Job Files table
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.print_job_files (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -170,58 +101,29 @@ CREATE TABLE IF NOT EXISTS public.print_job_files (
 
 ALTER TABLE public.print_job_files ENABLE ROW LEVEL SECURITY;
 
--- Clients can see files for their own jobs
 CREATE POLICY "Clients can view their own job files"
   ON public.print_job_files FOR SELECT TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = print_job_files.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = print_job_files.job_id AND print_jobs.user_id = auth.uid()));
 
--- Clients can add files to their own jobs
 CREATE POLICY "Clients can add files to own jobs"
   ON public.print_job_files FOR INSERT TO authenticated
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = print_job_files.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  WITH CHECK (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = print_job_files.job_id AND print_jobs.user_id = auth.uid()));
 
--- Clients can update their own job files
 CREATE POLICY "Clients can update their own job files"
   ON public.print_job_files FOR UPDATE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = print_job_files.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = print_job_files.job_id AND print_jobs.user_id = auth.uid()));
 
--- Clients can delete their own job files
 CREATE POLICY "Clients can delete their own job files"
   ON public.print_job_files FOR DELETE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = print_job_files.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = print_job_files.job_id AND print_jobs.user_id = auth.uid()));
 
--- Admins can manage all job files
 CREATE POLICY "Admins can manage all job files"
   ON public.print_job_files FOR ALL TO authenticated
   USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
 
 
 -- ============================================================
--- 6. Proofs table
+-- 4. Proofs table
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.proofs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -235,36 +137,21 @@ CREATE TABLE IF NOT EXISTS public.proofs (
 
 ALTER TABLE public.proofs ENABLE ROW LEVEL SECURITY;
 
--- Clients can view proofs for their own jobs
 CREATE POLICY "Clients can view their own proofs"
   ON public.proofs FOR SELECT TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = proofs.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = proofs.job_id AND print_jobs.user_id = auth.uid()));
 
--- Clients can update proof status (approve/request edit)
 CREATE POLICY "Clients can respond to proofs"
   ON public.proofs FOR UPDATE TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.print_jobs
-      WHERE print_jobs.id = proofs.job_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (SELECT 1 FROM public.print_jobs WHERE print_jobs.id = proofs.job_id AND print_jobs.user_id = auth.uid()));
 
--- Admins can manage all proofs
 CREATE POLICY "Admins can manage all proofs"
   ON public.proofs FOR ALL TO authenticated
   USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
 
 
 -- ============================================================
--- 7. Proof Comments table
+-- 5. Proof Comments table
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.proof_comments (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -277,32 +164,23 @@ CREATE TABLE IF NOT EXISTS public.proof_comments (
 
 ALTER TABLE public.proof_comments ENABLE ROW LEVEL SECURITY;
 
--- Clients can view comments on their own proofs
 CREATE POLICY "Clients can view own proof comments"
   ON public.proof_comments FOR SELECT TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.proofs
-      JOIN public.print_jobs ON print_jobs.id = proofs.job_id
-      WHERE proofs.id = proof_comments.proof_id
-        AND print_jobs.user_id = auth.uid()
-    )
-  );
+  USING (EXISTS (
+    SELECT 1 FROM public.proofs JOIN public.print_jobs ON print_jobs.id = proofs.job_id
+    WHERE proofs.id = proof_comments.proof_id AND print_jobs.user_id = auth.uid()
+  ));
 
--- Clients can add comments to their own proofs
 CREATE POLICY "Clients can comment on own proofs"
   ON public.proof_comments FOR INSERT TO authenticated
   WITH CHECK (
     auth.uid() = user_id
     AND EXISTS (
-      SELECT 1 FROM public.proofs
-      JOIN public.print_jobs ON print_jobs.id = proofs.job_id
-      WHERE proofs.id = proof_comments.proof_id
-        AND print_jobs.user_id = auth.uid()
+      SELECT 1 FROM public.proofs JOIN public.print_jobs ON print_jobs.id = proofs.job_id
+      WHERE proofs.id = proof_comments.proof_id AND print_jobs.user_id = auth.uid()
     )
   );
 
--- Admins can manage all comments
 CREATE POLICY "Admins can manage all comments"
   ON public.proof_comments FOR ALL TO authenticated
   USING ((auth.jwt() ->> 'email') LIKE '%@aloesigns.co.za');
