@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import { createClientSupabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -17,9 +17,10 @@ export default function PortalLogin() {
         setError('');
         setLoading(true);
         const supabase = createClientSupabase();
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) { setError(signInError.message); setLoading(false); return; }
-        router.push('/portal/');
+        const isAdmin = data.user?.email?.endsWith('@aloesigns.co.za');
+        router.push(isAdmin ? '/portal/admin' : '/portal/');
     }
 
     return (
