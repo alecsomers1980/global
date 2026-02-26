@@ -6,27 +6,12 @@ import Link from 'next/link';
 const slides = [
     {
         id: 1,
-        title: 'Signage that builds businesses',
-        description: 'We design, manufacture, and install everything in-house. From a single vehicle wrap to a complete building signage programme—we handle it end-to-end.',
+        seoH1: 'Branding, Printing & Signage Company in South Africa',
+        title: 'BIG. BOLD. UNMISSABLE BRANDING.',
+        description: 'From billboards to banners — we put your brand everywhere.',
         primaryCTA: { text: 'Get a Quote', href: '/get-quote' },
-        secondaryCTA: { text: 'Shop Signs', href: '/shop' },
-        location: 'Based in Gauteng, serving all of South Africa'
-    },
-    {
-        id: 2,
-        title: 'Professional Signage Services',
-        description: 'From vehicle branding to building signage, shopfronts to large format printing—we offer comprehensive signage solutions for businesses of all sizes.',
-        primaryCTA: { text: 'View Services', href: '/services/vehicle-branding' },
-        secondaryCTA: { text: 'Contact Us', href: '/contact' },
-        location: 'End-to-end service with in-house capabilities'
-    },
-    {
-        id: 3,
-        title: 'Shop Ready-Made Signs Online',
-        description: 'Browse our online shop for estate agent boards, safety signs, parking signs, and more. Quality signage delivered to your door with special offers available.',
-        primaryCTA: { text: 'Shop Now', href: '/shop' },
-        secondaryCTA: { text: 'View Specials', href: '/shop' },
-        location: 'Fast delivery nationwide'
+        secondaryCTA: { text: 'View Our Work', href: '#work' },
+        location: 'High-impact visual branding built to be seen.'
     }
 ];
 
@@ -46,23 +31,7 @@ export default function HeroBanner() {
             .catch(err => console.error(err));
     }, []);
 
-    // Auto-advance slides every 6 seconds
-    useEffect(() => {
-        if (!isAutoPlaying) return;
-
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
-        }, 6000);
-
-        return () => clearInterval(interval);
-    }, [isAutoPlaying]);
-
-    const goToSlide = (index: number) => {
-        setCurrentSlide(index);
-        setIsAutoPlaying(false);
-        // Resume auto-play after 10 seconds
-        setTimeout(() => setIsAutoPlaying(true), 10000);
-    };
+    // Removed auto-play logic to keep static bold hero
 
     const activeSlide = slides[currentSlide];
 
@@ -74,70 +43,92 @@ export default function HeroBanner() {
         : '/images/hero-banner.jpg';
 
     return (
-        <section className="relative h-[600px] bg-charcoal">
-            {/* Background Image */}
-            <div
-                className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-                style={{
-                    backgroundImage: `url(${bgImage})`,
-                    opacity: 0.4
-                }}
-            />
+        <section className="relative h-[65vh] md:h-[70vh] bg-charcoal flex items-center overflow-hidden">
+            {/* Left Side Background - Hexagon Honeycomb Collage */}
+            <div className="absolute inset-0 w-full md:w-[60%] h-full z-0 overflow-visible opacity-30 md:opacity-100 flex items-center justify-center -translate-x-[5%] pointer-events-none md:pointer-events-auto">
+                <div className="relative pointer-events-auto">
 
-            {/* Dark Overlay - Reduced opacity as requested */}
-            <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 to-charcoal/50" />
+                    {/* Center Hexagon */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] duration-500 z-20 shadow-[0_0_30px_rgba(0,0,0,0.4)]"
+                        style={{ transform: "translate(-50%, -50%)", backgroundImage: `url('/images/portfolio/billboards-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
 
-            {/* Content */}
-            <div className="relative h-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center">
-                <div className="max-w-3xl">
-                    {/* Animated slide content */}
+                    {/* Top Right Hexagon */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] hover:z-30 duration-500 z-10"
+                        style={{ transform: "translate(0%, -125%)", backgroundImage: `url('/images/portfolio/vehicle-rapping-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
+
+                    {/* Top Left Hexagon */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] hover:z-30 duration-500 z-10"
+                        style={{ transform: "translate(-100%, -125%)", backgroundImage: `url('/images/portfolio/shop-front-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
+
+                    {/* Bottom Right Hexagon - Image */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] hover:z-30 duration-500 z-10"
+                        style={{ transform: "translate(0%, 25%)", backgroundImage: `url('/images/portfolio/set-building-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
+
+                    {/* Bottom Left Hexagon */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] hover:z-30 duration-500 z-10"
+                        style={{ transform: "translate(-100%, 25%)", backgroundImage: `url('/images/portfolio/large-format-print-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
+
+                    {/* Far Left Middle Hexagon */}
+                    <div
+                        className="absolute top-1/2 left-1/2 w-[220px] md:w-[320px] aspect-[0.866] bg-cover bg-center transition-transform hover:scale-[1.03] hover:z-30 duration-500 z-0"
+                        style={{ transform: "translate(-150%, -50%)", backgroundImage: `url('/images/portfolio/building-signage-main.jpg')`, clipPath: "polygon(50% 2%, 98% 25%, 98% 75%, 50% 98%, 2% 75%, 2% 25%)" }}
+                    />
+                </div>
+            </div>
+
+            {/* Dark Overlay - Protects text readability ONLY on the right side */}
+            <div className="absolute inset-0 bg-charcoal/80 md:bg-transparent md:bg-gradient-to-l md:from-charcoal md:via-charcoal/95 md:to-transparent md:w-[50%] md:left-auto md:right-0 z-10" />
+
+
+
+            {/* Content - Right Aligned on Desktop */}
+            <div className="relative h-full w-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center items-center md:items-end z-20">
+                <div className="max-w-2xl text-center md:text-right flex flex-col items-center md:items-end">
                     <div
                         key={activeSlide.id}
-                        className="animate-fadeIn"
+                        className="animate-fadeIn w-full flex flex-col items-center md:items-end"
                     >
-                        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-                            {activeSlide.title}
+                        {/* SEO H1 Tag */}
+                        <h1 className="text-aloe-green font-bold tracking-widest uppercase text-sm md:text-md mb-4 flex items-center justify-center md:justify-end gap-3 w-full">
+                            <span className="md:hidden w-8 h-1 bg-aloe-green block"></span>
+                            {activeSlide.seoH1}
+                            <span className="hidden md:block w-8 h-1 bg-aloe-green"></span>
                         </h1>
 
-                        <p className="text-xl text-white/90 mb-8 leading-relaxed">
+                        {/* Main Big, Loud Title */}
+                        <h2 className="text-3xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 uppercase leading-none tracking-tight">
+                            {activeSlide.title}
+                        </h2>
+
+                        {/* Power Sub-line */}
+                        <p className="text-2xl md:text-3xl font-medium text-white/90 mb-10 max-w-xl">
                             {activeSlide.description}
                         </p>
 
                         {/* CTA Buttons */}
-                        <div className="flex flex-wrap gap-4 mb-8">
+                        <div className="flex flex-wrap justify-center md:justify-end gap-4 mb-8 w-full">
                             <Link
                                 href={activeSlide.primaryCTA.href}
-                                className="px-8 py-4 bg-aloe-green text-charcoal font-semibold rounded hover:bg-green-hover transition-colors text-lg"
+                                className="px-10 py-5 bg-aloe-green text-charcoal font-black rounded uppercase tracking-wider hover:bg-white transition-colors text-lg md:text-xl shadow-[0_0_20px_rgba(202,238,166,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.7)]"
                             >
                                 {activeSlide.primaryCTA.text}
                             </Link>
-                            <Link
-                                href={activeSlide.secondaryCTA.href}
-                                className="px-8 py-4 border-2 border-white text-white font-semibold rounded hover:bg-white hover:text-charcoal transition-colors text-lg"
-                            >
-                                {activeSlide.secondaryCTA.text}
-                            </Link>
                         </div>
 
-                        <p className="text-white/80 text-sm">
+                        <p className="text-white/50 font-semibold uppercase tracking-widest text-sm text-right w-full">
                             {activeSlide.location}
                         </p>
                     </div>
-                </div>
-
-                {/* Dot Navigation */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
-                    {slides.map((slide, index) => (
-                        <button
-                            key={slide.id}
-                            onClick={() => goToSlide(index)}
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                                ? 'bg-aloe-green w-8'
-                                : 'bg-white/40 hover:bg-white/60'
-                                }`}
-                            aria-label={`Go to slide ${index + 1}`}
-                        />
-                    ))}
                 </div>
             </div>
         </section>

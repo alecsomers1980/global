@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { products, categories, Product, getLowestUnitPrice } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import ProductCard from '@/components/ProductCard';
 
@@ -158,8 +157,6 @@ export default function ShopPage() {
                     </div>
                 </section>
             </main>
-
-            <Footer />
         </div>
     );
 }

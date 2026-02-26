@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { formatPrice } from '@/lib/utils';
 
 interface Order {
@@ -368,7 +367,6 @@ function OrderTrackingContent() {
                 </section>
             </main>
 
-            <Footer />
         </div>
     );
 }

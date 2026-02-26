@@ -1,8 +1,9 @@
 import Header from '@/components/Header';
 import HeroBanner from '@/components/HeroBanner';
-import AutoScrollTabs from '@/components/AutoScrollTabs';
+import ImageGrid from '@/components/ImageGrid';
+import ServicesList from '@/components/ServicesList';
+import AboutSection from '@/components/AboutSection';
 import ShopSpecials from '@/components/ShopSpecials';
-import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -10,7 +11,9 @@ export default function Home() {
       <Header />
       <main>
         <HeroBanner />
-        <AutoScrollTabs />
+        <ImageGrid />
+        <ServicesList />
+        <AboutSection />
         <ShopSpecials />
 
         {/* Stats Section */}
@@ -63,7 +66,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }

@@ -2,7 +2,6 @@ import ServiceHero from '@/components/ServiceHero';
 import FeatureGrid from '@/components/FeatureGrid';
 import ProcessSteps from '@/components/ProcessSteps';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import Link from 'next/link';
 import { ServiceData } from '@/lib/services';
 import { CheckCircle } from 'lucide-react';
@@ -91,7 +90,6 @@ export default function ServicePageTemplate({ service }: ServicePageTemplateProp
                     </div>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 }

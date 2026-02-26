@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { getProductById, products } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { useCart } from '@/context/CartContext';
 
@@ -270,8 +269,6 @@ export default function ProductDetailPage() {
                     </div>
                 </section>
             </main>
-
-            <Footer />
         </div>
     );
 }

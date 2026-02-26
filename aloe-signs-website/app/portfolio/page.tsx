@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { constructionProjects, portfolioCategories, Project } from '@/lib/portfolio';
 import { X } from 'lucide-react';
 
@@ -134,7 +133,6 @@ export default function PortfolioPage() {
                     })}
                 </div>
             </main>
-            <Footer />
 
             {/* Project Modal */}
             {selectedProject && (

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import StatsSection from '@/components/StatsSection';
 import { Building2, Users, Award, MapPin, CheckCircle } from 'lucide-react';
 
@@ -44,51 +43,142 @@ export default function AboutPage() {
                     </div>
                 </div>
 
-                {/* Our Story Section */}
-                <section className="py-16 md:py-20 bg-white">
+                {/* Founding Story Section */}
+                <section className="py-16 md:py-24 bg-white">
                     <div className="max-w-7xl mx-auto px-6">
-                        <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+                            <div className="relative aspect-square md:aspect-[4/5] bg-bg-grey rounded-sm overflow-hidden">
+                                <div
+                                    className="absolute inset-0 bg-cover bg-center grayscale contrast-125"
+                                    style={{ backgroundImage: `url('/images/portfolio/shopfront-1.jpg')` }}
+                                    title="Aloe Signs founders"
+                                />
+                                <div className="absolute inset-0 bg-aloe-green/10 mix-blend-overlay"></div>
+                            </div>
+
                             <div>
-                                <h2 className="text-3xl md:text-4xl font-bold text-charcoal mb-6">
-                                    Our Story
+                                <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-4">
+                                    <span className="w-12 h-1 bg-aloe-green block"></span>
+                                    Our Roots
                                 </h2>
-                                <div className="space-y-4 text-medium-grey">
+                                <h3 className="text-4xl md:text-5xl font-black text-charcoal mb-8 uppercase tracking-tight leading-tight">
+                                    Built on grit <br /> and late nights.
+                                </h3>
+                                <div className="space-y-6 text-xl text-medium-grey font-medium">
                                     <p>
-                                        Based in Randfontein, Gauteng, we&apos;ve grown from a small signage shop to a
-                                        full-service design, manufacturing, and installation company serving clients
-                                        across South Africa.
+                                        [PLACEHOLDER STORY] Aloe Signs wasn't born in a sterile corporate office. It was started decades ago by my father and mother, working out of a small garage with nothing but a vinyl cutter and an absolute refusal to fail.
                                     </p>
                                     <p>
-                                        What sets us apart is simple: we do everything in-house. From the first design
-                                        concept to the final installation, your project stays with our team. No
-                                        outsourcing, no delays, no quality compromises.
+                                        [PLACEHOLDER STORY] They spent their days knocking on factory doors in Randfontein and their nights hand-weeding vinyl on the kitchen table. They believed that South African businesses deserved signage that was built tough, priced fairly, and delivered on time.
                                     </p>
                                     <p>
-                                        Whether you need a single vehicle wrap or a complete building signage programme,
-                                        we handle it end-to-end with the same attention to detail and commitment to quality.
+                                        [PLACEHOLDER STORY] That same relentless work ethic is still the backbone of our operation today. From a single garage to a full-scale manufacturing facility, the values haven't changed: do the job right, or don't do it at all.
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
 
-                            <div className="bg-bg-grey p-8 rounded-lg">
-                                <h3 className="text-2xl font-bold text-charcoal mb-6">What We Do</h3>
-                                <div className="space-y-3">
-                                    {[
-                                        'Vehicle Branding',
-                                        'Building Signage',
-                                        'Shopfronts',
-                                        'Wayfinding & Interior',
-                                        'Billboards & Outdoor',
-                                        'Large Format Print',
-                                        'Screen Printing',
-                                        'Set Building',
-                                    ].map((service, index) => (
-                                        <div key={index} className="flex items-center gap-3">
-                                            <CheckCircle className="w-5 h-5 text-aloe-green flex-shrink-0" />
-                                            <span className="text-medium-grey">{service}</span>
-                                        </div>
-                                    ))}
+                {/* Owner Section */}
+                <section className="py-16 md:py-24 bg-charcoal text-white">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center md:flex-row-reverse">
+
+                            <div className="order-2 md:order-1">
+                                <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-4">
+                                    <span className="w-12 h-1 bg-aloe-green block"></span>
+                                    The Next Chapter
+                                </h2>
+                                <h3 className="text-4xl md:text-5xl font-black mb-8 uppercase tracking-tight leading-tight">
+                                    Andre de Bod
+                                    <span className="block text-2xl text-aloe-green mt-2">Owner & Managing Director</span>
+                                </h3>
+                                <div className="space-y-6 text-xl text-white/80 font-medium mb-10">
+                                    <p>
+                                        [PLACEHOLDER HISTORY] Growing up in the signage industry meant I learned how to mix ink before I learned how to drive. Taking over Aloe Signs wasn't just a business decision; it was about honoring a legacy while aggressively pushing it into the modern era.
+                                    </p>
+                                    <p>
+                                        [PLACEHOLDER HISTORY] Under my leadership, we've expanded our capabilities to include massive large-format printing, digital displays, and comprehensive fleet branding. We don't just make signs anymore—we engineer unmissable visual assets.
+                                    </p>
                                 </div>
+
+                                {/* Quote */}
+                                <blockquote className="border-l-4 border-aloe-green pl-6 py-2">
+                                    <p className="text-2xl md:text-3xl font-bold italic text-white mb-4">
+                                        "A brand is useless if no one can see it. We don't build quiet signs for quiet businesses. We build to dominate."
+                                    </p>
+                                </blockquote>
+                            </div>
+
+                            <div className="order-1 md:order-2 relative aspect-[3/4] bg-dark-grey rounded-sm overflow-hidden">
+                                <div
+                                    className="absolute inset-0 bg-cover bg-center opacity-90 mix-blend-luminosity"
+                                    style={{ backgroundImage: `url('/images/portfolio/shop-front-1.jpg')` }}
+                                    title="Andre de Bod"
+                                />
+                                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-charcoal to-transparent h-1/2"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                {/* The Team Section */}
+                <section className="py-16 md:py-24 bg-bg-grey">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center justify-center gap-4">
+                                <span className="w-8 h-1 bg-aloe-green block"></span>
+                                The Muscle
+                                <span className="w-8 h-1 bg-aloe-green block"></span>
+                            </h2>
+                            <h3 className="text-4xl md:text-5xl font-black text-charcoal uppercase tracking-tight">
+                                Meet the Crew
+                            </h3>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {/* Designers */}
+                            <div className="group">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url('/images/portfolio/interior-2.jpg')` }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
+                                </div>
+                                <h4 className="text-2xl font-black text-charcoal uppercase tracking-wide">[Staff Name]</h4>
+                                <p className="text-aloe-green font-bold uppercase tracking-wider text-sm mb-2">Lead Designer</p>
+                                <p className="text-medium-grey">The creative brain turning your wild ideas into print-ready blueprints.</p>
+                            </div>
+
+                            {/* Construction */}
+                            <div className="group">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url('/images/portfolio/set-building-main.jpg')` }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
+                                </div>
+                                <h4 className="text-2xl font-black text-charcoal uppercase tracking-wide">[Staff Name]</h4>
+                                <p className="text-aloe-green font-bold uppercase tracking-wider text-sm mb-2">Construction & Manufacturing</p>
+                                <p className="text-medium-grey">Operating the heavy machinery that builds the physical structures.</p>
+                            </div>
+
+                            {/* Setup */}
+                            <div className="group">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                        style={{ backgroundImage: `url('/images/portfolio/interior-1.jpg')` }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300"></div>
+                                </div>
+                                <h4 className="text-2xl font-black text-charcoal uppercase tracking-wide">[Staff Name]</h4>
+                                <p className="text-aloe-green font-bold uppercase tracking-wider text-sm mb-2">Setup & Installation</p>
+                                <p className="text-medium-grey">The boots on the ground making sure the sign survives any weather.</p>
                             </div>
                         </div>
                     </div>
@@ -212,7 +302,6 @@ export default function AboutPage() {
                     </div>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 }

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
@@ -29,7 +28,6 @@ export default function CartPage() {
                         </Link>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -183,8 +181,6 @@ export default function CartPage() {
                     </div>
                 </section>
             </main>
-
-            <Footer />
         </div>
     );
 }

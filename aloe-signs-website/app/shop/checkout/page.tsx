@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -39,7 +38,6 @@ export default function CheckoutPage() {
                         </Link>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -319,8 +317,6 @@ export default function CheckoutPage() {
                     <input type="hidden" name="cell_number" value={formData.phone} />
                 </form>
             </main>
-
-            <Footer />
         </div>
     );
 }

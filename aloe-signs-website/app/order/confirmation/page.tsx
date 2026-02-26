@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 
 interface Order {
@@ -64,7 +63,6 @@ function OrderConfirmationContent() {
                         <p className="text-medium-grey">Loading order details...</p>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -85,7 +83,6 @@ function OrderConfirmationContent() {
                         </Link>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -206,7 +203,6 @@ function OrderConfirmationContent() {
                 </div>
             </main>
 
-            <Footer />
         </div>
     );
 }

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 
@@ -204,7 +203,6 @@ export default function ContactPage() {
                     ></iframe>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 }

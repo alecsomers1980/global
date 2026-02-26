@@ -9,9 +9,9 @@ import CookieConsent from "@/components/CookieConsent";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Aloe Signs | Products that builds businesses",
-  description: "Professional signage solutions in South Africa. We design, manufacture, and install everything in-house. From vehicle branding to building signage, we handle it end-to-end.",
-  keywords: "signage, vehicle branding, building signage, shopfronts, wayfinding, billboards, large format print, screen printing, set building, South Africa, Gauteng",
+  title: "Aloe Signs | Branding, Printing & Signage Company in South Africa",
+  description: "Professional branding, signage & large-format printing company in South Africa. We design, print & install high-impact branding that gets your business noticed.",
+  keywords: "Branding company, Signage company, Printing company, Graphic design services, Large format printing, Custom signage, Professional branding solutions, Commercial signage, Outdoor advertising solutions, Business branding services, South Africa, Gauteng",
   icons: {
     icon: '/aloe-logo.png',
     shortcut: '/aloe-logo.png',

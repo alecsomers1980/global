@@ -11,14 +11,19 @@ const featuredProducts = products.filter(p => featuredProductIds.includes(p.id))
 
 export default function ShopSpecials() {
     return (
-        <section className="py-20 bg-charcoal">
+        <section className="py-32 bg-charcoal">
             <div className="max-w-[1400px] mx-auto px-6">
-                <div className="text-center mb-12">
-                    <h2 className="text-4xl font-bold text-white mb-4">
-                        Featured Specials
+                <div className="text-center mb-16">
+                    <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center justify-center gap-4">
+                        <span className="w-12 h-1 bg-aloe-green block"></span>
+                        Shop Online
+                        <span className="w-12 h-1 bg-aloe-green block"></span>
                     </h2>
-                    <p className="text-light-grey text-lg">
-                        Save big on our most popular products
+                    <h3 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                        Ready To Ship <span className="text-aloe-green">Specials</span>
+                    </h3>
+                    <p className="text-xl text-white/80 max-w-2xl mx-auto">
+                        Save big on our most popular and ready-made signage products.
                     </p>
                 </div>
 
@@ -32,10 +37,10 @@ export default function ShopSpecials() {
                 </div>
 
                 {/* View All Link */}
-                <div className="text-center mt-12">
+                <div className="text-center mt-20">
                     <Link
                         href="/shop"
-                        className="inline-block px-8 py-3 border-2 border-white text-white font-semibold rounded hover:bg-white hover:text-charcoal transition-colors"
+                        className="inline-block px-10 py-4 border-2 border-aloe-green text-aloe-green hover:bg-aloe-green hover:text-charcoal font-black rounded uppercase tracking-widest transition-colors text-lg"
                     >
                         View All Products
                     </Link>

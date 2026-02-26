@@ -6,7 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { constructionProjects } from '@/lib/portfolio';
 
 export default function ProjectDetailPage() {
@@ -272,8 +271,6 @@ export default function ProjectDetailPage() {
                     </div>
                 </div>
             )}
-
-            <Footer />
         </div>
     );
 }
