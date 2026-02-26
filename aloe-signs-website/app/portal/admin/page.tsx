@@ -4,15 +4,17 @@ import { createClientSupabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
+interface Allowance {
+    date: string;
+    startTime: string;
+    endTime: string;
+}
+
 interface JobFile {
     id: string;
     original_name: string;
     display_name: string | null;
     description: string;
-    width: number;
-    height: number;
-    unit: string;
-    quantity: number;
     storage_path: string;
 }
 
@@ -21,6 +23,7 @@ interface ProofComment {
     comment: string;
     is_admin: boolean;
     created_at: string;
+    user_id: string;
 }
 
 interface Proof {
@@ -35,8 +38,8 @@ interface Proof {
 interface Profile {
     full_name: string;
     email: string;
-    company: string;
-    contact_number: string;
+    company: string | null;
+    contact_number: string | null;
 }
 
 interface Job {
@@ -45,6 +48,21 @@ interface Job {
     status: string;
     created_at: string;
     updated_at: string;
+    material: string | null;
+    delivery_type: string | null;
+    delivery_address: string | null;
+    ground_clearance: string | null;
+    water_electricity_notes: string | null;
+    safety_file_required: boolean;
+    site_contact_person: string | null;
+    site_contact_number: string | null;
+    access_contact_person: string | null;
+    access_contact_number: string | null;
+    completion_target: string | null;
+    setup_allowance: Allowance[] | null;
+    strike_allowance: Allowance[] | null;
+    storage_required: boolean;
+    storage_time_estimate: string | null;
     profiles: Profile;
     print_job_files: JobFile[];
     proofs: Proof[];
@@ -244,7 +262,57 @@ export default function AdminPortalPage() {
 
                                 {/* Expanded Details */}
                                 {isExpanded && (
-                                    <div style={{ padding: '0 24px 24px', borderTop: '1px solid #e5e7eb' }}>
+                                    <div style={{ padding: '24px', background: '#f9fafb', borderTop: '1px solid #eee' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Fulfillment Details</h4>
+                                                <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
+                                                    <tbody>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Material</td><td>{job.material || '—'}</td></tr>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Delivery Type</td><td style={{ textTransform: 'capitalize' }}>{job.delivery_type}</td></tr>
+                                                        {job.delivery_address && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Address</td><td>{job.delivery_address}</td></tr>}
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Ground Clearance</td><td>{job.ground_clearance || '—'}</td></tr>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Safety File?</td><td>{job.safety_file_required ? '✅ YES' : '❌ NO'}</td></tr>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Target Date</td><td>{job.completion_target || '—'}</td></tr>
+                                                        {job.storage_required && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Storage</td><td>YES ({job.storage_time_estimate})</td></tr>}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Contact Information</h4>
+                                                <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
+                                                    <tbody>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Site Contact</td><td>{job.site_contact_person || '—'} {job.site_contact_number ? `(${job.site_contact_number})` : ''}</td></tr>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Access Contact</td><td>{job.access_contact_person || '—'} {job.access_contact_number ? `(${job.access_contact_number})` : ''}</td></tr>
+                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Notes (H2O/Elec)</td><td>{job.water_electricity_notes || '—'}</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Setup Allowance</h4>
+                                                <div style={{ fontSize: '13px', color: '#4b5563' }}>
+                                                    {!job.setup_allowance || job.setup_allowance.length === 0 ? 'None scheduled' : job.setup_allowance.map((a, i) => (
+                                                        <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
+                                                            <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Strike Allowance</h4>
+                                                <div style={{ fontSize: '13px', color: '#4b5563' }}>
+                                                    {!job.strike_allowance || job.strike_allowance.length === 0 ? 'None scheduled' : job.strike_allowance.map((a, i) => (
+                                                        <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
+                                                            <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         {/* Status Change */}
                                         <div style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                             <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Change Status:</label>
@@ -266,7 +334,6 @@ export default function AdminPortalPage() {
                                                 <span>📄 {f.display_name || f.original_name}</span>
                                                 {f.display_name && <span style={{ color: '#9ca3af', fontSize: '12px' }}>({f.original_name})</span>}
                                                 {f.description && <span style={{ color: '#9ca3af' }}>— {f.description}</span>}
-                                                <span style={{ color: '#9ca3af' }}>{f.width}×{f.height}{f.unit} · Qty: {f.quantity}</span>
                                                 <button onClick={async () => {
                                                     const url = await getSignedUrl(f.storage_path);
                                                     if (url) window.open(url);

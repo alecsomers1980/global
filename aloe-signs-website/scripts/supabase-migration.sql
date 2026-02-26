@@ -47,6 +47,21 @@ CREATE TABLE IF NOT EXISTS public.print_jobs (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   status TEXT NOT NULL DEFAULT 'Uploaded'
     CHECK (status IN ('Uploaded', 'Processing', 'Awaiting Proof Signoff', 'Completed')),
+  material TEXT,
+  delivery_type TEXT DEFAULT 'collection' CHECK (delivery_type IN ('installation', 'collection', 'delivery')),
+  delivery_address TEXT,
+  ground_clearance TEXT,
+  water_electricity_notes TEXT,
+  safety_file_required BOOLEAN DEFAULT FALSE,
+  site_contact_person TEXT,
+  site_contact_number TEXT,
+  access_contact_person TEXT,
+  access_contact_number TEXT,
+  completion_target DATE,
+  setup_allowance JSONB,
+  strike_allowance JSONB,
+  storage_required BOOLEAN DEFAULT FALSE,
+  storage_time_estimate TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -101,7 +101,7 @@ export default function PortalDashboard() {
                     </div>
                 )}
 
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 My Print Jobs</h2>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 Current Jobs</h2>
                 {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>Loading…</div>)
                     : jobs.length === 0 ? (
                         <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No jobs yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Create your first print job.</p><Link href="/portal/jobs/new" style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ New Print Job</Link></div></div>
