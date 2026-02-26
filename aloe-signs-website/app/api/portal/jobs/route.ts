@@ -9,9 +9,6 @@ export async function GET() {
 
     const { data: jobs, error } = await supabase.from('print_jobs')
         .select(`id, status, created_at, updated_at,
-            material, delivery_type, delivery_address, ground_clearance, water_electricity_notes,
-            safety_file_required, site_contact_person, site_contact_number, access_contact_person, access_contact_number,
-            completion_target, setup_allowance, strike_allowance, storage_required, storage_time_estimate,
             print_job_files ( id, original_name, display_name, description, storage_path ),
             proofs ( id, original_name, status, storage_path, created_at, proof_comments ( id, comment, is_admin, created_at, user_id ) )`)
         .eq('user_id', user.id).order('created_at', { ascending: false });
@@ -35,25 +32,30 @@ export async function POST(req: Request) {
 
     if (!files || files.length === 0) return NextResponse.json({ error: 'At least one file is required' }, { status: 400 });
 
-    const { data: job, error: jobError } = await supabase.from('print_jobs').insert({
+    const insertPayload: any = {
         user_id: user.id,
         status: 'Uploaded',
-        material,
-        delivery_type: deliveryType,
-        delivery_address: deliveryAddress,
-        ground_clearance: groundClearance,
-        water_electricity_notes: waterElectricityNotes,
-        safety_file_required: safetyFileRequired,
-        site_contact_person: siteContactPerson,
-        site_contact_number: siteContactNumber,
-        access_contact_person: accessContactPerson,
-        access_contact_number: accessContactNumber,
-        completion_target: completionTarget || null,
-        setup_allowance: setupAllowance,
-        strike_allowance: strikeAllowance,
-        storage_required: storageRequired,
-        storage_time_estimate: storageTimeEstimate
-    }).select('id').single();
+    };
+
+    // Only add fields if they are explicitly provided in the request
+    // This prevents errors if the database schema hasn't been updated with all fields yet
+    if (material !== undefined) insertPayload.material = material;
+    if (deliveryType !== undefined) insertPayload.delivery_type = deliveryType;
+    if (deliveryAddress !== undefined) insertPayload.delivery_address = deliveryAddress;
+    if (groundClearance !== undefined) insertPayload.ground_clearance = groundClearance;
+    if (waterElectricityNotes !== undefined) insertPayload.water_electricity_notes = waterElectricityNotes;
+    if (safetyFileRequired !== undefined) insertPayload.safety_file_required = safetyFileRequired;
+    if (siteContactPerson !== undefined) insertPayload.site_contact_person = siteContactPerson;
+    if (siteContactNumber !== undefined) insertPayload.site_contact_number = siteContactNumber;
+    if (accessContactPerson !== undefined) insertPayload.access_contact_person = accessContactPerson;
+    if (accessContactNumber !== undefined) insertPayload.access_contact_number = accessContactNumber;
+    if (completionTarget !== undefined) insertPayload.completion_target = completionTarget || null;
+    if (setupAllowance !== undefined) insertPayload.setup_allowance = setupAllowance;
+    if (strikeAllowance !== undefined) insertPayload.strike_allowance = strikeAllowance;
+    if (storageRequired !== undefined) insertPayload.storage_required = storageRequired;
+    if (storageTimeEstimate !== undefined) insertPayload.storage_time_estimate = storageTimeEstimate;
+
+    const { data: job, error: jobError } = await supabase.from('print_jobs').insert(insertPayload).select('id').single();
 
     if (jobError || !job) return NextResponse.json({ error: jobError?.message || 'Failed to create job' }, { status: 500 });
 

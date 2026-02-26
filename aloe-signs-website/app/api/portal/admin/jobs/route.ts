@@ -13,9 +13,6 @@ export async function GET() {
     const { data: jobs, error } = await adminSupabase
         .from('print_jobs')
         .select(`id, user_id, status, created_at, updated_at,
-            material, delivery_type, delivery_address, ground_clearance, water_electricity_notes,
-            safety_file_required, site_contact_person, site_contact_number, access_contact_person, access_contact_number,
-            completion_target, setup_allowance, strike_allowance, storage_required, storage_time_estimate,
             profiles!print_jobs_user_id_fkey ( full_name, email, company, contact_number ),
             print_job_files ( id, original_name, display_name, description, storage_path ),
             proofs ( id, original_name, status, storage_path, created_at, proof_comments ( id, comment, is_admin, created_at, user_id ) )`)
