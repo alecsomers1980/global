@@ -125,7 +125,7 @@ export default function HeroBanner() {
                             </Link>
                         </div>
 
-                        <p className="text-white/50 font-semibold uppercase tracking-widest text-sm text-right w-full">
+                        <p className="text-white/50 font-semibold uppercase tracking-widest text-sm text-center md:text-right w-full">
                             {activeSlide.location}
                         </p>
                     </div>
