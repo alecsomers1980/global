@@ -7,6 +7,7 @@ import Image from 'next/image';
 interface JobFile {
     id: string;
     original_name: string;
+    display_name: string | null;
     description: string;
     width: number;
     height: number;
@@ -262,7 +263,8 @@ export default function AdminPortalPage() {
                                         <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Files ({job.print_job_files?.length || 0})</h4>
                                         {job.print_job_files?.map(f => (
                                             <div key={f.id} style={{ fontSize: '13px', color: '#4b5563', padding: '6px 0', borderBottom: '1px solid #f3f4f6', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                                <span>📄 {f.original_name}</span>
+                                                <span>📄 {f.display_name || f.original_name}</span>
+                                                {f.display_name && <span style={{ color: '#9ca3af', fontSize: '12px' }}>({f.original_name})</span>}
                                                 {f.description && <span style={{ color: '#9ca3af' }}>— {f.description}</span>}
                                                 <span style={{ color: '#9ca3af' }}>{f.width}×{f.height}{f.unit} · Qty: {f.quantity}</span>
                                                 <button onClick={async () => {

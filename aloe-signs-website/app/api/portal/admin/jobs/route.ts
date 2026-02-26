@@ -14,7 +14,7 @@ export async function GET() {
         .from('print_jobs')
         .select(`id, user_id, status, created_at, updated_at,
             profiles!print_jobs_user_id_fkey ( full_name, email, company, contact_number ),
-            print_job_files ( id, original_name, description, width, height, unit, quantity, storage_path ),
+            print_job_files ( id, original_name, display_name, description, width, height, unit, quantity, storage_path ),
             proofs ( id, original_name, status, storage_path, created_at, proof_comments ( id, comment, is_admin, created_at, user_id ) )`)
         .order('created_at', { ascending: false });
 

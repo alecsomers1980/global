@@ -29,17 +29,17 @@ export async function notifyAdminNewJob(opts: { clientName: string; clientEmail:
     `<tr><td style="${tdStyle};font-weight:600;width:120px">Email</td><td style="${tdStyle}">${opts.clientEmail}</td></tr>`,
   ].filter(Boolean).join('');
 
-  // File rows
-  const fileRows = opts.files.map((f, i) => {
+  // File cards (stacked layout, avoids wide table stretching)
+  const fileCards = opts.files.map((f, i) => {
     const name = f.displayName || f.originalName;
-    const dims = (f.width || f.height) ? `${f.width} × ${f.height} ${f.unit}` : '—';
-    return `<tr>
-      <td style="${tdStyle}">${i + 1}</td>
-      <td style="${tdStyle}"><strong>${name}</strong>${f.displayName && f.originalName !== f.displayName ? `<br/><span style="color:#9ca3af;font-size:12px">${f.originalName}</span>` : ''}</td>
-      <td style="${tdStyle}">${f.description || '—'}</td>
-      <td style="${tdStyle}">${dims}</td>
-      <td style="${tdStyle}">${f.quantity}</td>
-    </tr>`;
+    const dims = (f.width || f.height) ? `${f.width} × ${f.height} ${f.unit}` : '';
+    const subtitle = f.displayName && f.originalName !== f.displayName ? `<p style="margin:2px 0 0 0;font-size:12px;color:#9ca3af;word-break:break-all">${f.originalName}</p>` : '';
+    return `<div style="background:#f9fafb;border-radius:8px;padding:14px 16px;margin-bottom:8px;border:1px solid #e5e7eb">
+      <p style="margin:0;font-size:14px;font-weight:700;color:#2d2d2d;word-break:break-word">File ${i + 1}: ${name}</p>
+      ${subtitle}
+      ${f.description ? `<p style="margin:6px 0 0 0;font-size:13px;color:#6b7280">${f.description}</p>` : ''}
+      <p style="margin:6px 0 0 0;font-size:12px;color:#9ca3af">${dims ? `${dims} · ` : ''}Qty: ${f.quantity}</p>
+    </div>`;
   }).join('');
 
   const body = `
@@ -48,11 +48,8 @@ export async function notifyAdminNewJob(opts: { clientName: string; clientEmail:
     <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Client Details</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">${clientRows}</table>
 
-    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Job Specifications</h3>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:28px">
-      <tr><th style="${thStyle}">#</th><th style="${thStyle}">File</th><th style="${thStyle}">Description</th><th style="${thStyle}">Size</th><th style="${thStyle}">Qty</th></tr>
-      ${fileRows}
-    </table>
+    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Uploaded Files (${opts.files.length})</h3>
+    ${fileCards}
 
     <div style="text-align:center;margin-top:28px">
       <a href="https://aloe-signs-website.vercel.app/portal/admin" style="display:inline-block;background:#84cc16;color:#2d2d2d;font-weight:700;padding:14px 32px;text-decoration:none;border-radius:8px">View Files in Admin Portal</a>
