@@ -1,23 +1,51 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
-export function middleware(request: NextRequest) {
-    // Check if accessing admin routes (except login page)
-    if (request.nextUrl.pathname.startsWith('/admin') &&
-        !request.nextUrl.pathname.startsWith('/admin/login')) {
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
 
-        // Check for authentication cookie
+    // ── Admin routes: existing cookie-based auth ──────────────────────────────
+    if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
         const authCookie = request.cookies.get('admin_auth');
-
         if (!authCookie || authCookie.value !== 'authenticated') {
-            // Redirect to login page
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
+    }
+
+    // ── Portal protected routes: Supabase session check ───────────────────────
+    if (pathname.startsWith('/portal/upload')) {
+        let response = NextResponse.next({ request });
+
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookies: {
+                    getAll: () => request.cookies.getAll(),
+                    setAll: (cookiesToSet) => {
+                        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+                        response = NextResponse.next({ request });
+                        cookiesToSet.forEach(({ name, value, options }) =>
+                            response.cookies.set(name, value, options)
+                        );
+                    },
+                },
+            }
+        );
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return NextResponse.redirect(new URL('/portal/login', request.url));
+        }
+
+        return response;
     }
 
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: '/admin/:path*',
+    matcher: ['/admin/:path*', '/portal/upload/:path*'],
 };
+
