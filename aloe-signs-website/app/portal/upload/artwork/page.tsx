@@ -117,7 +117,7 @@ export default function ArtworkUploadPage() {
                         </div>
                     )}
 
-                    <button type="submit" disabled={uploading} style={{ width: '100%', padding: '18px', background: uploading ? '#cbd5e1' : '#84cc16', color: '#1a1a1a', fontWeight: 700, fontSize: '18px', border: 'none', borderRadius: '12px', cursor: uploading ? 'not-allowed' : 'pointer' }}>
+                    <button type="submit" disabled={uploading} style={{ width: '100%', padding: '18px', background: uploading ? '#cbd5e1' : '#1a1a1a', color: '#fff', fontWeight: 700, fontSize: '18px', border: 'none', borderRadius: '12px', cursor: uploading ? 'not-allowed' : 'pointer' }}>
                         {uploading ? 'Processing Upload...' : 'Upload Artwork'}
                     </button>
                 </form>

@@ -67,7 +67,7 @@ export default function PortalDashboard() {
                         <h1 style={{ margin: '0 0 4px 0', fontSize: '26px', fontWeight: 700, color: '#2d2d2d' }}>Welcome{userName ? `, ${userName.split(' ')[0]}` : ''} 👋</h1>
                         <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Manage your print jobs and review proofs</p>
                     </div>
-                    <Link href="/portal/upload/artwork" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 2px 8px rgba(132,204,22,0.3)' }}>＋ Upload Artwork</Link>
+                    <Link href="/portal/upload/artwork" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>＋ Upload Artwork</Link>
                 </div>
 
                 {proofJobs.length > 0 && (
@@ -90,12 +90,12 @@ export default function PortalDashboard() {
                                     <div style={{ background: '#f9fafb', borderRadius: '8px', padding: '16px', marginTop: '8px' }}>
                                         <textarea value={proofComment} onChange={e => setProofComment(e.target.value)} placeholder="Leave a comment (required for edit request)..." style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '14px', resize: 'vertical', height: '80px', boxSizing: 'border-box', outline: 'none', marginBottom: '12px' }} />
                                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                            <button onClick={() => respondToProof(proof.id, 'Approved')} disabled={submitting} style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>✅ Approve</button>
+                                            <button onClick={() => respondToProof(proof.id, 'Approved')} disabled={submitting} style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>✅ Approve</button>
                                             <button onClick={() => { if (!proofComment.trim()) { alert('Please add a comment.'); return; } respondToProof(proof.id, 'Edit Required'); }} disabled={submitting} style={{ background: '#fef3c7', color: '#92400e', fontWeight: 700, padding: '10px 24px', border: '1px solid #fcd34d', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>✏️ Request Edit</button>
                                             <button onClick={() => { setRespondingProof(null); setProofComment(''); }} style={{ background: '#f3f4f6', color: '#6b7280', padding: '10px 24px', border: '1px solid #d1d5db', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>Cancel</button>
                                         </div>
                                     </div>
-                                ) : (<button onClick={() => setRespondingProof(proof.id)} style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', marginTop: '8px' }}>Respond to Proof</button>)}
+                                ) : (<button onClick={() => setRespondingProof(proof.id)} style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', marginTop: '8px' }}>Respond to Proof</button>)}
                             </div>
                         )))}
                     </div>
@@ -104,7 +104,7 @@ export default function PortalDashboard() {
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 Artwork Uploaded</h2>
                 {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>Loading…</div>)
                     : jobs.length === 0 ? (
-                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
+                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
                     ) : jobs.map(job => {
                         const sc = SC[job.status] || SC['Uploaded'];
                         return (

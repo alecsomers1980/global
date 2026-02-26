@@ -369,7 +369,7 @@ export default function AdminPortalPage() {
                                                             </p>
                                                         )}
                                                     </div>
-                                                    <button onClick={() => downloadAdminFile(f.storage_path, f.original_name)} style={{ background: '#84cc16', color: '#fff', fontWeight: 700, padding: '10px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(132, 204, 22, 0.2)', transition: 'background 0.2s', marginTop: 'auto' }} onMouseEnter={e => e.currentTarget.style.background = '#65a30d'} onMouseLeave={e => e.currentTarget.style.background = '#84cc16'}>
+                                                    <button onClick={() => downloadAdminFile(f.storage_path, f.original_name)} style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '10px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', transition: 'background 0.2s', marginTop: 'auto' }} onMouseEnter={e => e.currentTarget.style.background = '#000'} onMouseLeave={e => e.currentTarget.style.background = '#1a1a1a'}>
                                                         ⬇️ Download File
                                                     </button>
                                                 </div>
@@ -403,7 +403,7 @@ export default function AdminPortalPage() {
                                         <div style={{ marginTop: '16px', display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                                             <button onClick={() => proofFileRefs.current[job.id]?.click()}
                                                 disabled={proofUploading === job.id}
-                                                style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
+                                                style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '10px 24px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
                                                 {proofUploading === job.id ? 'Uploading…' : '🎨 Upload Proof'}
                                             </button>
                                             <input
