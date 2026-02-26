@@ -10,14 +10,28 @@ export async function GET() {
     const { createClient } = await import('@supabase/supabase-js');
     const adminSupabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
-    const { data: jobs, error } = await adminSupabase
+    const { data: jobData, error: jobsError } = await adminSupabase
         .from('print_jobs')
         .select(`id, user_id, status, created_at, updated_at,
-            profiles!print_jobs_user_id_fkey ( full_name, email, company, contact_number ),
             print_job_files ( id, original_name, display_name, description, storage_path ),
             proofs ( id, original_name, status, storage_path, created_at, proof_comments ( id, comment, is_admin, created_at, user_id ) )`)
         .order('created_at', { ascending: false });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (jobsError) return NextResponse.json({ error: jobsError.message }, { status: 500 });
+
+    const userIds = Array.from(new Set(jobData?.map(j => j.user_id) || []));
+    const { data: profileData } = await adminSupabase
+        .from('profiles')
+        .select('id, full_name, email, company, contact_number')
+        .in('id', userIds);
+
+    const profilesMap = new Map(profileData?.map(p => [p.id, p]) || []);
+
+    const jobs = jobData?.map(job => ({
+        ...job,
+        profiles: profilesMap.get(job.user_id) || null
+    }));
+
     return NextResponse.json({ jobs });
 }
+
