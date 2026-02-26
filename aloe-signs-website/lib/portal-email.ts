@@ -13,9 +13,55 @@ export async function sendPortalEmail(opts: { to: string; subject: string; title
   await transporter.sendMail({ from: `"Aloe Signs" <${process.env.SMTP_USER}>`, to: opts.to, subject: opts.subject, text: opts.text, html: wrapHtml(opts.title, opts.body) });
 }
 
-export async function notifyAdminNewJob(opts: { clientName: string; clientEmail: string; fileCount: number }) {
+interface JobFileInfo { displayName: string; originalName: string; description: string; width: number; height: number; unit: string; quantity: number; }
+
+export async function notifyAdminNewJob(opts: { clientName: string; clientEmail: string; company?: string; contactNumber?: string; files: JobFileInfo[] }) {
   const to = process.env.UPLOAD_NOTIFICATION_EMAIL || 'melissa@aloesigns.co.za';
-  await sendPortalEmail({ to, subject: `New Print Job - ${opts.clientName}`, title: 'New Job', body: `<h1 style="margin:0 0 12px 0;font-size:22px;font-weight:700;color:#2d2d2d">New Print Job Submitted</h1><p style="color:#6b7280">Client: <strong>${opts.clientName}</strong> (${opts.clientEmail})</p><p style="color:#6b7280">Files: <strong>${opts.fileCount}</strong></p><div style="text-align:center;margin-top:28px"><a href="https://aloe-signs-website.vercel.app/portal/admin" style="display:inline-block;background:#84cc16;color:#2d2d2d;font-weight:700;padding:14px 32px;text-decoration:none;border-radius:8px">View in Admin Portal</a></div>`, text: `New print job from ${opts.clientName} (${opts.clientEmail}). ${opts.fileCount} file(s).` });
+
+  const thStyle = 'text-align:left;padding:8px 12px;font-size:13px;color:#6b7280;border-bottom:1px solid #e5e7eb';
+  const tdStyle = 'padding:8px 12px;font-size:14px;color:#2d2d2d;border-bottom:1px solid #f3f4f6';
+
+  // Client info rows
+  const clientRows = [
+    opts.company ? `<tr><td style="${tdStyle};font-weight:600;width:120px">Company</td><td style="${tdStyle}">${opts.company}</td></tr>` : '',
+    `<tr><td style="${tdStyle};font-weight:600;width:120px">Name</td><td style="${tdStyle}">${opts.clientName}</td></tr>`,
+    opts.contactNumber ? `<tr><td style="${tdStyle};font-weight:600;width:120px">Contact</td><td style="${tdStyle}">${opts.contactNumber}</td></tr>` : '',
+    `<tr><td style="${tdStyle};font-weight:600;width:120px">Email</td><td style="${tdStyle}">${opts.clientEmail}</td></tr>`,
+  ].filter(Boolean).join('');
+
+  // File rows
+  const fileRows = opts.files.map((f, i) => {
+    const name = f.displayName || f.originalName;
+    const dims = (f.width || f.height) ? `${f.width} × ${f.height} ${f.unit}` : '—';
+    return `<tr>
+      <td style="${tdStyle}">${i + 1}</td>
+      <td style="${tdStyle}"><strong>${name}</strong>${f.displayName && f.originalName !== f.displayName ? `<br/><span style="color:#9ca3af;font-size:12px">${f.originalName}</span>` : ''}</td>
+      <td style="${tdStyle}">${f.description || '—'}</td>
+      <td style="${tdStyle}">${dims}</td>
+      <td style="${tdStyle}">${f.quantity}</td>
+    </tr>`;
+  }).join('');
+
+  const body = `
+    <h1 style="margin:0 0 24px 0;font-size:22px;font-weight:700;color:#2d2d2d">New Job</h1>
+
+    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Client Details</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">${clientRows}</table>
+
+    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Job Specifications</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:28px">
+      <tr><th style="${thStyle}">#</th><th style="${thStyle}">File</th><th style="${thStyle}">Description</th><th style="${thStyle}">Size</th><th style="${thStyle}">Qty</th></tr>
+      ${fileRows}
+    </table>
+
+    <div style="text-align:center;margin-top:28px">
+      <a href="https://aloe-signs-website.vercel.app/portal/admin" style="display:inline-block;background:#84cc16;color:#2d2d2d;font-weight:700;padding:14px 32px;text-decoration:none;border-radius:8px">View Files in Admin Portal</a>
+    </div>`;
+
+  const fileList = opts.files.map((f, i) => `${i + 1}. ${f.displayName || f.originalName}${f.description ? ` - ${f.description}` : ''}`).join('\n');
+  const text = `New Job from ${opts.clientName} (${opts.clientEmail}).\n${opts.company ? `Company: ${opts.company}\n` : ''}${opts.contactNumber ? `Contact: ${opts.contactNumber}\n` : ''}\nFiles:\n${fileList}`;
+
+  await sendPortalEmail({ to, subject: `New Job – ${opts.clientName}`, title: 'New Job', body, text });
 }
 
 export async function notifyClientProofReady(opts: { clientEmail: string; clientName: string; proofName: string }) {

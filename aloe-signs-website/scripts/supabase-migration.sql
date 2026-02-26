@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS public.print_job_files (
   job_id UUID REFERENCES public.print_jobs(id) ON DELETE CASCADE NOT NULL,
   storage_path TEXT NOT NULL,
   original_name TEXT NOT NULL,
+  display_name TEXT,
   description TEXT,
   width NUMERIC,
   height NUMERIC,

@@ -4,8 +4,8 @@ import { createClientSupabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-interface FileEntry { id: string; file: File | null; description: string; width: string; height: string; unit: string; quantity: string; }
-function createEntry(): FileEntry { return { id: Math.random().toString(36).slice(2), file: null, description: '', width: '', height: '', unit: 'mm', quantity: '1' }; }
+interface FileEntry { id: string; file: File | null; name: string; description: string; width: string; height: string; unit: string; quantity: string; }
+function createEntry(): FileEntry { return { id: Math.random().toString(36).slice(2), file: null, name: '', description: '', width: '', height: '', unit: 'mm', quantity: '1' }; }
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -27,14 +27,14 @@ export default function NewJobPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push('/portal/login'); return; }
     try {
-      const uploaded: Array<{ storagePath: string; originalName: string; description: string; width: number; height: number; unit: string; quantity: number }> = [];
+      const uploaded: Array<{ storagePath: string; originalName: string; displayName: string; description: string; width: number; height: number; unit: string; quantity: number }> = [];
       for (let i = 0; i < entries.length; i++) {
         const en = entries[i]; if (!en.file) continue;
         const safeName = en.file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         const path = `${user.id}/${Date.now()}_${safeName}`;
         const { error: err } = await supabase.storage.from('client-uploads').upload(path, en.file, { upsert: false });
         if (err) throw err;
-        uploaded.push({ storagePath: path, originalName: en.file.name, description: en.description, width: parseFloat(en.width) || 0, height: parseFloat(en.height) || 0, unit: en.unit, quantity: parseInt(en.quantity) || 1 });
+        uploaded.push({ storagePath: path, originalName: en.file.name, displayName: en.name.trim(), description: en.description, width: parseFloat(en.width) || 0, height: parseFloat(en.height) || 0, unit: en.unit, quantity: parseInt(en.quantity) || 1 });
         setProgress(Math.round(((i + 1) / entries.length) * 80));
       }
       const res = await fetch('/api/portal/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ files: uploaded }) });
@@ -68,11 +68,12 @@ export default function NewJobPage() {
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>File {idx + 1}</h3>
                 {entries.length > 1 && <button type="button" onClick={() => removeEntry(en.id)} style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '4px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Remove</button>}
               </div>
+              <div style={{ marginBottom: '12px' }}><label style={lbl}>File Name <span style={{ color: '#9ca3af', fontWeight: 400 }}>(give this artwork a name)</span></label><input type="text" value={en.name} onChange={e => updateEntry(en.id, 'name', e.target.value)} style={inp} placeholder="e.g. Front Window Banner" /></div>
               <div onClick={() => fileRefs.current[en.id]?.click()} style={{ border: `2px dashed ${en.file ? '#84cc16' : '#d1d5db'}`, borderRadius: '10px', padding: '20px', textAlign: 'center', cursor: 'pointer', background: en.file ? '#f0fce4' : '#fafafa', marginBottom: '16px' }}>
                 {en.file ? <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>{en.file.name} ({(en.file.size / 1024 / 1024).toFixed(1)} MB)</p> : <p style={{ margin: 0, color: '#6b7280' }}>Click to select file</p>}
                 <input ref={el => { fileRefs.current[en.id] = el; }} type="file" onChange={e => updateEntry(en.id, 'file', e.target.files?.[0] || null)} accept=".pdf,.ai,.eps,.tiff,.tif,.png,.jpg,.jpeg,.svg,.zip,.psd" style={{ display: 'none' }} />
               </div>
-              <div style={{ marginBottom: '12px' }}><label style={lbl}>Description</label><input type="text" value={en.description} onChange={e => updateEntry(en.id, 'description', e.target.value)} style={inp} placeholder="e.g. Main banner" /></div>
+              <div style={{ marginBottom: '12px' }}><label style={lbl}>Description <span style={{ color: '#9ca3af', fontWeight: 400 }}>(any extra notes about this artwork)</span></label><textarea value={en.description} onChange={e => updateEntry(en.id, 'description', e.target.value)} style={{ ...inp, resize: 'vertical', minHeight: '60px' }} placeholder="e.g. Please match PMS 485 red, bleed on all sides, etc." /></div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 100px', gap: '12px' }}>
                 <div><label style={lbl}>Width</label><input type="number" value={en.width} onChange={e => updateEntry(en.id, 'width', e.target.value)} style={inp} min="0" step="any" /></div>
                 <div><label style={lbl}>Height</label><input type="number" value={en.height} onChange={e => updateEntry(en.id, 'height', e.target.value)} style={inp} min="0" step="any" /></div>
