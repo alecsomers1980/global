@@ -94,6 +94,7 @@ export default function AdminPortalPage() {
     const [proofUploading, setProofUploading] = useState<string | null>(null);
     const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
     const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const loadJobs = useCallback(async () => {
         try {
@@ -185,7 +186,19 @@ export default function AdminPortalPage() {
         }
     }
 
-    const filteredJobs = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
+    const filteredByStatus = filter === 'all' ? jobs : jobs.filter(j => j.status === filter);
+    const filteredJobs = filteredByStatus.filter(job => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        const profile = job.profiles || {} as Profile;
+
+        return (
+            (profile.full_name || '').toLowerCase().includes(q) ||
+            (profile.company || '').toLowerCase().includes(q) ||
+            (profile.email || '').toLowerCase().includes(q) ||
+            job.print_job_files?.some(f => (f.display_name || f.original_name).toLowerCase().includes(q))
+        );
+    });
 
     const statCounts: Record<string, number> = {
         all: jobs.length,
@@ -211,27 +224,50 @@ export default function AdminPortalPage() {
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 20px' }}>
                 <h1 style={{ margin: '0 0 24px 0', fontSize: '26px', fontWeight: 700, color: '#2d2d2d' }}>All Print Jobs</h1>
 
-                {/* Status Filter Pills */}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
-                    {['all', ...ALL_STATUSES].map(status => {
-                        const isActive = filter === status;
-                        const sc = status === 'all'
-                            ? { bg: isActive ? '#2d2d2d' : '#f3f4f6', text: isActive ? '#fff' : '#6b7280', border: '#d1d5db' }
-                            : STATUS_COLORS[status] || { bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' };
-                        return (
-                            <button key={status} onClick={() => setFilter(status)}
+                {/* Status Filter and Search Bar */}
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {['all', ...ALL_STATUSES].map(status => {
+                            const isActive = filter === status;
+                            const sc = status === 'all'
+                                ? { bg: isActive ? '#2d2d2d' : '#f3f4f6', text: isActive ? '#fff' : '#6b7280', border: '#d1d5db' }
+                                : STATUS_COLORS[status] || { bg: '#f3f4f6', text: '#6b7280', border: '#d1d5db' };
+                            return (
+                                <button key={status} onClick={() => setFilter(status)}
+                                    style={{
+                                        background: isActive ? sc.bg : '#fff',
+                                        color: isActive ? sc.text : '#6b7280',
+                                        border: `1px solid ${isActive ? (sc as { border?: string }).border || sc.bg : '#d1d5db'}`,
+                                        padding: '8px 18px', borderRadius: '99px', cursor: 'pointer',
+                                        fontSize: '13px', fontWeight: isActive ? 700 : 500,
+                                        transition: 'all 0.2s',
+                                    }}>
+                                    {status === 'all' ? 'All' : status} ({statCounts[status] || 0})
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <div style={{ flex: '1 1 250px', maxWidth: '400px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Search client, company, email, or file..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
                                 style={{
-                                    background: isActive ? sc.bg : '#fff',
-                                    color: isActive ? sc.text : '#6b7280',
-                                    border: `1px solid ${isActive ? (sc as { border?: string }).border || sc.bg : '#d1d5db'}`,
-                                    padding: '8px 18px', borderRadius: '99px', cursor: 'pointer',
-                                    fontSize: '13px', fontWeight: isActive ? 700 : 500,
-                                    transition: 'all 0.2s',
-                                }}>
-                                {status === 'all' ? 'All' : status} ({statCounts[status] || 0})
-                            </button>
-                        );
-                    })}
+                                    width: '100%',
+                                    padding: '10px 16px 10px 36px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #d1d5db',
+                                    fontSize: '14px',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Jobs List */}

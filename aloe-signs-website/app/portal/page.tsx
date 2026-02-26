@@ -27,6 +27,7 @@ export default function PortalDashboard() {
     const [proofComment, setProofComment] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [userName, setUserName] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const loadJobs = useCallback(async () => {
         try { const res = await fetch('/api/portal/jobs'); const data = await res.json(); if (data.jobs) setJobs(data.jobs); } catch (e) { console.error(e); } finally { setLoading(false); }
@@ -101,71 +102,110 @@ export default function PortalDashboard() {
                     </div>
                 )}
 
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 Artwork Uploaded</h2>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', margin: 0 }}>📋 Artwork Uploaded</h2>
+                    <div style={{ flex: '1 1 200px', maxWidth: '300px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Search by file name or description..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 16px 8px 36px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #d1d5db',
+                                    fontSize: '14px',
+                                    outline: 'none',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>Loading…</div>)
                     : jobs.length === 0 ? (
                         <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
-                    ) : jobs.map(job => {
-                        const sc = SC[job.status] || SC['Uploaded'];
-                        return (
-                            <div key={job.id} style={{ ...card, padding: '20px 24px' }}>
-                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+                    ) : (() => {
+                        const filteredJobs = jobs.filter(job => {
+                            if (!searchQuery) return true;
+                            const q = searchQuery.toLowerCase();
+                            return job.print_job_files?.some(f =>
+                                (f.display_name || '').toLowerCase().includes(q) ||
+                                (f.original_name || '').toLowerCase().includes(q) ||
+                                (f.description || '').toLowerCase().includes(q)
+                            );
+                        });
 
-                                    {/* Left Side: Status & Date */}
-                                    <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <span style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`, padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, display: 'inline-block', textAlign: 'center' }}>
-                                            {job.status}
-                                        </span>
-                                        <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 500 }}>
-                                            {new Date(job.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                        </span>
-                                    </div>
+                        if (filteredJobs.length === 0) {
+                            return <div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>No results match your search.</div>;
+                        }
 
-                                    {/* Right Side: Artwork List */}
-                                    <div style={{ flex: '1 1 0%', minWidth: '200px' }}>
-                                        {job.print_job_files?.map((f, idx) => (
-                                            <div key={f.id} style={{
-                                                padding: '12px',
-                                                background: '#f9fafb',
-                                                borderRadius: '8px',
-                                                border: '1px solid #f3f4f6',
-                                                marginBottom: idx !== job.print_job_files.length - 1 ? '8px' : '0'
-                                            }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                                    <span style={{ fontSize: '16px' }}>🎨</span>
-                                                    <span style={{ fontWeight: 700, color: '#374151', fontSize: '14px' }}>{f.display_name || f.original_name}</span>
-                                                </div>
-                                                {f.description && (
-                                                    <p style={{ margin: '0 0 0 24px', color: '#6b7280', fontSize: '13px', lineHeight: '1.4' }}>
-                                                        {f.description}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ))}
+                        return filteredJobs.map(job => {
+                            const sc = SC[job.status] || SC['Uploaded'];
+                            return (
+                                <div key={job.id} style={{ ...card, padding: '20px 24px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
 
-                                        {/* Show simple view for pending proofs if any exist */}
-                                        {job.proofs?.map(p => {
-                                            const ps = PS[p.status] || PS['Pending'];
-                                            return (
-                                                <div key={p.id} style={{ marginTop: '12px', padding: '12px', background: '#f0fce4', borderRadius: '8px', border: '1px solid #d9f99d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        <span style={{ fontSize: '16px' }}>👁️</span>
-                                                        <span style={{ fontWeight: 600, color: '#3f6212', fontSize: '13px' }}>Proof: {p.original_name}</span>
-                                                        <span style={{ background: ps.bg, color: ps.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>{p.status}</span>
+                                        {/* Left Side: Status & Date */}
+                                        <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <span style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`, padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, display: 'inline-block', textAlign: 'center' }}>
+                                                {job.status}
+                                            </span>
+                                            <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 500 }}>
+                                                {new Date(job.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                            </span>
+                                        </div>
+
+                                        {/* Right Side: Artwork List */}
+                                        <div style={{ flex: '1 1 0%', minWidth: '200px' }}>
+                                            {job.print_job_files?.map((f, idx) => (
+                                                <div key={f.id} style={{
+                                                    padding: '12px',
+                                                    background: '#f9fafb',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid #f3f4f6',
+                                                    marginBottom: idx !== job.print_job_files.length - 1 ? '8px' : '0'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                        <span style={{ fontSize: '16px' }}>🎨</span>
+                                                        <span style={{ fontWeight: 700, color: '#374151', fontSize: '14px' }}>{f.display_name || f.original_name}</span>
                                                     </div>
-                                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                                        <button onClick={() => openLightbox(p.storage_path)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>View</button>
-                                                        <button onClick={() => downloadFile(p.storage_path, p.original_name)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Download</button>
-                                                    </div>
+                                                    {f.description && (
+                                                        <p style={{ margin: '0 0 0 24px', color: '#6b7280', fontSize: '13px', lineHeight: '1.4' }}>
+                                                            {f.description}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+                                            ))}
 
+                                            {/* Show simple view for pending proofs if any exist */}
+                                            {job.proofs?.map(p => {
+                                                const ps = PS[p.status] || PS['Pending'];
+                                                return (
+                                                    <div key={p.id} style={{ marginTop: '12px', padding: '12px', background: '#f0fce4', borderRadius: '8px', border: '1px solid #d9f99d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <span style={{ fontSize: '16px' }}>👁️</span>
+                                                            <span style={{ fontWeight: 600, color: '#3f6212', fontSize: '13px' }}>Proof: {p.original_name}</span>
+                                                            <span style={{ background: ps.bg, color: ps.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>{p.status}</span>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                            <button onClick={() => openLightbox(p.storage_path)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>View</button>
+                                                            <button onClick={() => downloadFile(p.storage_path, p.original_name)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Download</button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })
+                    })()}
             </div>
             {lightboxUrl && (
                 <div onClick={() => setLightboxUrl(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'pointer', padding: '20px' }}>
