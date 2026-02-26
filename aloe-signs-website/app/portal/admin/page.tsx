@@ -125,6 +125,17 @@ export default function AdminPortalPage() {
         return data?.signedUrl || '';
     }
 
+    async function downloadAdminFile(storagePath: string, originalName: string) {
+        const url = await getSignedUrl(storagePath);
+        if (url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = originalName;
+            a.target = '_blank';
+            a.click();
+        }
+    }
+
     async function changeStatus(jobId: string, newStatus: string) {
         setStatusUpdating(jobId);
         try {
@@ -263,55 +274,67 @@ export default function AdminPortalPage() {
                                 {/* Expanded Details */}
                                 {isExpanded && (
                                     <div style={{ padding: '24px', background: '#f9fafb', borderTop: '1px solid #eee' }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                                            <div>
-                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Fulfillment Details</h4>
-                                                <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
-                                                    <tbody>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Material</td><td>{job.material || '—'}</td></tr>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Delivery Type</td><td style={{ textTransform: 'capitalize' }}>{job.delivery_type}</td></tr>
-                                                        {job.delivery_address && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Address</td><td>{job.delivery_address}</td></tr>}
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Ground Clearance</td><td>{job.ground_clearance || '—'}</td></tr>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Safety File?</td><td>{job.safety_file_required ? '✅ YES' : '❌ NO'}</td></tr>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Target Date</td><td>{job.completion_target || '—'}</td></tr>
-                                                        {job.storage_required && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Storage</td><td>YES ({job.storage_time_estimate})</td></tr>}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div>
-                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Contact Information</h4>
-                                                <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
-                                                    <tbody>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Site Contact</td><td>{job.site_contact_person || '—'} {job.site_contact_number ? `(${job.site_contact_number})` : ''}</td></tr>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Access Contact</td><td>{job.access_contact_person || '—'} {job.access_contact_number ? `(${job.access_contact_number})` : ''}</td></tr>
-                                                        <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Notes (H2O/Elec)</td><td>{job.water_electricity_notes || '—'}</td></tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                        <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '2px solid #e5e7eb', paddingBottom: '8px' }}>Client Details</h4>
+                                        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px', marginBottom: '24px', display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
+                                            <div><p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6b7280', textTransform: 'uppercase' }}>Name</p><p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1f2937' }}>{profile.full_name || 'Unknown'}</p></div>
+                                            <div><p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6b7280', textTransform: 'uppercase' }}>Company</p><p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1f2937' }}>{profile.company || '—'}</p></div>
+                                            <div><p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6b7280', textTransform: 'uppercase' }}>Email</p><a href={`mailto:${profile.email}`} style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#84cc16', textDecoration: 'none' }}>{profile.email}</a></div>
+                                            <div><p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#6b7280', textTransform: 'uppercase' }}>Contact Number</p><p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1f2937' }}>{profile.contact_number || '—'}</p></div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                                            <div>
-                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Setup Allowance</h4>
-                                                <div style={{ fontSize: '13px', color: '#4b5563' }}>
-                                                    {!job.setup_allowance || job.setup_allowance.length === 0 ? 'None scheduled' : job.setup_allowance.map((a, i) => (
-                                                        <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
-                                                            <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
-                                                        </div>
-                                                    ))}
+                                        {(!job.material && !job.delivery_type && (!job.setup_allowance || job.setup_allowance.length === 0)) ? null : (
+                                            <>
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px', marginBottom: '24px' }}>
+                                                    <div>
+                                                        <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Fulfillment Details</h4>
+                                                        <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
+                                                            <tbody>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Material</td><td>{job.material || '—'}</td></tr>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Delivery Type</td><td style={{ textTransform: 'capitalize' }}>{job.delivery_type}</td></tr>
+                                                                {job.delivery_address && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Address</td><td>{job.delivery_address}</td></tr>}
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Ground Clearance</td><td>{job.ground_clearance || '—'}</td></tr>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Safety File?</td><td>{job.safety_file_required ? '✅ YES' : '❌ NO'}</td></tr>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Target Date</td><td>{job.completion_target || '—'}</td></tr>
+                                                                {job.storage_required && <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Storage</td><td>YES ({job.storage_time_estimate})</td></tr>}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div>
+                                                        <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Contact Information</h4>
+                                                        <table style={{ width: '100%', fontSize: '13px', color: '#4b5563' }}>
+                                                            <tbody>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600, width: '120px' }}>Site Contact</td><td>{job.site_contact_person || '—'} {job.site_contact_number ? `(${job.site_contact_number})` : ''}</td></tr>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Access Contact</td><td>{job.access_contact_person || '—'} {job.access_contact_number ? `(${job.access_contact_number})` : ''}</td></tr>
+                                                                <tr><td style={{ padding: '4px 0', fontWeight: 600 }}>Notes (H2O/Elec)</td><td>{job.water_electricity_notes || '—'}</td></tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Strike Allowance</h4>
-                                                <div style={{ fontSize: '13px', color: '#4b5563' }}>
-                                                    {!job.strike_allowance || job.strike_allowance.length === 0 ? 'None scheduled' : job.strike_allowance.map((a, i) => (
-                                                        <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
-                                                            <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
+
+                                                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px', marginBottom: '24px' }}>
+                                                    <div>
+                                                        <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Setup Allowance</h4>
+                                                        <div style={{ fontSize: '13px', color: '#4b5563' }}>
+                                                            {!job.setup_allowance || job.setup_allowance.length === 0 ? 'None scheduled' : job.setup_allowance.map((a, i) => (
+                                                                <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
+                                                                    <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
+                                                                </div>
+                                                            ))}
                                                         </div>
-                                                    ))}
+                                                    </div>
+                                                    <div>
+                                                        <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Strike Allowance</h4>
+                                                        <div style={{ fontSize: '13px', color: '#4b5563' }}>
+                                                            {!job.strike_allowance || job.strike_allowance.length === 0 ? 'None scheduled' : job.strike_allowance.map((a, i) => (
+                                                                <div key={i} style={{ padding: '4px 8px', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '4px', marginBottom: '4px' }}>
+                                                                    <strong>{a.date}</strong>: {a.startTime} – {a.endTime}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </>
+                                        )}
 
                                         {/* Status Change */}
                                         <div style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -328,18 +351,30 @@ export default function AdminPortalPage() {
                                         </div>
 
                                         {/* Files */}
-                                        <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Files ({job.print_job_files?.length || 0})</h4>
-                                        {job.print_job_files?.map(f => (
-                                            <div key={f.id} style={{ fontSize: '13px', color: '#4b5563', padding: '6px 0', borderBottom: '1px solid #f3f4f6', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                                                <span>📄 {f.display_name || f.original_name}</span>
-                                                {f.display_name && <span style={{ color: '#9ca3af', fontSize: '12px' }}>({f.original_name})</span>}
-                                                {f.description && <span style={{ color: '#9ca3af' }}>— {f.description}</span>}
-                                                <button onClick={async () => {
-                                                    const url = await getSignedUrl(f.storage_path);
-                                                    if (url) window.open(url);
-                                                }} style={{ background: 'none', border: 'none', color: '#84cc16', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Download</button>
-                                            </div>
-                                        ))}
+                                        <h4 style={{ margin: '24px 0 16px 0', fontSize: '14px', fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '2px solid #e5e7eb', paddingBottom: '8px' }}>Uploaded Artwork ({job.print_job_files?.length || 0})</h4>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                                            {job.print_job_files?.map(f => (
+                                                <div key={f.id} style={{ background: '#fff', border: '1px solid #d1d5db', borderRadius: '10px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                                                    <div>
+                                                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                                                            <span style={{ fontSize: '20px' }}>🎨</span>
+                                                            <div>
+                                                                <h5 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 700, color: '#1f2937', wordBreak: 'break-word' }}>{f.display_name || f.original_name}</h5>
+                                                                {f.display_name && <p style={{ margin: 0, fontSize: '12px', color: '#6b7280', wordBreak: 'break-all' }}>({f.original_name})</p>}
+                                                            </div>
+                                                        </div>
+                                                        {f.description && (
+                                                            <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: '1.5', background: '#f9fafb', padding: '10px', borderRadius: '6px' }}>
+                                                                {f.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <button onClick={() => downloadAdminFile(f.storage_path, f.original_name)} style={{ background: '#84cc16', color: '#fff', fontWeight: 700, padding: '10px', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 2px 4px rgba(132, 204, 22, 0.2)', transition: 'background 0.2s', marginTop: 'auto' }} onMouseEnter={e => e.currentTarget.style.background = '#65a30d'} onMouseLeave={e => e.currentTarget.style.background = '#84cc16'}>
+                                                        ⬇️ Download File
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
 
                                         {/* Proofs */}
                                         <h4 style={{ margin: '20px 0 8px 0', fontSize: '13px', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '1px' }}>Proofs ({job.proofs?.length || 0})</h4>
