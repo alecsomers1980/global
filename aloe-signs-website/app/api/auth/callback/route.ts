@@ -1,4 +1,4 @@
-import { createServerSupabase } from '@/lib/supabase';
+import { createServerSupabase } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Supabase calls this URL after a user clicks the email confirmation link.
