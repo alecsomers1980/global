@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase-server';
-import { notifyAdminNewJob } from '@/lib/portal-email';
+import { notifyAdminNewJob, notifyAdminArtworkUpload } from '@/lib/portal-email';
 
 export async function GET() {
     const supabase = await createServerSupabase();
@@ -70,33 +70,48 @@ export async function POST(req: Request) {
     // Fetch client profile for company & contact info
     const { data: profile } = await supabase.from('profiles').select('company, contact_number').eq('id', user.id).single();
 
+    // Check if this is a simplified artwork upload (missing job spec fields)
+    const isSimplifiedUpload = !material && !deliveryType && !deliveryAddress && !setupAllowance && !strikeAllowance;
+
     try {
-        await notifyAdminNewJob({
-            clientName: user.user_metadata?.full_name || user.email || 'Unknown',
-            clientEmail: user.email || '',
-            company: profile?.company || undefined,
-            contactNumber: profile?.contact_number || undefined,
-            material,
-            deliveryType,
-            deliveryAddress,
-            groundClearance,
-            waterElectricityNotes,
-            safetyFileRequired,
-            siteContactPerson,
-            siteContactNumber,
-            accessContactPerson,
-            accessContactNumber,
-            completionTarget,
-            setupAllowance,
-            strikeAllowance,
-            storageRequired,
-            storageTimeEstimate,
-            files: files.map((f: any) => ({
-                displayName: f.displayName,
-                originalName: f.originalName,
-                description: f.description
-            })),
-        });
+        if (isSimplifiedUpload) {
+            await notifyAdminArtworkUpload({
+                clientName: user.user_metadata?.full_name || user.email || 'Unknown',
+                clientEmail: user.email || '',
+                contactNumber: profile?.contact_number || undefined,
+                files: files.map((f: any) => ({
+                    displayName: f.displayName,
+                    description: f.description
+                })),
+            });
+        } else {
+            await notifyAdminNewJob({
+                clientName: user.user_metadata?.full_name || user.email || 'Unknown',
+                clientEmail: user.email || '',
+                company: profile?.company || undefined,
+                contactNumber: profile?.contact_number || undefined,
+                material,
+                deliveryType,
+                deliveryAddress,
+                groundClearance,
+                waterElectricityNotes,
+                safetyFileRequired,
+                siteContactPerson,
+                siteContactNumber,
+                accessContactPerson,
+                accessContactNumber,
+                completionTarget,
+                setupAllowance,
+                strikeAllowance,
+                storageRequired,
+                storageTimeEstimate,
+                files: files.map((f: any) => ({
+                    displayName: f.displayName,
+                    originalName: f.originalName,
+                    description: f.description
+                })),
+            });
+        }
     } catch (e) { console.error('Failed to notify admin:', e); }
 
     return NextResponse.json({ jobId: job.id });

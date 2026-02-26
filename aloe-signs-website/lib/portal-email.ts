@@ -129,3 +129,52 @@ export async function notifyAdminProofResponse(opts: { clientName: string; clien
   const emoji = opts.action === 'Approved' ? '✅' : '✏️';
   await sendPortalEmail({ to, subject: `${emoji} Proof ${opts.action} - ${opts.proofName}`, title: `Proof ${opts.action}`, body: `<h1 style="margin:0 0 12px 0;font-size:22px;font-weight:700;color:#2d2d2d">${emoji} Proof ${opts.action}</h1><p style="color:#6b7280">Client: <strong>${opts.clientName}</strong></p><p style="color:#6b7280">Proof: <strong>${opts.proofName}</strong></p>${opts.comment ? `<div style="background:#f3f4f6;border-radius:8px;padding:16px;margin:16px 0"><p style="margin:0;font-size:14px;color:#374151"><strong>Comment:</strong> ${opts.comment}</p></div>` : ''}<div style="text-align:center;margin-top:28px"><a href="https://aloe-signs-website.vercel.app/portal/admin" style="display:inline-block;background:#84cc16;color:#2d2d2d;font-weight:700;padding:14px 32px;text-decoration:none;border-radius:8px">View in Admin</a></div>`, text: `Proof "${opts.proofName}" was ${opts.action} by ${opts.clientName}.${opts.comment ? ` Comment: ${opts.comment}` : ''}` });
 }
+export async function notifyAdminArtworkUpload(opts: {
+  clientName: string;
+  clientEmail: string;
+  contactNumber?: string;
+  files: Array<{ displayName: string; description: string }>;
+}) {
+  const adminTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_PORT === '465',
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+  });
+
+  const tdStyle = 'padding:12px;border-bottom:1px solid #eee;font-size:14px;color:#4b5563';
+
+  const clientRows = [
+    `<tr><td style="${tdStyle};font-weight:600;width:120px">From Name</td><td style="${tdStyle}">${opts.clientName}</td></tr>`,
+    opts.contactNumber && `<tr><td style="${tdStyle};font-weight:600;width:120px">Number</td><td style="${tdStyle}">${opts.contactNumber}</td></tr>`,
+    `<tr><td style="${tdStyle};font-weight:600;width:120px">Email</td><td style="${tdStyle}">${opts.clientEmail}</td></tr>`,
+  ].filter(Boolean).join('');
+
+  const artworkCards = opts.files.map((f, i) => `
+    <div style="background:#f9fafb;border-radius:8px;padding:14px 16px;margin-bottom:8px;border:1px solid #e5e7eb">
+      <p style="margin:0;font-size:14px;font-weight:700;color:#2d2d2d">Artwork Name: ${f.displayName}</p>
+      ${f.description ? `<p style="margin:6px 0 0 0;font-size:13px;color:#6b7280">${f.description}</p>` : ''}
+    </div>
+  `).join('');
+
+  const body = `
+    <h1 style="margin:0 0 24px 0;font-size:22px;font-weight:700;color:#2d2d2d">New Artwork Uploaded</h1>
+    
+    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Client Details</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">${clientRows}</table>
+
+    <h3 style="margin:0 0 8px 0;font-size:14px;font-weight:700;color:#84cc16;text-transform:uppercase;letter-spacing:0.5px">Artwork Details</h3>
+    ${artworkCards}
+
+    <div style="text-align:center;margin-top:28px">
+      <a href="https://aloe-signs-website.vercel.app/portal/admin" style="display:inline-block;background:#84cc16;color:#2d2d2d;font-weight:700;padding:14px 32px;text-decoration:none;border-radius:8px">View in Admin Portal</a>
+    </div>`;
+
+  await adminTransporter.sendMail({
+    from: `"Aloe Signs Portal" <${process.env.SMTP_USER}>`,
+    to: 'team@aloesigns.co.za',
+    subject: `New Artwork Uploaded: ${opts.clientName}`,
+    text: `New artwork uploaded by ${opts.clientName}. Details: ${opts.files.map(f => f.displayName).join(', ')}. View in admin: https://aloe-signs-website.vercel.app/portal/admin`,
+    html: wrapHtml('New Artwork Uploaded', body),
+  });
+}

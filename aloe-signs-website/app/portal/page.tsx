@@ -67,7 +67,7 @@ export default function PortalDashboard() {
                         <h1 style={{ margin: '0 0 4px 0', fontSize: '26px', fontWeight: 700, color: '#2d2d2d' }}>Welcome{userName ? `, ${userName.split(' ')[0]}` : ''} 👋</h1>
                         <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Manage your print jobs and review proofs</p>
                     </div>
-                    <Link href="/portal/jobs/new" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 2px 8px rgba(132,204,22,0.3)' }}>＋ New Print Job</Link>
+                    <Link href="/portal/upload/artwork" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 2px 8px rgba(132,204,22,0.3)' }}>＋ Upload Artwork</Link>
                 </div>
 
                 {proofJobs.length > 0 && (
@@ -101,10 +101,10 @@ export default function PortalDashboard() {
                     </div>
                 )}
 
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 Current Jobs</h2>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px' }}>📋 Artwork Uploaded</h2>
                 {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>Loading…</div>)
                     : jobs.length === 0 ? (
-                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No jobs yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Create your first print job.</p><Link href="/portal/jobs/new" style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ New Print Job</Link></div></div>
+                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
                     ) : jobs.map(job => {
                         const sc = SC[job.status] || SC['Uploaded'];
                         return (
