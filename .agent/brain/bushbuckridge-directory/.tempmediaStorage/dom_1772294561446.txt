@@ -1,0 +1,45 @@
+<current_dom_explanation>
+This is a temporary snapshot of the current page's DOM structure. The DOM will change if you navigate to or interact with another page. Use a tool like browser_get_dom to capture and preserve the DOM in your trajectory if needed for later reference.
+</current_dom_explanation>
+<current_dom>
+[0] (186,35)<a class='flex items-center space-x-2' href='/' />
+	[1] (129,35)<span >DBIB />
+	[2] (200,35)<span >Doing Business in Bushbuckridge />
+[3] (296,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/'>Home / Hub />
+[4] (352,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/find-a-service'>Find a Service />
+[5] (418,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/directory'>Business Directory />
+[6] (476,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/spotlight'>Spotlight />
+[7] (514,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/events'>Events />
+[8] (561,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/opportunities'>Opportunities />
+[9] (604,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/jobs'>Jobs />
+[10] (852,35)<a class='items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 hidden sm:inline-flex rounded-full' href='/buy-your-spot'>Buy Your Spot />
+Featured Businesses
+View all →
+[ Business Cover ]
+Bushbuckridge Builders
+4.8
+Thulamahashe
+Construction
+[11] (177,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full flex-1 bg-green-600 hover:bg-green-700'>WhatsApp />
+[12] (292,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex-1'>View Profile />
+[ Business Cover ]
+Savannah Tech Solutions
+5
+Acornhoek
+IT Services
+[13] (442,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full flex-1 bg-green-600 hover:bg-green-700'>WhatsApp />
+[14] (557,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex-1'>View Profile />
+[ Business Cover ]
+Local Flavors Catering
+4.9
+Dwarsloop
+Food & Dining
+[15] (707,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive text-primary-foreground h-9 px-4 py-2 has-[>svg]:px-3 w-full flex-1 bg-green-600 hover:bg-green-700'>WhatsApp />
+[16] (823,470)<button class='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 flex-1'>View Profile />
+The Annual Business Journal
+Get comprehensive insights, contact lists, and market analysis for the Bushbuckridge region in our latest PDF edition.
+[17] (189,855)<a class='inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 rounded-md px-6 has-[>svg]:px-4 font-semibold' href='/download-journal'>Download 2026 Edition />
+BUSHBUCKRIDGE
+JOURNAL
+
+</current_dom>

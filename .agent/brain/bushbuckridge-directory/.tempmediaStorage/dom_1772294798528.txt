@@ -1,0 +1,42 @@
+<current_dom_explanation>
+This is a temporary snapshot of the current page's DOM structure. The DOM will change if you navigate to or interact with another page. Use a tool like browser_get_dom to capture and preserve the DOM in your trajectory if needed for later reference.
+</current_dom_explanation>
+<current_dom>
+[0] (186,35)<a class='flex items-center space-x-2' href='/' />
+	[1] (129,35)<span >DBIB />
+	[2] (200,35)<span >Doing Business in Bushbuckridge />
+[3] (296,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/'>Home / Hub />
+[4] (352,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/find-a-service'>Find a Service />
+[5] (418,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/directory'>Business Directory />
+[6] (476,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/spotlight'>Spotlight />
+[7] (514,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/events'>Events />
+[8] (561,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/opportunities'>Opportunities />
+[9] (604,35)<a class='flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground' href='/jobs'>Jobs />
+[10] (852,35)<a class='items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 hidden sm:inline-flex rounded-full' href='/buy-your-spot'>Buy Your Spot />
+Enquiry Sent!
+Thank you for reaching out. We have received your message and our team will get back to you as soon as possible.
+[11] (461,460)<a class='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 gap-2' href='/find-a-service'>Find a Service />
+[12] (539,460)<a class='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3 gap-2' href='/'>Back to Home />
+Doing Business in Bushbuckridge
+The premier business directory and investment journal connecting local enterprises and empowering the local economy.
+Explore
+[13] (342,718)<a class='text-sm text-muted-foreground hover:text-foreground' href='/directory'>Business Directory />
+[14] (335,754)<a class='text-sm text-muted-foreground hover:text-foreground' href='/find-a-service'>Find a Service />
+[15] (365,789)<a class='text-sm text-muted-foreground hover:text-foreground' href='/opportunities'>Opportunities (Tenders/Funding) />
+[16] (329,824)<a class='text-sm text-muted-foreground hover:text-foreground' href='/jobs'>Local Jobs />
+Actions
+[17] (531,718)<a class='text-sm text-muted-foreground hover:text-foreground' href='/buy-your-spot'>Buy Your Spot />
+[18] (523,754)<a class='text-sm text-muted-foreground hover:text-foreground' href='/enquiries'>Enquiries />
+[19] (598,786)<a class='text-sm text-muted-foreground hover:text-foreground font-medium flex items-center' href='/download-journal'>Download the Annual Journal />
+Get in touch
+Email: info@dbib.co.za
+Phone: +27 12 345 6789
+Follow us on social media
+©
+2026
+Bushbuckridge Business Journal. All rights reserved.
+[20] (759,954)<a class='hover:text-foreground' href='/privacy'>Privacy Policy />
+[21] (815,954)<a class='hover:text-foreground' href='/terms'>Terms of Service />
+[22] (866,954)<a class='hover:text-foreground' href='/admin'>Staff Login />
+
+</current_dom>
