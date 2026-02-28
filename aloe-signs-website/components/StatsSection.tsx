@@ -1,22 +1,27 @@
 export default function StatsSection() {
     const stats = [
-        { value: '25+', label: 'Years in Business' },
-        { value: '500+', label: 'Projects Completed' },
-        { value: '180+', label: 'Vehicles Wrapped' },
-        { value: '4.9★', label: 'Google Rating' },
+        { value: '25+', label: 'YEARS IN BUSINESS' },
+        { value: '500+', label: 'PROJECTS COMPLETED' },
+        { value: '180+', label: 'VEHICLES WRAPPED' },
+        { value: '4.9★', label: 'GOOGLE RATING' },
     ];
 
     return (
-        <section className="py-16 md:py-20 bg-charcoal text-white">
+        <section className="py-24 bg-[#0B0E0D] border-y border-white/5">
             <div className="max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
                     {stats.map((stat, index) => (
-                        <div key={index} className="text-center">
-                            <div className="text-4xl md:text-5xl font-bold text-aloe-green mb-2">
-                                {stat.value}
-                            </div>
-                            <div className="text-light-grey">
-                                {stat.label}
+                        <div key={index} className="relative group">
+                            {index !== 0 && (
+                                <div className="hidden lg:block absolute left-[-24px] top-1/2 -translate-y-1/2 w-px h-12 bg-white/10" />
+                            )}
+                            <div className="text-center">
+                                <div className="text-5xl md:text-6xl font-black text-vibrant-emerald mb-3 tracking-tighter group-hover:scale-110 transition-transform duration-500">
+                                    {stat.value}
+                                </div>
+                                <div className="text-white/40 text-[10px] md:text-xs font-black tracking-[0.2em] uppercase">
+                                    {stat.label}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -25,3 +30,4 @@ export default function StatsSection() {
         </section>
     );
 }
+

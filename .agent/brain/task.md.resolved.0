@@ -1,0 +1,18 @@
+# Task: Aloe Signs Cinematic UI Redesign
+
+- [ ] Phase 1: Research & Planning [/]
+    - [x] Review Cinematic UI principles from previous project
+    - [/] Analyze current Aloe Signs website structure
+    - [ ] Create [DESIGN.md](file:///c:/Users/foota/.gemini/antigravity/scratch/global/DESIGN.md) for Aloe Signs (if missing)
+    - [ ] Create [implementation_plan.md](file:///C:/Users/foota/.gemini/antigravity/brain/fc7af153-b4a8-43a5-a13c-e6f7590564be/implementation_plan.md)
+- [ ] Phase 2: Global Styling [/]
+    - [ ] Update [globals.css](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/app/globals.css) with cinematic tokens
+    - [ ] Update [layout.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/app/layout.tsx) for fonts (Outfit)
+- [ ] Phase 3: Homepage Redesign [/]
+    - [ ] Implement Cinematic Hero section
+    - [ ] Redesign Navigation (Glassmorphism)
+    - [ ] Redesign Footer (Premium Dark Theme)
+    - [ ] Update Service cards with cinematic effects
+- [ ] Phase 4: Verification [/]
+    - [ ] Run `npm run lint`
+    - [ ] Manual visual verification

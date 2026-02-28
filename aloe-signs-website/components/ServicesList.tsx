@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const servicesData = [
     {
         id: 'signage',
         title: 'SIGNAGE & BILLBOARDS',
-        description: 'High-impact outdoor branding that stops traffic.',
+        description: 'High-impact outdoor branding that stops traffic and demands attention across South Africa.',
         image: '/images/portfolio/billboards-main.jpg',
         link: '/services/building-signage',
         alt: 'Billboard signage for retail brand in South Africa'
@@ -14,7 +15,7 @@ const servicesData = [
     {
         id: 'printing',
         title: 'LARGE FORMAT PRINTING',
-        description: 'Massive banners, posters & digital prints — crystal clear at any scale.',
+        description: 'Massive banners, posters & digital prints — crystal clear at any scale, built for durability.',
         image: '/images/portfolio/large-format-print-main.jpg',
         link: '/services/large-format-print',
         alt: 'Large format banner printing for commercial use'
@@ -22,7 +23,7 @@ const servicesData = [
     {
         id: 'branding',
         title: 'VEHICLE BRANDING',
-        description: 'Turn your fleet into moving billboards that demand attention.',
+        description: 'Turn your fleet into moving billboards that demand attention and drive brand awareness.',
         image: '/images/portfolio/vehicle-rapping-main.jpg',
         link: '/services/vehicle-branding',
         alt: 'Complete commercial vehicle branding wrap'
@@ -31,71 +32,67 @@ const servicesData = [
 
 export default function ServicesList() {
     return (
-        <section className="py-32 bg-charcoal text-white relative">
-            <div className="max-w-[1400px] mx-auto px-6">
+        <section className="py-40 bg-[#0B0E0D] text-white relative flex flex-col items-center">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-vibrant-emerald/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-vibrant-emerald/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-                {/* Intro */}
-                <div className="mb-24 md:w-2/3">
-                    <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-4">
-                        <span className="w-12 h-1 bg-aloe-green block"></span>
-                        Our Core Capabilities
+            <div className="max-w-7xl mx-auto px-6 w-full">
+                {/* Intro Section */}
+                <div className="mb-32 max-w-4xl">
+                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+                        <span className="w-1.5 h-1.5 rounded-full bg-vibrant-emerald"></span>
+                        <span className="text-[10px] font-black tracking-[0.3em] text-white/60 uppercase">
+                            CORE CAPABILITIES
+                        </span>
+                    </div>
+                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-10">
+                        WE BUILD BRANDS THAT<br />
+                        <span className="text-vibrant-emerald">COMMAND ATTENTION.</span>
                     </h2>
-                    <p className="text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
-                        We build brands that work <span className="text-aloe-green">as hard as you do.</span>
+                    <p className="text-xl md:text-2xl font-medium text-white/50 max-w-2xl leading-relaxed">
+                        Precision engineering meets artistic vision. We deliver high-impact branding solutions that transform your business visibility.
                     </p>
                 </div>
 
-                {/* Vertical Service List */}
-                <div className="flex flex-col gap-32">
+                {/* Service Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {servicesData.map((service, index) => (
-                        <div
+                        <Link
                             key={service.id}
-                            className={`flex flex-col ${index % 2 !== 0 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-12 lg:gap-24 group`}
+                            href={service.link}
+                            className="group relative block rounded-[2.5rem] overflow-hidden glass-card hover:border-vibrant-emerald/40 transition-all duration-500 hover:-translate-y-4 shadow-2xl"
                         >
-                            {/* Image Side */}
-                            <div className="w-full md:w-1/2 relative">
-                                <Link href={service.link} className="block relative aspect-[4/3] overflow-hidden">
-                                    <div className="absolute inset-0 bg-dark-grey transition-transform duration-700 group-hover:scale-105">
-                                        {/* Simulated Image */}
-                                        <div
-                                            className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500"
-                                            style={{ backgroundImage: `url(${service.image})` }}
-                                            title={service.alt}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent" />
-                                    </div>
-
-                                    {/* Decorative accent */}
-                                    {index % 2 === 0 ? (
-                                        <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-aloe-green -z-10 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform" />
-                                    ) : (
-                                        <div className="absolute -top-6 -left-6 w-32 h-32 bg-aloe-green -z-10 group-hover:-translate-x-2 group-hover:-translate-y-2 transition-transform" />
-                                    )}
-                                </Link>
+                            {/* Image Background */}
+                            <div className="absolute inset-0 z-0">
+                                <div
+                                    className="absolute inset-0 bg-cover bg-center grayscale opacity-40 group-hover:grayscale-0 group-hover:scale-110 group-hover:opacity-60 transition-all duration-700"
+                                    style={{ backgroundImage: `url(${service.image})` }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E0D] via-[#0B0E0D]/60 to-transparent z-10" />
                             </div>
 
-                            {/* Content Side */}
-                            <div className="w-full md:w-1/2 space-y-6">
-                                <h3 className="text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter text-white">
-                                    {service.title}
-                                </h3>
-                                <p className="text-2xl text-white/80 font-medium">
-                                    {service.description}
-                                </p>
-                                <div className="pt-8">
-                                    <Link
-                                        href={service.link}
-                                        className="inline-flex items-center gap-4 text-aloe-green font-bold text-xl uppercase tracking-widest hover:text-white transition-colors"
-                                    >
-                                        <span className="w-12 h-1 bg-aloe-green block transition-all group-hover:w-24 group-hover:bg-white"></span>
-                                        Explore Service
-                                    </Link>
+                            {/* Content */}
+                            <div className="relative z-20 p-10 h-[500px] flex flex-col justify-end">
+                                <div className="mb-4">
+                                    <div className="w-12 h-1 bg-vibrant-emerald mb-6 transition-all duration-500 group-hover:w-24" />
+                                    <h3 className="text-3xl font-black tracking-tighter mb-4">
+                                        {service.title}
+                                    </h3>
+                                    <p className="text-white/60 font-medium text-sm leading-relaxed mb-6 group-hover:text-white/90 transition-colors">
+                                        {service.description}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3 text-xs font-black tracking-widest text-vibrant-emerald group-hover:gap-5 transition-all">
+                                    EXPLORE SERVICE
+                                    <span className="text-xl">→</span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>
         </section>
     );
 }
+

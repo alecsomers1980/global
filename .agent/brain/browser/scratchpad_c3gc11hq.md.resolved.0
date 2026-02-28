@@ -1,0 +1,15 @@
+# Aloe Signs Cinematic UI Verification
+
+## Task Checklist
+- [ ] Open `http://localhost:3001`
+- [ ] Verify floating header
+- [ ] Verify cinematic hero section with background image
+- [ ] Verify Services section
+- [ ] Verify Image Grid section
+- [ ] Capture full-page screenshot
+- [ ] Summarize findings
+
+## Notes
+- Port: 3001
+- Target: Cinematic look and feel
+- Key components to check: Header, Hero, Services, Image Grid.

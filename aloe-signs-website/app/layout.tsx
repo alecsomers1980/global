@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Footer from "@/components/Footer";
 import CookieConsent from "@/components/CookieConsent";
 
-const inter = Inter({ subsets: ["latin"] });
+
 
 export const metadata: Metadata = {
   title: "Aloe Signs | Branding, Printing & Signage Company in South Africa",
@@ -26,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased bg-[#0B0E0D] text-[#F8FAFC]">
         <CartProvider>
           {children}
           <WhatsAppButton />
@@ -37,3 +36,4 @@ export default function RootLayout({
     </html>
   );
 }
+

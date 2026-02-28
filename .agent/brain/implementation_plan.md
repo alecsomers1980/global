@@ -1,42 +1,68 @@
-# Everest Motoring: Admin Car Assignment Feature
+# Implementation Plan: Aloe Signs Cinematic UI Redesign
 
-## Goal Description
-Add a new feature in the Everest Admin portal allowing administrators to explicitly assign an available vehicle from inventory to a registered client. This assignment will populate the client's Dashboard (Client Portal) with the vehicle tracking and finance forms.
+Transform the Aloe Signs website into a **premium, professional, and cinematic** experience using high-impact visuals, glassmorphism, and modern typography (Outfit).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This redesign will shift the site from its current light/mixed theme to a **predominantly dark cinematic theme** (Cinematic Black `#0B0E0D`). This is a significant visual departure intended to create a premium feel.
+
+> [!NOTE]
+> We will be integrating the **Outfit** font from Google Fonts to achieve the cinematic geometric look for headings.
 
 ## Proposed Changes
 
-### Everest Motoring Application
-#### [NEW] `src/app/admin/assign/page.js`
-1.  **Data Fetching:**
-    *   Fetch all users from `profiles` where `role = 'client'`.
-    *   Fetch all vehicles from `cars` where `status = 'available'`.
-2.  **UI Construction:** Create a dedicated "Assign Vehicle" page containing a list of clients and an "Add New Client" section.
-    *   **Client Searchable List:** Instead of a simple dropdown, build a searchable data table (similar to `TradeInsTable` or `LeadsTable`) where the admin can search for existing clients by name or phone/email.
-    *   **Vehicle Dropdown:** Once a client is selected, provide a dropdown to select an available vehicle.
-    *   **Add Client Functionality:** Include a form to add a new client (Name, Surname, Email, Phone).
+### [Global Styling]
+#### [MODIFY] [globals.css](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/app/globals.css)
+- Add cinematic design tokens (colors, glassmorphism utilities, deep shadows).
+- Define global dark-mode styles as the default.
+- Add utility for `backdrop-blur` and `shimmer` effects.
 
-#### [NEW] `src/app/admin/assign/AssignClientUI.jsx`
-1.  **Client Component:** This will hold the interactive state for searching clients, selecting a vehicle, and the "Add New Client" form.
-2.  **WhatsApp Integration:** When adding a new client, include an option to send a WhatsApp message containing a specialized registration link pre-filled with their details (`/auth/register-client?first_name=X&last_name=Y&email=Z&phone=W`).
-3.  **Action Handlers:** Connect the UI buttons to the server actions.
+#### [MODIFY] [layout.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/app/layout.tsx)
+- Integrate **Outfit** font for headings and ensure **Manrope** is maintained for body text.
+- Update global metadata and root styling for a dark theme foundation.
 
-#### [NEW] `src/app/admin/assign/actions.js`
-1.  **Server Action (`assignCarAction`):** Handle the form submission for assigning a car.
-    *   Insert a new row into the `leads` table, mapping the selected `client_id` and `car_id`, populating the client's name and details automatically, and setting the status to `'finance_pending'`.
-    *   Trigger `revalidatePath` to update the Leads and Portal data caches.
-2.  **Server Action (`inviteNewClientAction`):** (Optional, if we want to send invite emails from the server). The admin can invite the user utilizing Supabase's `auth.admin.inviteUserByEmail`, or simply rely on the WhatsApp link. Let's stick to the WhatsApp pre-filled link for immediate client interaction as requested, as the existing invite works similarly.
+---
 
-#### [MODIFY] [layout.js](file:///c:/Users/info/OneDrive/Documents/Antigravity/everest-motoring/src/app/admin/layout.js)
-1.  **Navigation Links:** Add a new link `<a href="/admin/assign">Assign Vehicle</a>` into the top navigation bar next to "Car Inquiries".
+### [Homepage Redesign]
+#### [MODIFY] [Header.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/components/Header.tsx)
+- Refactor to a floating **glassmorphism** navigation bar.
+- Implement `backdrop-blur-2xl` and semi-transparent backgrounds.
+- Optimize for a "premium" feel with refined spacing and typography.
+
+#### [MODIFY] [HeroBanner.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/components/HeroBanner.tsx)
+- Redesign for **cinematic impact**: Full-bleed background imagery with deep gradient overlays.
+- **Reintegrate Hexagonal Collage**: Merge the signature hexagon structure into the cinematic layout.
+- Apply glassmorphism and emerald lighting to hexagons for a futuristic, premium look.
+- Use larger, bold "Outfit" typography for the main hook.
+- Implement more sophisticated CTA buttons with subtle glow effects.
+
+#### [MODIFY] [Footer.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/components/Footer.tsx)
+- Update to a premium **Deep Slate** theme.
+- Organize content with better hierarchy and modern spacing.
+
+#### [MODIFY] [ServicesList.tsx](file:///c:/Users/foota/.gemini/antigravity/scratch/global/aloe-signs-website/components/ServicesList.tsx)
+- Update service cards to use the `rounded-[2rem]` radius and glassmorphism hover effects defined in `DESIGN.md`.
+
+---
+
+## Phase 3.1: Cinematic Hexagon Integration
+We will merge the "Honeycomb" geometric aesthetic with the new Cinematic workshop background. This creates a "Viewing Portals" effect where hexagons showcase specific projects against the atmospheric workshop backdrop. We'll use glassmorphism and emerald accents to tie them into the new visual language.
+
+---
 
 ## Verification Plan
 
 ### Automated Tests
-*   Run the Next.js dev server. No build errors should occur.
+- Run `npm run lint` to ensure no styling or TypeScript regressions.
+- Run `npm run build` to verify the production build success with new fonts and styles.
 
 ### Manual Verification
-*   Log in as an admin and navigate to the new "Assign Vehicle" page.
-*   Search for the `everest@clients.co.za` test user.
-*   Assign an available vehicle to the test user.
-*   Log in as the test user and verify that their Portal clearly displays the assigned vehicle and requests them to upload their finance documents.
-*   Test the "Add Client" feature to ensure the WhatsApp link generates correctly with pre-filled parameters.
+- **Visual Audit**:
+    - Verify the "Cinematic" feel: Does the Hero look premium?
+    - Is the glassmorphism in the Header working correctly (blur effect)?
+    - Check the color consistency against `DESIGN.md`.
+- **Responsive Check**:
+    - Ensure the floating header and large cards scale correctly on mobile.
+- **Interactive Check**:
+    - Verify hover states on cards and buttons feel "smooth" and high-end.
