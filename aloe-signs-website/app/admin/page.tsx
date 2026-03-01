@@ -182,24 +182,11 @@ export default function AdminDashboard() {
                     overflow: hidden;
                 }
 
-                .stat-card::before {
-                    content: '';
-                    position: absolute;
-                    top: 0; left: 0; right: 0;
-                    height: 2px;
-                    background: var(--accent, rgba(255,255,255,0.1));
-                    border-radius: 2px 2px 0 0;
-                }
-
                 .stat-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
-
-                .stat-card.active {
-                    border-color: var(--accent, rgba(132,204,22,0.3));
-                    background: rgba(132,204,22,0.04);
-                }
+                .stat-card.active { background: rgba(132,204,22,0.04); }
 
                 .stat-label { font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-                .stat-value { font-size: 32px; font-weight: 800; color: var(--accent-text, #fff); letter-spacing: -1px; }
+                .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
                 .stat-sub { font-size: 11px; color: #374151; margin-top: 4px; }
 
                 /* REVENUE CARD */
@@ -447,11 +434,14 @@ export default function AdminDashboard() {
                                 <div
                                     key={s.key}
                                     className={`stat-card${filter === s.key ? ' active' : ''}`}
-                                    style={{ '--accent': s.accent, '--accent-text': s.accentText } as React.CSSProperties}
+                                    style={{
+                                        borderTop: `3px solid ${s.accent}`,
+                                        borderColor: filter === s.key ? s.accent : undefined,
+                                    }}
                                     onClick={() => setFilter(s.key)}
                                 >
                                     <div className="stat-label">{s.label}</div>
-                                    <div className="stat-value">{s.value}</div>
+                                    <div className="stat-value" style={{ color: s.accentText }}>{s.value}</div>
                                 </div>
                             ))}
                         </div>
