@@ -8,7 +8,7 @@
   --cinematic-black: #0B0E0D;
   --deep-slate: #121816;
   --aloe-green: #3E7D6A;
-  --vibrant-emerald: #4ADE80;
+  --vibrant-emerald: #00E533;
   --solar-white: #F8FAFC;
   --muted-sage: #94A3B8;
   --glass-white: rgba(255, 255, 255, 0.05);
@@ -27,7 +27,13 @@
   h4,
   h5,
   h6 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Outfit', sans-serif !important;
+  }
+
+  input,
+  select,
+  textarea {
+    color: #1a202c !important;
   }
 }
 

@@ -24,7 +24,7 @@ export default function AboutPage() {
                                     Home
                                 </Link>
                                 <span>/</span>
-                                <span className="text-white">About Us</span>
+                                <span className="text-white font-bold">About Us</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -47,7 +47,7 @@ export default function AboutPage() {
                 <section className="py-16 md:py-24 bg-white">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-                            <div className="relative aspect-square md:aspect-[4/5] bg-bg-grey rounded-sm overflow-hidden">
+                            <div className="relative aspect-square md:aspect-[4/5] bg-bg-grey rounded-[2.5rem] overflow-hidden shadow-xl">
                                 <div
                                     className="absolute inset-0 bg-cover bg-center grayscale contrast-125"
                                     style={{ backgroundImage: `url('/images/portfolio/shopfront-1.jpg')` }}
@@ -81,7 +81,7 @@ export default function AboutPage() {
                 </section>
 
                 {/* Owner Section */}
-                <section className="py-16 md:py-24 bg-charcoal text-white">
+                <section className="py-16 md:py-24 bg-white text-charcoal border-y border-border-grey">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center md:flex-row-reverse">
 
@@ -94,7 +94,7 @@ export default function AboutPage() {
                                     Andre de Bod
                                     <span className="block text-2xl text-aloe-green mt-2">Owner & Managing Director</span>
                                 </h3>
-                                <div className="space-y-6 text-xl text-white/80 font-medium mb-10">
+                                <div className="space-y-6 text-xl text-charcoal/80 font-medium mb-10">
                                     <p>
                                         [PLACEHOLDER HISTORY] Growing up in the signage industry meant I learned how to mix ink before I learned how to drive. Taking over Aloe Signs wasn't just a business decision; it was about honoring a legacy while aggressively pushing it into the modern era.
                                     </p>
@@ -105,13 +105,13 @@ export default function AboutPage() {
 
                                 {/* Quote */}
                                 <blockquote className="border-l-4 border-aloe-green pl-6 py-2">
-                                    <p className="text-2xl md:text-3xl font-bold italic text-white mb-4">
+                                    <p className="text-2xl md:text-3xl font-bold italic text-charcoal mb-4">
                                         "A brand is useless if no one can see it. We don't build quiet signs for quiet businesses. We build to dominate."
                                     </p>
                                 </blockquote>
                             </div>
 
-                            <div className="order-1 md:order-2 relative aspect-[3/4] bg-dark-grey rounded-sm overflow-hidden">
+                            <div className="order-1 md:order-2 relative aspect-[3/4] bg-dark-grey rounded-[2.5rem] overflow-hidden shadow-2xl">
                                 <div
                                     className="absolute inset-0 bg-cover bg-center opacity-90 mix-blend-luminosity"
                                     style={{ backgroundImage: `url('/images/portfolio/shop-front-1.jpg')` }}
@@ -141,7 +141,7 @@ export default function AboutPage() {
                         <div className="grid md:grid-cols-3 gap-8">
                             {/* Designers */}
                             <div className="group">
-                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
                                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                                         style={{ backgroundImage: `url('/images/portfolio/interior-2.jpg')` }}
@@ -155,7 +155,7 @@ export default function AboutPage() {
 
                             {/* Construction */}
                             <div className="group">
-                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
                                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                                         style={{ backgroundImage: `url('/images/portfolio/set-building-main.jpg')` }}
@@ -169,7 +169,7 @@ export default function AboutPage() {
 
                             {/* Setup */}
                             <div className="group">
-                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-sm">
+                                <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
                                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                                         style={{ backgroundImage: `url('/images/portfolio/interior-1.jpg')` }}
@@ -224,7 +224,7 @@ export default function AboutPage() {
                             ].map((item, index) => {
                                 const Icon = item.icon;
                                 return (
-                                    <div key={index} className="bg-bg-grey p-6 rounded-lg">
+                                    <div key={index} className="bg-bg-grey p-8 rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow">
                                         <div className="w-12 h-12 bg-aloe-green rounded-lg flex items-center justify-center mb-4">
                                             <Icon className="w-6 h-6 text-charcoal" />
                                         </div>
@@ -270,7 +270,7 @@ export default function AboutPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-white p-8 rounded-lg">
+                            <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-border-grey">
                                 <h3 className="text-2xl font-bold text-charcoal mb-4">
                                     Ready to work with us?
                                 </h3>
@@ -281,13 +281,13 @@ export default function AboutPage() {
                                 <div className="space-y-4">
                                     <Link
                                         href="/contact"
-                                        className="block w-full px-6 py-4 bg-aloe-green text-charcoal font-bold rounded-lg hover:bg-green-hover transition-colors text-center"
+                                        className="block w-full px-6 py-4 bg-aloe-green text-charcoal font-bold rounded-full hover:bg-green-hover transition-colors text-center"
                                     >
                                         Get a Quote
                                     </Link>
                                     <Link
                                         href="tel:0116932600"
-                                        className="block w-full px-6 py-4 border-2 border-charcoal text-charcoal font-bold rounded-lg hover:bg-charcoal hover:text-white transition-colors text-center"
+                                        className="block w-full px-6 py-4 border-2 border-charcoal text-charcoal font-bold rounded-full hover:bg-charcoal hover:text-white transition-colors text-center"
                                     >
                                         Call 011 693 2600
                                     </Link>

@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function WhatsAppButton() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+
     const [isOnline, setIsOnline] = useState(false);
 
     // Business Hours: Mon-Fri, 08:00 - 17:00
@@ -25,7 +28,13 @@ export default function WhatsAppButton() {
         // Check every minute
         const interval = setInterval(checkTime, 60000);
         return () => clearInterval(interval);
-    }, []);
+    }, [pathname]); // Also added pathname to deps as a precaution
+
+    // Hide WhatsApp button on the Under Construction gateway
+    // This must be after ALL hooks to maintain consistent hook order
+    if (pathname === '/') {
+        return null;
+    }
 
     const phoneNumber = '27720000000'; // Placeholder mobile number
     const message = encodeURIComponent('Hi Aloe Signs, I would like to enquire about...');

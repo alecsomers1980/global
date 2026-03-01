@@ -53,7 +53,7 @@ export default function Header() {
                             src="/aloe-logo.png"
                             alt="Aloe Signs Logo"
                             fill
-                            className="object-contain brightness-0 invert"
+                            className="object-contain"
                             priority
                         />
                     </div>
@@ -61,28 +61,28 @@ export default function Header() {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center gap-10">
-                    <Link href="/" className="text-sm font-semibold tracking-wide text-white/80 hover:text-vibrant-emerald hover:scale-105 transition-all">
+                    <Link href="/" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
                         HOME
                     </Link>
-                    <Link href="/about" className="text-sm font-semibold tracking-wide text-white/80 hover:text-vibrant-emerald hover:scale-105 transition-all">
+                    <Link href="/about" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
                         ABOUT
                     </Link>
 
                     <div className="relative group">
-                        <button className="text-sm font-semibold tracking-wide text-white/80 hover:text-vibrant-emerald transition-all flex items-center gap-1">
+                        <button className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green transition-all flex items-center gap-1">
                             SERVICES
                             <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
                         </button>
 
                         {/* Dropdown Menu */}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] bg-black/80 backdrop-blur-3xl">
+                            <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] bg-black/95 backdrop-blur-3xl">
                                 <div className="py-2 grid gap-1 p-2">
                                     {services.map((service) => (
                                         <Link
                                             key={service.href}
                                             href={service.href}
-                                            className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-vibrant-emerald rounded-xl transition-all"
+                                            className="block px-4 py-2.5 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-aloe-green rounded-xl transition-all"
                                         >
                                             {service.name}
                                         </Link>
@@ -92,10 +92,10 @@ export default function Header() {
                         </div>
                     </div>
 
-                    <Link href="/portfolio" className="text-sm font-semibold tracking-wide text-white/80 hover:text-vibrant-emerald hover:scale-105 transition-all">
+                    <Link href="/portfolio" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
                         PORTFOLIO
                     </Link>
-                    <Link href="/shop" className="text-sm font-semibold tracking-wide text-white/80 hover:text-vibrant-emerald hover:scale-105 transition-all">
+                    <Link href="/shop" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
                         SHOP
                     </Link>
                 </nav>
@@ -103,7 +103,7 @@ export default function Header() {
                 {/* Right Side */}
                 <div className="hidden lg:flex items-center gap-6">
                     <a href="tel:0116932600" className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-vibrant-emerald group-hover:text-black transition-all">
+                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-aloe-green group-hover:text-black transition-all">
                             <Phone className="w-4 h-4" />
                         </div>
                         <span className="text-sm font-bold tracking-tight text-white/90">011 693 2600</span>
@@ -115,7 +115,7 @@ export default function Header() {
                     >
                         <ShoppingCart className="w-5 h-5 text-white/90 group-hover:scale-110 transition-transform" />
                         {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-vibrant-emerald text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                            <span className="absolute -top-1 -right-1 bg-aloe-green text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                                 {cartCount}
                             </span>
                         )}
@@ -123,7 +123,7 @@ export default function Header() {
 
                     <Link
                         href="/get-quote"
-                        className="px-8 py-3 bg-vibrant-emerald text-black text-sm font-black rounded-full hover:scale-105 hover:shadow-[0_0_20px_rgba(74,222,128,0.4)] transition-all active:scale-95"
+                        className="px-8 py-3 bg-aloe-green text-charcoal text-sm font-black rounded-full hover:scale-105 hover:shadow-[0_0_20px_rgba(0,229,51,0.4)] transition-all active:scale-95"
                     >
                         GET A QUOTE
                     </Link>
@@ -137,7 +137,7 @@ export default function Header() {
                     >
                         <ShoppingCart className="w-5 h-5 text-white" />
                         {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-vibrant-emerald text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center">
+                            <span className="absolute -top-1 -right-1 bg-aloe-green text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center">
                                 {cartCount}
                             </span>
                         )}
@@ -159,7 +159,7 @@ export default function Header() {
                             key={link.href}
                             href={link.href}
                             onClick={closeMenu}
-                            className="text-3xl font-black text-white hover:text-vibrant-emerald transition-all tracking-tighter"
+                            className="text-3xl font-black text-white hover:text-aloe-green transition-all tracking-tighter"
                         >
                             {link.name.toUpperCase()}
                         </Link>
@@ -168,7 +168,7 @@ export default function Header() {
                     <Link
                         href="/get-quote"
                         onClick={closeMenu}
-                        className="mt-4 px-12 py-5 bg-vibrant-emerald text-black font-black rounded-full text-xl shadow-2xl"
+                        className="mt-4 px-12 py-5 bg-aloe-green text-black font-black rounded-full text-xl shadow-2xl"
                     >
                         GET A QUOTE
                     </Link>

@@ -19,8 +19,14 @@ export default function PortalLogin() {
         const supabase = createClientSupabase();
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) { setError(signInError.message); setLoading(false); return; }
-        const isAdmin = data.user?.email?.endsWith('@aloesigns.co.za');
-        router.push(isAdmin ? '/portal/admin' : '/portal/');
+        const userEmail = data.user?.email;
+        if (userEmail === 'view@aloesigns.co.za') {
+            router.push('/home');
+        } else if (userEmail?.endsWith('@aloesigns.co.za')) {
+            router.push('/portal/admin');
+        } else {
+            router.push('/portal/');
+        }
     }
 
     return (
@@ -34,12 +40,12 @@ export default function PortalLogin() {
                     <div style={{ marginBottom: '16px' }}>
                         <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Email</label>
                         <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                            style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box', outline: 'none' }} />
+                            style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box', outline: 'none', color: '#1a202c' }} />
                     </div>
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' }}>Password</label>
                         <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-                            style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box', outline: 'none' }} />
+                            style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box', outline: 'none', color: '#1a202c' }} />
                     </div>
                     {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', color: '#dc2626', fontSize: '13px' }}>{error}</div>}
                     <button type="submit" disabled={loading}

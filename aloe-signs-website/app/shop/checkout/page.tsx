@@ -238,7 +238,7 @@ export default function CheckoutPage() {
 
                                 {/* Order Summary */}
                                 <div className="lg:sticky lg:top-24 h-fit">
-                                    <div className="bg-bg-grey rounded p-6 space-y-6">
+                                    <div className="bg-bg-grey rounded-[2rem] p-8 space-y-6 border border-border-grey shadow-sm">
                                         <h2 className="text-2xl font-bold text-charcoal">Your Order</h2>
 
                                         {/* Order Items */}
@@ -281,7 +281,7 @@ export default function CheckoutPage() {
                                         <button
                                             type="submit"
                                             disabled={isProcessing}
-                                            className="w-full px-6 py-4 bg-aloe-green text-charcoal font-bold text-center rounded hover:bg-green-hover transition-colors disabled:bg-light-grey disabled:cursor-not-allowed"
+                                            className="w-full px-6 py-4 bg-aloe-green text-charcoal font-bold text-center rounded-full hover:bg-green-hover transition-colors disabled:bg-light-grey disabled:cursor-not-allowed"
                                         >
                                             {isProcessing ? 'Processing...' : 'Proceed to Payment'}
                                         </button>

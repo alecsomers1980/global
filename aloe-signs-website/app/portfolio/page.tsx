@@ -38,7 +38,7 @@ export default function PortfolioPage() {
                                     Home
                                 </Link>
                                 <span>/</span>
-                                <span className="text-white">Portfolio</span>
+                                <span className="text-white font-bold">Portfolio</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -84,7 +84,7 @@ export default function PortfolioPage() {
                 </section>
 
                 {/* Portfolio Sections */}
-                <div className="py-20 space-y-20">
+                <div className="py-20 space-y-20 bg-white">
                     {portfolioCategories.filter(cat => cat !== 'All').map((category) => {
                         const categoryProjects = constructionProjects.filter(project => project.category === category);
 
@@ -102,7 +102,7 @@ export default function PortfolioPage() {
                                         {categoryProjects.map((project) => (
                                             <div
                                                 key={project.id}
-                                                className="group cursor-pointer bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                                                className="group cursor-pointer bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                                                 onClick={() => handleProjectClick(project)}
                                             >
                                                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -142,7 +142,7 @@ export default function PortfolioPage() {
                         onClick={() => setSelectedProject(null)}
                     ></div>
 
-                    <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-300">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-6xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-300">
                         <button
                             onClick={() => setSelectedProject(null)}
                             className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-bg-grey transition-colors z-20"
@@ -153,7 +153,7 @@ export default function PortfolioPage() {
                         <div className="grid lg:grid-cols-2">
                             {/* Images Column */}
                             <div className="bg-charcoal p-8 space-y-4">
-                                <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg border border-white/10">
+                                <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-lg border border-white/10">
                                     <Image
                                         src={modalMainImage}
                                         alt={selectedProject.title}
@@ -165,7 +165,7 @@ export default function PortfolioPage() {
                                     <div className="grid grid-cols-4 gap-2">
                                         {/* Main image thumbnail included */}
                                         <div
-                                            className={`relative aspect-[4/3] rounded overflow-hidden border cursor-pointer ${modalMainImage === selectedProject.image ? 'border-aloe-green ring-2 ring-aloe-green' : 'border-white/10 hover:border-white/50'}`}
+                                            className={`relative aspect-[4/3] rounded-2xl overflow-hidden border cursor-pointer ${modalMainImage === selectedProject.image ? 'border-aloe-green ring-2 ring-aloe-green' : 'border-white/10 hover:border-white/50'}`}
                                             onClick={() => setModalMainImage(selectedProject.image)}
                                         >
                                             <Image
@@ -179,7 +179,7 @@ export default function PortfolioPage() {
                                         {selectedProject.images.map((img, idx) => (
                                             <div
                                                 key={idx}
-                                                className={`relative aspect-[4/3] rounded overflow-hidden border cursor-pointer ${modalMainImage === img ? 'border-aloe-green ring-2 ring-aloe-green' : 'border-white/10 hover:border-white/50'}`}
+                                                className={`relative aspect-[4/3] rounded-2xl overflow-hidden border cursor-pointer ${modalMainImage === img ? 'border-aloe-green ring-2 ring-aloe-green' : 'border-white/10 hover:border-white/50'}`}
                                                 onClick={() => setModalMainImage(img)}
                                             >
                                                 <Image

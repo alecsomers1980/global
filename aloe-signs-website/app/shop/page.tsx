@@ -47,7 +47,7 @@ export default function ShopPage() {
                                     Home
                                 </Link>
                                 <span>/</span>
-                                <span className="text-white">Shop</span>
+                                <span className="text-white font-bold">Shop</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -61,7 +61,7 @@ export default function ShopPage() {
                 </div>
 
                 {/* Shop Content */}
-                <section className="py-12">
+                <section className="py-12 bg-white">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="grid lg:grid-cols-[250px_1fr] gap-8">
                             {/* Sidebar Filters */}

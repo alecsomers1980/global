@@ -21,16 +21,35 @@ export default function PortalRegister() {
         if (!contactNumber.trim()) { setError('Contact number is required.'); return; }
         setError('');
         setLoading(true);
-        const supabase = createClientSupabase();
-        const { error: signUpError } = await supabase.auth.signUp({
-            email, password,
-            options: { data: { full_name: fullName, company, contact_number: contactNumber } },
-        });
-        if (signUpError) { setError(signUpError.message); setLoading(false); return; }
-        setSuccess(true);
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    password,
+                    fullName,
+                    company,
+                    contactNumber
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to create account');
+            }
+
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const inputStyle: React.CSSProperties = { width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box' as const, outline: 'none' };
+    const inputStyle: React.CSSProperties = { width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #d1d5db', fontSize: '15px', boxSizing: 'border-box' as const, outline: 'none', color: '#1a202c' };
     const labelStyle: React.CSSProperties = { display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px' };
 
     if (success) {

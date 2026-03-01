@@ -113,6 +113,7 @@ export default function UploadPage() {
     const inputStyle: React.CSSProperties = {
         width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #d1d5db',
         fontSize: '15px', boxSizing: 'border-box', outline: 'none', background: '#fff',
+        color: '#1a202c'
     };
     const labelStyle: React.CSSProperties = {
         display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px',

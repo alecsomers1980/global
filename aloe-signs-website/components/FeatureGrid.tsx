@@ -35,7 +35,7 @@ export default function FeatureGrid({ title, subtitle, features }: FeatureGridPr
                         return (
                             <div
                                 key={index}
-                                className="bg-bg-grey p-6 rounded-lg hover:shadow-lg transition-shadow"
+                                className="bg-bg-grey p-8 rounded-[2.5rem] hover:shadow-lg transition-shadow"
                             >
                                 {/* Icon */}
                                 {Icon && (

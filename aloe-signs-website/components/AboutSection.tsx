@@ -19,8 +19,8 @@ export default function AboutSection() {
                     {/* Owner Image Side */}
                     <div className="w-full lg:w-5/12 relative">
                         {/* Decorative background shape */}
-                        <div className="absolute top-8 -left-8 w-full h-full bg-aloe-green -z-10 rounded-sm" />
-                        <div className="relative aspect-[3/4] bg-dark-grey overflow-hidden shadow-2xl">
+                        <div className="absolute top-8 -left-8 w-full h-full bg-aloe-green -z-10 rounded-[2.5rem]" />
+                        <div className="relative aspect-[3/4] bg-dark-grey overflow-hidden shadow-2xl rounded-[2.5rem]">
                             <div
                                 className="absolute inset-0 bg-cover bg-center opacity-90 mix-blend-luminosity"
                                 style={{ backgroundImage: `url('/images/portfolio/building-signage-main.jpg')` }}
@@ -78,7 +78,7 @@ export default function AboutSection() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {actionImages.map((img, idx) => (
-                            <div key={idx} className="relative aspect-square overflow-hidden group rounded-sm shadow-lg">
+                            <div key={idx} className="relative aspect-square overflow-hidden group rounded-[2.5rem] shadow-lg">
                                 <div
                                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                                     style={{ backgroundImage: `url(${img.src})` }}

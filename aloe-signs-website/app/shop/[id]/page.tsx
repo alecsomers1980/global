@@ -82,7 +82,7 @@ export default function ProductDetailPage() {
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="grid lg:grid-cols-2 gap-12">
                             {/* Product Image */}
-                            <div className="relative aspect-square bg-bg-grey rounded overflow-hidden">
+                            <div className="relative aspect-square bg-bg-grey rounded-[2.5rem] overflow-hidden">
                                 <Image
                                     src={product.image}
                                     alt={product.name}

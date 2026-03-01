@@ -96,7 +96,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green"
+                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green text-charcoal"
                         placeholder="Your name"
                     />
                 </div>
@@ -113,7 +113,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green"
+                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green text-charcoal"
                         placeholder="your@email.com"
                     />
                 </div>
@@ -129,7 +129,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green"
+                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green text-charcoal"
                         placeholder="0123456789"
                     />
                 </div>
@@ -144,7 +144,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
                         name="service"
                         value={formData.service}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green"
+                        className="w-full px-4 py-3 border-2 border-border-grey rounded-lg focus:outline-none focus:border-aloe-green text-charcoal"
                     >
                         <option value="">Select a service</option>
                         <option value="Vehicle Branding">Vehicle Branding</option>

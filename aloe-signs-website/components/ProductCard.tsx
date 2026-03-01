@@ -20,7 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="bg-white border border-border-grey rounded overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-full">
+        <div className="bg-white border border-border-grey rounded-[2.5rem] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-full">
             {/* Product Image */}
             <Link href={`/shop/${product.id}`} className="block relative aspect-square bg-bg-grey">
                 <Image
@@ -79,14 +79,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {product.pricingTiers ? (
                     <Link
                         href={`/shop/${product.id}`}
-                        className="block w-full px-4 py-3 bg-charcoal text-white text-center font-bold rounded hover:bg-black transition-colors"
+                        className="block w-full px-4 py-3 bg-charcoal text-white text-center font-bold rounded-full hover:bg-black transition-colors"
                     >
                         Select Options
                     </Link>
                 ) : (
                     <button
                         onClick={handleAddToCart}
-                        className="w-full px-4 py-3 bg-aloe-green text-charcoal font-bold rounded hover:bg-green-hover transition-colors"
+                        className="w-full px-4 py-3 bg-aloe-green text-charcoal font-bold rounded-full hover:bg-green-hover transition-colors"
                     >
                         Add to Cart
                     </button>

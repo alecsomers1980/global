@@ -7,8 +7,9 @@ export async function middleware(request: NextRequest) {
 
   const isPortalPublic = pathname === '/portal/login' || pathname === '/portal/register';
   const isPortalRoute = pathname.startsWith('/portal');
+  const isHomeRoute = pathname === '/home';
 
-  if (!isPortalRoute || isPortalPublic) return res;
+  if (!isHomeRoute && (!isPortalRoute || isPortalPublic)) return res;
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,11 +21,15 @@ export async function middleware(request: NextRequest) {
   if (!user) return NextResponse.redirect(new URL('/portal/login', request.url));
 
   const isAdminRoute = pathname.startsWith('/portal/admin');
-  if (isAdminRoute && !user.email?.endsWith('@aloesigns.co.za')) {
-    return NextResponse.redirect(new URL('/portal/', request.url));
+  const userEmail = user.email || '';
+
+  if (isAdminRoute) {
+    if (userEmail === 'view@aloesigns.co.za' || !userEmail.endsWith('@aloesigns.co.za')) {
+      return NextResponse.redirect(new URL('/portal/', request.url));
+    }
   }
 
   return res;
 }
 
-export const config = { matcher: ['/portal/:path*'] };
+export const config = { matcher: ['/portal/:path*', '/home'] };

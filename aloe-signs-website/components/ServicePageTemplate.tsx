@@ -56,7 +56,7 @@ export default function ServicePageTemplate({ service }: ServicePageTemplateProp
                             </div>
 
                             {/* Right Column - CTA */}
-                            <div className="bg-bg-grey p-8 rounded-lg">
+                            <div className="bg-bg-grey p-10 rounded-[2.5rem] border border-border-grey shadow-sm">
                                 <h3 className="text-2xl font-bold text-charcoal mb-4">
                                     Ready to get started?
                                 </h3>

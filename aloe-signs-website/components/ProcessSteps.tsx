@@ -36,7 +36,7 @@ export default function ProcessSteps({ title, subtitle, steps }: ProcessStepsPro
                             )}
 
                             {/* Step Card */}
-                            <div className="bg-white p-6 rounded-lg relative z-10">
+                            <div className="bg-white p-8 rounded-[2.5rem] relative z-10 h-full">
                                 {/* Number Badge */}
                                 <div className="w-12 h-12 bg-aloe-green rounded-full flex items-center justify-center mb-4">
                                     <span className="text-2xl font-bold text-charcoal">{step.number}</span>

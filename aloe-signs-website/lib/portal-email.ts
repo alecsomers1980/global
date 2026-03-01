@@ -6,11 +6,71 @@ const transporter = nodemailer.createTransport({
 });
 
 function wrapHtml(title: string, body: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${title}</title></head><body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:40px 20px"><div style="background:#2d2d2d;padding:24px;border-radius:12px 12px 0 0;text-align:center"><img src="https://aloe-signs-website.vercel.app/aloe-logo.png" alt="Aloe Signs" width="160" style="display:block;margin:0 auto" /></div><div style="background:#fff;padding:32px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb;border-top:none">${body}</div><p style="text-align:center;color:#9ca3af;font-size:12px;margin-top:24px">Aloe Signs Client Portal</p></div></body></html>`;
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
+    <!-- Brand Header -->
+    <div style="background-color:#2d2d2d;padding:40px 20px;border-radius:16px 16px 0 0;text-align:center;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+      <img src="https://aloe-signs-website.vercel.app/aloe-logo.png" alt="Aloe Signs" width="180" style="display:block;margin:0 auto;" />
+    </div>
+    
+    <!-- Content Body -->
+    <div style="background-color:#ffffff;padding:48px 40px;border-radius:0 0 16px 16px;border:1px solid #e2e8f0;border-top:none;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);">
+      ${body}
+      
+      <div style="margin-top:40px;padding-top:24px;border-top:1px solid #f1f5f9;text-align:center;">
+        <p style="margin:0;font-size:14px;color:#94a3b8;font-weight:500;">Aloe Signs Client Portal</p>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="text-align:center;margin-top:32px;">
+      <p style="margin:0;font-size:12px;color:#cbd5e1;">&copy; ${new Date().getFullYear()} Aloe Signs. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>`;
 }
 
 export async function sendPortalEmail(opts: { to: string; subject: string; title: string; body: string; text: string }) {
-  await transporter.sendMail({ from: `"Aloe Signs" <${process.env.SMTP_USER}>`, to: opts.to, subject: opts.subject, text: opts.text, html: wrapHtml(opts.title, opts.body) });
+  const fromEmail = process.env.EMAIL_FROM || process.env.SMTP_USER;
+  await transporter.sendMail({
+    from: `"Aloe Signs" <${fromEmail}>`,
+    to: opts.to,
+    subject: opts.subject,
+    text: opts.text,
+    html: wrapHtml(opts.title, opts.body)
+  });
+}
+
+export async function sendVerificationEmail(email: string, link: string, fullName: string) {
+  const body = `
+    <h1 style="margin:0 0 16px 0;font-size:26px;font-weight:700;color:#1e293b;text-align:center;">Welcome to Aloe Signs!</h1>
+    <p style="margin:0 0 24px 0;font-size:16px;line-height:1.6;color:#475569;text-align:center;">Hi ${fullName}, thank you for registering with the Aloe Signs Client Portal. Please confirm your email address to activate your account.</p>
+    
+    <div style="text-align:center;margin:32px 0;">
+      <a href="${link}" style="display:inline-block;background-color:#84cc16;color:#1a1a1a;font-weight:700;padding:16px 40px;text-decoration:none;border-radius:12px;font-size:16px;box-shadow:0 4px 6px -1px rgba(132, 204, 22, 0.2);">Confirm Email Address</a>
+    </div>
+    
+    <p style="margin:32px 0 0 0;font-size:14px;line-height:1.6;color:#94a3b8;text-align:center;">If the button above doesn't work, copy and paste this link into your browser:</p>
+    <p style="margin:8px 0 0 0;font-size:13px;color:#84cc16;text-align:center;word-break:break-all;">${link}</p>
+    
+    <p style="margin:40px 0 0 0;font-size:14px;color:#64748b;text-align:center;">If you didn't create an account, you can safely ignore this email.</p>
+  `;
+
+  await sendPortalEmail({
+    to: email,
+    subject: 'Confirm your Aloe Signs account',
+    title: 'Confirm your account',
+    body,
+    text: `Hi ${fullName}, welcome to Aloe Signs! Please confirm your email by visiting this link: ${link}`
+  });
 }
 
 interface Allowance { date: string; startTime: string; endTime: string; }

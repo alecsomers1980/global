@@ -54,15 +54,15 @@ export default function CartPage() {
                                 {cart.map(item => (
                                     <div
                                         key={item.cartId}
-                                        className="bg-white border border-border-grey rounded p-6 flex gap-6"
+                                        className="bg-white border border-border-grey rounded-[2rem] p-6 flex gap-6"
                                     >
                                         {/* Product Image */}
-                                        <div className="relative w-32 h-32 bg-bg-grey rounded flex-shrink-0">
+                                        <div className="relative w-32 h-32 bg-bg-grey rounded-2xl flex-shrink-0 overflow-hidden">
                                             <Image
                                                 src={item.image}
                                                 alt={item.name}
                                                 fill
-                                                className="object-cover rounded"
+                                                className="object-cover"
                                             />
                                         </div>
 
@@ -144,7 +144,7 @@ export default function CartPage() {
 
                             {/* Order Summary */}
                             <div className="lg:sticky lg:top-24 h-fit">
-                                <div className="bg-bg-grey rounded p-6 space-y-6">
+                                <div className="bg-bg-grey rounded-[2rem] p-8 space-y-6 border border-border-grey">
                                     <h2 className="text-2xl font-bold text-charcoal">Order Summary</h2>
 
                                     <div className="space-y-3">

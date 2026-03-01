@@ -1,7 +1,17 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+    const pathname = usePathname();
+
+    // Hide footer on the Under Construction gateway
+    if (pathname === '/') {
+        return null;
+    }
+
     return (
         <footer className="bg-[#0B0E0D] text-white/90 border-t border-white/5">
             <div className="max-w-7xl mx-auto px-6 py-20">
@@ -20,8 +30,8 @@ export default function Footer() {
                             High-impact visual branding built to be seen. Products that build businesses.
                         </p>
                         <div className="space-y-3 font-medium">
-                            <p className="flex items-center gap-3 text-vibrant-emerald">
-                                <span className="w-1.5 h-1.5 rounded-full bg-vibrant-emerald"></span>
+                            <p className="flex items-center gap-3 text-aloe-green">
+                                <span className="w-1.5 h-1.5 rounded-full bg-aloe-green"></span>
                                 068 883 8049
                             </p>
                             <p className="flex items-center gap-3">
@@ -35,13 +45,13 @@ export default function Footer() {
                     <div>
                         <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-8">SERVICES</h4>
                         <ul className="space-y-4 text-white/50 font-semibold text-sm">
-                            <li><Link href="/services/vehicle-branding" className="hover:text-vibrant-emerald transition-colors">VEHICLE BRANDING</Link></li>
-                            <li><Link href="/services/building-signage" className="hover:text-vibrant-emerald transition-colors">BUILDING SIGNAGE</Link></li>
-                            <li><Link href="/services/shopfronts" className="hover:text-vibrant-emerald transition-colors">SHOPFRONTS</Link></li>
-                            <li><Link href="/services/wayfinding-interior" className="hover:text-vibrant-emerald transition-colors">WAYFINDING & INTERIOR</Link></li>
-                            <li><Link href="/services/billboards-outdoor" className="hover:text-vibrant-emerald transition-colors">BILLBOARDS & OUTDOOR</Link></li>
-                            <li><Link href="/services/large-format-print" className="hover:text-vibrant-emerald transition-colors">LARGE FORMAT PRINT</Link></li>
-                            <li><Link href="/services/screen-printing" className="hover:text-vibrant-emerald transition-colors">SCREEN PRINTING</Link></li>
+                            <li><Link href="/services/vehicle-branding" className="hover:text-aloe-green transition-colors">VEHICLE BRANDING</Link></li>
+                            <li><Link href="/services/building-signage" className="hover:text-aloe-green transition-colors">BUILDING SIGNAGE</Link></li>
+                            <li><Link href="/services/shopfronts" className="hover:text-aloe-green transition-colors">SHOPFRONTS</Link></li>
+                            <li><Link href="/services/wayfinding-interior" className="hover:text-aloe-green transition-colors">WAYFINDING & INTERIOR</Link></li>
+                            <li><Link href="/services/billboards-outdoor" className="hover:text-aloe-green transition-colors">BILLBOARDS & OUTDOOR</Link></li>
+                            <li><Link href="/services/large-format-print" className="hover:text-aloe-green transition-colors">LARGE FORMAT PRINT</Link></li>
+                            <li><Link href="/services/screen-printing" className="hover:text-aloe-green transition-colors">SCREEN PRINTING</Link></li>
                         </ul>
                     </div>
 
@@ -49,12 +59,12 @@ export default function Footer() {
                     <div>
                         <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-8">QUICK LINKS</h4>
                         <ul className="space-y-4 text-white/50 font-semibold text-sm">
-                            <li><Link href="/shop" className="hover:text-vibrant-emerald transition-colors">SHOP ALL</Link></li>
-                            <li><Link href="/portfolio" className="hover:text-vibrant-emerald transition-colors">OUR WORK</Link></li>
-                            <li><Link href="/about" className="hover:text-vibrant-emerald transition-colors">ABOUT US</Link></li>
-                            <li><Link href="/contact" className="hover:text-vibrant-emerald transition-colors">CONTACT</Link></li>
-                            <li><Link href="/get-quote" className="hover:text-vibrant-emerald transition-colors">GET A QUOTE</Link></li>
-                            <li><Link href="/order/track" className="hover:text-vibrant-emerald transition-colors">TRACK ORDER</Link></li>
+                            <li><Link href="/shop" className="hover:text-aloe-green transition-colors">SHOP ALL</Link></li>
+                            <li><Link href="/portfolio" className="hover:text-aloe-green transition-colors">OUR WORK</Link></li>
+                            <li><Link href="/about" className="hover:text-aloe-green transition-colors">ABOUT US</Link></li>
+                            <li><Link href="/contact" className="hover:text-aloe-green transition-colors">CONTACT</Link></li>
+                            <li><Link href="/get-quote" className="hover:text-aloe-green transition-colors">GET A QUOTE</Link></li>
+                            <li><Link href="/order/track" className="hover:text-aloe-green transition-colors">TRACK ORDER</Link></li>
                         </ul>
                     </div>
 
@@ -64,7 +74,7 @@ export default function Footer() {
                         <p className="text-white/60 text-sm">Join 500+ businesses that choose Aloe Signs for their branding needs.</p>
                         <Link
                             href="/get-quote"
-                            className="block w-full py-4 bg-white text-black font-black text-center rounded-xl hover:bg-vibrant-emerald transition-all hover:scale-[1.02]"
+                            className="block w-full py-4 bg-white text-black font-black text-center rounded-xl hover:bg-aloe-green transition-all hover:scale-[1.02]"
                         >
                             START A PROJECT
                         </Link>
