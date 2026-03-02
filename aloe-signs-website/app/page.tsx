@@ -6,9 +6,9 @@ import { LayoutGrid, Lock, Upload, ArrowRight } from 'lucide-react';
 
 export default function UnderConstruction() {
     return (
-        <div className="min-h-screen bg-charcoal text-white flex flex-col items-center justify-center relative overflow-hidden font-outfit">
+        <div className="min-h-[100dvh] bg-charcoal text-white flex flex-col relative overflow-x-hidden font-outfit">
             {/* Background Aesthetic */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 pointer-events-none">
                 <div
                     className="absolute inset-0 opacity-10"
                     style={{
@@ -23,9 +23,9 @@ export default function UnderConstruction() {
             <div className="absolute top-1/4 -right-20 w-96 h-96 bg-aloe-green/10 rounded-full blur-[120px] animate-pulse" />
             <div className="absolute bottom-1/4 -left-20 w-80 h-80 bg-aloe-green/5 rounded-full blur-[100px] animate-pulse delay-700" />
 
-            <main className="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center text-center">
+            <main className="relative z-10 w-full max-w-5xl px-6 py-12 md:py-20 m-auto flex flex-col items-center text-center">
                 {/* Logo */}
-                <div className="mb-12 animate-fadeIn">
+                <div className="mb-6 md:mb-12 animate-fadeIn">
                     <Image
                         src="/aloe-logo.png"
                         alt="Aloe Signs"
