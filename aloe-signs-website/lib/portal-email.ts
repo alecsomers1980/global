@@ -30,7 +30,9 @@ export async function sendPortalEmail(opts: {
   text: string;
   preview?: string;
 }) {
-  const fromField = process.env.EMAIL_FROM || `"Aloe Signs" <${process.env.SMTP_USER}>`;
+  // We hardcode the from string to avoid any double-quote corruption from Vercel's env variables
+  // which can silently trigger spam filters on the receiving end.
+  const fromField = `"Aloe Signs Portal" <${process.env.SMTP_USER}>`;
   try {
     const info = await transporter.sendMail({
       from: fromField,
