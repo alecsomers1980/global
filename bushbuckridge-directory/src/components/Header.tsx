@@ -15,6 +15,7 @@ const navLinks = [
     { name: 'Events', href: '/events' },
     { name: 'Opportunities', href: '/opportunities' },
     { name: 'Jobs', href: '/jobs' },
+    { name: 'Pricing', href: '/pricing' },
 ]
 
 export default function Header() {
@@ -49,7 +50,7 @@ export default function Header() {
 
                     <div className="flex items-center gap-4">
                         <Button asChild className="hidden sm:inline-flex rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/90 font-bold border-0">
-                            <Link href="/buy-your-spot">Buy Your Spot</Link>
+                            <Link href="/list-your-business">List Your Business</Link>
                         </Button>
 
                         {/* Mobile Navigation */}
@@ -83,7 +84,7 @@ export default function Header() {
                                         The premier business directory and investment journal connecting local enterprises and empowering the Bushbuckridge economy.
                                     </p>
                                     <Button asChild className="w-full h-14 rounded-2xl bg-secondary text-secondary-foreground font-bold">
-                                        <Link href="/buy-your-spot">Buy Your Spot</Link>
+                                        <Link href="/list-your-business">List Your Business</Link>
                                     </Button>
                                 </div>
                             </SheetContent>

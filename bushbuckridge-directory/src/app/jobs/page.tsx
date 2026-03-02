@@ -2,8 +2,9 @@ import { createClient } from '@/utils/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
-import { Briefcase, MapPin, Building, ArrowRight } from 'lucide-react'
+import { Briefcase, MapPin, Building, ArrowRight, Clock, UserCheck } from 'lucide-react'
 import Link from 'next/link'
+import SecondaryHeader from '@/components/SecondaryHeader'
 
 export default async function JobsPage() {
     const supabase = await createClient()
@@ -14,56 +15,82 @@ export default async function JobsPage() {
         .order('created_at', { ascending: false })
 
     return (
-        <div className="container mx-auto px-4 py-12 max-w-5xl">
-            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-primary mb-2">Local Jobs</h1>
-                    <p className="text-muted-foreground max-w-2xl">
-                        Find employment opportunities from verified businesses operating in Bushbuckridge.
-                    </p>
-                </div>
-                <Button asChild>
-                    <Link href="/buy-your-spot">Post a Job (Coming Soon)</Link>
-                </Button>
-            </div>
+        <div className="flex flex-col gap-12 pb-24">
+            <SecondaryHeader
+                title="Local Career Opportunities"
+                subtitle="Find employment opportunities from verified businesses operating in the Bushbuckridge region."
+                badge="JOBS PORTAL"
+                backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=2000&auto=format&fit=crop"
+            />
 
-            {error ? (
-                <div className="p-4 text-red-500 bg-red-50 rounded-lg">Failed to load job listings.</div>
-            ) : jobs?.length === 0 ? (
-                <div className="text-center py-20 bg-muted/30 rounded-2xl border border-dashed">
-                    <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">No active job listings</h3>
-                    <p className="text-muted-foreground">Local businesses haven't posted any jobs recently.</p>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {jobs?.map((job) => (
-                        <Card key={job.id} className="hover:border-primary/50 transition-colors">
-                            <div className="flex flex-col sm:flex-row gap-4 p-6 items-start sm:items-center">
-                                <div className="hidden sm:flex h-16 w-16 bg-muted rounded-lg items-center justify-center shrink-0">
-                                    <Building className="h-8 w-8 text-muted-foreground" />
-                                </div>
-                                <div className="flex-1 space-y-1">
-                                    <h3 className="text-xl font-semibold"><Link href={`/jobs/${job.slug}`} className="hover:underline">{job.title}</Link></h3>
-                                    <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-sm text-muted-foreground">
-                                        {/* Placeholder meta data for layout */}
-                                        <span className="flex items-center"><Building className="h-3.5 w-3.5 mr-1" /> Local Business</span>
-                                        <span className="flex items-center"><MapPin className="h-3.5 w-3.5 mr-1" /> Bushbuckridge Area</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto mt-4 sm:mt-0">
-                                    <span className="text-xs text-muted-foreground font-medium">
-                                        Posted {formatDistanceToNow(new Date(job.created_at))} ago
-                                    </span>
-                                    <Button variant="outline" className="w-full sm:w-auto" asChild>
-                                        <Link href={`mailto:${job.contact_info}`}>Apply via Email</Link>
-                                    </Button>
-                                </div>
+            <div className="container mx-auto px-4 -mt-24 relative z-20">
+                <div className="flex flex-col lg:flex-row gap-12">
+                    <div className="flex-1 space-y-8">
+                        {error ? (
+                            <div className="p-8 text-sm text-red-500 bg-red-50 rounded-[2rem] border border-red-200 shadow-sm text-center">
+                                Failed to load job listings. Please refresh the page.
                             </div>
-                        </Card>
-                    ))}
+                        ) : jobs?.length === 0 ? (
+                            <div className="text-center py-32 bg-card/60 backdrop-blur-xl rounded-[3.5rem] border border-dashed flex flex-col items-center justify-center">
+                                <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-6">
+                                    <Briefcase className="h-10 w-10 text-primary/20" />
+                                </div>
+                                <h3 className="text-2xl font-black text-primary">No active listings</h3>
+                                <p className="text-muted-foreground max-w-sm mx-auto font-medium mt-2">
+                                    Local businesses haven't posted any jobs recently. Check back soon.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {jobs?.map((job) => (
+                                    <Card key={job.id} className="group border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:bg-card/80 rounded-[2.5rem] overflow-hidden">
+                                        <div className="flex flex-col md:flex-row gap-8 p-10 items-start md:items-center">
+                                            <div className="h-20 w-20 bg-primary/5 rounded-3xl flex items-center justify-center shrink-0 border border-primary/10 group-hover:scale-110 transition-transform">
+                                                <Building className="h-10 w-10 text-primary/40" />
+                                            </div>
+                                            <div className="flex-1 space-y-3">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-xs font-black text-primary/40 uppercase tracking-widest">Local Business</span>
+                                                    <div className="h-1 w-1 rounded-full bg-primary/20" />
+                                                    <span className="text-xs font-black text-primary/40 uppercase tracking-widest flex items-center">
+                                                        <Clock className="h-3 w-3 mr-1" /> {formatDistanceToNow(new Date(job.created_at))} ago
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-3xl font-black tracking-tight group-hover:text-primary transition-colors">
+                                                    <Link href={`/jobs/${job.slug}`}>{job.title}</Link>
+                                                </h3>
+                                                <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-bold text-muted-foreground">
+                                                    <span className="flex items-center"><MapPin className="h-4 w-4 mr-2 text-primary/40" /> Bushbuckridge Area</span>
+                                                    <span className="flex items-center"><UserCheck className="h-4 w-4 mr-2 text-primary/40" /> Full Time / Contract</span>
+                                                </div>
+                                            </div>
+                                            <div className="w-full md:w-auto pt-6 md:pt-0">
+                                                <Button size="lg" className="h-16 px-10 rounded-2xl bg-primary hover:bg-primary/90 font-black shadow-lg shadow-primary/10 w-full md:w-auto transition-all active:scale-95" asChild>
+                                                    <Link href={`mailto:${job.contact_info}`}>
+                                                        Apply Now <ArrowRight className="ml-2 h-5 w-5" />
+                                                    </Link>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <aside className="lg:w-96 space-y-8">
+                        <div className="bg-primary/5 backdrop-blur-xl border border-primary/5 p-10 rounded-[2.5rem] sticky top-32">
+                            <h3 className="text-2xl font-black tracking-tight text-primary mb-6">Employer Services</h3>
+                            <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
+                                Are you a local business looking for talent? Post your job openings here to reach local candidates.
+                            </p>
+                            <Button variant="outline" className="w-full h-16 rounded-2xl font-black border-primary/10 bg-white/50" asChild>
+                                <Link href="/list-your-business">List Your Business</Link>
+                            </Button>
+                        </div>
+                    </aside>
                 </div>
-            )}
+            </div>
         </div>
     )
 }

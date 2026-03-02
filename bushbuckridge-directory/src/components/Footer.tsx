@@ -45,6 +45,11 @@ export default function Footer() {
                                     Local Jobs
                                 </Link>
                             </li>
+                            <li>
+                                <Link href="/pricing" className="text-base text-white/60 hover:text-white transition-colors">
+                                    Pricing Plans
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -52,8 +57,8 @@ export default function Footer() {
                         <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-secondary">Actions</h3>
                         <ul className="space-y-4">
                             <li>
-                                <Link href="/buy-your-spot" className="text-base text-white/60 hover:text-white transition-colors">
-                                    Register Business
+                                <Link href="/list-your-business" className="text-base text-white/60 hover:text-white transition-colors">
+                                    List Your Business
                                 </Link>
                             </li>
                             <li>

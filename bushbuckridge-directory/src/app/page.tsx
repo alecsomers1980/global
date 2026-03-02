@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Search, MapPin, Briefcase, Calendar, Star, BookOpen, Layers } from 'lucide-react'
+import { createClient } from '@/utils/supabase/server'
 
-// Mock Data
+// Mock Data for Quick Tiles (static for now)
 const quickTiles = [
   { name: 'Directory', icon: Layers, href: '/directory', color: 'bg-blue-100 text-blue-600' },
   { name: 'Find a Service', icon: Search, href: '/find-a-service', color: 'bg-emerald-100 text-emerald-600' },
@@ -15,17 +16,27 @@ const quickTiles = [
   { name: 'Spotlight', icon: Star, href: '/spotlight', color: 'bg-yellow-100 text-yellow-600' },
 ]
 
-const featuredBusinesses = [
-  { id: 1, name: 'Bushbuckridge Builders', category: 'Construction', area: 'Thulamahashe', rating: 4.8 },
-  { id: 2, name: 'Savannah Tech Solutions', category: 'IT Services', area: 'Acornhoek', rating: 5.0 },
-  { id: 3, name: 'Local Flavors Catering', category: 'Food & Dining', area: 'Dwarsloop', rating: 4.9 },
-]
+export default async function Home() {
+  const supabase = await createClient()
 
-export default function Home() {
+  // Fetch Featured Businesses with their primary sector and area
+  const { data: realFeatured } = await supabase
+    .from('businesses')
+    .select(`
+      *,
+      sectors(name),
+      areas(name),
+      posts(slug)
+    `)
+    .eq('is_featured', true)
+    .limit(3)
+
+  const featuredList = realFeatured || []
+
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Cinematic Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-32">
         {/* Background Image with Overlay */}
         <div
           className="absolute inset-0 z-0 scale-105"
@@ -49,7 +60,7 @@ export default function Home() {
             Discover trusted local services, premium business opportunities, and the thriving commercial landscape of the Lowveld.
           </p>
 
-          <div className="max-w-3xl mx-auto glass p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-3">
+          <div className="max-w-3xl mx-auto glass-dark p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
               <Input
@@ -62,14 +73,6 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="mt-12 flex items-center justify-center gap-6">
-            <Button size="lg" variant="outline" className="h-14 px-8 border-white/20 text-white hover:bg-white/10 backdrop-blur-md rounded-xl" asChild>
-              <Link href="/find-a-service">Explore Directory</Link>
-            </Button>
-            <Button variant="link" asChild className="text-white hover:text-secondary font-semibold text-lg">
-              <Link href="/buy-your-spot">List your business &rarr;</Link>
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -106,16 +109,16 @@ export default function Home() {
           </Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-          {featuredBusinesses.map((biz) => (
+          {featuredList.map((biz) => (
             <Card key={biz.id} className="group overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 rounded-[2rem]">
               <div className="relative h-64 bg-muted overflow-hidden">
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                  style={{ backgroundImage: `url('https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=800&auto=format&fit=crop')` }} // Generic premium placeholder
+                  style={{ backgroundImage: `url('${biz.logo_url || 'https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=800&auto=format&fit=crop'}')` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <Badge className="absolute top-6 left-6 bg-secondary text-secondary-foreground font-bold px-4 py-1 rounded-full shadow-lg">
-                  {biz.category}
+                  {(biz.sectors as any)?.name}
                 </Badge>
               </div>
               <CardHeader className="pb-4 relative -mt-12 bg-transparent">
@@ -123,20 +126,26 @@ export default function Home() {
                   <div className="flex justify-between items-start gap-4 mb-2">
                     <CardTitle className="text-2xl font-bold line-clamp-1 group-hover:text-primary transition-colors">{biz.name}</CardTitle>
                     <Badge variant="secondary" className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 shrink-0 font-bold border-0">
-                      <Star className="h-4 w-4 mr-1 fill-current" /> {biz.rating}
+                      <Star className="h-4 w-4 mr-1 fill-current" /> {biz.is_verified ? '5.0' : '4.5'}
                     </Badge>
                   </div>
                   <div className="flex items-center text-sm font-medium text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-1.5 text-primary" /> {biz.area}
+                    <MapPin className="h-4 w-4 mr-1.5 text-primary" /> {(biz.areas as any)?.name}
                   </div>
                 </div>
               </CardHeader>
               <CardFooter className="px-6 pb-8 pt-0 flex gap-3">
-                <Button className="flex-1 h-12 rounded-xl bg-green-600 hover:bg-green-700 font-bold shadow-lg shadow-green-600/20">
-                  Quick WhatsApp
-                </Button>
-                <Button variant="outline" className="flex-1 h-12 rounded-xl border-primary/20 hover:bg-primary/5 font-bold">
-                  View Profile
+                {biz.whatsapp && (
+                  <Button className="flex-1 h-12 rounded-xl bg-green-600 hover:bg-green-700 font-bold shadow-lg shadow-green-600/20" asChild>
+                    <a href={`https://wa.me/${biz.whatsapp.replace(/\D/g, '').replace(/^0/, '27')}`} target="_blank" rel="noopener noreferrer">
+                      Quick WhatsApp
+                    </a>
+                  </Button>
+                )}
+                <Button variant="outline" className="flex-1 h-12 rounded-xl border-primary/20 hover:bg-primary/5 font-bold" asChild>
+                  <Link href={`/business/${biz.id}`}>
+                    View Profile
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>

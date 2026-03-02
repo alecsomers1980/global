@@ -4,7 +4,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { redirect } from 'next/navigation'
-import { BookOpen, Download, Shield } from 'lucide-react'
+import { BookOpen, Download, Shield, Sparkles } from 'lucide-react'
+import SecondaryHeader from '@/components/SecondaryHeader'
 
 // The PDF would be stored in Supabase Storage. Update this URL once uploaded.
 const JOURNAL_PDF_URL = process.env.NEXT_PUBLIC_JOURNAL_PDF_URL || '#'
@@ -28,36 +29,60 @@ export default function DownloadJournalPage() {
     }
 
     return (
-        <div className="container max-w-lg mx-auto px-4 py-16 text-center">
-            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6">
-                <BookOpen className="h-10 w-10 text-primary" />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary mb-3">Annual Business Journal</h1>
-            <p className="text-muted-foreground text-lg mb-10 max-w-md mx-auto">
-                Get your free copy of the 2026 Doing Business in Bushbuckridge Directory. Complete with sector guides, key contacts, and area maps.
-            </p>
+        <div className="flex flex-col gap-12 pb-24">
+            <SecondaryHeader
+                title="Business Journal"
+                subtitle="Get your free copy of the 2026 Doing Business in Bushbuckridge Directory. Complete with sector guides and maps."
+                badge="ANNUAL PUBLICATION"
+                backgroundImage="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=2000&auto=format&fit=crop"
+            />
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Get Your Free PDF</CardTitle>
-                    <CardDescription>Enter your email to receive the download. We respect your privacy.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form action={captureEmailAndRedirect} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email Address *</Label>
-                            <Input id="email" name="email" type="email" placeholder="you@example.com" required />
+            <div className="container max-w-2xl mx-auto px-4 -mt-24 relative z-20">
+                <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3.5rem] overflow-hidden">
+                    <div className="absolute top-0 right-0 p-10 pointer-events-none opacity-10">
+                        <BookOpen className="h-32 w-32 text-primary" />
+                    </div>
+
+                    <CardHeader className="p-12 text-center">
+                        <div className="mx-auto h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+                            <Download className="h-10 w-10 text-primary" />
                         </div>
-                        <Button type="submit" className="w-full h-11 gap-2">
-                            <Download className="h-4 w-4" /> Download Now
-                        </Button>
-                    </form>
-                    <p className="text-xs text-muted-foreground mt-4 flex items-center justify-center gap-1">
-                        <Shield className="h-3 w-3" />
-                        We will not share your email with third parties.
-                    </p>
-                </CardContent>
-            </Card>
+                        <CardTitle className="text-4xl font-black tracking-tight mb-4">Digital Access</CardTitle>
+                        <CardDescription className="text-lg font-medium max-w-md mx-auto leading-relaxed">
+                            Enter your professional email to instantly unlock the full annual directory and business guide.
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="px-12 pb-12">
+                        <form action={captureEmailAndRedirect} className="space-y-6">
+                            <div className="space-y-3">
+                                <Label htmlFor="email" className="text-sm font-black uppercase tracking-widest text-primary/40 ml-1">Work Email</Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="your@business.com"
+                                    required
+                                    className="h-16 rounded-2xl border-primary/10 bg-white/50 focus:ring-primary/20 transition-all px-6 text-lg font-medium"
+                                />
+                            </div>
+                            <Button type="submit" className="w-full h-18 text-xl font-black bg-primary hover:bg-primary/90 rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95 gap-3">
+                                <Download className="h-6 w-6" /> Download PDF Guide
+                            </Button>
+                        </form>
+
+                        <div className="mt-10 pt-8 border-t border-primary/5 flex flex-col items-center gap-4">
+                            <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground/60 uppercase tracking-tighter">
+                                <Shield className="h-4 w-4 text-emerald-500" />
+                                <span>Zero-Spam Policy • Managed by RVR Inc</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground/40 font-medium text-center">
+                                By downloading, you agree to receive essential business updates. Your data remains private and protected under POPIA.
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }

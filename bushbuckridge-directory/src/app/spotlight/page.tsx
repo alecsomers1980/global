@@ -1,10 +1,11 @@
 import { createClient } from '@/utils/supabase/server'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar, ArrowRight, Star } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { Image as ImageIcon, ArrowRight } from 'lucide-react'
+import SecondaryHeader from '@/components/SecondaryHeader'
 
 export default async function SpotlightPage() {
     const supabase = await createClient()
@@ -12,77 +13,97 @@ export default async function SpotlightPage() {
     const { data: posts, error } = await supabase
         .from('posts')
         .select(`
-      id,
-      title,
-      slug,
-      content,
-      image_url,
-      created_at,
-      businesses ( name, sectors (name) )
-    `)
+            *,
+            businesses (
+                id,
+                name,
+                logo_url,
+                sectors ( name )
+            )
+        `)
         .order('created_at', { ascending: false })
 
     return (
-        <div className="container mx-auto px-4 py-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
-                <div>
-                    <Badge variant="secondary" className="mb-3">Editorial</Badge>
-                    <h1 className="text-3xl font-bold tracking-tight text-primary mb-2">Spotlight</h1>
-                    <p className="text-muted-foreground max-w-2xl">
-                        In-depth profiles, success stories, and features on the businesses driving growth in the Bushbuckridge region.
-                    </p>
-                </div>
-            </div>
+        <div className="flex flex-col gap-12 pb-24">
+            <SecondaryHeader
+                title="Business Spotlight"
+                subtitle="Deep dives into the stories, people, and innovations driving the Bushbuckridge economy."
+                badge="PREMIUM ARTICLES"
+            />
 
-            {error ? (
-                <div className="p-4 text-red-500 bg-red-50 rounded-lg">Failed to load articles.</div>
-            ) : posts?.length === 0 ? (
-                <div className="text-center py-20 bg-muted/30 rounded-2xl border border-dashed">
-                    <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium">No spotlight articles yet</h3>
-                    <p className="text-muted-foreground">Check back soon for features on local businesses.</p>
-                </div>
-            ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {posts?.map((post) => (
-                        <Card key={post.id} className="overflow-hidden flex flex-col hover:border-primary/50 transition-colors">
-                            <div className="h-48 bg-muted relative flex items-center justify-center overflow-hidden">
-                                {post.image_url ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={post.image_url} alt={post.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-500" />
-                                ) : (
-                                    <ImageIcon className="h-8 w-8 text-muted-foreground opacity-50" />
-                                )}
-                            </div>
-                            <CardHeader className="pb-3">
-                                <div className="flex justify-between items-center mb-2">
-                                    <Badge variant="outline" className="text-xs font-normal">
-                                        {post.businesses ? (Array.isArray(post.businesses) ? (post.businesses as any[])[0]?.sectors?.name : (post.businesses as any)?.sectors?.name) || 'Local Business' : 'Local Business'}
+            <div className="container mx-auto px-4 -mt-24 relative z-20">
+                {error ? (
+                    <div className="p-8 text-sm text-red-500 bg-red-50 rounded-[2rem] border border-red-200 shadow-sm mb-8 text-center">
+                        Failed to load articles. Please refresh the page.
+                    </div>
+                ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {posts?.map((post) => (
+                            <Card key={post.id} className="group flex flex-col overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 rounded-[2.5rem]">
+                                <div className="relative h-72 bg-muted overflow-hidden">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        src={post.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop'}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                    <Badge className="absolute top-6 left-6 bg-secondary text-secondary-foreground font-bold px-4 py-1 rounded-full shadow-lg">
+                                        {(post.businesses as any)?.sectors?.name || 'Venture'}
                                     </Badge>
-                                    <time className="text-xs text-muted-foreground">
-                                        {format(new Date(post.created_at), 'MMM d, yyyy')}
-                                    </time>
                                 </div>
-                                <CardTitle className="line-clamp-2 hover:text-primary transition-colors">
-                                    <Link href={`/spotlight/${post.slug}`}>{post.title}</Link>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <p className="text-sm text-muted-foreground line-clamp-3">
-                                    {post.content.replace(/<[^>]*>?/gm, '')} {/* Strip basic HTML for excerpt */}
-                                </p>
-                            </CardContent>
-                            <CardFooter>
-                                <Button variant="ghost" className="w-full justify-between" asChild>
-                                    <Link href={`/spotlight/${post.slug}`}>
-                                        Read full story <ArrowRight className="h-4 w-4" />
+
+                                <CardHeader className="px-8 pt-8 pb-4">
+                                    <Link href={`/business/${(post.businesses as any)?.id}`} className="flex items-center gap-3 mb-4 group/author">
+                                        <div className="h-10 w-10 rounded-full border-2 border-primary/20 overflow-hidden bg-white shadow-sm flex-shrink-0 group-hover/author:border-primary transition-colors">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={(post.businesses as any)?.logo_url || 'https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=200&auto=format&fit=crop'}
+                                                alt={(post.businesses as any)?.name}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </div>
+                                        <span className="text-sm font-bold text-muted-foreground truncate group-hover/author:text-primary transition-colors">{(post.businesses as any)?.name}</span>
                                     </Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            )}
+                                    <CardTitle className="text-2xl font-black tracking-tight leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                                        {post.title}
+                                    </CardTitle>
+                                </CardHeader>
+
+                                <CardContent className="px-8 flex-1">
+                                    <p className="text-muted-foreground line-clamp-3 font-medium italic mb-6">
+                                        {post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'}
+                                    </p>
+                                    <div className="flex items-center text-xs font-bold uppercase tracking-widest text-primary/40">
+                                        <Calendar className="h-4 w-4 mr-1.5" />
+                                        {format(new Date(post.created_at), 'MMMM dd, yyyy')}
+                                    </div>
+                                </CardContent>
+
+                                <CardFooter className="px-8 pb-10 pt-4">
+                                    <Button className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-bold shadow-lg shadow-primary/10 transition-transform active:scale-95" asChild>
+                                        <Link href={`/spotlight/${post.slug}`}>
+                                            Read Full Article <ArrowRight className="ml-2 h-5 w-5" />
+                                        </Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+
+                        {(!posts || posts.length === 0) && (
+                            <div className="col-span-full py-32 text-center bg-muted/30 rounded-[3rem] border border-dashed flex flex-col items-center justify-center">
+                                <div className="h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
+                                    <Star className="h-10 w-10 text-primary/10" />
+                                </div>
+                                <h3 className="text-2xl font-bold">New Stories Coming Soon</h3>
+                                <p className="text-muted-foreground max-w-sm mx-auto font-medium mt-2">
+                                    We're currently curating the next round of business success stories from the Bushbuckridge region.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -67,7 +68,7 @@ export default function EnquiriesPage() {
                     <div className="pt-4 border-t">
                         <p className="text-sm text-muted-foreground">
                             Looking to list your business? Head over to our{' '}
-                            <a href="/buy-your-spot" className="text-primary font-medium hover:underline">Reserve Your Spot</a>{' '}
+                            <Link href="/list-your-business" className="text-primary font-medium hover:underline">List Your Business</Link>{' '}
                             page.
                         </p>
                     </div>
