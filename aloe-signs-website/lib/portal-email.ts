@@ -30,9 +30,9 @@ export async function sendPortalEmail(opts: {
   text: string;
   preview?: string;
 }) {
-  const fromEmail = process.env.EMAIL_FROM || process.env.SMTP_USER;
+  const fromField = process.env.EMAIL_FROM || `"Aloe Signs" <${process.env.SMTP_USER}>`;
   await transporter.sendMail({
-    from: `"Aloe Signs" <${fromEmail}>`,
+    from: fromField,
     to: opts.to,
     subject: opts.subject,
     text: opts.text,
