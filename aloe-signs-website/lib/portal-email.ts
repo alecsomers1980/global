@@ -31,13 +31,20 @@ export async function sendPortalEmail(opts: {
   preview?: string;
 }) {
   const fromField = process.env.EMAIL_FROM || `"Aloe Signs" <${process.env.SMTP_USER}>`;
-  await transporter.sendMail({
-    from: fromField,
-    to: opts.to,
-    subject: opts.subject,
-    text: opts.text,
-    html: buildEmailHtml(opts.title, opts.body, opts.preview),
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: fromField,
+      to: opts.to,
+      subject: opts.subject,
+      text: opts.text,
+      html: buildEmailHtml(opts.title, opts.body, opts.preview),
+    });
+    console.log(`Email successfully sent to ${opts.to}. MessageId: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    console.error(`Failed to send email to ${opts.to}:`, error);
+    throw error;
+  }
 }
 
 // ─── Email Verification ───────────────────────────────────────────────────────

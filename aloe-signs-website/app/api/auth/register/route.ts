@@ -36,8 +36,7 @@ export async function POST(req: NextRequest) {
                 full_name: fullName,
                 email: email,
                 company: company || null,
-                contact_number: contactNumber,
-                updated_at: new Date().toISOString()
+                contact_number: contactNumber
             });
 
         if (profileError) {
