@@ -81,8 +81,8 @@ export default function ContactPage() {
                                         <div>
                                             <h3 className="font-semibold text-slate-DEFAULT">Visit Us</h3>
                                             <p className="text-slate-light leading-relaxed mt-1">
-                                                12 Industrial Road<br />
-                                                Riverside Industrial Park<br />
+                                                5 Meidlinger Street<br />
+                                                Nelspruit Central<br />
                                                 Nelspruit, 1200
                                             </p>
                                         </div>
@@ -94,10 +94,21 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-slate-DEFAULT">Call Us</h3>
-                                            <p className="text-slate-light leading-relaxed mt-1">
-                                                <a href="tel:+27137521111" className="hover:text-orange-DEFAULT transition-colors">+27 13 752 1111</a> <br />
-                                                <span className="text-xs text-slate-400">Sales & Support</span>
-                                            </p>
+                                            <div className="text-slate-light leading-relaxed mt-1 space-y-1">
+                                                <div>
+                                                    <span className="font-medium text-slate-600">Office:</span>{' '}
+                                                    <a href="tel:+27137522471" className="hover:text-orange-DEFAULT transition-colors">+27 13 752 2471</a>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-slate-600">Dawie Rieger:</span>{' '}
+                                                    <a href="tel:+27609961182" className="hover:text-orange-DEFAULT transition-colors">060 996 1182</a>
+                                                </div>
+                                                <div>
+                                                    <span className="font-medium text-slate-600">Estelle Rieger:</span>{' '}
+                                                    <a href="tel:+27823235884" className="hover:text-orange-DEFAULT transition-colors">082 323 5884</a>
+                                                </div>
+                                                <span className="text-xs text-slate-400 block mt-1">Sales & Support</span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -108,8 +119,7 @@ export default function ContactPage() {
                                         <div>
                                             <h3 className="font-semibold text-slate-DEFAULT">Email Us</h3>
                                             <p className="text-slate-light leading-relaxed mt-1">
-                                                <a href="mailto:info@spanslab.co.za" className="hover:text-orange-DEFAULT transition-colors">info@spanslab.co.za</a> <br />
-                                                <a href="mailto:sales@spanslab.co.za" className="hover:text-orange-DEFAULT transition-colors">sales@spanslab.co.za</a>
+                                                <a href="mailto:spanslab@aeronet.co.za" className="hover:text-orange-DEFAULT transition-colors">spanslab@aeronet.co.za</a>
                                             </p>
                                         </div>
                                     </div>
@@ -130,25 +140,17 @@ export default function ContactPage() {
                                 </div>
                             </div>
 
-                            {/* Map Placeholder */}
-                            <div className="w-full h-64 bg-slate-200 rounded-xl relative overflow-hidden">
-                                <div className="absolute inset-0 flex items-center justify-center bg-slate-100">
-                                    <div className="text-center">
-                                        <MapPin className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                                        <span className="text-slate-400 font-medium">Google Maps Integration</span>
-                                    </div>
-                                </div>
-                                {/* 
-                // Actual Google Maps Embed
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=..." 
-                    width="100%" 
-                    height="100%" 
-                    style={{border:0}} 
-                    allowFullScreen 
-                    loading="lazy" 
-                /> 
-                */}
+                            {/* Google Map Embed */}
+                            <div className="w-full h-80 bg-slate-200 rounded-xl relative overflow-hidden shadow-inner border border-border/60">
+                                <iframe
+                                    src="https://maps.google.com/maps?q=5%20Meidlinger%20Street,%20Nelspruit&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0 }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                />
                             </div>
                         </div>
 

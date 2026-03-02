@@ -4,23 +4,23 @@ import Image from "next/image";
 
 const team = [
     {
-        name: "Marius Venter",
-        role: "Founder & CEO",
+        name: "Estelle Rieger",
+        role: "(Title)",
         image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop",
     },
     {
-        name: "Sarah Nkosi",
-        role: "Operations Director",
+        name: "Dawie Rieger",
+        role: "(Title)",
         image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop",
     },
     {
-        name: "David Smit",
-        role: "Technical Manager",
+        name: "Michiel Griesel",
+        role: "(Title)",
         image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
     },
     {
-        name: "Lerato Khumalo",
-        role: "Sales Lead",
+        name: "Wendy",
+        role: "(Title)",
         image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop",
     },
 ];

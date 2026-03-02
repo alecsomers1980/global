@@ -7,8 +7,8 @@ import { usePathname } from 'next/navigation';
 export default function Footer() {
     const pathname = usePathname();
 
-    // Hide footer on the Under Construction gateway
-    if (pathname === '/') {
+    // Hide footer on the Under Construction gateway and any portal pages
+    if (pathname === '/' || pathname.startsWith('/portal')) {
         return null;
     }
 

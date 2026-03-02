@@ -6,7 +6,7 @@ const values = [
     {
         icon: Award,
         title: "Quality First",
-        description: "We never compromise on the strength or finish of our products. SABS standards are our minimum.",
+        description: "We never compromise on the strength or finish of our products. Industrial standards are our minimum.",
     },
     {
         icon: Shield,

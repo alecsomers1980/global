@@ -49,15 +49,15 @@ const config: Config = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
-                // Spanslab specific colors
+                // Spanslab specific colors - Synchronized with globals.css HSL
                 slate: {
-                    DEFAULT: "#334155",
-                    light: "#64748B",
-                    dark: "#0F172A",
+                    DEFAULT: "#334155", // 215 25% 27%
+                    light: "#64748B",   // 215 16% 47%
+                    dark: "#0F1724",    // 217 33% 14% (Adjusted for contrast)
                 },
                 orange: {
-                    DEFAULT: "#F97316", // Safety Orange
-                    hover: "#EA580C",
+                    DEFAULT: "#ba3b3b", // Brand Red
+                    hover: "#9b3131",
                 },
                 concrete: {
                     light: "#F8FAFC",

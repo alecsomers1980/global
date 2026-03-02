@@ -1,17 +1,19 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
 
 export function Testimonials() {
     return (
-        <section className="py-20 bg-white">
+        <section className="py-24 bg-concrete-DEFAULT relative">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-slate-DEFAULT mb-4">
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-dark mb-6 tracking-tight">
                         Trusted by Builders
                     </h2>
-                    <p className="text-slate-light max-w-2xl mx-auto text-lg">
-                        Hear from contractors and developers who rely on Spanslab.
+                    <div className="w-20 h-1 bg-orange-DEFAULT mx-auto mb-6 rounded-full" />
+                    <p className="text-slate-light max-w-2xl mx-auto text-lg leading-relaxed">
+                        Hear from the contractors and developers who rely on Spanslab for their most critical projects.
                     </p>
                 </div>
 
@@ -33,16 +35,28 @@ export function Testimonials() {
                             role: "Homeowner",
                         },
                     ].map((testimonial, i) => (
-                        <div key={i} className="bg-concrete-light p-8 rounded-2xl border border-border/50 relative">
-                            <Quote className="absolute top-6 left-6 h-8 w-8 text-orange-DEFAULT/20" />
-                            <p className="text-slate-DEFAULT text-base leading-relaxed italic mb-6 pt-6 relative z-10">
+                        <motion.div 
+                            key={i}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                            className="bg-white p-10 rounded-3xl border border-border/40 relative shadow-sm hover:shadow-xl transition-shadow duration-500"
+                        >
+                            <Quote className="absolute top-8 left-8 h-10 w-10 text-orange-DEFAULT/10" />
+                            <p className="text-slate-dark text-lg leading-relaxed italic mb-8 pt-8 relative z-10 font-light">
                                 "{testimonial.quote}"
                             </p>
-                            <div>
-                                <h4 className="font-bold text-slate-DEFAULT">{testimonial.author}</h4>
-                                <p className="text-xs text-orange-DEFAULT font-medium">{testimonial.role}</p>
+                            <div className="flex items-center space-x-4 border-t border-border/40 pt-6">
+                                <div className="w-12 h-12 bg-orange-DEFAULT/10 rounded-full flex items-center justify-center text-orange-DEFAULT font-bold text-lg">
+                                    {testimonial.author.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-slate-dark">{testimonial.author}</h4>
+                                    <p className="text-sm text-orange-DEFAULT font-semibold tracking-wide uppercase">{testimonial.role}</p>
+                                </div>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>

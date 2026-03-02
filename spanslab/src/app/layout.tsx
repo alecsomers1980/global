@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Public_Sans, JetBrains_Mono } from "next/font/google"; // Changed imports
+import { Public_Sans, JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
 import "./globals.css";
 
 const publicSans = Public_Sans({
@@ -18,8 +19,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Spanslab - Professional Concrete Products & Construction Materials",
-  description: "Nelspruit's trusted supplier of Rib & Block slabs and Paving. Quality construction materials delivered with precision.",
+  title: "Spanslab - Professional Concrete Bricks, Slabs & Paving",
+  description: "Nelspruit's trusted manufacturer of Cement Bricks, Maxi Bricks, Rib & Block slabs and Paving. Quality construction materials delivered with precision.",
   openGraph: {
     type: "website",
     locale: "en_ZA",
@@ -53,6 +54,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <WhatsAppCTA />
       </body>
     </html>
   );

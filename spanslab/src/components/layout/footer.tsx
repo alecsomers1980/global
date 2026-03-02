@@ -8,16 +8,15 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                     {/* Company Info */}
                     <div className="space-y-4">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-slate-DEFAULT rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">S</span>
-                            </div>
-                            <span className="text-slate-DEFAULT font-bold text-xl tracking-tight">
-                                Spanslab
-                            </span>
+                        <Link href="/" className="flex items-center">
+                            <img
+                                src="/images/Spanslab-Logo.png"
+                                alt="Spanslab Logo"
+                                className="h-10 w-auto object-contain"
+                            />
                         </Link>
                         <p className="text-slate-light text-sm leading-relaxed max-w-xs">
-                            Nelspruit&apos;s trusted supplier of Rib & Block slabs and Paving. Building strong foundations for over 15 years.
+                            Nelspruit&apos;s trusted supplier of Cement Bricks, Maxi Bricks, Slabs and Paving. Building strong foundations for over 15 years.
                         </p>
                         <div className="flex space-x-4 pt-2">
                             <a href="#" className="text-slate-light hover:text-orange-DEFAULT transition-colors">
@@ -42,7 +41,7 @@ export function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/products" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
+                                <Link href="/products/cement-stock-bricks" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
                                     Our Products
                                 </Link>
                             </li>
@@ -64,17 +63,17 @@ export function Footer() {
                         <h3 className="text-slate-DEFAULT font-semibold mb-6">Products</h3>
                         <ul className="space-y-3">
                             <li>
-                                <Link href="/products?category=rib-and-block" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
+                                <Link href="/products/rib-and-block-system" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
                                     Rib & Block Slabs
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/products?category=paving" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
+                                <Link href="/products/50mm-bevel" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
                                     Bevel Paving
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/products?category=building-materials" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
+                                <Link href="/products/cement-stock-bricks" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
                                     Building Materials
                                 </Link>
                             </li>
@@ -88,21 +87,29 @@ export function Footer() {
                             <li className="flex items-start space-x-3">
                                 <MapPin className="w-5 h-5 text-orange-DEFAULT shrink-0 mt-0.5" />
                                 <span className="text-slate-light text-sm">
-                                    12 Industrial Road,<br />
+                                    5 Meidlinger Street,<br />
                                     Nelspruit, Mpumalanga,<br />
                                     South Africa, 1200
                                 </span>
                             </li>
-                            <li className="flex items-center space-x-3">
-                                <Phone className="w-5 h-5 text-orange-DEFAULT shrink-0" />
-                                <a href="tel:+27137521111" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
-                                    +27 13 752 1111
-                                </a>
+                            <li className="flex items-start space-x-3">
+                                <Phone className="w-5 h-5 text-orange-DEFAULT shrink-0 mt-0.5" />
+                                <div className="flex flex-col space-y-1">
+                                    <span className="text-slate-light text-sm">
+                                        <span className="font-medium">Office:</span> <a href="tel:+27137522471" className="hover:text-orange-DEFAULT transition-colors">+27 13 752 2471</a>
+                                    </span>
+                                    <span className="text-slate-light text-sm">
+                                        <span className="font-medium">Dawie:</span> <a href="tel:+27609961182" className="hover:text-orange-DEFAULT transition-colors">060 996 1182</a>
+                                    </span>
+                                    <span className="text-slate-light text-sm">
+                                        <span className="font-medium">Estelle:</span> <a href="tel:+27823235884" className="hover:text-orange-DEFAULT transition-colors">082 323 5884</a>
+                                    </span>
+                                </div>
                             </li>
                             <li className="flex items-center space-x-3">
                                 <Mail className="w-5 h-5 text-orange-DEFAULT shrink-0" />
-                                <a href="mailto:info@spanslab.co.za" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
-                                    info@spanslab.co.za
+                                <a href="mailto:spanslab@aeronet.co.za" className="text-slate-light hover:text-orange-DEFAULT transition-colors text-sm">
+                                    spanslab@aeronet.co.za
                                 </a>
                             </li>
                         </ul>
