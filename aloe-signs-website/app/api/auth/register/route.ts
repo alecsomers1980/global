@@ -12,6 +12,17 @@ export async function POST(req: NextRequest) {
 
         const adminSupabase = createAdminSupabase();
 
+        // 0. Check for existing contact number
+        const { data: existingProfile, error: searchError } = await adminSupabase
+            .from('profiles')
+            .select('id')
+            .eq('contact_number', contactNumber)
+            .maybeSingle();
+
+        if (existingProfile) {
+            return NextResponse.json({ error: 'A user with this contact number is already registered.' }, { status: 400 });
+        }
+
         // 1. Create the user
         const { data: { user }, error: signUpError } = await adminSupabase.auth.admin.createUser({
             email,
