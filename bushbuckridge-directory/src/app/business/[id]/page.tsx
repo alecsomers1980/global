@@ -19,6 +19,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
+import { trackAnalyticsEvent } from '@/app/actions/analytics'
+import { TrackLink } from '@/components/TrackLink'
 
 export default async function BusinessProfilePage({
     params,
@@ -41,6 +43,9 @@ export default async function BusinessProfilePage({
     if (error || !business) {
         notFound()
     }
+
+    // Record Profile View (fire and forget)
+    trackAnalyticsEvent(business.id, 'profile_view')
 
     return (
         <div className="flex flex-col pb-24">
@@ -145,7 +150,7 @@ export default async function BusinessProfilePage({
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">Phone Number</p>
-                                            <a href={`tel:${business.phone}`} className="font-black text-lg block">{business.phone}</a>
+                                            <TrackLink href={`tel:${business.phone}`} businessId={business.id} eventType="phone_click" className="font-black text-lg block hover:text-primary transition-colors">{business.phone}</TrackLink>
                                         </div>
                                     </div>
                                 )}
@@ -169,7 +174,7 @@ export default async function BusinessProfilePage({
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">Official Website</p>
-                                            <a href={business.website} target="_blank" rel="noopener noreferrer" className="font-black text-base block truncate hover:text-primary">{business.website.replace(/^https?:\/\//, '')}</a>
+                                            <TrackLink href={business.website} businessId={business.id} eventType="website_click" target="_blank" rel="noopener noreferrer" className="font-black text-base block truncate hover:text-primary transition-colors">{business.website.replace(/^https?:\/\//, '')}</TrackLink>
                                         </div>
                                     </div>
                                 )}
@@ -178,9 +183,9 @@ export default async function BusinessProfilePage({
                             <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-primary/10">
                                 {business.whatsapp && (
                                     <Button className="col-span-2 h-16 bg-[#25D366] hover:bg-[#1ea855] text-white font-black text-lg rounded-2xl shadow-lg shadow-green-600/20" asChild>
-                                        <a href={`https://wa.me/${business.whatsapp.replace(/\D/g, '').replace(/^0/, '27')}`} target="_blank" rel="noopener noreferrer">
+                                        <TrackLink href={`https://wa.me/${business.whatsapp.replace(/\D/g, '').replace(/^0/, '27')}`} businessId={business.id} eventType="whatsapp_click" target="_blank" rel="noopener noreferrer">
                                             <MessageCircle className="h-5 w-5 mr-3" /> WhatsApp
-                                        </a>
+                                        </TrackLink>
                                     </Button>
                                 )}
 

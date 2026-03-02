@@ -33,7 +33,22 @@ export default async function FindServicePage({
         query = query.eq('area_id', searchParams.area)
     }
 
-    const { data: businesses } = await query.order('is_featured', { ascending: false }).order('name')
+    const { data: fetchedBusinesses } = await query
+
+    // Sort: Featured first, then Premium > Enhanced > Standard, then Alphabetical
+    const tierWeight: Record<string, number> = { premium: 3, enhanced: 2, standard: 1 }
+    const businesses = fetchedBusinesses?.sort((a, b) => {
+        if (a.is_featured && !b.is_featured) return -1
+        if (!a.is_featured && b.is_featured) return 1
+
+        const weightA = tierWeight[a.package_tier || 'standard'] || 1
+        const weightB = tierWeight[b.package_tier || 'standard'] || 1
+
+        if (weightA !== weightB) return weightB - weightA
+
+        return a.name.localeCompare(b.name)
+    })
+
     const bizList = businesses ?? []
 
     return (
