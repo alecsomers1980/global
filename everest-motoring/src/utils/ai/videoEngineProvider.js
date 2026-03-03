@@ -14,8 +14,23 @@ export async function startCinematicClips(scriptArray, carPayload) {
         // Identify the images we have
         const heroImg = carPayload.main_image_url;
         const galleryImg1 = carPayload.gallery_urls && carPayload.gallery_urls.length > 0 ? carPayload.gallery_urls[0] : heroImg;
-        const galleryImg2 = carPayload.gallery_urls && carPayload.gallery_urls.length > 1 ? carPayload.gallery_urls[1] : heroImg;
-        const sceneImages = [heroImg, galleryImg1, galleryImg2];
+        const galleryImg2 = carPayload.gallery_urls && carPayload.gallery_urls.length > 1 ? carPayload.gallery_urls[1] : galleryImg1;
+        const galleryImg3 = carPayload.gallery_urls && carPayload.gallery_urls.length > 2 ? carPayload.gallery_urls[2] : heroImg;
+        const galleryImg4 = carPayload.gallery_urls && carPayload.gallery_urls.length > 3 ? carPayload.gallery_urls[3] : galleryImg3;
+
+        // Map images to scenes based on the expected 5-scene flow if possible:
+        // Scene 1: Front/Side (heroImg)
+        // Scene 2: Back/Side (galleryImg1 or galleryImg2 depending on how they upload, we'll try to use variety)
+        // Scene 3: Interior (galleryImg2 or galleryImg3)
+        // Scene 4: Dashboard/Driver Seat (galleryImg3 or galleryImg4)
+        // Scene 5: Side View (galleryImg4 or fallback to heroImg)
+        const sceneImages = [
+            heroImg,       // Scene 1 (Front/Side B-Roll)
+            galleryImg1,   // Scene 2 (Back/Side Intro)
+            galleryImg2,   // Scene 3 (Interior Overview)
+            galleryImg3,   // Scene 4 (RHD Driver Seat)
+            galleryImg4    // Scene 5 (Side Profile Closing)
+        ];
 
         for (let i = 0; i < scriptArray.length; i++) {
             const scene = scriptArray[i];
@@ -62,7 +77,7 @@ export async function startCinematicClips(scriptArray, carPayload) {
 
         // Return all task IDs so the client can manage polling
         const tasks = await Promise.all(taskPromises);
-        console.log(`[Video Engine] All 3 clips started successfully. Task IDs:`, tasks);
+        console.log(`[Video Engine] All ${scriptArray.length} clips started successfully. Task IDs:`, tasks);
         return tasks;
 
     } catch (error) {
