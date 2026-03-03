@@ -22,8 +22,8 @@ export default function Header() {
     return (
         <header className="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
-                <div className="glass-dark h-20 w-full max-w-7xl rounded-[2rem] flex items-center justify-between px-8 shadow-2xl pointer-events-auto border-white/10 backdrop-blur-2xl">
-                    <div className="flex gap-6 md:gap-10">
+                <div className="glass-dark h-20 w-full max-w-7xl rounded-[2rem] flex items-center justify-between px-4 xl:px-8 shadow-2xl pointer-events-auto border-white/10 backdrop-blur-2xl">
+                    <div className="flex gap-4 xl:gap-10">
                         <Link href="/" className="flex items-center space-x-3 group">
                             <div className="bg-secondary text-secondary-foreground h-10 w-10 rounded-xl flex items-center justify-center font-black text-xl shadow-lg transition-transform group-hover:scale-110">
                                 B
@@ -35,12 +35,12 @@ export default function Header() {
                                 </span>
                             </div>
                         </Link>
-                        <nav className="hidden lg:flex gap-8">
+                        <nav className="hidden lg:flex gap-4 xl:gap-8">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="flex items-center text-sm font-bold text-white/70 transition-all hover:text-secondary hover:scale-105"
+                                    className="flex items-center text-sm font-bold text-white/70 transition-all hover:text-secondary hover:scale-105 whitespace-nowrap"
                                 >
                                     {link.name}
                                 </Link>
