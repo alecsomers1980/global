@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button'
 export default async function AdminLoginPage({
     searchParams,
 }: {
-    searchParams: { message: string }
+    searchParams: Promise<{ message: string }>
 }) {
     const supabase = await createClient()
+    const resolvedParams = await searchParams;
     const { data: { session } } = await supabase.auth.getSession()
 
     // If already logged in, redirect to dashboard
@@ -64,8 +65,8 @@ export default async function AdminLoginPage({
                             </div>
                             <Input id="password" name="password" type="password" required />
                         </div>
-                        {searchParams?.message && (
-                            <p className="text-sm text-destructive">{searchParams.message}</p>
+                        {resolvedParams?.message && (
+                            <p className="text-sm text-destructive">{resolvedParams.message}</p>
                         )}
                         <Button type="submit" className="w-full">
                             Login

@@ -11,9 +11,10 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 export default async function FindServicePage({
     searchParams,
 }: {
-    searchParams: { q?: string; sector?: string; area?: string }
+    searchParams: Promise<{ q?: string; sector?: string; area?: string }>
 }) {
     const supabase = await createClient()
+    const resolvedParams = await searchParams;
 
     const { data: sectors } = await supabase.from('sectors').select('id, name').order('name')
     const { data: areas } = await supabase.from('areas').select('id, name').order('name')
@@ -23,14 +24,14 @@ export default async function FindServicePage({
         .select('*, sectors(name), areas(name)')
         .eq('status', 'active')
 
-    if (searchParams.q) {
-        query = query.or(`name.ilike.%${searchParams.q}%,description.ilike.%${searchParams.q}%`)
+    if (resolvedParams.q) {
+        query = query.or(`name.ilike.%${resolvedParams.q}%,description.ilike.%${resolvedParams.q}%`)
     }
-    if (searchParams.sector && searchParams.sector !== 'all') {
-        query = query.eq('sector_id', searchParams.sector)
+    if (resolvedParams.sector && resolvedParams.sector !== 'all') {
+        query = query.eq('sector_id', resolvedParams.sector)
     }
-    if (searchParams.area && searchParams.area !== 'all') {
-        query = query.eq('area_id', searchParams.area)
+    if (resolvedParams.area && resolvedParams.area !== 'all') {
+        query = query.eq('area_id', resolvedParams.area)
     }
 
     const { data: fetchedBusinesses } = await query
@@ -67,7 +68,7 @@ export default async function FindServicePage({
                             <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-primary/40" />
                             <Input
                                 name="q"
-                                defaultValue={searchParams.q}
+                                defaultValue={resolvedParams.q}
                                 placeholder="e.g. plumber, car wash, accountant, catering..."
                                 className="pl-16 h-16 text-lg border-0 shadow-inner bg-muted/50 rounded-2xl focus-visible:ring-primary/20"
                             />
@@ -75,7 +76,7 @@ export default async function FindServicePage({
                         <div className="grid sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-2">Sector</label>
-                                <Select name="sector" defaultValue={searchParams.sector || 'all'}>
+                                <Select name="sector" defaultValue={resolvedParams.sector || 'all'}>
                                     <SelectTrigger className="h-14 bg-muted/30 border-0 rounded-xl text-base font-medium">
                                         <SelectValue placeholder="All Sectors" />
                                     </SelectTrigger>
@@ -87,7 +88,7 @@ export default async function FindServicePage({
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-2">Area</label>
-                                <Select name="area" defaultValue={searchParams.area || 'all'}>
+                                <Select name="area" defaultValue={resolvedParams.area || 'all'}>
                                     <SelectTrigger className="h-14 bg-muted/30 border-0 rounded-xl text-base font-medium">
                                         <SelectValue placeholder="All Areas" />
                                     </SelectTrigger>

@@ -10,9 +10,10 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 export default async function SpotlightDetailPage({
     params,
 }: {
-    params: { slug: string }
+    params: Promise<{ slug: string }>
 }) {
     const supabase = await createClient()
+    const { slug } = await params;
 
     const { data: post, error } = await supabase
         .from('posts')
@@ -24,7 +25,7 @@ export default async function SpotlightDetailPage({
                 areas (name)
             )
         `)
-        .eq('slug', params.slug)
+        .eq('slug', slug)
         .single()
 
     if (error || !post) {

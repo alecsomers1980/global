@@ -17,9 +17,10 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 export default async function DirectoryPage({
     searchParams,
 }: {
-    searchParams: { q?: string; sector?: string; area?: string }
+    searchParams: Promise<{ q?: string; sector?: string; area?: string }>
 }) {
     const supabase = await createClient()
+    const resolvedParams = await searchParams;
 
     // 1. Fetch Taxonomies for Filters
     const { data: sectors } = await supabase.from('sectors').select('id, name').order('name')
@@ -36,14 +37,14 @@ export default async function DirectoryPage({
         `)
         .eq('status', 'active')
 
-    if (searchParams.q) {
-        query = query.ilike('name', `%${searchParams.q}%`)
+    if (resolvedParams.q) {
+        query = query.ilike('name', `%${resolvedParams.q}%`)
     }
-    if (searchParams.sector && searchParams.sector !== 'all') {
-        query = query.eq('sector_id', searchParams.sector)
+    if (resolvedParams.sector && resolvedParams.sector !== 'all') {
+        query = query.eq('sector_id', resolvedParams.sector)
     }
-    if (searchParams.area && searchParams.area !== 'all') {
-        query = query.eq('area_id', searchParams.area)
+    if (resolvedParams.area && resolvedParams.area !== 'all') {
+        query = query.eq('area_id', resolvedParams.area)
     }
 
     const { data: fetchedBusinesses, error } = await query
@@ -80,7 +81,7 @@ export default async function DirectoryPage({
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/40" />
                                 <Input
                                     name="q"
-                                    defaultValue={searchParams.q}
+                                    defaultValue={resolvedParams.q}
                                     placeholder="Business name or keyword..."
                                     className="pl-12 h-14 bg-muted/50 border-0 rounded-xl font-medium"
                                 />
@@ -89,7 +90,7 @@ export default async function DirectoryPage({
 
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-2">Sector</label>
-                            <Select name="sector" defaultValue={searchParams.sector || 'all'}>
+                            <Select name="sector" defaultValue={resolvedParams.sector || 'all'}>
                                 <SelectTrigger className="h-14 bg-muted/30 border-0 rounded-xl font-medium">
                                     <SelectValue placeholder="All Sectors" />
                                 </SelectTrigger>
@@ -104,7 +105,7 @@ export default async function DirectoryPage({
 
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-2">Area</label>
-                            <Select name="area" defaultValue={searchParams.area || 'all'}>
+                            <Select name="area" defaultValue={resolvedParams.area || 'all'}>
                                 <SelectTrigger className="h-14 bg-muted/30 border-0 rounded-xl font-medium">
                                     <SelectValue placeholder="All Areas" />
                                 </SelectTrigger>

@@ -25,9 +25,10 @@ import { TrackLink } from '@/components/TrackLink'
 export default async function BusinessProfilePage({
     params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
     const supabase = await createClient()
+    const { id } = await params;
 
     const { data: business, error } = await supabase
         .from('businesses')
@@ -37,7 +38,7 @@ export default async function BusinessProfilePage({
             areas (name),
             posts (*)
         `)
-        .eq('id', params.id)
+        .eq('id', id)
         .single()
 
     if (error || !business) {
