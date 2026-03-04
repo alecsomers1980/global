@@ -35,14 +35,14 @@ export default function CommunityPulse() {
                         </div>
                         <div className="space-y-4">
                             {[
-                                { date: "TOMORROW / 09:00", title: "Business Networking Forum", loc: "Civic Centre, Hub A" },
-                                { date: "12 MAR / 18:00", title: "Town Hall Development Workshop", loc: "Community Park" },
-                                { date: "15 MAR / 10:00", title: "Youth Sports Initiative Demo Day", loc: "Innovation Lab" },
+                                { date: "THU / 09:00", title: "Regional Infrastructure Development Forum", loc: "Public Works Chamber" },
+                                { date: "12 MAR / 14:00", title: "Agricultural Innovation & Sustainability Workshop", loc: "Ehlanzeni Agri-Hub" },
+                                { date: "15 MAR / 10:00", title: "Digital Literacy & Tech Integration Summit", loc: "Innovation Lab" },
                             ].map((event, i) => (
-                                <div key={i} className="group cursor-pointer">
-                                    <span className="text-[10px] font-sans font-bold text-[#E60000] uppercase tracking-wider block mb-1">{event.date}</span>
-                                    <h4 className="text-sm font-semibold text-zinc-900 group-hover:text-[#E60000] transition-colors mb-1">{event.title}</h4>
-                                    <p className="text-[12px] font-sans text-zinc-500">{event.loc}</p>
+                                <div key={i} className="group cursor-pointer border-b border-zinc-100 last:border-0 pb-4 last:pb-0">
+                                    <span className="text-[9px] font-sans font-bold text-[#E60000] uppercase tracking-[0.2em] block mb-2">{event.date}</span>
+                                    <h4 className="text-sm font-display font-bold text-zinc-900 group-hover:text-[#E60000] transition-colors mb-1">{event.title}</h4>
+                                    <p className="text-[11px] font-sans text-zinc-500 font-medium">{event.loc}</p>
                                 </div>
                             ))}
                         </div>
@@ -59,15 +59,15 @@ export default function CommunityPulse() {
                         </div>
                         <div className="space-y-4">
                             {[
-                                { name: "Dr. Samora Machel", role: "Economic Advisor", posts: "14 Articles", img: "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?q=80&w=200&auto=format&fit=crop" },
-                                { name: "Lerato Khoza", role: "Local Entrepreneur", posts: "9 Articles", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
-                                { name: "Thabo Mbekeni", role: "Community Analyst", posts: "6 Articles", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
+                                { name: "Dr. Samora Machel", role: "Economic Infrastructure Analyst", posts: "14 Reports", img: "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?q=80&w=200&auto=format&fit=crop" },
+                                { name: "Lerato Khoza", role: "Sustainability & Agritech Specialist", posts: "9 Reports", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
+                                { name: "Thabo Mbekeni", role: "Regional Security Lead", posts: "6 Reports", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
                             ].map((voice, i) => (
-                                <div key={i} className="flex items-center gap-4 group cursor-pointer bg-white p-3 rounded-lg border border-zinc-100 hover:border-[#E60000]/30 transition-colors shadow-sm">
-                                    <img src={voice.img} alt={voice.name} className="w-10 h-10 rounded-md grayscale border border-zinc-200 group-hover:grayscale-0 transition-all duration-300" />
+                                <div key={i} className="flex items-center gap-4 group cursor-pointer bg-white p-4 rounded-xl border border-zinc-100 hover:border-[#E60000]/30 transition-all hover:shadow-md">
+                                    <img src={voice.img} alt={voice.name} className="w-12 h-12 rounded-lg grayscale border border-zinc-200 group-hover:grayscale-0 transition-all duration-300 object-cover" />
                                     <div>
-                                        <h4 className="text-sm font-semibold text-zinc-900 group-hover:text-[#E60000] transition-colors">{voice.name}</h4>
-                                        <p className="text-[11px] font-sans text-zinc-500 mt-0.5">{voice.role} · <span className="text-[#E60000] font-medium">{voice.posts}</span></p>
+                                        <h4 className="text-sm font-display font-bold text-zinc-900 group-hover:text-[#E60000] transition-colors">{voice.name}</h4>
+                                        <p className="text-[10px] font-sans font-bold text-zinc-400 uppercase tracking-widest mt-1">{voice.role} · <span className="text-[#E60000]">{voice.posts}</span></p>
                                     </div>
                                 </div>
                             ))}

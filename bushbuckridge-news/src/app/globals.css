@@ -243,3 +243,14 @@ body {
   box-shadow: 0 0 10px rgba(230, 0, 0, 0.3);
   transform-origin: left;
 }
+
+/* Prose Paragraph Spacing Fix */
+.prose p {
+  margin-top: 1.5em !important;
+  margin-bottom: 1.5em !important;
+}
+
+.prose h2, .prose h3 {
+  margin-top: 2.5em !important;
+  margin-bottom: 1.25em !important;
+}

@@ -5,11 +5,28 @@ import { supabase, getImageUrl } from '@/lib/supabase';
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { ArrowRight, Clock, Activity, Target } from "lucide-react";
+import { ArrowRight, Clock, Activity, Target, Megaphone, User } from "lucide-react";
 
 export const revalidate = 60;
 
 const CATEGORIES = ["Community", "Crime", "Lifestyle", "Notice", "Politics", "Sports"];
+
+function stripHtml(html: string) {
+  if (!html) return "";
+  // Strip tags, then replace literal newlines/multiple spaces, then decode common entities
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\\n/g, ' ')
+    .replace(/\sn\s/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+}
 
 export default async function Home() {
   const { data: posts, error } = await supabase
@@ -97,28 +114,33 @@ export default async function Home() {
             {error ? (
               <p className="text-[#E60000] font-sans font-medium text-sm border border-[#E60000]/30 bg-[#E60000]/10 p-4 rounded-lg">Error loading stories: {error.message}</p>
             ) : (
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-10">
                 {(gridStories.length > 0 ? gridStories : PLACEHOLDER_NEWS).map((post, i) => {
                   const isReal = gridStories.length > 0;
                   const ph = post as typeof PLACEHOLDER_NEWS[0];
                   const rp = post as typeof gridStories[0];
+                  const isFeatured = i === 0;
 
                   return (
-                    <div key={i}>
+                    <article key={i} className="group">
                       {/* In-feed Ad every 4 articles */}
                       {i > 0 && i % 4 === 0 && (
-                        <div className="my-8 rounded-xl overflow-hidden border !border-zinc-200 !bg-zinc-50 shadow-sm">
-                          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-200 bg-zinc-100">
-                            <span className="text-[11px] font-sans font-bold text-zinc-500 uppercase tracking-widest">Sponsored Content</span>
-                            <span className="news-badge !bg-transparent !border-zinc-300 !text-zinc-400">PROMOTED</span>
+                        <div className="mb-10 rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-sm transition-all hover:shadow-md">
+                          <div className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-200 bg-zinc-100/50">
+                            <span className="text-[10px] font-sans font-bold text-zinc-500 uppercase tracking-[0.2em]">Sponsored Insights</span>
+                            <Megaphone size={14} className="text-[#E60000]/40" />
                           </div>
-                          <div className="h-32 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200')] bg-cover bg-center flex items-center justify-center relative group overflow-hidden">
-                            <div className="absolute inset-0 bg-black/70 group-hover:bg-black/50 transition-colors duration-500"></div>
-                            <div className="relative z-10 text-center px-6">
-                              <h4 className="text-white font-display text-xl md:text-2xl font-bold mb-2 break-words">Unlock Enterprise Cloud Architecture</h4>
-                              <p className="text-zinc-300 font-sans text-sm md:text-base">
-                                Join the tech summit this Friday. <a href="/advertise" className="text-[#E60000] hover:text-white hover:underline transition-colors">Register Now →</a>
+                          <div className="h-40 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200')] bg-cover bg-center flex items-center justify-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80"></div>
+                            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=')] opacity-30"></div>
+                            <div className="relative z-10 text-center px-8">
+                              <h4 className="text-white font-display text-xl md:text-2xl font-bold mb-2 tracking-tight">Scale Your Local Enterprise with Cloud-First Intelligence</h4>
+                              <p className="text-zinc-300 font-sans text-sm md:text-base mb-4">
+                                Join our upcoming technology briefing for local business leaders.
                               </p>
+                              <a href="/advertise" className="inline-flex items-center gap-2 text-[#E60000] font-sans font-bold text-xs uppercase tracking-widest hover:text-white transition-colors border border-[#E60000]/30 hover:bg-[#E60000] px-4 py-2 rounded-full">
+                                Reserve Seat <ArrowRight size={14} />
+                              </a>
                             </div>
                           </div>
                         </div>
@@ -127,63 +149,72 @@ export default async function Home() {
                       {/* Article news-card */}
                       <Link
                         href={isReal ? `/article/${rp.slug}` : "#"}
-                        className="news-card !bg-white !border-zinc-200 group flex flex-col sm:flex-row gap-6 p-5 sm:p-4 text-left hover:!bg-zinc-50 transition-colors"
+                        className={`news-card block !bg-white !border-zinc-200 overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${isFeatured ? "border-t-4 border-t-[#E60000]" : ""
+                          }`}
                       >
-                        {/* Image wrapper */}
-                        <div className="flex-shrink-0 w-full sm:w-48 h-[180px] sm:h-32 rounded-lg bg-zinc-100 overflow-hidden img-zoom border border-zinc-200 order-2 sm:order-1 mt-4 sm:mt-0">
-                          {isReal ? (
-                            <Image
-                              src={getImageUrl(rp.featured_image)}
-                              alt={rp.title}
-                              width={200}
-                              height={140}
-                              unoptimized
-                              className="w-full h-full object-cover transition-all duration-700"
-                            />
-                          ) : (
-                            <img src={ph.image} alt={ph.title} className="w-full h-full object-cover transition-all duration-700" />
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex flex-col justify-between flex-1 min-w-0 order-1 sm:order-2">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              {i === 0 && (
-                                <span className="text-[10px] font-sans font-bold uppercase tracking-[0.1em] text-white bg-[#E60000] px-2 py-0.5 rounded-sm flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                  Breaking
-                                </span>
-                              )}
-                              <span className="text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-[#E60000] bg-[#E60000]/10 px-2 py-0.5 rounded-sm">
+                        <div className={`flex flex-col ${isFeatured ? "md:flex-row" : "sm:flex-row"} gap-0`}>
+                          {/* Image wrapper */}
+                          <div className={`relative flex-shrink-0 ${isFeatured ? "w-full md:w-[45%] h-[260px] md:h-[320px]" : "w-full sm:w-56 h-[200px] sm:h-48"
+                            } overflow-hidden bg-zinc-100 border-b ${isFeatured ? "md:border-b-0 md:border-r" : "sm:border-b-0 sm:border-r"} border-zinc-100`}>
+                            {isReal ? (
+                              <Image
+                                src={getImageUrl(rp.featured_image)}
+                                alt={rp.title}
+                                fill
+                                unoptimized
+                                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                              />
+                            ) : (
+                              <img
+                                src={ph.image}
+                                alt={ph.title}
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                              />
+                            )}
+                            {/* Category Badge on Image */}
+                            <div className="absolute top-4 left-4 z-10">
+                              <span className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-sm border border-white/10">
                                 {isReal ? "Editorial" : ph.tag}
                               </span>
-                              <span className="text-[11px] text-zinc-400 font-sans font-medium flex items-center gap-1.5">
-                                <Clock size={12} /> {isReal ? format(new Date(rp.published_at), "MMM d, yyyy") : ph.date}
+                            </div>
+                          </div>
+
+                          {/* Content */}
+                          <div className={`flex flex-col p-6 md:p-8 flex-1 min-w-0`}>
+                            <div className="flex items-center gap-4 mb-4 text-[10px] font-sans font-bold uppercase tracking-[0.15em] text-zinc-400">
+                              <time className="flex items-center gap-1.5 border-r border-zinc-200 pr-4">
+                                <Clock size={12} className="text-[#E60000]" /> {isReal ? format(new Date(rp.published_at), "MMM d, yyyy") : ph.date}
+                              </time>
+                              <span className="flex items-center gap-1.5">
+                                <Activity size={12} className="text-[#E60000]/50" /> 4m Read Time
                               </span>
                             </div>
 
-                            <h3 className="text-xl md:text-[22px] font-display font-semibold text-zinc-900 mb-2 leading-tight group-hover:text-[#E60000] transition-colors duration-300">
+                            <h3 className={`${isFeatured ? "text-2xl md:text-3xl" : "text-xl md:text-2xl"
+                              } font-display font-bold text-zinc-900 mb-4 leading-[1.2] group-hover:text-[#E60000] transition-colors duration-300`}>
                               {isReal ? rp.title : ph.title}
                             </h3>
-                            <p className="text-sm md:text-[15px] text-zinc-600 line-clamp-2 leading-relaxed">
-                              {isReal
-                                ? rp.content?.replace(/<[^>]+>/g, '').substring(0, 140) + '...'
-                                : ph.excerpt}
-                            </p>
-                          </div>
 
-                          <div className="flex items-center justify-between mt-4 border-t border-zinc-100 pt-3">
-                            <span className="text-[11px] text-zinc-400 font-sans font-semibold tracking-widest uppercase">
-                              Read Time: 4m
-                            </span>
-                            <span className="flex items-center gap-1 text-[#E60000] text-[12px] font-sans font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                              Read Full Story <ArrowRight size={14} />
-                            </span>
+                            <p className={`${isFeatured ? "text-base" : "text-[15px]"
+                              } text-zinc-600 line-clamp-3 leading-relaxed mb-6`}>
+                              {isReal ? stripHtml(rp.content).substring(0, 180) + '...' : ph.excerpt}
+                            </p>
+
+                            <div className="mt-auto flex items-center justify-between pt-5 border-t border-zinc-100">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-[#E60000]/10 flex items-center justify-center border border-[#E60000]/20">
+                                  <User size={12} className="text-[#E60000]" />
+                                </div>
+                                <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-zinc-500">Editorial Staff</span>
+                              </div>
+                              <span className="flex items-center gap-2 text-[#E60000] text-[11px] font-sans font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity">
+                                View News <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </Link>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -357,10 +388,46 @@ export default async function Home() {
 }
 
 const PLACEHOLDER_NEWS = [
-  { title: "Smart Grid Infrastructure Initiated in Bushbuckridge CBD", tag: "Tech", excerpt: "The new localized energy grid uses solar power efficiently to support residential sectors.", date: "2h ago", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop" },
-  { title: "Local Arts & Culture Expo Breaks Attendance Records", tag: "Culture", excerpt: "The gallery showcasing local artists saw unprecedented crowds this weekend at the town hall.", date: "5h ago", image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop" },
-  { title: "New Conservation Efforts to Monitor Wildlife Reserves", tag: "Environment", excerpt: "Local rangers will now patrol the northern ridges to track animal movements and deter poaching.", date: "12h ago", image: "https://images.unsplash.com/photo-1527416348127-d4fa23c6bfa1?q=80&w=800&auto=format&fit=crop" },
-  { title: "Business Incubation Hub Opens its Doors", tag: "Business", excerpt: "The intensive 6-month entrepreneur program has officially graduated its first cohort into the industry.", date: "Yesterday", image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop" },
-  { title: "Youth Development Summit Scheduled for Town Hall", tag: "Events", excerpt: "Community leaders converge to discuss skill-building and education for small local businesses.", date: "2 days ago", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop" },
-  { title: "New Community Clinics Open in Rural Sectors", tag: "Health", excerpt: "Upgraded facilities now connect remote villages with top medical professionals and services.", date: "3 days ago", image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop" },
+  {
+    title: "Regional Economic Transformation: Bushbuckridge CBD Infrastructure Project Breaks Ground",
+    tag: "Development",
+    excerpt: "The Multi-Million Rand CBD revitalization project marks a turning point for local commerce, introducing sustainable smart-grid technology and dedicated enterprise zones.",
+    date: "2h ago",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    title: "Pan-African Conservation Summit: Global Experts Convene at Kruger Gate",
+    tag: "Environment",
+    excerpt: "Leading biologists and environmental policymakers gather to discuss data-driven preservation strategies for Southern African wildlife corridors during the week-long summit.",
+    date: "5h ago",
+    image: "https://images.unsplash.com/photo-1547970810-dc1eac37d174?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    title: "Digital Literacy Initiative: Bridging the Divide in Rural Mpumalanga Schools",
+    tag: "Education",
+    excerpt: "A new collaborative framework between telecommunications leaders and local government aims to equip 50 community schools with fiber-optic connectivity and high-performance labs.",
+    date: "12h ago",
+    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    title: "Agricultural Innovation: Hydroponic Startup Success in Ehlanzeni District",
+    tag: "Business",
+    excerpt: "Transforming traditional farming methods, local agritech entrepreneurs are seeing record yields through climate-controlled vertical farming systems funded by the recent startup grant.",
+    date: "Yesterday",
+    image: "https://images.unsplash.com/photo-1558449028-b53a39d10006?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    title: "Community Safety Report: Integrated Response Systems Show 15% Reduction in Incidents",
+    tag: "Security",
+    excerpt: "New tech-driven community policing initiatives and rapid response protocols are yielding positive results in the greater Bushbuckridge municipal area.",
+    date: "2 days ago",
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    title: "Cultural Heritage Preservation: Annual Festival Announces Global Livestream Partnership",
+    tag: "Culture",
+    excerpt: "Showcasing the rich traditions of the region to a global audience, the upcoming heritage festival will feature high-definition immersive broadcasting for the first time.",
+    date: "3 days ago",
+    image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop"
+  },
 ];

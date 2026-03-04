@@ -15,6 +15,23 @@ interface HeroProps {
 
 const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2940&auto=format&fit=crop";
 
+function stripHtml(html: string) {
+    if (!html) return "";
+    // Strip tags, then replace literal newlines/multiple spaces, then decode common entities
+    return html
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\\n/g, ' ')
+        .replace(/\sn\s/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .trim();
+}
+
 export default function Hero({ post, imageUrl }: HeroProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -88,73 +105,75 @@ export default function Hero({ post, imageUrl }: HeroProps) {
                                 {/* Excerpt - explicitly bright white to ensure readability over dark areas */}
                                 <p className="hero-excerpt text-white/95 text-base md:text-lg leading-relaxed mb-8 max-w-2xl font-sans hidden md:block drop-shadow-md">
                                     {post
-                                        ? post.content?.replace(/<[^>]+>/g, '').substring(0, 160) + '...'
+                                        ? stripHtml(post.content).substring(0, 160) + '...'
                                         : "The city council has approved the deployment of a new smart infrastructure hub, aimed at stabilizing commerce and allowing peer-to-peer growth."}
                                 </p>
 
                                 {/* CTA */}
-                                <div className="hero-cta inline-flex items-center gap-3 text-white font-sans font-bold text-[13px] uppercase tracking-wider group-hover:text-[#E60000] transition-colors border-b-2 border-[#E60000] pb-1 drop-shadow-md">
-                                    Read Full Article <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                                <div className="hero-cta inline-flex items-center gap-4 text-white font-sans font-bold text-[12px] uppercase tracking-[0.2em] group-hover:text-[#E60000] transition-colors border-2 border-[#E60000] px-6 py-2.5 rounded-full backdrop-blur-sm drop-shadow-md">
+                                    Read Full Report <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
                                 </div>
                             </div>
                         </div>
                     </Link>
 
                     {/* ── SIDEBAR ── */}
-                    <aside className="lg:col-span-4 flex flex-col h-full space-y-4">
+                    <aside className="lg:col-span-4 flex flex-col h-full space-y-6">
 
-                        {/* Status block */}
-                        <div className="news-card !bg-white !border-zinc-200 p-4 border-t-2 border-t-[#E60000]">
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="text-[12px] font-sans font-bold text-zinc-500 uppercase tracking-widest">Network Impact</span>
-                                <span className="flex items-center gap-1.5 text-[#E60000] text-[11px] font-sans font-bold uppercase"><span className="live-indicator"></span> High</span>
+                        {/* Network Statistics Card */}
+                        <div className="news-card !bg-white !border-zinc-200 p-6 border-t-4 border-t-[#E60000] shadow-md relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#E60000]/5 rounded-bl-[100px] pointer-events-none"></div>
+                            <div className="flex justify-between items-center mb-6 relative z-10">
+                                <span className="text-[10px] font-sans font-bold text-zinc-500 uppercase tracking-[0.2em]">Network Pulse</span>
+                                <span className="flex items-center gap-2 text-[#E60000] text-[10px] font-sans font-bold uppercase tracking-widest"><span className="live-indicator"></span> Active</span>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6 relative z-10">
                                 <div>
-                                    <div className="text-[26px] font-display font-bold text-zinc-900">4,892</div>
-                                    <div className="text-[10px] font-sans font-bold text-zinc-500 uppercase tracking-wider">Readers Online</div>
+                                    <div className="text-3xl font-display font-bold text-zinc-900 leading-tight tracking-tight">4,892</div>
+                                    <div className="text-[10px] font-sans font-bold text-zinc-400 uppercase tracking-[0.15em] mt-1">Live Readers</div>
                                 </div>
                                 <div>
-                                    <div className="text-[26px] font-display font-bold text-zinc-900">42</div>
-                                    <div className="text-[10px] font-sans font-bold text-zinc-500 uppercase tracking-wider">Stories Published</div>
+                                    <div className="text-3xl font-display font-bold text-zinc-900 leading-tight tracking-tight">27</div>
+                                    <div className="text-[10px] font-sans font-bold text-zinc-400 uppercase tracking-[0.15em] mt-1">Updates Today</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Advertisement Block (Replaced Trending Now) */}
-                        <div className="hero-sidebar-card flex-1 flex flex-col !bg-zinc-50 !border-zinc-200 rounded-xl overflow-hidden relative group shadow-sm mt-2">
-                            {/* Decorative background accent */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#E60000]/5 rounded-bl-[100px] pointer-events-none"></div>
+                        {/* Enterprise Sponsorship Card */}
+                        <div className="hero-sidebar-card flex-1 flex flex-col !bg-zinc-900 !border-zinc-800 rounded-xl overflow-hidden relative group shadow-xl">
+                            {/* Premium Tech Background */}
+                            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-30"></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#E60000]/10 via-transparent to-black"></div>
 
-                            <div className="p-6 flex flex-col h-full">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className="news-badge bg-zinc-200/50 text-zinc-500 border-transparent shadow-none !px-2">Sponsorship</span>
+                            <div className="p-8 flex flex-col h-full relative z-10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="text-[9px] font-sans font-bold text-[#E60000] border border-[#E60000]/30 px-2 py-1 rounded bg-[#E60000]/5 uppercase tracking-[0.2em]">Sponsorship</span>
                                 </div>
 
-                                <div className="mb-4">
-                                    <div className="w-12 h-12 rounded-lg bg-white border border-zinc-200 flex items-center justify-center text-[#E60000] shadow-sm mb-4">
-                                        <Megaphone size={24} />
+                                <div className="mb-8">
+                                    <div className="w-14 h-14 rounded-xl bg-[#E60000] flex items-center justify-center text-white shadow-[0_0_20px_rgba(230,0,0,0.3)] mb-6">
+                                        <Megaphone size={28} />
                                     </div>
-                                    <h3 className="text-xl font-display font-bold text-zinc-900 mb-2 leading-tight">
-                                        Amplify Your Brand in Bushbuckridge
+                                    <h3 className="text-2xl font-display font-bold text-white mb-3 leading-tight tracking-tight">
+                                        Drive Regional Impact with Bushnews Intelligence
                                     </h3>
-                                    <p className="text-sm font-sans text-zinc-600 leading-relaxed">
-                                        Reach over 50,000 highly engaged local readers daily. Place your business at the forefront of the community network.
+                                    <p className="text-sm font-sans text-zinc-400 leading-relaxed mb-6">
+                                        Leverage our high-performance network to scale your brand across the greater Bushbuckridge trade corridors.
                                     </p>
                                 </div>
 
-                                <div className="mt-auto space-y-3">
+                                <div className="mt-auto space-y-4">
                                     <Link
                                         href="/advertise"
-                                        className="btn-primary w-full flex justify-center py-3 text-[13px]"
+                                        className="btn-primary w-full flex justify-center py-4 text-[12px] font-bold tracking-[0.2em] bg-[#E60000] border-[#E60000]"
                                     >
-                                        Register as Advertiser
+                                        Inquire Architecture
                                     </Link>
                                     <Link
                                         href="/advertise/info"
-                                        className="w-full flex justify-center py-2.5 text-[12px] font-sans font-bold text-zinc-500 hover:text-[#E60000] transition-colors border border-zinc-200 hover:border-[#E60000]/30 rounded-md bg-white"
+                                        className="w-full flex justify-center py-3 text-[11px] font-sans font-bold text-zinc-400 hover:text-white transition-colors border border-zinc-700 hover:border-zinc-500 rounded-lg bg-zinc-800/50"
                                     >
-                                        Read More
+                                        Download Media Kit
                                     </Link>
                                 </div>
                             </div>
