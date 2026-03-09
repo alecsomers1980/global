@@ -1,51 +1,51 @@
 /**
  * Replaces the old heygenService.js with an agnostic Image-to-Video Engine.
- * Defaulting to Veo 3.1 Fast via Kie.ai for cost-effective ($0.30/video), high-quality testing.
+ * Updated to Sora 2 Image To Video Stable via Kie.ai based on recent requirements.
  */
 
+const DEV_MOCK_MODE = true; // [DEV MODE] Set to true to mock generation and avoid consuming Kie.ai credits
+
 export async function startCinematicClips(scriptArray, carPayload) {
-    if (!process.env.KIE_API_KEY) {
+    if (!DEV_MOCK_MODE && !process.env.KIE_API_KEY) {
         throw new Error("Missing KIE_API_KEY in environment variables.");
     }
 
     try {
         const taskPromises = [];
 
-        // Identify the images we have
+        // Identify the images we have for the 4 scenes
         const heroImg = carPayload.main_image_url;
         const galleryImg1 = carPayload.gallery_urls && carPayload.gallery_urls.length > 0 ? carPayload.gallery_urls[0] : heroImg;
-        const galleryImg2 = carPayload.gallery_urls && carPayload.gallery_urls.length > 1 ? carPayload.gallery_urls[1] : galleryImg1;
-        const galleryImg3 = carPayload.gallery_urls && carPayload.gallery_urls.length > 2 ? carPayload.gallery_urls[2] : heroImg;
-        const galleryImg4 = carPayload.gallery_urls && carPayload.gallery_urls.length > 3 ? carPayload.gallery_urls[3] : galleryImg3;
+        const galleryImg2 = carPayload.gallery_urls && carPayload.gallery_urls.length > 1 ? carPayload.gallery_urls[1] : heroImg;
+        // Scene 1: Hero (metadata main), Scene 2: Gallery 1, Scene 3: Gallery 2, Scene 4: Hero (Presenter)
+        const sceneImages = [heroImg, galleryImg1, galleryImg2, heroImg];
 
-        // Map images to scenes based on the expected 5-scene flow if possible:
-        // Scene 1: Front/Side (heroImg)
-        // Scene 2: Back/Side (galleryImg1 or galleryImg2 depending on how they upload, we'll try to use variety)
-        // Scene 3: Interior (galleryImg2 or galleryImg3)
-        // Scene 4: Dashboard/Driver Seat (galleryImg3 or galleryImg4)
-        // Scene 5: Side View (galleryImg4 or fallback to heroImg)
-        const sceneImages = [
-            heroImg,       // Scene 1 (Front/Side B-Roll)
-            galleryImg1,   // Scene 2 (Back/Side Intro)
-            galleryImg2,   // Scene 3 (Interior Overview)
-            galleryImg3,   // Scene 4 (RHD Driver Seat)
-            galleryImg4    // Scene 5 (Side Profile Closing)
-        ];
+        console.log(`[Video Engine] Starting Sora 2 generation for ${scriptArray.length} scenes. Mock Mode: ${DEV_MOCK_MODE}`);
 
         for (let i = 0; i < scriptArray.length; i++) {
             const scene = scriptArray[i];
             const baseImageUrl = sceneImages[i] || heroImg;
 
-            console.log(`[Video Engine] Requesting generation for Scene ${i + 1} via Veo 3...`);
+            console.log(`[Video Engine] Requesting generation for Scene ${i + 1} via Sora 2... Image: ${baseImageUrl}`);
+
+            if (DEV_MOCK_MODE) {
+                // Mock task creation
+                taskPromises.push(Promise.resolve({ scene: i + 1, taskId: `mock-task-${Date.now()}-scene-${i}` }));
+                continue;
+            }
 
             const requestBody = {
-                model: "veo3",
-                prompt: scene.visual_prompt,
-                imageUrls: [baseImageUrl],
-                aspect_ratio: "16:9"
+                model: "sora-2-image-to-video-stable",
+                input: {
+                    prompt: scene.visual_prompt,
+                    image_urls: [baseImageUrl],
+                    aspect_ratio: "portrait", // Assuming we want portrait for social dominance unless specified landscape
+                    n_frames: "10",
+                    upload_method: "s3"
+                }
             };
 
-            const startPromise = fetch("https://api.kie.ai/api/v1/veo/generate", {
+            const startPromise = fetch("https://api.kie.ai/api/v1/jobs/createTask", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -55,16 +55,11 @@ export async function startCinematicClips(scriptArray, carPayload) {
             }).then(async (response) => {
                 const startData = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(`Video Engine returned HTTP ${response.status}`);
+                if (!response.ok || startData.code !== 200) {
+                    throw new Error(`Video Engine returned HTTP ${response.status} / Code ${startData.code}: ${startData.msg}`);
                 }
 
-                let taskId = null;
-                if (startData?.data?.taskId) taskId = startData.data.taskId;
-                else if (startData?.data?.task_id) taskId = startData.data.task_id;
-                else if (startData?.taskId) taskId = startData.taskId;
-                else if (typeof startData?.data === 'string') taskId = startData.data;
-
+                const taskId = startData?.data?.taskId;
                 if (!taskId) {
                     throw new Error(`Failed to get taskId. Response: ${JSON.stringify(startData)}`);
                 }
@@ -75,7 +70,6 @@ export async function startCinematicClips(scriptArray, carPayload) {
             taskPromises.push(startPromise);
         }
 
-        // Return all task IDs so the client can manage polling
         const tasks = await Promise.all(taskPromises);
         console.log(`[Video Engine] All ${scriptArray.length} clips started successfully. Task IDs:`, tasks);
         return tasks;
@@ -87,9 +81,15 @@ export async function startCinematicClips(scriptArray, carPayload) {
 }
 
 export async function pollCinematicTask(taskId) {
+    if (DEV_MOCK_MODE) {
+        // Mock polling - succeed immediately
+        console.log(`[Video Engine] Mock polling success for task ${taskId}`);
+        return { isComplete: true, videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4" };
+    }
+
     if (!process.env.KIE_API_KEY) throw new Error("Missing KIE_API_KEY");
 
-    const pollResponse = await fetch(`https://api.kie.ai/api/v1/veo/record-info?taskId=${taskId}`, {
+    const pollResponse = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${process.env.KIE_API_KEY}`
@@ -102,37 +102,22 @@ export async function pollCinematicTask(taskId) {
 
     const pollData = await pollResponse.json();
 
-    if (pollData && pollData.data) {
+    if (pollData && pollData.code === 200 && pollData.data) {
         const task = pollData.data;
 
-        if (task.successFlag === 1) {
-            let finalVideoUrl = null;
-            if (typeof task.response === 'string' && task.response.startsWith('http')) {
-                finalVideoUrl = task.response;
-            } else if (typeof task.response === 'object' && task.response !== null) {
-                finalVideoUrl = task.response.url || task.response.cdnUrl || task.response.video_url || task.response.videoUrl || null;
-            }
-
-            if (!finalVideoUrl && Array.isArray(task.response) && task.response.length > 0) {
-                const first = task.response[0];
-                finalVideoUrl = (typeof first === 'string') ? first : (first?.url || first?.cdnUrl || null);
-            }
-
-            if (!finalVideoUrl && task.response) {
-                const responseStr = typeof task.response === 'string' ? task.response : JSON.stringify(task.response);
-                const urlMatch = responseStr.match(/https?:\/\/[^\s"]+\.mp4[^\s"]*/);
-                if (urlMatch) {
-                    finalVideoUrl = urlMatch[0];
+        if (task.state === "success") {
+            try {
+                const resultObj = JSON.parse(task.resultJson);
+                if (resultObj.resultUrls && resultObj.resultUrls.length > 0) {
+                    return { isComplete: true, videoUrl: resultObj.resultUrls[0] };
+                } else {
+                    return { isComplete: false, error: "Task marked success but resultUrls unavailable." };
                 }
+            } catch (e) {
+                return { isComplete: false, error: "Failed to parse resultJson." };
             }
-
-            if (finalVideoUrl) {
-                return { isComplete: true, videoUrl: finalVideoUrl };
-            } else {
-                return { isComplete: false, error: "Task marked success but URL unavailable." };
-            }
-        } else if (task.successFlag === -1 || task.errorCode) {
-            return { isComplete: false, error: `Error Code: ${task.errorCode} - ${task.errorMessage}` };
+        } else if (task.state === "fail") {
+            return { isComplete: false, error: `Error Code: ${task.failCode} - ${task.failMsg}` };
         }
     }
 

@@ -7,12 +7,23 @@ export async function generateVehicleScript(car) {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        // Using gemini-1.5-flash for broader free-tier availability
+        // Using gemini-2.5-flash for broader free-tier availability and reasoning
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        // Determine car type category for adaptive scripting
+        let carType = "Standard";
+        const bodyTypeClean = (car.model + " " + (car.description || "")).toLowerCase();
+        if (bodyTypeClean.includes("suv") || bodyTypeClean.includes("fortuner") || bodyTypeClean.includes("rover") || bodyTypeClean.includes("cruiser")) {
+            carType = "SUV (Focus on adventure, safety, ground clearance, and family utility)";
+        } else if (bodyTypeClean.includes("hatch") || bodyTypeClean.includes("polo") || bodyTypeClean.includes("swift")) {
+            carType = "Economy/Hatchback (Focus on fuel efficiency, value, city driving, and practicality)";
+        } else if (car.price > 800000 || bodyTypeClean.includes("sedan") || bodyTypeClean.includes("bmw") || bodyTypeClean.includes("mercedes")) {
+            carType = "Luxury Sedan/Premium (Focus on status, smooth ride, premium materials, and executive comfort)";
+        }
 
         const prompt = `
 You are an expert cinematic Creative Director specializing in luxury automotive car commercials.
-Write an intelligent, 5-scene visual prompt script for an AI Image-to-Video generator (like Sora or Veo) based on the following vehicle.
+Write an intelligent, 4-scene visual prompt script for an AI Image-to-Video generator (like Sora 2) based on the following vehicle.
 
 Vehicle Details:
 Make: ${car.make}
@@ -24,34 +35,45 @@ Transmission: ${car.transmission || 'Unknown'}
 Fuel Type: ${car.fuel_type || 'Unknown'}
 Features: ${car.features && car.features.length > 0 ? car.features.join(', ') : 'Standard features'}
 
+Adaptive Scripting Context:
+This vehicle falls under the category: ${carType}.
+Please subtly weave these category-specific themes into the scene details and camera dynamics.
+
 Strict Instructions for the script:
-1. You must write exactly FIVE scene descriptions. Each scene is an 8-second video clip.
+1. You must write exactly FOUR scene descriptions. Each scene represents a video clip prompt.
+2. Provide highly detailed visual descriptions of the camera movement, lighting, and environment.
 
-2. **AVATAR CONSISTENCY (CRITICAL):** Scenes 2, 3, 4, and 5 MUST feature the EXACT SAME presenter — a professional, attractive white female with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse, with an "Everest Motoring" logo embroidered on the blazer's breast pocket. She has light makeup, a warm confident smile, and looks approximately 30 years old. You MUST repeat this EXACT description of her appearance in EVERY scene prompt where she appears to ensure the AI generates the same person each time.
+Scene Breakdown:
+Scene 1: The Hook (Exterior Hero Shot)
+- Cinematic tracking shot, smooth glide from front bumper to side profile.
+- Dramatic lighting (e.g., Golden Hour sunset with realistic lens flares or moody showroom lighting).
+- Describe high-energy cuts showing the car's silhouette.
 
-3. **BACKGROUND CONSISTENCY (CRITICAL):** ALL FIVE scenes must take place in the EXACT SAME environment — a sleek, modern "Everest Motoring" premium showroom with polished concrete floors, floor-to-ceiling glass windows letting in natural daylight, soft overhead spotlights on the car, and a large brushed-metal "EVEREST MOTORING" sign on the back wall. You MUST repeat this EXACT environment description in EVERY scene prompt to maintain visual continuity.
+Scene 2: The Technology (Dashboard/Cockpit)
+- Interior cinematic POV shot.
+- Slow pan across the dashboard, focusing on digital displays, premium stitching, or center console. **CRITICAL: This is a South African vehicle, which means it is Right-Hand Drive (RHD). The steering wheel must be on the right side of the car.**
+- Soft ambient lighting.
 
-4. The prompt MUST describe both the presenter's actions (if present) and the camera movement.
+Scene 3: The Comfort (Rear Cabin)
+- Slow push-in to the back seat or passenger area.
+- Focus on legroom, seat texture, and comfort.
+- Natural light streaming through the windows emphasizing space.
 
-5. **Scene 1 (Cinematic B-Roll):** A premium, cinematic ad-style shot of the Front and Side of the car. Use creative camera movements like dynamic zooming in or flashing closer and further away. No presenter in this scene.
+Scene 4: The Closer (Human Presenter)
+- A professional, attractive female sales presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an "Everest Motoring" logo on the breast pocket.
+- She stands next to the car in a sleek modern "Everest Motoring" premium showroom setup with polished concrete floors and large brushed-metal "EVEREST MOTORING" sign.
+- She looks directly into the camera with a warm, inviting smile, gesturing welcomingly.
+- Camera slowly pushes in for an intimate close-up.
 
-6. **Scene 2 (Exterior Tour - Back & Side):** The presenter stands near the back and side of the car, introducing the vehicle and confidently highlighting its exterior design and features.
-
-7. **Scene 3 (Interior Overview):** An interior shot showing the cabin. The presenter talks a bit about the overall luxurious feel and space of the interior.
-
-8. **Scene 4 (Driver's Seat Experience - RHD FOCUS):** The presenter is sitting in the driver's seat. **CRITICAL: This is a South African vehicle, which means it is Right-Hand Drive (RHD). The steering wheel must be on the right side of the car.** The camera focuses closely on her interacting with the steering wheel and dashboard technology. She is explaining what it feels like to be behind the wheel.
-
-9. **Scene 5 (The Closer - Side View):** The presenter stands next to the side profile of the car. She looks directly into the camera issuing a strong, irresistible offer and Call-To-Action (e.g. promoting a lead or sale). She gestures welcomingly as if handing over the keys. The "EVEREST MOTORING" sign is prominently visible behind her. The camera pushes in for a trust-building close-up.
-
-10. Format Requirement: Return ONLY a valid JSON array of objects with keys: scene, location, and visual_prompt. Do not include markdown formatting outside the JSON array.
+Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
+Do not include markdown formatting outside the JSON array. The \`visual_prompt\` should be a single, long paragraph containing all the visual imagery, camera instructions, lighting, and action for the AI video generator.
 
 Example Output:
 [
-  { "scene": 1, "location": "exterior", "visual_prompt": "A premium cinematic shot of the front and side of the car inside a sleek modern 'Everest Motoring' showroom with polished concrete floors, floor-to-ceiling glass windows, soft spotlights, and a large brushed-metal 'EVEREST MOTORING' sign on the back wall. Dynamic, high-energy editing with the camera zooming in rapidly and flashing back out to emphasize the aggressive styling. 8k resolution, photorealistic." },
-  { "scene": 2, "location": "exterior", "visual_prompt": "A professional, attractive white female presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an 'Everest Motoring' logo on the breast pocket, stands confidently near the back and side of the car inside the sleek modern 'Everest Motoring' showroom (polished concrete floors, glass windows, spotlights, brushed-metal sign). She smiles warmly and gestures to the rear design, introducing the vehicle's features. Smooth panning camera." },
-  { "scene": 3, "location": "interior", "visual_prompt": "The same professional white female presenter with shoulder-length blonde hair in the navy blazer and white blouse is seen inside the luxurious cabin. The showroom's natural light streams through the glass windows behind the car. She gestures broadly to showcase the premium materials and spacious interior, talking directly to the camera." },
-  { "scene": 4, "location": "interior", "visual_prompt": "The same professional white female presenter with shoulder-length blonde hair in the navy blazer and white blouse sits in the driver's seat. CRITICAL: The car is Right-Hand Drive (RHD), so she is sitting on the right side of the cabin holding the steering wheel. The camera is close up on her face and the dashboard technology as she enthusiastically explains the driver's experience." },
-  { "scene": 5, "location": "exterior", "visual_prompt": "The same professional white female presenter with shoulder-length blonde hair in the navy blazer and white blouse steps out and stands next to the side profile of the car in the Everest Motoring showroom. She looks directly into the camera with a warm, inviting smile and gestures invitingly, acting as if closing a sale and offering the keys. The camera slowly pushes in towards her for an intimate close-up. The large 'EVEREST MOTORING' sign is prominently visible on the wall behind her." }
+  { "scene": 1, "location": "exterior", "visual_prompt": "Cinematic 4K tracking shot of the vehicle... [highly detailed prompt]" },
+  { "scene": 2, "location": "interior", "visual_prompt": "Interior cinematic POV shot... [highly detailed prompt]" },
+  { "scene": 3, "location": "interior", "visual_prompt": "Slow push-in to the back seat... [highly detailed prompt]" },
+  { "scene": 4, "location": "exterior", "visual_prompt": "A professional white female presenter with shoulder-length blonde hair... [highly detailed prompt]" }
 ]
 `;
 
@@ -65,15 +87,14 @@ Example Output:
     } catch (error) {
         console.error("Error generating script with Gemini:", error);
 
-        // Fallback generic script if Gemini fails or rate limits
-        const avatarDesc = "A professional, attractive white female presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an 'Everest Motoring' logo on the breast pocket";
-        const showroomDesc = "inside a sleek modern 'Everest Motoring' showroom with polished concrete floors, floor-to-ceiling glass windows, soft spotlights, and a large brushed-metal 'EVEREST MOTORING' sign on the back wall";
+        // Fallback generic script for 4 scenes if Gemini fails or rate limits
+        const presenterDesc = "A professional, attractive white female presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an 'Everest Motoring' logo";
+        
         return [
-            { scene: 1, location: "exterior", visual_prompt: `A premium cinematic shot of the front and side of the ${car.year} ${car.make} ${car.model} ${showroomDesc}. Dynamic, high-energy camera movements zooming in and out to emphasize the car's aggressive front grille and styling. 8k resolution, photorealistic.` },
-            { scene: 2, location: "exterior", visual_prompt: `${avatarDesc} stands confidently near the back and side of the ${car.make} ${car.model} ${showroomDesc}. She smiles warmly and gestures to the rear design, confidently introducing the vehicle. Smooth panning camera.` },
-            { scene: 3, location: "interior", visual_prompt: `${avatarDesc} is seen inside the luxurious cabin of the ${car.make} ${car.model}. She gestures broadly to showcase the premium materials and spacious interior, talking directly to the camera.` },
-            { scene: 4, location: "interior", visual_prompt: `${avatarDesc} sits in the driver's seat of the ${car.make} ${car.model}. CRITICAL: This is a Right-Hand Drive (RHD) car, so she is seated on the right side. The camera focuses on her holding the steering wheel and the modern dashboard technology as she explains the driver's experience.` },
-            { scene: 5, location: "exterior", visual_prompt: `${avatarDesc} stands next to the side profile of the ${car.make} ${car.model} ${showroomDesc}. She looks directly into the camera with a warm inviting smile and gestures welcomingly, pitching an irresistible offer. The camera slowly pushes in towards her for an intimate trust-building close-up.` }
+            { scene: 1, location: "exterior", visual_prompt: `Cinematic 4K tracking shot of the ${car.year} ${car.make} ${car.model}. The camera starts low at the front bumper and smoothly glides to a side profile. Dramatic "Golden Hour" sunset lighting with realistic lens flares and high-energy cuts showing the car's silhouette.` },
+            { scene: 2, location: "interior", visual_prompt: `Interior cinematic POV shot of the ${car.make} ${car.model}. The camera slowly pans across the dashboard, focusing on the high-tech digital displays and premium stitching. CRITICAL: This is a Right-Hand Drive (RHD) car. Soft ambient lighting highlights the interior luxury.` },
+            { scene: 3, location: "interior", visual_prompt: `Cinematic slow push-in to the back passenger area of the ${car.make} ${car.model}. Focus on the spacious legroom and premium seat texture. Natural light streams through the windows emphasizing comfort and space.` },
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the ${car.make} ${car.model} in a sleek modern 'Everest Motoring' showroom. She looks directly into the camera with a warm, inviting smile and gestures welcomingly. Cinematic camera slowly pushes in towards her for an intimate close-up.` }
         ];
     }
 }

@@ -33,46 +33,97 @@ export default function VehicleForm({ initialData = null }) {
 
         try {
             const formData = new FormData(e.target);
-            const imageFiles = formData.getAll("image_files");
+            const scene1File = formData.get("scene1_image");
+            const scene2File = formData.get("scene2_image");
+            const scene3File = formData.get("scene3_image");
+            const galleryFiles = formData.getAll("gallery_images");
+            
             let mainImageUrl = formData.get("main_image_url") || (isEditing ? initialData.main_image_url : null);
             let galleryUrls = isEditing && initialData.gallery_urls ? [...initialData.gallery_urls] : [];
 
+            // Helper to upload a single file
+            const uploadFile = async (file) => {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `vehicles/${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('vehicles')
+                    .upload(filePath, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } = supabase.storage
+                    .from('vehicles')
+                    .getPublicUrl(filePath);
+                
+                return publicUrlData.publicUrl;
+            };
+
             // 1. Upload to Supabase Storage if new files were selected
-            const validFiles = imageFiles.filter(file => file.size > 0);
-            if (validFiles.length > 0) {
-                setUploadProgress(30);
+            try {
+                // Determine total files to track progress
+                const validGalleryFiles = galleryFiles.filter(file => file.size > 0);
+                const allFilesToUpload = [];
+                if (scene1File && scene1File.size > 0) allFilesToUpload.push({ type: 'main', file: scene1File });
+                if (scene2File && scene2File.size > 0) allFilesToUpload.push({ type: 'scene2', file: scene2File });
+                if (scene3File && scene3File.size > 0) allFilesToUpload.push({ type: 'scene3', file: scene3File });
+                
+                validGalleryFiles.forEach(file => {
+                     allFilesToUpload.push({ type: 'gallery', file });
+                });
 
-                let i = 0;
-                for (const imageFile of validFiles) {
-                    const fileExt = imageFile.name.split('.').pop();
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-                    const filePath = `vehicles/${fileName}`;
+                if (allFilesToUpload.length > 0) {
+                    setUploadProgress(30);
+                    
+                    let i = 0;
+                    // Note: We need to make sure scene2 is gallery[0] and scene3 is gallery[1]
+                    // If building a new car and all images are provided:
+                    // newGalleryUrls = [scene2Url, scene3Url, ...galleryUrls]
+                    const newGalleryAssets = [];
+                    let scene2Url = null;
+                    let scene3Url = null;
 
-                    const { error: uploadError } = await supabase.storage
-                        .from('vehicles')
-                        .upload(filePath, imageFile);
-
-                    if (uploadError) {
-                        console.error("Storage upload error:", uploadError);
-                        alert(`Failed to upload ${imageFile.name}.`);
-                        setIsUploading(false);
-                        return;
+                    for (const item of allFilesToUpload) {
+                        const url = await uploadFile(item.file);
+                        if (item.type === 'main') mainImageUrl = url;
+                        else if (item.type === 'scene2') scene2Url = url;
+                        else if (item.type === 'scene3') scene3Url = url;
+                        else if (item.type === 'gallery') newGalleryAssets.push(url);
+                        
+                        i++;
+                        setUploadProgress(30 + Math.floor((40 / allFilesToUpload.length) * i));
                     }
-
-                    const { data: publicUrlData } = supabase.storage
-                        .from('vehicles')
-                        .getPublicUrl(filePath);
-
-                    if (i === 0) {
-                        mainImageUrl = publicUrlData.publicUrl;
-                    } else {
-                        galleryUrls.push(publicUrlData.publicUrl);
+                    
+                    // Construct galleryUrls:
+                    // Scene 2 and Scene 3 are the first two elements of the gallery.
+                    if (scene2Url || scene3Url || newGalleryAssets.length > 0) {
+                         const compiledGallery = [];
+                         // keep existing gallery unless we are overwriting specific slots?
+                         // The simplest approach is to push the new ones.
+                         // For AI video, the script generator pulls galleryUrls[0] and galleryUrls[1].
+                         if (scene2Url) compiledGallery.push(scene2Url);
+                         else if (isEditing && galleryUrls[0]) compiledGallery.push(galleryUrls[0]);
+                         
+                         if (scene3Url) compiledGallery.push(scene3Url);
+                         else if (isEditing && galleryUrls[1]) compiledGallery.push(galleryUrls[1]);
+                         
+                         // Append the rest of existing that aren't the first two
+                         if (isEditing && galleryUrls.length > 2) {
+                             compiledGallery.push(...galleryUrls.slice(2));
+                         }
+                         
+                         compiledGallery.push(...newGalleryAssets);
+                         galleryUrls = compiledGallery;
                     }
-                    i++;
-                    setUploadProgress(30 + Math.floor((40 / validFiles.length) * i));
                 }
-                setUploadProgress(70);
+            } catch (err) {
+                 console.error("Storage upload error:", err);
+                 alert(`Failed to upload images.`);
+                 setIsUploading(false);
+                 return;
             }
+            setUploadProgress(70);
 
             setUploadProgress(90);
 
@@ -244,17 +295,64 @@ export default function VehicleForm({ initialData = null }) {
                 )}
 
                 {/* File Upload Section */}
-                <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
-                    <span className="material-symbols-outlined text-4xl text-slate-400 mb-2">add_photo_alternate</span>
-                    <label className="block text-sm font-bold text-slate-700 mb-1">{isEditing ? "Upload New Images" : "Upload Vehicle Images"}</label>
-                    <p className="text-xs text-slate-500 mb-4">Upload as many photos as you like! Hold Ctrl/Cmd to select multiple. <br />The first image will be the primary exterior hero, the second an interior shot, and the third another exterior angle. The AI Engine will automatically use the first three to generate the video commercial.</p>
-                    <input
-                        type="file"
-                        name="image_files"
-                        multiple
-                        accept="image/png, image/jpeg, image/webp"
-                        className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 mx-auto block"
-                    />
+                <div>
+                     <label className="block text-sm font-bold text-slate-700 mb-4">Video Cinematic Scenes {"&"} Photos</label>
+                     <p className="text-sm text-slate-500 mb-6">These first three images are used by the AI engine to generate the 3 distinct video scenes. The rest form the image gallery.</p>
+                     
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                         {/* Scene 1 */}
+                         <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">car_front</span>
+                             <label className="block text-sm font-bold text-slate-700 mb-1">Scene 1: Front / Side</label>
+                             <p className="text-xs text-slate-500 mb-4">Hero exterior shot.</p>
+                             <input
+                                 type="file"
+                                 name="scene1_image"
+                                 accept="image/png, image/jpeg, image/webp"
+                                 className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                             />
+                         </div>
+
+                         {/* Scene 2 */}
+                         <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">dashboard</span>
+                             <label className="block text-sm font-bold text-slate-700 mb-1">Scene 2: Dashboard View</label>
+                             <p className="text-xs text-slate-500 mb-4">Interior cockpit layout.</p>
+                             <input
+                                 type="file"
+                                 name="scene2_image"
+                                 accept="image/png, image/jpeg, image/webp"
+                                 className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                             />
+                         </div>
+
+                         {/* Scene 3 */}
+                         <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">airline_seat_recline_extra</span>
+                             <label className="block text-sm font-bold text-slate-700 mb-1">Scene 3: Backseat Area</label>
+                             <p className="text-xs text-slate-500 mb-4">Passenger comfort / space.</p>
+                             <input
+                                 type="file"
+                                 name="scene3_image"
+                                 accept="image/png, image/jpeg, image/webp"
+                                 className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                             />
+                         </div>
+                     </div>
+
+                     {/* Bulk Gallery */}
+                     <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                         <span className="material-symbols-outlined text-4xl text-slate-400 mb-2">collections</span>
+                         <label className="block text-sm font-bold text-slate-700 mb-1">Gallery Images</label>
+                         <p className="text-xs text-slate-500 mb-4">Hold Ctrl/Cmd to select multiple extra photos (engines, boot space, specific angles).</p>
+                         <input
+                             type="file"
+                             name="gallery_images"
+                             multiple
+                             accept="image/png, image/jpeg, image/webp"
+                             className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 mx-auto block"
+                         />
+                     </div>
                 </div>
 
                 <div>
