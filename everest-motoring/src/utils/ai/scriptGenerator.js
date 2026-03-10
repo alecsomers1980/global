@@ -41,29 +41,34 @@ Please subtly weave these category-specific themes into the scene details and ca
 
 Strict Instructions for the script:
 1. You must write exactly FOUR scene descriptions. Each scene represents a video clip prompt.
-2. Provide highly detailed visual descriptions of the camera movement, lighting, and environment.
+2. These are pre-owned vehicles. NEVER use the word "new" in the voiceover scripts. Use words like "striking", "exceptional", or just the make and model.
+3. Keep visual descriptions concise and positive. Avoid negative words like "don't", "no", or "without", as they confuse the video AI. Describe exactly what SHOULD be seen.
 
 Scene Breakdown:
 Scene 1: The Hook (Exterior Hero Shot)
-- Cinematic tracking shot, smooth glide from front bumper to side profile.
+- Very slow, subtle cinematic camera push-in with a tiny, almost imperceptible pan. The camera angle stays mostly locked to the reference image but provides a very slight angle change for a premium feel. Do not distort the background geometry.
 - Dramatic lighting (e.g., Golden Hour sunset with realistic lens flares or moody showroom lighting).
-- Describe high-energy cuts showing the car's silhouette.
+- The vehicle's front license plate clearly displays the word "EVEREST" in clean lettering.
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a catchy 1-sentence hook introducing the make and model]"
 
 Scene 2: The Technology (Dashboard/Cockpit)
-- Interior cinematic POV shot.
-- Slow pan across the dashboard, focusing on digital displays, premium stitching, or center console. **CRITICAL: This is a South African vehicle, which means it is Right-Hand Drive (RHD). The steering wheel must be on the right side of the car.**
+- Very slow, subtle cinematic camera push-in on the dashboard. Do not pan left or right. Focus entirely on the area visible in the reference image.
+- The steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and analog/digital display style.
 - Soft ambient lighting.
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning 1 or 2 of its best technology features]"
 
 Scene 3: The Comfort (Rear Cabin)
-- Slow push-in to the back seat or passenger area.
-- Focus on legroom, seat texture, and comfort.
+- Very slow, subtle cinematic camera push-in on the back seat or passenger area. Do not pan.
+- The cabin interior and the exact background environment visible through the windows perfectly match the source image.
 - Natural light streaming through the windows emphasizing space.
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning its comfort or powertrain features]"
 
 Scene 4: The Closer (Human Presenter)
 - A professional, attractive female sales presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an "Everest Motoring" logo on the breast pocket.
-- She stands next to the car in a sleek modern "Everest Motoring" premium showroom setup with polished concrete floors and large brushed-metal "EVEREST MOTORING" sign.
+- She stands next to the exact same vehicle from Scene 1, in the exact same outdoor or indoor environment as Scene 1. A subtle "EVEREST MOTORING" logo is visible on a wall or structure behind her.
 - She looks directly into the camera with a warm, inviting smile, gesturing welcomingly.
-- Camera slowly pushes in for an intimate close-up.
+- Very slow, subtle cinematic camera push-in. Do not pan or reveal new environments.
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact Everest Motoring regarding this specific make/model. Do NOT use the word 'new']"
 
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
 Do not include markdown formatting outside the JSON array. The \`visual_prompt\` should be a single, long paragraph containing all the visual imagery, camera instructions, lighting, and action for the AI video generator.
@@ -89,25 +94,27 @@ Example Output:
 
         // Fallback generic script for 4 scenes if Gemini fails or rate limits
         const presenterDesc = "A professional, attractive white female presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an 'Everest Motoring' logo";
-        
+
         return [
-            { scene: 1, location: "exterior", visual_prompt: `Cinematic 4K tracking shot of the ${car.year} ${car.make} ${car.model}. The camera starts low at the front bumper and smoothly glides to a side profile. Dramatic "Golden Hour" sunset lighting with realistic lens flares and high-energy cuts showing the car's silhouette.` },
-            { scene: 2, location: "interior", visual_prompt: `Interior cinematic POV shot of the ${car.make} ${car.model}. The camera slowly pans across the dashboard, focusing on the high-tech digital displays and premium stitching. CRITICAL: This is a Right-Hand Drive (RHD) car. Soft ambient lighting highlights the interior luxury.` },
-            { scene: 3, location: "interior", visual_prompt: `Cinematic slow push-in to the back passenger area of the ${car.make} ${car.model}. Focus on the spacious legroom and premium seat texture. Natural light streams through the windows emphasizing comfort and space.` },
-            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the ${car.make} ${car.model} in a sleek modern 'Everest Motoring' showroom. She looks directly into the camera with a warm, inviting smile and gestures welcomingly. Cinematic camera slowly pushes in towards her for an intimate close-up.` }
+            { scene: 1, location: "exterior", visual_prompt: `Very slow, subtle cinematic push-in shot with a tiny pan of the ${car.year} ${car.make} ${car.model}. Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: 'Introducing the striking ${car.make} ${car.model}.'` },
+            { scene: 2, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in interior POV shot of the ${car.make} ${car.model}. Do not pan left or right. The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: 'Experience unparalleled technology right at your fingertips.'` },
+            { scene: 3, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in shot of the back passenger area of the ${car.make} ${car.model}. Do not pan. Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: 'Designed for exceptional comfort on every journey.'` },
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Very slow, subtle cinematic push-in shot. She looks directly into the camera with a warm, inviting smile and gestures welcomingly. AUDIO: South African English Female Voiceover: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
         ];
     }
 }
 
 export async function optimizeVehicleDescription(car, manualDescription) {
     if (!process.env.GOOGLE_GEMINI_API_KEY) {
+        console.warn("[SEO Content] No GEMINI API KEY found. Skipping description optimization.");
         return manualDescription;
     }
 
     try {
+        console.log(`[SEO Content] Starting description optimization for ${car.year} ${car.make} ${car.model}...`);
         const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        // Using gemini-1.5-flash as it robustly supports multimodal (vision + text) inputs natively.
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Using gemini-2.5-flash as it robustly supports multimodal (vision + text) inputs natively.
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         let imagePart = null;
         if (car.main_image_url) {
@@ -125,15 +132,16 @@ export async function optimizeVehicleDescription(car, manualDescription) {
                             mimeType: mimeType
                         }
                     };
+                    console.log("[SEO Content] Successfully loaded reference image for color/condition analysis.");
                 }
             } catch (imgErr) {
-                console.warn("Could not fetch image for AI optimization:", imgErr);
+                console.warn("[SEO Content] Could not fetch image for AI optimization:", imgErr.message);
             }
         }
 
         const promptText = `
 You are an expert automotive copywriter specializing in SEO and high-conversion sales copy for Everest Motoring.
-Write a short, punchy, and highly attractive description for the following vehicle.
+Write a brilliant, SEO-optimized, highly attractive sales pitch description for the following vehicle.
 
 Vehicle Details:
 Make: ${car.make}
@@ -147,14 +155,14 @@ Features: ${car.features && car.features.length > 0 ? car.features.join(', ') : 
 User's Extra/Unique Features: ${manualDescription || 'None provided'}
 
 Strict Instructions:
-1. Keep it concise but persuasive (2-3 short paragraphs max).
-2. It must be optimized for Google SEO (use relevant keywords implicitly).
-3. Important: When mentioning the price, spell out the currency. For example, do not write "R 800,000", you MUST write it as "800,000 South African Rand".
-4. Highlight the best features, the condition, and the overall value proposition.
+1. Write 2-3 engaging, persuasive paragraphs. 
+2. It MUST be optimized for Google SEO (use relevant keywords implicitly, e.g. "Buy used ${car.make} ${car.model} in South Africa").
+3. Important: When mentioning the price, spell out the currency. You MUST write it as "${car.price} South African Rand".
+4. Highlight the best features, the pristine condition, and the overall value proposition.
 5. If an image is provided in the prompt, scan the photo to determine the exact color of the car and integrate that color naturally into the description.
-6. Use all the information provided, from the make to the features to the extra/unique features, to write a compelling narrative.
-7. End with a strong Call to Action to book a test drive or inquire for finance.
-8. Do not include markdown headers or unnecessary formatting. Just return the clean text ready to be displayed on the website.
+6. Use all the information provided to write a compelling narrative.
+7. CRITICAL: End with a strong, explicit Call to Action aimed at lead generation and sales (e.g., "Contact Everest Motoring today to book your exclusive test drive, or inquire about our tailored finance options!").
+8. Do NOT include markdown headers (* or #) or unnecessary formatting. Just return the clean, professional text ready to be displayed on the website.
 `;
 
         const requestParts = [promptText];
@@ -162,10 +170,14 @@ Strict Instructions:
             requestParts.push(imagePart);
         }
 
+        console.log("[SEO Content] Calling Gemini 1.5 Flash for generation...");
         const result = await model.generateContent(requestParts);
-        return result.response.text().trim();
+        const finalDescription = result.response.text().trim();
+        console.log("[SEO Content] Successfully generated optimized description.");
+
+        return finalDescription;
     } catch (error) {
-        console.error("Error optimizing description with Gemini:", error);
+        console.error("[SEO Content] Error optimizing description with Gemini:", error);
         return manualDescription; // Fallback to raw text
     }
 }

@@ -61,7 +61,7 @@ export default function VideoRenderManager() {
             let finalClipUrls = [];
             let attempts = 0;
 
-            while (!clipsComplete && attempts < 40) {
+            while (!clipsComplete && attempts < 90) {
                 // Wait 10s between checks to avoid spamming the backend
                 await new Promise(r => setTimeout(r, 10000));
                 attempts++;
@@ -79,7 +79,7 @@ export default function VideoRenderManager() {
             }
 
             if (!clipsComplete || finalClipUrls.length === 0) {
-                throw new Error("Timed out waiting for Veo 3.1 completion after 6 minutes.");
+                throw new Error("Timed out waiting for Veo 3.1 completion after 15 minutes. Heavy load.");
             }
 
             // 4. Stitch Videos

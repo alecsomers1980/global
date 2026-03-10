@@ -29,7 +29,8 @@ export default function VehicleGallery({ car }) {
                                 video_id: car.video_url.split(':')[1],
                                 video_title: `${car.year} ${car.make} ${car.model} AI Walkaround`
                             }}
-                            autoPlay="muted"
+                            autoPlay
+                            volume={0.66}
                             style={{ height: '100%', width: '100%', objectFit: 'cover' }}
                         />
                     ) : (
@@ -37,9 +38,9 @@ export default function VehicleGallery({ car }) {
                             src={car.video_url}
                             className="w-full h-full object-cover"
                             autoPlay
-                            muted
                             loop
                             controls
+                            onCanPlay={(e) => { e.target.volume = 0.66; }}
                         />
                     )
                 ) : activeMedia !== null && allImages[activeMedia] ? (

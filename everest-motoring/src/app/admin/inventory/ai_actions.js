@@ -177,10 +177,16 @@ export async function checkHeyGenVideoStatus(carId) {
 }
 
 export async function optimizeDescriptionAction(carPayload, manualDescription) {
+    console.log("=========================================");
+    console.log("[SERVER ACTION HIT] optimizeDescriptionAction invoked!");
+    console.log("PAYLOAD RECEIVED:", JSON.stringify(carPayload).substring(0, 150) + "...");
+    console.log("=========================================");
     try {
-        return await optimizeVehicleDescription(carPayload, manualDescription);
+        const result = await optimizeVehicleDescription(carPayload, manualDescription);
+        console.log("[SERVER ACTION] optimizeVehicleDescription returned successfully.");
+        return result;
     } catch (e) {
-        console.error("Failed to optimize description:", e);
+        console.error("Failed to optimize description in Server Action:", e);
         return manualDescription;
     }
 }
