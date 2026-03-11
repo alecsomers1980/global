@@ -125,7 +125,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 | Everest Motoring Platform — setup & launch | Custom branding, inventory database, admin panel, lead capture forms | Included |
 | AI Pipeline Integration | Setup of Video, Voiceover, and Copywriting API connections | Included |
 | Domain & hosting configuration | Vercel, Supabase, DNS setup | Included |
-| **Month 1 Total** | *One-time setup and deployment fee* | **R8,500** |
+| **Month 1 Total** | *Reduced launch rate — one-time* | **R5,500** |
 
 ---
 
@@ -146,23 +146,26 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 
 ### Phase 3 — Full SaaS Subscription (Month 3 onwards)
 
-> Full AI automation operational marketing up to 20 vehicles per month. Monthly subscription rate covering all infrastructure and variable AI generation costs.
+> Full AI automation operational marketing up to 20 vehicles per month. Monthly subscription rate covering all infrastructure, software developments, and AI compute costs.
 
 | What's Included | Detail |
 |---|---|
 | Fully Managed Hosting | Vercel (Frontend) & Supabase (Database/Storage) |
 | Tech Infrastructure & Maintenance | Zero plugins to update; secure, fast, always online |
-| **AI Video Generation Allowance** | Covers generation costs for up to **20 cars per month** (Walkarounds + Voiceovers) |
+| **All Future Platform Updates** | Continuous feature additions and platform improvements that do not incur direct 3rd party costs |
+| **AI Video Generation Allowance** | Covers video and voiceover generation costs for up to **20 cars per month** |
 | **AI Copywriting & SEO** | Automated descriptions for all loaded vehicles |
+| **AI Monthly Newsletter** | System auto-generates a professional monthly newsletter to all subscribers |
 | **Zero-Touch Social Media** | Automated posting via Ember Social |
 | **Authority Blogging & Posts** | Monthly SEO articles and weekly expert social posts |
+| **WhatsApp Affiliate Distro** | Fully covers Meta WhatsApp API costs for distributing media kits to up to **40 affiliates** |
 | Customer Portals | Finance, Trade-In, and Test Drive modules |
 | Lead & Affiliate Management | Centralized CRM dashboard |
 | Monthly Analytics Reporting | ROI, stock turnover, and lead performance reporting |
 | Priority Support | Email & WhatsApp — business hours |
-| **Monthly Total (from Month 3)** | **R4,500/mo*** |
+| **Monthly Total (from Month 3)** | **R12,000/mo*** |
 
-*\*Note: The monthly subscription covers the heavy compute costs required to render AI videos and process language models for 20 vehicles. Higher inventory volumes will be quoted on a customized scaling tier.*
+*\*Note: The monthly subscription is a comprehensive package covering heavy compute costs for AI video rendering, language models for 20 vehicles, continuous platform upgrades, and WhatsApp distribution for 40 partners. Higher inventory or affiliate volumes will require a customized scaling tier.*
 
 ---
 
@@ -173,7 +176,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 - This quotation is valid for **30 days** from the date of issue.
 - A signed SaaS Service Agreement is required before work commences.
 - The subscription is structured as a **12-month minimum term**.
-- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote. Usage of the Meta WhatsApp Business API for affiliate video distribution is billed by Meta per message sent (approx. R0.70 ZAR per affiliate per car) and is not included in the base subscription.*
+- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote.*
 
 ---
 
