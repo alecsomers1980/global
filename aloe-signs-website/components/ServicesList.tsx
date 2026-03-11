@@ -24,7 +24,7 @@ const servicesData = [
         id: 'bulk-orders',
         title: 'BULK ORDERS & SCREEN PRINTING',
         description: 'High-volume commercial screen printing for apparel, banners, and gear.',
-        image: '/images/portfolio/screen-1.jpg',
+        image: '/images/screen.png',
         link: '/services/bulk-orders-screen-printing',
         alt: 'Commercial screen printing services'
     },
@@ -40,7 +40,7 @@ const servicesData = [
         id: 'promo-items',
         title: 'PROMO ITEMS',
         description: 'Custom promotional items that keep your brand in their hands.',
-        image: '/images/portfolio/print-1.jpg',
+        image: '/images/promo.png',
         link: '/services/promo-items',
         alt: 'Custom promotional printing'
     },
@@ -80,7 +80,7 @@ const servicesData = [
         id: 'regulatory-signs',
         title: 'PLANT/MINES REGULATORY SIGNS',
         description: 'Compliant safety and regulatory signage for industrial plants and mines.',
-        image: '/images/portfolio/wayfinder-main.jpg',
+        image: '/images/safety.png',
         link: '/services/regulatory-signs',
         alt: 'Regulatory signage for plants and mines'
     },
@@ -88,7 +88,7 @@ const servicesData = [
         id: 'site-activations',
         title: 'SITE ACTIVATIONS',
         description: 'Complete site activations that leave a lasting unmissable impact.',
-        image: '/images/portfolio/set-building-main.jpg',
+        image: '/images/site.png',
         link: '/services/site-activations',
         alt: 'Event site activations'
     }
