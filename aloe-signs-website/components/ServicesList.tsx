@@ -88,7 +88,7 @@ const servicesData = [
         id: 'site-activations',
         title: 'SITE ACTIVATIONS',
         description: 'Complete site activations that leave a lasting unmissable impact.',
-        image: '/images/site.png',
+        image: '/images/Site.png',
         link: '/services/site-activations',
         alt: 'Event site activations'
     }
