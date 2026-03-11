@@ -77,6 +77,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 | **AI Cinematic Walkarounds** | Upload 3 basic photos (Front, Dash, Rear). The AI engine instantly generates a professional, multi-scene video. **Saves thousands of Rands in videography fees.** |
 | **AI Voiceover Scripts** | The system automatically writes and narrates a professional script detailing the specific features of that exact car in the video. |
 | **AI Sales Copywriting** | Enter basic specs (Make, Model, Year, Mileage). The AI writes a compelling, high-converting sales description instantly. |
+| **Live Market Pricing AI** | When entering a vehicle like a "2021 Ford Ranger", the system scrapes South African market data to display the average asking price and days-on-market for similar cars. Gives dealers data-driven confidence to price for maximum profit margins and fast turnover. |
 | **Post-Sale Celebration Videos** | When a car is sold, snap a photo of the happy buyer. The system instantly generates a branded "Congratulations!" video to post online, driving massive local social proof. |
 
 ### 2. The Customer Conversion Portals
@@ -85,6 +86,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 |---|---|
 | **Finance Calculator & Pre-Approval** | Buyers calculate installments instantly. Integration with light credit-checking ensures your team only spends time on qualified buyers. |
 | **Trade-In Valuation Engine** | Customers upload details of their current car to get an estimate, generating high-quality leads and future inventory for your floor. |
+| **Instant Finance Pre-Approval** | Replaces basic calculators. Integrated with a South African Credit API (Experian/TransUnion via Datanamix/SearchWorks). The system runs a background "soft inquiry" (which doesn't impact credit scores) and instantly tells the buyer what they are pre-approved for. Salespeople spend zero time negotiating with unqualified buyers. |
 | **Direct WhatsApp Integration** | Instant "Chat about this car" buttons link directly to your sales team with the vehicle context attached. |
 | **Affiliate Tracking & Distribution** | Allow partners to generate referral links and earn commissions on closed sales. When a new car is listed, the system instantly generates and sends a premium "Media Kit" (AI video, high-res photos, and a custom spec sheet with their personalized WhatsApp link) via **both Email and WhatsApp** so they can forward it to their network instantly. |
 
@@ -189,7 +191,7 @@ The Everest Motoring platform replaces an entire marketing department for less t
 - This quotation is valid for **30 days** from the date of issue.
 - A signed SaaS Service Agreement is required before work commences.
 - The subscription is structured as a **12-month minimum term**.
-- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote.*
+- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote. Soft credit checks via the Pre-Approval API carry a small per-inquiry cost levied by the credit bureau (approx. R5 - R15 per check depending on the provider) which is billed based on actual usage.*
 
 ---
 
