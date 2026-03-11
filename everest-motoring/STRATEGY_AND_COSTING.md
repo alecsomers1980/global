@@ -27,7 +27,7 @@ These features are currently built into the Everest Motoring platform.
 These features are planned to be built out to completely automate the dealership's marketing and sales funnel, elevating them above the competition.
 
 1.  **"Zero-Touch" Social Media Publishing**
-    *   The generated AI cinematic videos are automatically reformatted to vertical 9:16 and instantly scheduled/published to TikTok, Instagram Reels, YouTube Shorts, and Facebook.
+    *   The generated AI cinematic videos are automatically reformatted to vertical 9:16 and seamlessly scheduled/published to TikTok, Instagram Reels, YouTube Shorts, and Facebook pages directly via **Ember Social**.
 2.  **WhatsApp "AI Salesperson" (Pull Mechanism)**
     *   Integration with WhatsApp Business API. When a lead clicks "Chat about this car", an AI bot instantly responds 24/7 with specs, finance options, and the cinematic video, securing the lead before a human even steps in.
 3.  **"Stock Watch" / Automated Matchmaking**
@@ -41,7 +41,7 @@ These features are planned to be built out to completely automate the dealership
 7.  **🏆 Post-Sale Celebration Video (Social Proof Engine)**
     *   When a car is marked "Sold", the system prompts the dealer to snap a photo of the happy customer with their new car. The AI engine instantly creates a celebratory social media video (*"Congratulations to [Name] on their new [Car]!"*) to drive massive local social proof.
 8.  **Automated "Authority" Social Media Publishing**
-    *   Beyond just posting inventory, the AI automatically generates and schedules 2-3 weekly "Value Posts" (e.g., *Top 5 Reliable First Cars under R150k*, *How to Check Your Tyre Tread*, *Finance Tips for 2026*). This positions Everest Motoring as trusted industry experts, not just a sales floor.
+    *   Beyond just posting inventory, the AI automatically generates and schedules 2-3 weekly "Value Posts" (e.g., *Top 5 Reliable First Cars under R150k*, *How to Check Your Tyre Tread*, *Finance Tips for 2026*). These are securely published through **Ember Social**, positioning Everest Motoring as trusted industry experts, not just a sales floor.
 9.  **AI-Generated SEO Blogging (Lead Magnet)**
     *   The system automatically researches and writes 2-4 comprehensive, keyword-optimized blog posts per month tailored to the South African market (e.g., *"Is it better to buy a diesel or petrol bakkie in SA?"*). This builds massive organic SEO traffic completely hands-free.
 
@@ -90,16 +90,16 @@ Generating the cinematic videos and AI descriptions requires calling external AP
 
 ### 3. Future API Integrations (Optional add-ons for later)
 *   **WhatsApp Business API (Meta):** ~$15.00/mo (depending on conversation volume).
-*   **Make.com / Zapier (Social Media scheduling for Authority Posts):** ~$10.50/mo.
+*   **Ember Social Integration:** Built-in / Internal (Handles all zero-touch social media scheduling and publishing).
 *   **XML Syndication Feeds:** Built internally (Free), though external platforms (AutoTrader/Cars.co.za) will charge their own dealer subscription fees.
 
 ---
 
 ### 📊 Monthly Summary
-To run the highly automated, AI-driven Everest Motoring showroom adding 20 cars a month with full SEO & Social Authority:
+To run the highly automated, AI-driven Everest Motoring showroom adding 20 cars a month with full SEO & Social Authority via Ember Social:
 
-*   **Fixed Infrastructure & Automation Tools:** ~$55.50
+*   **Fixed Infrastructure (Vercel/Supabase/Mux):** ~$45.00
 *   **Variable AI Costs (20 cars + Content):** ~$50.50
-*   **Estimated Total Tech Running Cost:** **~$106.00 / month** (Approx. R1,950 ZAR per month).
+*   **Estimated Total Tech Running Cost:** **~$95.50 / month** (Approx. R1,750 ZAR per month).
 
 *This represents an incredibly low overhead compared to hiring a full-time copywriter, videographer, and social media manager.*
