@@ -86,7 +86,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 | **Finance Calculator & Pre-Approval** | Buyers calculate installments instantly. Integration with light credit-checking ensures your team only spends time on qualified buyers. |
 | **Trade-In Valuation Engine** | Customers upload details of their current car to get an estimate, generating high-quality leads and future inventory for your floor. |
 | **Direct WhatsApp Integration** | Instant "Chat about this car" buttons link directly to your sales team with the vehicle context attached. |
-| **Affiliate Tracking Portal** | Allow partners to generate referral links and earn commissions on closed sales, turning your community into an extended sales force. |
+| **Affiliate Tracking & Distribution** | Allow partners to generate referral links and earn commissions on closed sales. When a new car is listed, the system instantly generates and emails a premium "Media Kit" (AI video, high-res photos, and a custom spec sheet with their personalized WhatsApp link) so they can forward it to their network instantly. |
 
 ### 3. The Omni-Channel Marketing Engine
 

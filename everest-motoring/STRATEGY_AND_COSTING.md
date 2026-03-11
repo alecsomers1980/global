@@ -16,8 +16,9 @@ These features are currently built into the Everest Motoring platform.
     *   Backend CRUD system (`/admin/inventory`) for adding, editing, managing, and featuring vehicle stock.
 4.  **Customer Conversion Portals**
     *   Built-in tools for buyers to Book a Test Drive, Calculate Finance (`/finance`), and Value Their Trade-In (`/value-my-car`).
-5.  **Affiliate & Referral Tracking**
+5.  **Affiliate & Referral Tracking (with Auto-Distribution)**
     *   A portal (`/affiliate`) where partners can generate tracked links and drive sales for a commission.
+    *   **Automated Asset Distribution:** When a new car is published, the system instantly generates and emails a premium "Media Kit" to all registered affiliates. This kit includes the AI video, gallery photos, a premium specification notice, and their own personalized tracking link—empowering them to immediately push the car to their audiences.
 6.  **Lead Management Dashboard**
     *   Centralized hub for managing incoming purchase leads, trade-in requests, and tracking affiliate payouts.
 
