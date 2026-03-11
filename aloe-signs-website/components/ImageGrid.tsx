@@ -6,7 +6,7 @@ import Link from 'next/link';
 const gridImages = [
     { src: '/images/Billboards.jpg', alt: 'Billboards', label: 'Billboards', link: '/services/billboards' },
     { src: '/images/XXL.jpeg', alt: 'Building wraps and XXL needs', label: 'Building wraps & XXL needs', link: '/services/building-wraps' },
-    { src: '/images/portfolio/screen-1.jpg', alt: 'Bulk orders and screen printing', label: 'Bulk orders & screen printing', link: '/services/bulk-orders-screen-printing' },
+    { src: '/images/screen.png', alt: 'Bulk orders and screen printing', label: 'Bulk orders & screen printing', link: '/services/bulk-orders-screen-printing' },
     { src: '/images/portfolio/vehicle-rapping-main.jpg', alt: 'Fleet maintenance and branding', label: 'Fleet maintenance & branding', link: '/services/fleet-maintenance-branding' },
     { src: '/images/portfolio/print-1.jpg', alt: 'Promo Items', label: 'Promo Items', link: '/services/promo-items' },
     { src: '/images/Wall Art.jpeg', alt: 'Wall art', label: 'Wall art', link: '/services/wall-art' },
