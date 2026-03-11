@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { products, categories, Product, getLowestUnitPrice } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
+import ServiceHero from '@/components/ServiceHero';
 import { useCart } from '@/context/CartContext';
 import ProductCard from '@/components/ProductCard';
 
@@ -31,34 +32,14 @@ export default function ShopPage() {
             <Header />
 
             <main>
-                {/* Page Header (Rich Hero) */}
-                <div className="relative bg-charcoal text-white py-20 md:py-32">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                            backgroundSize: '40px 40px'
-                        }}></div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-6 relative z-10">
-                        <div className="max-w-3xl">
-                            <div className="flex items-center gap-2 text-sm text-light-grey mb-6">
-                                <Link href="/" className="hover:text-aloe-green transition-colors">
-                                    Home
-                                </Link>
-                                <span>/</span>
-                                <span className="text-white font-bold">Shop</span>
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                Shop
-                            </h1>
-                            <p className="text-lg md:text-xl text-light-grey">
-                                Professional signage products delivered fast
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {/* Page Header */}
+                <ServiceHero 
+                    title="Shop"
+                    tagline="Professional signage products delivered fast"
+                    description="Browse our collection of ready-made signs, hardware, and accessories built with the same Aloe Signs quality you expect."
+                    backgroundImage="/images/portfolio/shopfront-1.jpg"
+                    compact={true}
+                />
 
                 {/* Shop Content */}
                 <section className="py-12 bg-white">

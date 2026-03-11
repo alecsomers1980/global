@@ -45,13 +45,13 @@ export default function Footer() {
                     <div>
                         <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-8">SERVICES</h4>
                         <ul className="space-y-4 text-white/50 font-semibold text-sm">
-                            <li><Link href="/services/vehicle-branding" className="hover:text-aloe-green transition-colors">VEHICLE BRANDING</Link></li>
-                            <li><Link href="/services/building-signage" className="hover:text-aloe-green transition-colors">BUILDING SIGNAGE</Link></li>
-                            <li><Link href="/services/shopfronts" className="hover:text-aloe-green transition-colors">SHOPFRONTS</Link></li>
-                            <li><Link href="/services/wayfinding-interior" className="hover:text-aloe-green transition-colors">WAYFINDING & INTERIOR</Link></li>
-                            <li><Link href="/services/billboards-outdoor" className="hover:text-aloe-green transition-colors">BILLBOARDS & OUTDOOR</Link></li>
-                            <li><Link href="/services/large-format-print" className="hover:text-aloe-green transition-colors">LARGE FORMAT PRINT</Link></li>
-                            <li><Link href="/services/screen-printing" className="hover:text-aloe-green transition-colors">SCREEN PRINTING</Link></li>
+                            <li><Link href="/services/billboards" className="hover:text-aloe-green transition-colors">BILLBOARDS</Link></li>
+                            <li><Link href="/services/building-wraps" className="hover:text-aloe-green transition-colors">BUILDING WRAPS & XXL</Link></li>
+                            <li><Link href="/services/bulk-orders-screen-printing" className="hover:text-aloe-green transition-colors">BULK ORDERS & SCREEN PRINTING</Link></li>
+                            <li><Link href="/services/fleet-maintenance-branding" className="hover:text-aloe-green transition-colors">FLEET MAINTENANCE & BRANDING</Link></li>
+                            <li><Link href="/services/promo-items" className="hover:text-aloe-green transition-colors">PROMO ITEMS</Link></li>
+                            <li><Link href="/services/wall-art" className="hover:text-aloe-green transition-colors">WALL ART</Link></li>
+                            <li><Link href="/services/set-building-strike" className="hover:text-aloe-green transition-colors">SET BUILDING & STRIKE</Link></li>
                         </ul>
                     </div>
 

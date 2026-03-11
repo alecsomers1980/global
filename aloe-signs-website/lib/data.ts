@@ -5,6 +5,11 @@ export interface PricingTier {
     doublePrice: number;
 }
 
+export interface ProductVariant {
+    name: string;
+    price: number;
+}
+
 export interface Product {
     id: string;
     name: string;
@@ -18,16 +23,41 @@ export interface Product {
     features: string[];
     inStock: boolean;
     pricingTiers?: PricingTier[];
+    variants?: ProductVariant[];
     artworkFee?: number;
 }
 
 export const productsList: Product[] = [
+    // Billboards
+    {
+        id: 'billboards',
+        name: 'Billboard Installations',
+        category: 'billboards',
+        description: 'Complete billboard manufacturing and installation service. Build an unmissable brand presence with our massive outdoor formats.\n\n*Excluding VAT\n*Includes installation on poles in & around JHB + PTA',
+        size: 'Various Sizes',
+        price: 10000,
+        image: '/images/Billboards.jpg',
+        features: [
+            'Full structural engineering and manufacturing',
+            'High-resolution outdoor PVC flighting',
+            'Installation on poles included (JHB & PTA)',
+            'Weatherproof and highly durable structure',
+            'Maximum brand visibility'
+        ],
+        inStock: true,
+        variants: [
+            { name: '8x3m Billboard', price: 25000 },
+            { name: '6x3m Billboard', price: 19000 },
+            { name: '4x3m Billboard', price: 13000 },
+            { name: '4x2m Billboard', price: 10000 }
+        ]
+    },
     // Estate Agent Boards
     {
         id: 'estate-board-small',
         name: 'Estate Agent Board - Small',
         category: 'estate-boards',
-        description: 'Professional correx estate agent board. Perfect for residential properties. Weatherproof and durable.\n\nPRICE INCLUDE SHIPPING TO YOUR NEAREST POSTNET OR PUDO',
+        description: 'Professional correx estate agent board. Perfect for residential properties. Weatherproof and durable.\n\nChoose between nationwide courier or local collection at checkout.',
         size: '600 x 400mm',
         price: 450,
         originalPrice: 3565,
@@ -43,17 +73,19 @@ export const productsList: Product[] = [
         inStock: true,
         artworkFee: 250,
         pricingTiers: [
-            { quantity: 6, singlePrice: 450, doublePrice: 700 },
-            { quantity: 12, singlePrice: 750, doublePrice: 1250 },
-            { quantity: 24, singlePrice: 1250, doublePrice: 2050 },
-            { quantity: 48, singlePrice: 2075, doublePrice: 3314 }
+            // Cost is (unitPrice * qty)
+            // 3mm Small SS: 55, DS: 100
+            { quantity: 6, singlePrice: (55 * 6), doublePrice: (100 * 6) },
+            { quantity: 12, singlePrice: (45 * 12), doublePrice: (80 * 12) },
+            { quantity: 24, singlePrice: (40 * 24), doublePrice: (70 * 24) },
+            { quantity: 48, singlePrice: (35 * 48), doublePrice: (60 * 48) }
         ]
     },
     {
         id: 'estate-board-medium',
         name: 'Estate Agent Board - Medium',
         category: 'estate-boards',
-        description: 'Medium-sized estate agent board for maximum visibility. High-quality correx construction.\n\nPRICE INCLUDE SHIPPING TO YOUR NEAREST POSTNET OR PUDO',
+        description: 'Medium-sized estate agent board for maximum visibility. High-quality correx construction.\n\nChoose between nationwide courier or local collection at checkout.',
         size: '800 x 600mm',
         price: 950,
         originalPrice: 5190,
@@ -69,17 +101,19 @@ export const productsList: Product[] = [
         inStock: true,
         artworkFee: 250,
         pricingTiers: [
-            { quantity: 6, singlePrice: 950, doublePrice: 980 },
-            { quantity: 12, singlePrice: 1580, doublePrice: 1795 },
-            { quantity: 24, singlePrice: 2825, doublePrice: 3100 },
-            { quantity: 48, singlePrice: 4790, doublePrice: 4940 }
+            // Cost is (unitPrice * qty)
+            // 3.5mm Medium SS: 135, DS: 200
+            { quantity: 6, singlePrice: (135 * 6), doublePrice: (200 * 6) },
+            { quantity: 12, singlePrice: (100 * 12), doublePrice: (150 * 12) },
+            { quantity: 24, singlePrice: (95 * 24), doublePrice: (140 * 24) },
+            { quantity: 48, singlePrice: (80 * 48), doublePrice: (120 * 48) }
         ]
     },
     {
         id: 'estate-board-large',
         name: 'Estate Agent Board - Large',
         category: 'estate-boards',
-        description: 'Large estate agent board for commercial and luxury properties. Premium quality.\n\nPRICE INCLUDE SHIPPING TO YOUR NEAREST POSTNET OR PUDO',
+        description: 'Large estate agent board for commercial and luxury properties. Premium quality.\n\nChoose between nationwide courier or local collection at checkout.',
         size: '1200 x 800mm',
         price: 2130,
         originalPrice: 12710,
@@ -95,16 +129,19 @@ export const productsList: Product[] = [
         inStock: true,
         artworkFee: 250,
         pricingTiers: [
-            { quantity: 6, singlePrice: 2130, doublePrice: 2590 },
-            { quantity: 12, singlePrice: 3438, doublePrice: 4385 },
-            { quantity: 24, singlePrice: 5763, doublePrice: 7425 },
-            { quantity: 48, singlePrice: 9470, doublePrice: 12710 }
+            // Cost is (unitPrice * qty)
+            // 4.0mm Large SS: 280, DS: 420
+            { quantity: 6, singlePrice: (280 * 6), doublePrice: (420 * 6) },
+            { quantity: 12, singlePrice: (210 * 12), doublePrice: (320 * 12) },
+            { quantity: 24, singlePrice: (190 * 24), doublePrice: (280 * 24) },
+            { quantity: 48, singlePrice: (160 * 48), doublePrice: (240 * 48) }
         ]
     }
 ];
 
 export const categories = [
     { id: 'all', name: 'All Products' },
+    { id: 'billboards', name: 'Billboards' },
     { id: 'estate-boards', name: 'Estate Agent Boards' },
     { id: 'safety-signs', name: 'Safety Signs' },
     { id: 'parking-signs', name: 'Parking Signs' },
@@ -121,6 +158,11 @@ export function getProductsByCategory(category: string): Product[] {
 }
 
 export function getLowestUnitPrice(product: Product): number | null {
+    if (product.variants && product.variants.length > 0) {
+        const variantPrices = product.variants.map(v => v.price);
+        return Math.min(...variantPrices);
+    }
+
     if (!product.pricingTiers || product.pricingTiers.length === 0) return null;
 
     // Calculate per-unit price for each tier (using single sided as it's the base price)

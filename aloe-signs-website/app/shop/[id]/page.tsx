@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { getProductById, products } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
+import ServiceHero from '@/components/ServiceHero';
 import ProductCard from '@/components/ProductCard';
 import { useCart } from '@/context/CartContext';
 
@@ -18,10 +19,17 @@ export default function ProductDetailPage() {
     const [quantity, setQuantity] = useState(6);
     const [sides, setSides] = useState<'single' | 'double'>('single');
     const [artwork, setArtwork] = useState(false);
+    const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0] || null);
 
     // Calculate dynamic price
     const currentPrice = useMemo(() => {
-        if (!product || !product.pricingTiers) return product?.price || 0;
+        if (!product) return 0;
+        
+        if (product.variants && selectedVariant) {
+            return selectedVariant.price + (artwork && product.artworkFee ? product.artworkFee : 0);
+        }
+
+        if (!product.pricingTiers) return product.price;
 
         const tier = product.pricingTiers.find(t => t.quantity === quantity);
         let price = 0;
@@ -35,7 +43,7 @@ export default function ProductDetailPage() {
         }
 
         return price;
-    }, [product, quantity, sides, artwork]);
+    }, [product, quantity, sides, artwork, selectedVariant]);
 
     if (!product) {
         return (
@@ -51,7 +59,9 @@ export default function ProductDetailPage() {
     }
 
     const handleAddToCart = () => {
-        if (product.pricingTiers) {
+        if (product.variants && selectedVariant) {
+            addToCart(product, { variant: selectedVariant.name, artwork });
+        } else if (product.pricingTiers) {
             addToCart(product, { quantity, sides, artwork });
         } else {
             addToCart(product);
@@ -63,9 +73,18 @@ export default function ProductDetailPage() {
         <div className="min-h-screen">
             <Header />
 
-            <main>
+            <main className="bg-white">
+                {/* Page Header */}
+                <ServiceHero 
+                    title={product.name}
+                    tagline={product.category.replace('-', ' ').toUpperCase()}
+                    description={product.description.split('\n')[0]} // First paragraph of description
+                    backgroundImage={product.image}
+                    compact={true}
+                />
+
                 {/* Breadcrumb */}
-                <section className="bg-bg-grey py-6">
+                <section className="bg-white py-4 border-b border-border-grey">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <nav className="text-sm text-medium-grey">
                             <Link href="/" className="hover:text-aloe-green">Home</Link>
@@ -78,7 +97,7 @@ export default function ProductDetailPage() {
                 </section>
 
                 {/* Product Detail */}
-                <section className="py-12">
+                <section className="py-12 bg-white">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="grid lg:grid-cols-2 gap-12">
                             {/* Product Image */}
@@ -137,53 +156,78 @@ export default function ProductDetailPage() {
                                 </div>
 
                                 {/* Product Options (For Matrix Pricing) */}
-                                {product.pricingTiers && (
+                                {(product.pricingTiers || product.variants) && (
                                     <div className="space-y-6 bg-bg-grey p-6 rounded-lg border border-border-grey">
                                         <h3 className="font-bold text-charcoal text-lg">Configuration</h3>
 
-                                        {/* Quantity */}
-                                        <div className="space-y-2">
-                                            <label className="block text-sm font-medium text-charcoal">Quantity</label>
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {[6, 12, 24, 48].map((qty) => (
-                                                    <button
-                                                        key={qty}
-                                                        onClick={() => setQuantity(qty)}
-                                                        className={`py-2 px-4 rounded border text-center transition-colors ${quantity === qty
-                                                            ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
-                                                            : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
-                                                            }`}
-                                                    >
-                                                        {qty}
-                                                    </button>
-                                                ))}
+                                        {/* generic size variants */}
+                                        {product.variants && (
+                                            <div className="space-y-2">
+                                                <label className="block text-sm font-medium text-charcoal">Select Size</label>
+                                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                                                    {product.variants.map((v, i) => (
+                                                        <button
+                                                            key={i}
+                                                            onClick={() => setSelectedVariant(v)}
+                                                            className={`py-3 px-2 text-sm rounded border text-center transition-colors ${selectedVariant?.name === v.name
+                                                                ? 'bg-aloe-green text-charcoal border-aloe-green font-bold shadow-sm'
+                                                                : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
+                                                                }`}
+                                                        >
+                                                            {v.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
-                                        {/* Sides */}
-                                        <div className="space-y-2">
-                                            <label className="block text-sm font-medium text-charcoal">Printing</label>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <button
-                                                    onClick={() => setSides('single')}
-                                                    className={`py-3 px-4 rounded border text-center transition-colors ${sides === 'single'
-                                                        ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
-                                                        : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
-                                                        }`}
-                                                >
-                                                    Single Sided
-                                                </button>
-                                                <button
-                                                    onClick={() => setSides('double')}
-                                                    className={`py-3 px-4 rounded border text-center transition-colors ${sides === 'double'
-                                                        ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
-                                                        : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
-                                                        }`}
-                                                >
-                                                    Double Sided
-                                                </button>
-                                            </div>
-                                        </div>
+                                        {/* Quantity */}
+                                        {product.pricingTiers && (
+                                            <>
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-charcoal">Quantity</label>
+                                                    <div className="grid grid-cols-4 gap-2">
+                                                        {[6, 12, 24, 48].map((qty) => (
+                                                            <button
+                                                                key={qty}
+                                                                onClick={() => setQuantity(qty)}
+                                                                className={`py-2 px-4 rounded border text-center transition-colors ${quantity === qty
+                                                                    ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
+                                                                    : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
+                                                                    }`}
+                                                            >
+                                                                {qty}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Sides */}
+                                                <div className="space-y-2">
+                                                    <label className="block text-sm font-medium text-charcoal">Printing</label>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <button
+                                                            onClick={() => setSides('single')}
+                                                            className={`py-3 px-4 rounded border text-center transition-colors ${sides === 'single'
+                                                                ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
+                                                                : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
+                                                                }`}
+                                                        >
+                                                            Single Sided
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setSides('double')}
+                                                            className={`py-3 px-4 rounded border text-center transition-colors ${sides === 'double'
+                                                                ? 'bg-aloe-green text-charcoal border-aloe-green font-bold'
+                                                                : 'bg-white text-medium-grey border-border-grey hover:border-aloe-green'
+                                                                }`}
+                                                        >
+                                                            Double Sided
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
 
                                         {/* Artwork */}
                                         {product.artworkFee && (
@@ -254,7 +298,7 @@ export default function ProductDetailPage() {
                 </section>
 
                 {/* Similar Products */}
-                <section className="py-12 bg-bg-grey">
+                <section className="py-12 bg-white border-t border-border-grey">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <h2 className="text-2xl font-bold text-charcoal mb-6">Similar Products</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -30,7 +30,7 @@ export const constructionProjects: Project[] = [
     {
         "id": "building-signage",
         "title": "Building Signage",
-        "category": "Building Signage",
+        "category": "Building wraps & XXL needs",
         "image": "/images/portfolio/building-signage-main.jpg",
         "images": [
             "/images/portfolio/building-signage-1.jpg",
@@ -53,7 +53,7 @@ export const constructionProjects: Project[] = [
     {
         "id": "large-format-print",
         "title": "Large Format Print",
-        "category": "Large Format Print",
+        "category": "Wall art",
         "image": "/images/portfolio/large-format-print-main.jpg",
         "images": [
             "/images/portfolio/large-format-print-1.jpg",
@@ -66,7 +66,7 @@ export const constructionProjects: Project[] = [
     {
         "id": "set-building",
         "title": "Set Building",
-        "category": "Set Building",
+        "category": "Set building & strike",
         "image": "/images/portfolio/set-building-main.jpg",
         "images": [
             "/images/portfolio/set-building-1.jpg",
@@ -97,7 +97,7 @@ export const constructionProjects: Project[] = [
     {
         "id": "shop-front",
         "title": "Shop Front",
-        "category": "Shop Front",
+        "category": "Tangible Visual Texture",
         "image": "/images/portfolio/shop-front-main.jpg",
         "images": [
             "/images/portfolio/shop-front-1.jpg",
@@ -126,8 +126,8 @@ export const constructionProjects: Project[] = [
     },
     {
         "id": "vehicle-rapping",
-        "title": "Vehicle Rapping",
-        "category": "Vehicle Rapping",
+        "title": "Vehicle Wraps",
+        "category": "Fleet maintenance & branding",
         "image": "/images/portfolio/vehicle-rapping-main.jpg",
         "images": [
             "/images/portfolio/vehicle-rapping-1.jpg",
@@ -142,7 +142,7 @@ export const constructionProjects: Project[] = [
     {
         "id": "wayfinder",
         "title": "Wayfinder",
-        "category": "Wayfinder",
+        "category": "3D Renders",
         "image": "/images/portfolio/wayfinder-main.jpg",
         "images": [
             "/images/portfolio/wayfinder-1.jpg",
@@ -175,10 +175,14 @@ export const constructionProjects: Project[] = [
 export const portfolioCategories = [
     'All',
     'Billboards',
-    'Building Signage',
-    'Large Format Print',
-    'Set Building',
-    'Shop Front',
-    'Vehicle Rapping',
-    'Wayfinder'
+    'Building wraps & XXL needs',
+    'Bulk orders & screen printing',
+    'Fleet maintenance & branding',
+    'Promo Items',
+    'Wall art',
+    'Set building & strike',
+    '3D Renders',
+    'Tangible Visual Texture',
+    'Plant/Mines Regulatory Signs',
+    'Site Activations'
 ];

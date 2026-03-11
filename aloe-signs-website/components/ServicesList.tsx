@@ -5,68 +5,92 @@ import Image from 'next/image';
 
 const servicesData = [
     {
-        id: 'vehicle-branding',
-        title: 'VEHICLE BRANDING',
-        description: 'Turn your fleet into moving billboards that demand attention and drive brand awareness.',
-        image: '/images/portfolio/vehicle-rapping-main.jpg',
-        link: '/services/vehicle-branding',
-        alt: 'High-impact commercial vehicle branding and wraps'
-    },
-    {
-        id: 'signage',
-        title: 'BUILDING SIGNAGE',
-        description: 'Elevate your physical presence with high-visibility exterior and architectural signage.',
-        image: '/images/portfolio/building-signage-main.jpg',
-        link: '/services/building-signage',
-        alt: 'Professional building signage for commercial retail'
-    },
-    {
-        id: 'shopfronts',
-        title: 'SHOPFRONTS',
-        description: 'Create a stunning first impression with modern retail branding and storefront solutions.',
-        image: '/images/portfolio/shop-front-main.jpg',
-        link: '/services/shopfronts',
-        alt: 'Premium shopfront branding and retail design'
-    },
-    {
-        id: 'wayfinding',
-        title: 'WAYFINDING & INTERIOR',
-        description: 'Navigate your space with clarity using custom internal signage and 3D wayfinding systems.',
-        image: '/images/portfolio/wayfinder-main.jpg',
-        link: '/services/wayfinding-interior',
-        alt: 'Custom interior wayfinding and office signage'
-    },
-    {
         id: 'billboards',
-        title: 'BILLBOARDS & OUTDOOR',
-        description: 'Dominate the landscape with massive outdoor formats and high-impact billboard advertising.',
-        image: '/images/portfolio/billboards-main.jpg',
-        link: '/services/billboards-outdoor',
-        alt: 'Massive outdoor billboard advertising in South Africa'
+        title: 'BILLBOARDS',
+        description: 'Massive outdoor formats and high-impact advertising.',
+        image: '/images/Billboards.jpg',
+        link: '/services/billboards',
+        alt: 'Massive outdoor billboard advertising'
     },
     {
-        id: 'large-format',
-        title: 'LARGE FORMAT PRINT',
-        description: 'Crystal-clear digital printing at any scale, from massive banners to custom wall murals.',
-        image: '/images/portfolio/large-format-print-main.jpg',
-        link: '/services/large-format-print',
-        alt: 'High-quality large format digital printing'
+        id: 'building-wraps',
+        title: 'BUILDING WRAPS & XXL NEEDS',
+        description: 'Transform your architectural space into massive visual assets.',
+        image: '/images/XXL.jpeg',
+        link: '/services/building-wraps',
+        alt: 'Building wraps and XXL printing needs'
     },
     {
-        id: 'screen-printing',
-        title: 'SCREEN PRINTING',
-        description: 'Professional high-volume commercial screen printing for apparel, banners, and promotional gear.',
+        id: 'bulk-orders',
+        title: 'BULK ORDERS & SCREEN PRINTING',
+        description: 'High-volume commercial screen printing for apparel, banners, and gear.',
         image: '/images/portfolio/screen-1.jpg',
-        link: '/services/screen-printing',
+        link: '/services/bulk-orders-screen-printing',
         alt: 'Commercial screen printing services'
     },
     {
+        id: 'fleet-maintenance',
+        title: 'FLEET MAINTENANCE & BRANDING',
+        description: 'Turn your fleet into moving billboards that demand attention.',
+        image: '/images/portfolio/vehicle-rapping-main.jpg',
+        link: '/services/fleet-maintenance-branding',
+        alt: 'Commercial vehicle branding and wraps'
+    },
+    {
+        id: 'promo-items',
+        title: 'PROMO ITEMS',
+        description: 'Custom promotional items that keep your brand in their hands.',
+        image: '/images/portfolio/print-1.jpg',
+        link: '/services/promo-items',
+        alt: 'Custom promotional printing'
+    },
+    {
+        id: 'wall-art',
+        title: 'WALL ART',
+        description: 'Custom internal wall art, murals, and vibrant office branding.',
+        image: '/images/Wall Art.jpeg',
+        link: '/services/wall-art',
+        alt: 'Custom printed wall art'
+    },
+    {
         id: 'set-building',
-        title: 'SET BUILDING & PROPS',
-        description: 'Bringing creative visions to life with custom set construction and scenic props for events.',
+        title: 'SET BUILDING & STRIKE',
+        description: 'Custom set construction and scenic props for events.',
         image: '/images/portfolio/set-building-main.jpg',
-        link: '/services/set-building',
-        alt: 'Custom set building and prop design services'
+        link: '/services/set-building-strike',
+        alt: 'Set building and strike'
+    },
+    {
+        id: '3d-renders',
+        title: '3D RENDERS',
+        description: 'Navigate your vision with stunning 3D renders before production.',
+        image: '/images/3D.jpeg',
+        link: '/services/3d-renders',
+        alt: '3D renders and signage design'
+    },
+    {
+        id: 'tangible-visual',
+        title: 'TANGIBLE VISUAL TEXTURE',
+        description: 'Premium storefront branding with unique visual textures.',
+        image: '/images/Tangible Visual Texture.jpeg',
+        link: '/services/tangible-visual-texture',
+        alt: 'Tangible visual texture for retail'
+    },
+    {
+        id: 'regulatory-signs',
+        title: 'PLANT/MINES REGULATORY SIGNS',
+        description: 'Compliant safety and regulatory signage for industrial plants and mines.',
+        image: '/images/portfolio/wayfinder-main.jpg',
+        link: '/services/regulatory-signs',
+        alt: 'Regulatory signage for plants and mines'
+    },
+    {
+        id: 'site-activations',
+        title: 'SITE ACTIVATIONS',
+        description: 'Complete site activations that leave a lasting unmissable impact.',
+        image: '/images/portfolio/set-building-main.jpg',
+        link: '/services/site-activations',
+        alt: 'Event site activations'
     }
 ];
 
@@ -105,9 +129,13 @@ export default function ServicesList() {
                         >
                             {/* Image Background */}
                             <div className="absolute inset-0 z-0">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center grayscale opacity-40 group-hover:grayscale-0 group-hover:scale-110 group-hover:opacity-60 transition-all duration-700"
-                                    style={{ backgroundImage: `url(${service.image})` }}
+                                <Image
+                                    src={service.image}
+                                    alt={service.alt}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
+                                    quality={90}
+                                    className="object-cover absolute inset-0 grayscale opacity-40 group-hover:grayscale-0 group-hover:scale-110 group-hover:opacity-60 transition-all duration-700"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E0D] via-[#0B0E0D]/60 to-transparent z-10" />
                             </div>

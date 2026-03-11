@@ -33,14 +33,17 @@ export default function Header() {
     ];
 
     const services = [
-        { name: 'Vehicle Branding', href: '/services/vehicle-branding' },
-        { name: 'Building Signage', href: '/services/building-signage' },
-        { name: 'Shopfronts', href: '/services/shopfronts' },
-        { name: 'Wayfinding & Interior', href: '/services/wayfinding-interior' },
-        { name: 'Billboards & Outdoor', href: '/services/billboards-outdoor' },
-        { name: 'Large Format Print', href: '/services/large-format-print' },
-        { name: 'Screen Printing', href: '/services/screen-printing' },
-        { name: 'Set Building & Props', href: '/services/set-building' },
+        { name: 'Billboards', href: '/services/billboards' },
+        { name: 'Building wraps & XXL needs', href: '/services/building-wraps' },
+        { name: 'Bulk orders & screen printing', href: '/services/bulk-orders-screen-printing' },
+        { name: 'Fleet maintenance & branding', href: '/services/fleet-maintenance-branding' },
+        { name: 'Promo Items', href: '/services/promo-items' },
+        { name: 'Wall art', href: '/services/wall-art' },
+        { name: 'Set building & strike', href: '/services/set-building-strike' },
+        { name: '3D Renders', href: '/services/3d-renders' },
+        { name: 'Tangible Visual Texture', href: '/services/tangible-visual-texture' },
+        { name: 'Plant/Mines Regulatory Signs', href: '/services/regulatory-signs' },
+        { name: 'Site Activations', href: '/services/site-activations' },
     ];
 
     return (

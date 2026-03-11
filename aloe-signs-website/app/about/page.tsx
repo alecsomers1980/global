@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import StatsSection from '@/components/StatsSection';
+import ServiceHero from '@/components/ServiceHero';
 import { Building2, Users, Award, MapPin, CheckCircle } from 'lucide-react';
 
 export default function AboutPage() {
@@ -9,39 +11,99 @@ export default function AboutPage() {
             <Header />
             <main>
                 {/* Hero Section */}
-                <div className="relative bg-charcoal text-white py-20 md:py-32">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                            backgroundSize: '40px 40px'
-                        }}></div>
-                    </div>
+                <ServiceHero 
+                    title="About Aloe Signs"
+                    tagline="Products that builds businesses"
+                    description="For over 25 years, we've been helping South African businesses stand out with professional signage and branding solutions."
+                    backgroundImage="/images/portfolio/shopfront-1.jpg"
+                />
 
-                    <div className="max-w-7xl mx-auto px-6 relative z-10">
-                        <div className="max-w-3xl">
-                            <div className="flex items-center gap-2 text-sm text-light-grey mb-6">
-                                <Link href="/" className="hover:text-aloe-green transition-colors">
-                                    Home
-                                </Link>
-                                <span>/</span>
-                                <span className="text-white font-bold">About Us</span>
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                About Aloe Signs
-                            </h1>
-
-                            <p className="text-2xl md:text-3xl text-aloe-green font-semibold mb-6">
-                                Products that builds businesses
-                            </p>
-
-                            <p className="text-lg md:text-xl text-light-grey">
-                                For over 25 years, we&apos;ve been helping South African businesses stand out with
-                                professional signage and branding solutions.
+                {/* Heavy Artillery (Hardware) Section */}
+                <section className="py-16 md:py-24 bg-bg-grey text-charcoal border-b-8 border-aloe-green">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-sm md:text-base text-aloe-green font-bold tracking-[0.2em] uppercase mb-4 flex items-center justify-center gap-4">
+                                <span className="w-8 h-1 bg-aloe-green block"></span>
+                                The Arsenal
+                                <span className="w-8 h-1 bg-aloe-green block"></span>
+                            </h2>
+                            <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4">
+                                Unfair Advantages
+                            </h3>
+                            <p className="text-lg text-medium-grey max-w-2xl mx-auto">
+                                World-class signage requires world-class machinery. We don't cut corners on hardware, which means your brand never has to compromise on quality. Here is what powers our production floor:
                             </p>
                         </div>
+
+                        <div className="space-y-16 lg:space-y-24">
+                            {/* UV Flatbed Printer */}
+                            <div className="grid md:grid-cols-2 gap-10 items-center">
+                                <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-white shadow-xl group border border-border-grey">
+                                    <Image 
+                                        src="/images/Flatbed.jpg" 
+                                        alt="UV Flatbed Printer with Ricoh Gen 5 Heads"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-aloe-green/5 mix-blend-overlay"></div>
+                                </div>
+                                <div className="space-y-6 md:pl-8">
+                                    <div className="inline-block px-4 py-1 bg-aloe-green/10 text-aloe-green text-xs font-bold uppercase tracking-widest rounded-full border border-aloe-green/20 mb-2">
+                                        Rigid Substrate Dominance
+                                    </div>
+                                    <h4 className="text-3xl md:text-4xl font-black uppercase tracking-tight leading-none text-charcoal">
+                                        Industrial UV Flatbed
+                                    </h4>
+                                    <p className="text-xl text-aloe-green font-semibold">
+                                        Powered by Ricoh Gen 5 Printheads
+                                    </p>
+                                    <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
+                                        When it comes to rigid signage, compromise isn't an option. This industrial powerhouse prints with surgical precision directly onto almost any material—from acrylic and metal to wood and thick correx. 
+                                    </p>
+                                    <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
+                                        <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
+                                        <p className="text-charcoal/80">
+                                            The instant-curing UV ink creates a scratch-resistant, hyper-durable finish built to withstand brutal South African weather. Coupled with variable-drop technology, it delivers razor-sharp, photo-realistic details and vibrant colors that make your brand impossible to ignore—all with incredibly fast turnaround times.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* HP Latex 700W */}
+                            <div className="grid md:grid-cols-2 gap-10 items-center md:flex-row-reverse">
+                                <div className="order-2 md:order-1 space-y-6 md:pr-8">
+                                    <div className="inline-block px-4 py-1 bg-aloe-green/10 text-aloe-green text-xs font-bold uppercase tracking-widest rounded-full border border-aloe-green/20 mb-2">
+                                        Flexible Media Superiority
+                                    </div>
+                                    <h4 className="text-3xl md:text-4xl font-black uppercase tracking-tight leading-none text-charcoal">
+                                        HP Latex 700W
+                                    </h4>
+                                    <p className="text-xl text-aloe-green font-semibold">
+                                        The absolute highest standard in large format
+                                    </p>
+                                    <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
+                                        We've invested in the cutting-edge HP Latex 700W to bring your flexible graphics to life. Known for boasting the "whitest white" ink on the market, it is the ultimate weapon for high-impact window graphics, fleet branding, and transparent media that pops.
+                                    </p>
+                                    <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
+                                        <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
+                                        <p className="text-charcoal/80">
+                                            HP's water-based latex inks are completely odorless and environmentally safe—perfect for delicate indoor environments like hospitals or restaurants. Enjoy smooth gradients, extreme durability that won't scratch or yellow over time, and a premium finish that looks like a million bucks from day one to year five.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="order-1 md:order-2 relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-white shadow-xl group border border-border-grey">
+                                    <Image 
+                                        src="/images/HP.jpg" 
+                                        alt="HP Latex 700W Printer"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-aloe-green/5 mix-blend-overlay"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
 
                 {/* Founding Story Section */}
                 <section className="py-16 md:py-24 bg-white">

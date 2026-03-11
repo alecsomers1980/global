@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import ContactForm from '@/components/ContactForm';
+import ServiceHero from '@/components/ServiceHero';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 
 export default function ContactPage() {
@@ -9,39 +10,12 @@ export default function ContactPage() {
             <Header />
             <main>
                 {/* Hero Section */}
-                <div className="relative bg-charcoal text-white py-20 md:py-32">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                            backgroundSize: '40px 40px'
-                        }}></div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-6 relative z-10">
-                        <div className="max-w-3xl">
-                            <div className="flex items-center gap-2 text-sm text-light-grey mb-6">
-                                <Link href="/" className="hover:text-aloe-green transition-colors">
-                                    Home
-                                </Link>
-                                <span>/</span>
-                                <span className="text-white">Contact Us</span>
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                Get in Touch
-                            </h1>
-
-                            <p className="text-2xl md:text-3xl text-aloe-green font-semibold mb-6">
-                                We&apos;re here to help
-                            </p>
-
-                            <p className="text-lg md:text-xl text-light-grey">
-                                Have a question or ready to start your project? Get in touch and we&apos;ll respond
-                                within 24 hours.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ServiceHero 
+                    title="Get in Touch"
+                    tagline="We're here to help"
+                    description="Have a question or ready to start your project? Get in touch and we'll respond within 24 hours."
+                    backgroundImage="/images/portfolio/set-building-main.jpg"
+                />
 
                 {/* Contact Section */}
                 <section className="py-16 md:py-20 bg-white">

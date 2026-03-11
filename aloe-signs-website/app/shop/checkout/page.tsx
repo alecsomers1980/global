@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import ServiceHero from '@/components/ServiceHero';
 import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -103,14 +104,16 @@ export default function CheckoutPage() {
 
             <main>
                 {/* Page Header */}
-                <section className="bg-bg-grey py-12">
-                    <div className="max-w-[1400px] mx-auto px-6">
-                        <h1 className="text-4xl font-bold text-charcoal">Checkout</h1>
-                    </div>
-                </section>
+                <ServiceHero
+                    title="Checkout"
+                    tagline="SECURE PAYMENT"
+                    description="Enter your billing details and finalize your Aloe Signs order securely."
+                    backgroundImage="/images/portfolio/shopfront-1.jpg"
+                    compact={true}
+                />
 
                 {/* Checkout Form */}
-                <section className="py-12">
+                <section className="py-12 bg-white">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <form onSubmit={handleSubmit}>
                             <div className="grid lg:grid-cols-[1fr_400px] gap-8">

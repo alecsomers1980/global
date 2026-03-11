@@ -11,6 +11,7 @@ export default function Home() {
       <Header />
       <main>
         <HeroBanner />
+
         <ImageGrid />
         <ServicesList />
         <AboutSection />

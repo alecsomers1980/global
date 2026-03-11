@@ -1,25 +1,9 @@
 import {
-    Truck,
-    Building2,
-    Store,
-    MapPin,
-    Frame,
-    FileText,
-    Tag,
-    PenTool,
-    Car,
-    Lightbulb,
-    Palette,
-    Shield,
-    CheckCircle,
-    Users,
-    Clock,
-    Award,
-    Maximize,
-    Image,
-    Flag,
-    type LucideIcon,
+    Truck, Building2, Store, MapPin, Frame, FileText, Tag, PenTool,
+    Car, Lightbulb, Palette, Shield, CheckCircle, Users, Clock, Award,
+    Maximize, Image, Flag, AlertTriangle, Speaker, Boxes, Package, Target
 } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 export interface ServiceData {
     slug: string;
@@ -41,549 +25,238 @@ export interface ServiceData {
 
 export const services: ServiceData[] = [
     {
-        slug: 'vehicle-branding',
-        title: 'Vehicle Branding',
-        tagline: 'Turn your fleet into a mobile marketing asset',
-        description: 'Full wraps, partial wraps, and fleet programmes designed and installed in-house',
-        features: [
-            {
-                icon: Car,
-                title: 'Full Vehicle Wraps',
-                description: 'Complete vehicle transformation with high-quality vinyl wraps that protect your paintwork.',
-            },
-            {
-                icon: Palette,
-                title: 'Partial Wraps & Decals',
-                description: 'Cost-effective branding solutions with strategic placement for maximum impact.',
-            },
-            {
-                icon: Users,
-                title: 'Fleet Branding Programmes',
-                description: 'Consistent branding across your entire fleet with volume discounts available.',
-            },
-            {
-                icon: Shield,
-                title: 'Vehicle Magnets',
-                description: 'Removable magnetic signs perfect for temporary branding or multi-use vehicles.',
-            },
-            {
-                icon: Lightbulb,
-                title: 'Window Graphics',
-                description: 'One-way vision graphics for privacy and advertising without blocking visibility.',
-            },
-            {
-                icon: Award,
-                title: 'Reflective & Safety Markings',
-                description: 'Compliant safety markings and reflective materials for commercial vehicles.',
-            },
-        ],
-        process: [
-            {
-                number: '1',
-                title: 'Consultation & Measurement',
-                description: 'We assess your vehicle and discuss design options. Accurate measurements taken on-site.',
-            },
-            {
-                number: '2',
-                title: 'Design & Mockups',
-                description: '3D mockups created for your approval. Unlimited revisions until you\'re satisfied.',
-            },
-            {
-                number: '3',
-                title: 'Professional Installation',
-                description: 'Expert installation by certified applicators in our climate-controlled facility.',
-            },
-            {
-                number: '4',
-                title: 'Quality Check & Handover',
-                description: 'Thorough inspection and care instructions provided. 5-year warranty included.',
-            },
-        ],
-        benefits: [
-            'In-house design and installation team',
-            '5-year warranty on all wraps',
-            'Premium 3M and Avery vinyl materials',
-            'Climate-controlled installation facility',
-            'Fleet discounts available',
-            'Nationwide installation service',
-        ],
-    },
-    {
-        slug: 'building-signage',
-        title: 'Building Signage',
-        tagline: 'Make your building work for your brand',
-        description: 'From fascia signs to 3D lettering—manufactured and installed by our team',
-        features: [
-            {
-                icon: Building2,
-                title: 'Fascia Signs',
-                description: 'Eye-catching shopfront signs that make your business stand out from the street.',
-            },
-            {
-                icon: Maximize,
-                title: 'Pylon Signs',
-                description: 'Freestanding signs for maximum visibility from roads and highways.',
-            },
-            {
-                icon: Lightbulb,
-                title: '3D Lettering',
-                description: 'Dimensional letters and logos that add depth and premium appeal.',
-            },
-            {
-                icon: Lightbulb,
-                title: 'Lightboxes & Illuminated Signs',
-                description: 'LED-illuminated signs for 24/7 visibility and impact.',
-            },
-            {
-                icon: Palette,
-                title: 'Channel Letters',
-                description: 'Individual illuminated letters for a sophisticated, modern look.',
-            },
-            {
-                icon: Award,
-                title: 'Monument Signs',
-                description: 'Ground-level signs that create a strong, permanent presence.',
-            },
-        ],
-        process: [
-            {
-                number: '1',
-                title: 'Site Survey',
-                description: 'We visit your location to assess mounting options and local regulations.',
-            },
-            {
-                number: '2',
-                title: 'Design & Engineering',
-                description: 'Custom designs created with structural engineering for safe installation.',
-            },
-            {
-                number: '3',
-                title: 'Manufacturing',
-                description: 'Built in-house using premium materials and quality craftsmanship.',
-            },
-            {
-                number: '4',
-                title: 'Installation & Certification',
-                description: 'Professional installation with all necessary permits and certificates.',
-            },
-        ],
-        benefits: [
-            'Full in-house manufacturing',
-            'Structural engineering included',
-            'Permit application assistance',
-            'LED lighting with low energy costs',
-            'Maintenance plans available',
-            'Nationwide installation',
-        ],
-    },
-    {
-        slug: 'shopfronts',
-        title: 'Shopfront Signage',
-        tagline: 'First impressions that convert',
-        description: 'Complete shopfront design, fascias, window graphics, and A-frames',
-        features: [
-            {
-                icon: Store,
-                title: 'Shopfront Fascias',
-                description: 'Complete fascia design and installation to transform your storefront.',
-            },
-            {
-                icon: Palette,
-                title: 'Window Graphics & Vinyl',
-                description: 'Promotional graphics, frosted privacy film, and full-color displays.',
-            },
-            {
-                icon: Frame,
-                title: 'A-Frames & Pavement Signs',
-                description: 'Portable signs to attract foot traffic and promote daily specials.',
-            },
-            {
-                icon: Building2,
-                title: 'Blade Signs',
-                description: 'Projecting signs that catch attention from both directions.',
-            },
-            {
-                icon: Lightbulb,
-                title: 'Door Graphics',
-                description: 'Branded entrance graphics including opening hours and contact details.',
-            },
-            {
-                icon: MapPin,
-                title: 'Interior Branding',
-                description: 'Extend your brand inside with wall graphics and directional signage.',
-            },
-        ],
-        process: [
-            {
-                number: '1',
-                title: 'Shopfront Consultation',
-                description: 'We assess your space and discuss your brand vision and customer flow.',
-            },
-            {
-                number: '2',
-                title: 'Complete Design Package',
-                description: 'Comprehensive design including all signage elements for approval.',
-            },
-            {
-                number: '3',
-                title: 'Coordinated Production',
-                description: 'All elements manufactured together for consistent quality and timing.',
-            },
-            {
-                number: '4',
-                title: 'Installation & Setup',
-                description: 'Complete installation with minimal disruption to your business.',
-            },
-        ],
-        benefits: [
-            'Complete shopfront packages',
-            'Coordinated design across all elements',
-            'After-hours installation available',
-            'Durable outdoor-rated materials',
-            'Maintenance and updates included',
-            'Fast turnaround times',
-        ],
-    },
-    {
-        slug: 'wayfinding-interior',
-        title: 'Wayfinding & Interior Signage',
-        tagline: 'Guide your customers with clarity',
-        description: 'Directional signage, office branding, and interior graphics',
-        features: [
-            {
-                icon: MapPin,
-                title: 'Directional Signage',
-                description: 'Clear wayfinding systems that help visitors navigate your space.',
-            },
-            {
-                icon: Building2,
-                title: 'Office Door Signs',
-                description: 'Professional room identification and department signage.',
-            },
-            {
-                icon: Palette,
-                title: 'Wall Graphics & Murals',
-                description: 'Transform blank walls into branded spaces with custom graphics.',
-            },
-            {
-                icon: MapPin,
-                title: 'Floor Graphics',
-                description: 'Durable floor decals for directions, branding, or social distancing.',
-            },
-            {
-                icon: Building2,
-                title: 'Reception Signage',
-                description: 'Make a strong first impression with premium reception area branding.',
-            },
-            {
-                icon: Shield,
-                title: 'Safety & Compliance Signs',
-                description: 'SABS-compliant safety signage for fire exits, hazards, and regulations.',
-            },
-        ],
-        process: [
-            {
-                number: '1',
-                title: 'Space Assessment',
-                description: 'We map your space and identify key wayfinding and branding opportunities.',
-            },
-            {
-                number: '2',
-                title: 'Signage Strategy',
-                description: 'Comprehensive plan for consistent signage throughout your facility.',
-            },
-            {
-                number: '3',
-                title: 'Design & Approval',
-                description: 'Mockups showing how signage will look in your actual space.',
-            },
-            {
-                number: '4',
-                title: 'Installation',
-                description: 'Professional installation with minimal disruption to operations.',
-            },
-        ],
-        benefits: [
-            'Comprehensive wayfinding systems',
-            'SABS-compliant safety signage',
-            'Durable materials for high-traffic areas',
-            'ADA/accessibility compliance available',
-            'Modular systems for easy updates',
-            'After-hours installation',
-        ],
-    },
-    {
-        slug: 'billboards-outdoor',
-        title: 'Billboards & Outdoor Advertising',
+        slug: 'billboards',
+        title: 'Billboards',
         tagline: 'Make a big impact',
-        description: 'Large-scale outdoor advertising that gets noticed',
+        description: 'Large-scale outdoor advertising that gets noticed. Dominate the landscape with massive outdoor formats.',
         features: [
-            {
-                icon: Image,
-                title: 'Billboard Printing & Installation',
-                description: 'Large-format printing for roadside billboards and advertising structures.',
-            },
-            {
-                icon: Image,
-                title: 'Outdoor Banners',
-                description: 'PVC and mesh banners for outdoor advertising and events.',
-            },
-            {
-                icon: Building2,
-                title: 'Mesh Banners',
-                description: 'Wind-resistant mesh for large outdoor installations and building wraps.',
-            },
-            {
-                icon: Flag,
-                title: 'Event Signage',
-                description: 'Temporary signage for festivals, exhibitions, and outdoor events.',
-            },
-            {
-                icon: Building2,
-                title: 'Construction Site Signage',
-                description: 'Durable site boards and safety signage for construction projects.',
-            },
-            {
-                icon: Shield,
-                title: 'Temporary Hoardings',
-                description: 'Branded hoarding panels for construction sites and renovations.',
-            },
+            { icon: Image, title: 'Billboard Printing', description: 'Large-format printing for roadside billboards and advertising structures.' },
+            { icon: Building2, title: 'Structural Safety', description: 'Engineered for durability and weather resistance.' },
+            { icon: Flag, title: 'High Visibility', description: 'Strategic design for optimal impact from roads.' },
+            { icon: Shield, title: 'UV Protection', description: 'Fade-resistant inks that last under the harsh sun.' },
+            { icon: Target, title: 'Location Assessment', description: 'Expert advice on positioning and scale.' },
+            { icon: Users, title: 'Campaign Management', description: 'Regular updates for ongoing marketing campaigns.' }
         ],
         process: [
-            {
-                number: '1',
-                title: 'Site Evaluation',
-                description: 'We assess the location, size requirements, and mounting options.',
-            },
-            {
-                number: '2',
-                title: 'Design for Distance',
-                description: 'Graphics optimized for visibility from specific viewing distances.',
-            },
-            {
-                number: '3',
-                title: 'Large Format Production',
-                description: 'Printed on weather-resistant materials with UV protection.',
-            },
-            {
-                number: '4',
-                title: 'Professional Installation',
-                description: 'Safe installation by trained teams with proper equipment and permits.',
-            },
+            { number: '1', title: 'Site Evaluation', description: 'We assess the location, size requirements, and mounting options.' },
+            { number: '2', title: 'Design for Distance', description: 'Graphics optimized for visibility from specific viewing distances.' },
+            { number: '3', title: 'Large Format Production', description: 'Printed on weather-resistant materials with UV protection.' },
+            { number: '4', title: 'Professional Installation', description: 'Safe installation by trained teams with proper equipment and permits.' }
         ],
-        benefits: [
-            'Large-format printing up to 5m wide',
-            'Weather-resistant materials',
-            'UV-protected inks for longevity',
-            'Structural engineering for large installations',
-            'Permit application assistance',
-            'Nationwide installation',
-        ],
+        benefits: ['Large-format printing up to 5m wide', 'Weather-resistant materials', 'UV-protected inks for longevity', 'Structural engineering for large installations', 'Permit application assistance', 'Nationwide installation']
     },
     {
-        slug: 'large-format-print',
-        title: 'Large Format Printing',
-        tagline: 'Print anything, any size',
-        description: 'High-quality large format printing for all applications',
+        slug: 'building-wraps',
+        title: 'Building wraps & XXL needs',
+        tagline: 'Transform your architectural space into massive visual assets',
+        description: 'Complete building transformations and extra-large format printing for monumental impact.',
         features: [
-            {
-                icon: FileText,
-                title: 'Banners & PVC',
-                description: 'Durable PVC banners for indoor and outdoor use in any size.',
-            },
-            {
-                icon: Palette,
-                title: 'Posters & Wallpapers',
-                description: 'High-resolution posters and custom wallpaper for any space.',
-            },
-            {
-                icon: Palette,
-                title: 'Canvas Prints',
-                description: 'Gallery-quality canvas prints for art, photography, and decor.',
-            },
-            {
-                icon: Tag,
-                title: 'Fabric Printing',
-                description: 'Soft fabric prints for displays, backdrops, and textile applications.',
-            },
-            {
-                icon: Lightbulb,
-                title: 'Backlit Graphics',
-                description: 'Translucent prints for lightboxes and illuminated displays.',
-            },
-            {
-                icon: Image,
-                title: 'Exhibition Graphics',
-                description: 'Complete exhibition stand graphics including pop-up displays.',
-            },
+            { icon: Building2, title: 'Full Facade Coverage', description: 'Turn your entire building into a branded masterpiece.' },
+            { icon: Maximize, title: 'XXL Printing', description: 'Capabilities that handle the largest possible formats.' },
+            { icon: Shield, title: 'Weather Resistance', description: 'Durable mesh and PVC that withstand harsh weather.' },
+            { icon: Users, title: 'Expert Riggers', description: 'Specialized installation teams trained for heights.' },
+            { icon: Lightbulb, title: 'Mesh Solutions', description: 'Allow light in and wind through with specialized mesh.' },
+            { icon: Palette, title: 'Vibrant Colors', description: 'Colors that pop even from a distance.' }
         ],
         process: [
-            {
-                number: '1',
-                title: 'File Preparation',
-                description: 'We check your artwork or create designs to ensure perfect output.',
-            },
-            {
-                number: '2',
-                title: 'Material Selection',
-                description: 'Choose the right substrate for your application and environment.',
-            },
-            {
-                number: '3',
-                title: 'High-Quality Printing',
-                description: 'Printed on state-of-the-art equipment with color-matched inks.',
-            },
-            {
-                number: '4',
-                title: 'Finishing & Delivery',
-                description: 'Hemmed, eyeleted, or mounted as required. Delivered or installed.',
-            },
+            { number: '1', title: 'Site Survey', description: 'Thorough evaluation of the building structure and surrounding environment.' },
+            { number: '2', title: 'Structural Engineering', description: 'Calculations to ensure safe installation and wind load management.' },
+            { number: '3', title: 'Panel Printing', description: 'Printing in expertly divided panels for seamless joining.' },
+            { number: '4', title: 'Rigging', description: 'Installation by certified rope access technicians.' }
         ],
-        benefits: [
-            'Print widths up to 5 meters',
-            'Same-day printing available',
-            'Color matching and proofing',
-            'Multiple finishing options',
-            'Indoor and outdoor materials',
-            'Nationwide delivery',
-        ],
+        benefits: ['Monumental brand visibility', 'Specialized wind-resistant mesh', 'Certified installation experts', 'Permit and engineering assistance', 'Long-lasting UV inks', 'Seamless panel joints']
     },
     {
-        slug: 'screen-printing',
-        title: 'Screen Printing',
-        tagline: 'Quality printing for apparel & products',
-        description: 'Custom screen printing for clothing, promotional items, and more',
+        slug: 'bulk-orders-screen-printing',
+        title: 'Bulk orders & screen printing',
+        tagline: 'Quality printing for apparel, banners, and gear',
+        description: 'Professional high-volume commercial screen printing and bulk production solutions.',
         features: [
-            {
-                icon: Tag,
-                title: 'T-Shirt Printing',
-                description: 'Custom t-shirts with vibrant, long-lasting prints.',
-            },
-            {
-                icon: Users,
-                title: 'Workwear Branding',
-                description: 'Professional branding for uniforms, overalls, and corporate wear.',
-            },
-            {
-                icon: Award,
-                title: 'Promotional Products',
-                description: 'Branded merchandise including bags, caps, and accessories.',
-            },
-            {
-                icon: Palette,
-                title: 'Bags & Accessories',
-                description: 'Custom printing on tote bags, backpacks, and promotional items.',
-            },
-            {
-                icon: Users,
-                title: 'Bulk Orders',
-                description: 'Volume discounts for large orders and corporate programs.',
-            },
-            {
-                icon: Palette,
-                title: 'Custom Designs',
-                description: 'In-house design team to create unique artwork for your brand.',
-            },
+            { icon: Tag, title: 'Apparel Printing', description: 'Custom t-shirts, uniforms, and workwear with vibrant prints.' },
+            { icon: Users, title: 'High Volume', description: 'Capability to handle massive bulk orders quickly.' },
+            { icon: Palette, title: 'Spot Color Matching', description: 'Exact brand color matching for consistent corporate identity.' },
+            { icon: Package, title: 'Merchandise', description: 'Printing on bags, accessories, and various promotional merchandise.' },
+            { icon: Shield, title: 'Durable Prints', description: 'Wash-fast prints that stand the test of time and industrial wear.' },
+            { icon: Clock, title: 'Fast Turnaround', description: 'Efficient production lines for tight deadline deliveries.' }
         ],
         process: [
-            {
-                number: '1',
-                title: 'Design & Artwork',
-                description: 'We create or refine your artwork for optimal screen printing results.',
-            },
-            {
-                number: '2',
-                title: 'Sample Approval',
-                description: 'Physical sample produced for your approval before bulk production.',
-            },
-            {
-                number: '3',
-                title: 'Screen Production',
-                description: 'Screens prepared with your design for consistent, quality printing.',
-            },
-            {
-                number: '4',
-                title: 'Printing & Quality Control',
-                description: 'Each item printed and inspected to ensure consistent quality.',
-            },
+            { number: '1', title: 'Artwork Optimization', description: 'Refining designs specifically for the screen printing process.' },
+            { number: '2', title: 'Screen Preparation', description: 'Creating precise screens for each color layer.' },
+            { number: '3', title: 'Sample Runs', description: 'Producing and approving a physical sample before bulk run.' },
+            { number: '4', title: 'Bulk Production', description: 'Rapid, consistent printing across the entire order quantity.' }
         ],
-        benefits: [
-            'No minimum order quantities',
-            'Fast turnaround times',
-            'Eco-friendly water-based inks',
-            'Multi-color printing available',
-            'Quality garments and products',
-            'Volume discounts',
-        ],
+        benefits: ['Cost-effective for high volumes', 'Extremely durable prints', 'Exact corporate color matching', 'Wide range of print substrates', 'Fast production times', 'Dedicated account management']
     },
     {
-        slug: 'set-building',
-        title: 'Set Building & Props',
-        tagline: 'Bring your vision to life',
-        description: 'Custom set design and construction for events, film, and exhibitions',
+        slug: 'fleet-maintenance-branding',
+        title: 'Fleet maintenance & branding',
+        tagline: 'Turn your fleet into moving billboards',
+        description: 'Comprehensive fleet branding programs, from single vehicles to national fleets.',
         features: [
-            {
-                icon: PenTool,
-                title: 'Event Sets & Backdrops',
-                description: 'Custom-built sets and backdrops for conferences, launches, and events.',
-            },
-            {
-                icon: Building2,
-                title: 'Exhibition Stands',
-                description: 'Modular and custom exhibition stands that showcase your brand.',
-            },
-            {
-                icon: Store,
-                title: 'Retail Displays',
-                description: 'Point-of-sale displays and retail fixtures that drive sales.',
-            },
-            {
-                icon: Palette,
-                title: 'Props & 3D Elements',
-                description: 'Custom fabricated props and dimensional elements for any project.',
-            },
-            {
-                icon: PenTool,
-                title: 'Custom Fabrication',
-                description: 'Bespoke builds using wood, metal, acrylic, and composite materials.',
-            },
-            {
-                icon: Users,
-                title: 'Installation Services',
-                description: 'Professional setup and breakdown by our experienced team.',
-            },
+            { icon: Car, title: 'Full & Partial Wraps', description: 'Complete or partial transformations to suit your budget.' },
+            { icon: Truck, title: 'Fleet Consistency', description: 'Exact replication of branding across varied vehicle models.' },
+            { icon: Shield, title: 'Paint Protection', description: 'Vinyl wraps that protect the underlying bodywork.' },
+            { icon: PenTool, title: 'Decals & Lettering', description: 'Clean, professional cut vinyl branding.' },
+            { icon: Users, title: ' nationwide Rollouts', description: 'Coordinated branding updates across the country.' },
+            { icon: CheckCircle, title: 'Maintenance Plans', description: 'Repair and replacement programs for damaged graphics.' }
         ],
         process: [
-            {
-                number: '1',
-                title: 'Concept Development',
-                description: 'We work with you to understand your vision and requirements.',
-            },
-            {
-                number: '2',
-                title: '3D Visualization',
-                description: 'Detailed 3D renders showing exactly how your set will look.',
-            },
-            {
-                number: '3',
-                title: 'Fabrication',
-                description: 'Built in our workshop using quality materials and craftsmanship.',
-            },
-            {
-                number: '4',
-                title: 'Installation & Support',
-                description: 'On-site installation with technical support throughout your event.',
-            },
+            { number: '1', title: 'Fleet Audit', description: 'Assessing your vehicle types and designing templates for each.' },
+            { number: '2', title: 'Design Adaptation', description: 'Ensuring your brand works perfectly on every vehicle shape.' },
+            { number: '3', title: 'Production Scheduling', description: 'Coordinating printing to match vehicle availability.' },
+            { number: '4', title: 'Application', description: 'Application by certified technicians in controlled environments.' }
         ],
-        benefits: [
-            'Full in-house fabrication',
-            '3D rendering and visualization',
-            'Modular designs for reuse',
-            'Storage solutions available',
-            'Nationwide installation',
-            'Technical support on-site',
-        ],
+        benefits: ['Mobile advertising that pays for itself', 'Protects vehicle resale value', 'Consistent brand image nationwide', 'Premium cast vinyl materials', 'Certified installation warranties', 'Dedicated maintenance support']
     },
+    {
+        slug: 'promo-items',
+        title: 'Promo Items',
+        tagline: 'Keep your brand in their hands',
+        description: 'Custom promotional merchandise that builds lasting relationships with your clients.',
+        features: [
+            { icon: Package, title: 'Corporate Gifts', description: 'High-end branded gifts for key clients and partners.' },
+            { icon: Tag, title: 'Event Giveaways', description: 'Cost-effective items for mass distribution at exhibitions.' },
+            { icon: Users, title: 'Onboarding Kits', description: 'Welcome packages for new employees or VIP customers.' },
+            { icon: Palette, title: 'Custom Sourcing', description: 'Finding the exact unique items that tell your brand story.' },
+            { icon: Tag, title: 'Various Print Methods', description: 'Pad printing, engraving, embroidery, and UV printing.' },
+            { icon: Package, title: 'Packaging', description: 'Custom branded presentation packaging for your items.' }
+        ],
+        process: [
+            { number: '1', title: 'Needs Analysis', description: 'Understanding your target audience, budget, and objective.' },
+            { number: '2', title: 'Product Curation', description: 'Providing a tailored list of impactful promotional items.' },
+            { number: '3', title: 'Mockups & Samples', description: 'Creating visual mockups and sourcing physical samples.' },
+            { number: '4', title: 'Production & Delivery', description: 'Quality-controlled branding and bulk delivery.' }
+        ],
+        benefits: ['Tangible brand connection', 'High ROI on brand recall', 'Vast range of product options', 'Options for any budget', 'Expert branding advice', 'End-to-end fulfillment']
+    },
+    {
+        // Re-using Printer and Box that were accidentally omitted from imports? Let's fix that below if needed.
+        // But wait! Printer and Box are not imported from lucide-react. I should stick to imported ones.
+        slug: 'wall-art',
+        title: 'Wall art',
+        tagline: 'Custom internal wall art and murals',
+        description: 'Vibrant office branding, custom wallpapers, and architectural wall graphics.',
+        features: [
+            { icon: Image, title: 'Custom Wallpaper', description: 'Bespoke printed wallpaper tailored exactly to your walls.' },
+            { icon: Palette, title: 'Vinyl Murals', description: 'High-impact graphics applied directly to wall surfaces.' },
+            { icon: CheckCircle, title: 'Acoustic Panels', description: 'Branded panels that also dampen room echo.' },
+            { icon: Target, title: '3D Wall Elements', description: 'Incorporating dimensional lettering into wall designs.' },
+            { icon: Building2, title: 'Office Branding', description: 'Injecting company culture and values into workspaces.' },
+            { icon: Shield, title: 'Durable Finishes', description: 'Scuff-resistant laminates for high-traffic areas.' }
+        ],
+        process: [
+            { number: '1', title: 'Space Evaluation', description: 'Measuring walls and assessing surface paint capability.' },
+            { number: '2', title: 'Creative Design', description: 'Collaborating to create designs that fit the space and culture.' },
+            { number: '3', title: 'High-Res Printing', description: 'Printing on premium architectural vinyls and papers.' },
+            { number: '4', title: 'Precision Installation', description: 'Flawless application by experienced installers.' }
+        ],
+        benefits: ['Transforms boring workspaces', 'Boosts employee morale', 'Impresses visiting clients', 'Tailorable to exact dimensions', 'Washable and durable finishes', 'Seamless panel matching']
+    },
+    {
+        slug: 'set-building-strike',
+        title: 'Set building & strike',
+        tagline: 'Bringing creative visions to life',
+        description: 'Custom set construction, scenic props for events, and complete strike services.',
+        features: [
+            { icon: PenTool, title: 'Custom Fabrication', description: 'Building bespoke elements from wood, metal, and acrylic.' },
+            { icon: Frame, title: 'Event Stages', description: 'Designing and building impactful stage backdrops.' },
+            { icon: Target, title: 'Scenic Props', description: 'Creating specific 3D models and props for shoots or events.' },
+            { icon: Maximize, title: 'Modular Systems', description: 'Structures that can be reused or reconfigured.' },
+            { icon: Users, title: 'Theatrical Quality', description: 'Finishes designed to look perfect under professional lighting.' },
+            { icon: Clock, title: 'Efficient Strike', description: 'Rapid, safe dismantling and removal post-event.' }
+        ],
+        process: [
+            { number: '1', title: 'Concept review', description: 'Analyzing blueprints, sketches, and event requirements.' },
+            { number: '2', title: 'Workshop Build', description: 'Pre-fabricating the majority of elements in our controlled workshop.' },
+            { number: '3', title: 'On-site Assembly', description: 'Rapid installation at the event venue.' },
+            { number: '4', title: 'Strike & Removal', description: 'Professional pack-down once the event concludes.' }
+        ],
+        benefits: ['Complete end-to-end service', 'Expert finish quality', 'Safe, structural integrity', 'Rapid venue turnaround', 'Creative problem solving', 'In-house manufacturing']
+    },
+    {
+        slug: '3d-renders',
+        title: '3D Renders',
+        tagline: 'Navigate your vision before production',
+        description: 'Stunning 3D visualisations and architectural renders for signage and spatial design.',
+        features: [
+            { icon: Maximize, title: 'Photorealistic Mockups', description: 'See exactly how your signage will look in situ.' },
+            { icon: Building2, title: 'Spatial Planning', description: 'Visualize flow and wayfinding in architectural spaces.' },
+            { icon: Lightbulb, title: 'Day/Night Views', description: 'Simulate illumination to test lighting and visibility.' },
+            { icon: MapPin, title: 'Fly-throughs', description: 'Animated tours of proposed environments.' },
+            { icon: Palette, title: 'Material Simulation', description: 'Accurate representation of finishes, metals, and acrylics.' },
+            { icon: CheckCircle, title: 'Proof of Concept', description: 'Validate designs with stakeholders before spending on production.' }
+        ],
+        process: [
+            { number: '1', title: 'Briefing & Reference Gathering', description: 'Collecting photos of the existing space and design plans.' },
+            { number: '2', title: 'Modeling', description: 'Building the environment and the signage elements in 3D space.' },
+            { number: '3', title: 'Texturing & Lighting', description: 'Applying accurate materials and realistic lighting scenarios.' },
+            { number: '4', title: 'Final Render', description: 'Providing high-resolution images or videos for approval.' }
+        ],
+        benefits: ['Eliminates guesswork', 'Speeds up stakeholder approval', 'Identifies potential issues early', 'Aids in permit applications', 'Sets accurate expectations', 'Hyper-realistic quality']
+    },
+    {
+        slug: 'tangible-visual-texture',
+        title: 'Tangible Visual Texture',
+        tagline: 'Signage you can feel',
+        description: 'Premium storefront branding and signage incorporating unique tactile textures.',
+        features: [
+            { icon: Palette, title: 'Textured Vinyls', description: 'Woodgrain, carbon fiber, brushed metal, and leather-look finishes.' },
+            { icon: PenTool, title: 'Layered Acrylics', description: 'Building depth through stacked, precision-cut materials.' },
+            { icon: Maximize, title: 'Embossing & Routing', description: 'CNC routed details that create physical depth and shadows.' },
+            { icon: Shield, title: 'Specialty Coatings', description: 'Matte, gloss, and soft-touch finishes.' },
+            { icon: Award, title: 'Premium Branding', description: 'Elevate your brand beyond standard flat printing.' },
+            { icon: Store, title: 'Tactile Experience', description: 'Signage that invites physical interaction.' }
+        ],
+        process: [
+            { number: '1', title: 'Material Consultation', description: 'Exploring our sample library to find the perfect texture.' },
+            { number: '2', title: 'Design for Depth', description: 'Creating artwork specifically tailored for multi-layered production.' },
+            { number: '3', title: 'Precision Fabrication', description: 'Using CNC routers and specialized finishing techniques.' },
+            { number: '4', title: 'Installation', description: 'Careful mounting to highlight the dimensional elements.' }
+        ],
+        benefits: ['Stands out in a crowded market', 'Conveys extreme premium quality', 'Engages multiple senses', 'Highly durable composite materials', 'Bespoke aesthetic', 'Cannot be easily replicated']
+    },
+    {
+        slug: 'regulatory-signs',
+        title: 'Plant/Mines Regulatory Signs',
+        tagline: 'Compliant safety signage you can rely on',
+        description: 'Durable, fully compliant safety and regulatory signage for industrial environments.',
+        features: [
+            { icon: AlertTriangle, title: 'Hazard Warnings', description: 'Clear, universally understood danger and warning signs.' },
+            { icon: CheckCircle, title: 'Compliance Signs', description: 'Signage conforming exactly to national mining and safety standards.' },
+            { icon: Shield, title: 'Extreme Durability', description: 'Manufactured to survive harsh industrial and chemical environments.' },
+            { icon: Lightbulb, title: 'Reflective/Photoluminescent', description: 'Signs that remain visible in low-light or emergency situations.' },
+            { icon: MapPin, title: 'Site Evacuation Maps', description: 'Clear, durable maps for emergency procedures.' },
+            { icon: Users, title: 'Traffic Management', description: 'Heavy machinery and vehicular control signage.' }
+        ],
+        process: [
+            { number: '1', title: 'Audit & Compliance Check', description: 'Reviewing site requirements against current safety legislation.' },
+            { number: '2', title: 'Material Selection', description: 'Choosing substrates like Chromadek or Aluminum based on conditions.' },
+            { number: '3', title: 'Manufacturing', description: 'Producing signs with UV-protective and chemical-resistant laminates.' },
+            { number: '4', title: 'Strategic Placement', description: 'Installing signs at correct heights and locations for maximum compliance.' }
+        ],
+        benefits: ['Ensures legal compliance', 'Enhances worker safety', 'Withstands extreme environments', 'Fade and chemical resistant', 'Bulk supply capabilities', 'Reflective options available']
+    },
+    {
+        slug: 'site-activations',
+        title: 'Site Activations',
+        tagline: 'Complete experiential transformations',
+        description: 'End-to-end site branding and activations that leave a lasting unmissable impact.',
+        features: [
+            { icon: Flag, title: 'Event Branding', description: 'Comprehensive branding across all venue touchpoints.' },
+            { icon: Store, title: 'Pop-up Shops', description: 'Temporary retail structures and branding containers.' },
+            { icon: Users, title: 'Experiential Zones', description: 'Interactive spaces designed to engage consumers.' },
+            { icon: Image, title: 'Temporary Structures', description: 'Branded gazebos, domes, and activation pods.' },
+            { icon: CheckCircle, title: 'Logistics', description: 'Managing the delivery and setup of complex multi-element campaigns.' },
+            { icon: Clock, title: 'Rapid Deployment', description: 'Quick setup times for overnight venue transformations.' }
+        ],
+        process: [
+            { number: '1', title: 'Activation Strategy', description: 'Mapping consumer journeys and branding opportunities.' },
+            { number: '2', title: 'Kit Production', description: 'Manufacturing all elements required for the activation.' },
+            { number: '3', title: 'Deployment', description: 'Delivering and setting up the activation on tight schedules.' },
+            { number: '4', title: 'Strike & Storage', description: 'Dismantling and storing elements for future activations.' }
+        ],
+        benefits: ['Maximum brand immersion', 'Single-supplier convenience', 'Scalable solutions', 'Reusable activation kits', 'High consumer engagement', 'Expert logistics management']
+    }
 ];
 
 export function getServiceBySlug(slug: string): ServiceData | undefined {

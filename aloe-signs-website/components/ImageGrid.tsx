@@ -4,45 +4,57 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const gridImages = [
-    { src: '/images/portfolio/billboards-main.jpg', alt: 'Large format billboard printing', label: 'Billboards' },
-    { src: '/images/portfolio/vehicle-rapping-main.jpg', alt: 'Full commercial vehicle wrap', label: 'Fleet Branding' },
-    { src: '/images/portfolio/building-signage-main.jpg', alt: 'Building signage and shopfront design', label: 'Storefronts' },
-    { src: '/images/portfolio/large-format-print-main.jpg', alt: 'Large format custom printed banners', label: 'Large Format' },
-    { src: '/images/portfolio/wayfinder-main.jpg', alt: 'Custom illuminated 3D business signs', label: '3D Signage' },
-    { src: '/images/portfolio/print-1.jpg', alt: 'High quality commercial printing', label: 'Specialty Print' },
-    { src: '/images/portfolio/set-building-main.jpg', alt: 'Custom event and commercial set building', label: 'Set Building' },
-    { src: '/images/portfolio/shop-front-main.jpg', alt: 'Commercial shopfront and retail branding', label: 'Retail Branding' },
-    { src: '/images/portfolio/screen-1.jpg', alt: 'Professional commercial screen printing', label: 'Screen Print' },
+    { src: '/images/Billboards.jpg', alt: 'Billboards', label: 'Billboards', link: '/services/billboards' },
+    { src: '/images/XXL.jpeg', alt: 'Building wraps and XXL needs', label: 'Building wraps & XXL needs', link: '/services/building-wraps' },
+    { src: '/images/portfolio/screen-1.jpg', alt: 'Bulk orders and screen printing', label: 'Bulk orders & screen printing', link: '/services/bulk-orders-screen-printing' },
+    { src: '/images/portfolio/vehicle-rapping-main.jpg', alt: 'Fleet maintenance and branding', label: 'Fleet maintenance & branding', link: '/services/fleet-maintenance-branding' },
+    { src: '/images/portfolio/print-1.jpg', alt: 'Promo Items', label: 'Promo Items', link: '/services/promo-items' },
+    { src: '/images/Wall Art.jpeg', alt: 'Wall art', label: 'Wall art', link: '/services/wall-art' },
+    { src: '/images/portfolio/set-building-main.jpg', alt: 'Set building & strike', label: 'Set building & strike', link: '/services/set-building-strike' },
+    { src: '/images/3D.jpeg', alt: '3D Renders', label: '3D Renders', link: '/services/3d-renders' },
+    { src: '/images/Tangible Visual Texture.jpeg', alt: 'Tangible Visual Texture', label: 'Tangible Visual Texture', link: '/services/tangible-visual-texture' },
+    { src: '/images/portfolio/wayfinder-main.jpg', alt: 'Plant/Mines Regulatory Signs', label: 'Plant/Mines Regulatory Signs', link: '/services/regulatory-signs' },
+    { src: '/images/portfolio/set-building-main.jpg', alt: 'Site Activations', label: 'Site Activations', link: '/services/site-activations' },
 ];
 
 export default function ImageGrid() {
     return (
         <section className="py-32 bg-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-6">
+                
+                {/* Scroll Prompt */}
+                <div className="w-full flex flex-col items-center justify-center text-center -mt-20 mb-20">
+                    <div className="space-y-1 mb-4 flex flex-col items-center">
+                        <p className="text-slate-400 text-xs md:text-sm font-black tracking-widest uppercase">COME ON ....</p>
+                        <p className="text-slate-500 text-sm md:text-base font-black tracking-widest uppercase">GO ON....</p>
+                    </div>
+                    <p className="text-slate-900 text-xl md:text-2xl font-black uppercase tracking-tighter mt-2 animate-bounce flex flex-col items-center gap-3">
+                        SCROLL DOWN
+                        <span className="w-1 h-12 bg-gradient-to-b from-aloe-green to-transparent rounded-full mt-2" />
+                    </p>
+                </div>
+
                 {/* Section Header */}
                 <div className="mb-20">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-slate-50 border border-slate-200 rounded-full mb-8">
-                        <span className="w-1.5 h-1.5 rounded-full bg-aloe-green"></span>
-                        <span className="text-[10px] font-black tracking-[0.3em] text-slate-500 uppercase">
-                            PORTFOLIO SHOWCASE
-                        </span>
-                    </div>
                     <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6 uppercase">
-                        Unmissable <span className="text-aloe-green">Impact.</span>
+                        MAIN MONEY MAKERS <span className="text-aloe-green">(currently)</span>
                     </h2>
                 </div>
 
                 {/* Refined Light Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {gridImages.map((img, idx) => (
-                        <div
+                        <Link
                             key={idx}
-                            className="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-slate-100 border border-slate-200 transition-all duration-700 hover:border-aloe-green/30 shadow-xl hover:shadow-2xl"
+                            href={img.link}
+                            className="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-slate-100 border border-slate-200 transition-all duration-700 hover:border-aloe-green/30 shadow-xl hover:shadow-2xl block"
                         >
                             <Image
                                 src={img.src}
                                 alt={img.alt}
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                quality={90}
                                 className="object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
                             />
 
@@ -56,20 +68,20 @@ export default function ImageGrid() {
                                     {img.label}
                                 </h3>
                                 <p className="text-white/70 text-[10px] font-black tracking-widest uppercase mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                    VIEW PROJECT
+                                    VIEW SERVICES
                                 </p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 
-                <div className="mt-20 flex justify-center">
-                    <Link
-                        href="/portfolio"
-                        className="px-12 py-5 bg-slate-900 text-white font-black rounded-full text-lg hover:bg-aloe-green hover:text-slate-900 transition-all hover:scale-105 shadow-xl shadow-slate-900/10"
-                    >
-                        EXPLORE THE FULL SHOWCASE
-                    </Link>
+                {/* Removed explore the full showcase link */}
+                
+                {/* Outro Text */}
+                <div className="mt-20 text-center">
+                    <p className="text-3xl md:text-5xl font-black text-slate-800 uppercase tracking-tight">
+                        We like working with <span className="text-aloe-green">LEKKER</span> people!
+                    </p>
                 </div>
             </div>
 

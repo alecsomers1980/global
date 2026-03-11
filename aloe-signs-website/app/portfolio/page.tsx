@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import ServiceHero from '@/components/ServiceHero';
 import { constructionProjects, portfolioCategories, Project } from '@/lib/portfolio';
 import { X } from 'lucide-react';
 
@@ -22,34 +23,13 @@ export default function PortfolioPage() {
         <div className="min-h-screen">
             <Header />
             <main>
-                {/* Hero Section (Rich Hero) */}
-                <div className="relative bg-charcoal text-white py-20 md:py-32">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                            backgroundSize: '40px 40px'
-                        }}></div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-6 relative z-10">
-                        <div className="max-w-3xl">
-                            <div className="flex items-center gap-2 text-sm text-light-grey mb-6">
-                                <Link href="/" className="hover:text-aloe-green transition-colors">
-                                    Home
-                                </Link>
-                                <span>/</span>
-                                <span className="text-white font-bold">Portfolio</span>
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                Our Portfolio
-                            </h1>
-                            <p className="text-lg md:text-xl text-light-grey">
-                                Explore our recent work and see how we help businesses stand out.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {/* Hero Section */}
+                <ServiceHero 
+                    title="Our Portfolio"
+                    tagline="Explore our recent work"
+                    description="See how we help businesses stand out and dominate their industry with unmissable branding."
+                    backgroundImage="/images/Wall Art.jpeg"
+                />
 
                 {/* Categories Navigation */}
                 <section className="py-8 bg-bg-grey border-b border-border-grey sticky top-[80px] z-30 shadow-sm">

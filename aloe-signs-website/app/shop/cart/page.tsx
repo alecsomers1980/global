@@ -1,13 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
+import ServiceHero from '@/components/ServiceHero';
 import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+    const [deliveryOption, setDeliveryOption] = useState<'courier' | 'collection'>('courier');
+
+    const deliveryCost = deliveryOption === 'courier' ? 250 : 0;
 
     if (cart.length === 0) {
         return (
@@ -38,15 +43,16 @@ export default function CartPage() {
 
             <main>
                 {/* Page Header */}
-                <section className="bg-bg-grey py-12">
-                    <div className="max-w-[1400px] mx-auto px-6">
-                        <h1 className="text-4xl font-bold text-charcoal mb-2">Shopping Cart</h1>
-                        <p className="text-medium-grey">{cart.length} {cart.length === 1 ? 'item' : 'items'} in your cart</p>
-                    </div>
-                </section>
+                <ServiceHero
+                    title="Shopping Cart"
+                    tagline="REVIEW YOUR ORDER"
+                    description="Confirm your quantities, check shipping options, and finalize your custom signage before checking out."
+                    backgroundImage="/images/portfolio/shopfront-1.jpg" // Same background as shop for consistency
+                    compact={true}
+                />
 
                 {/* Cart Content */}
-                <section className="py-12">
+                <section className="py-12 bg-white">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
                             {/* Cart Items */}
@@ -147,18 +153,59 @@ export default function CartPage() {
                                 <div className="bg-bg-grey rounded-[2rem] p-8 space-y-6 border border-border-grey">
                                     <h2 className="text-2xl font-bold text-charcoal">Order Summary</h2>
 
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between text-medium-grey">
+                                    <div className="space-y-4">
+                                        <div className="bg-white p-4 rounded border border-border-grey space-y-3">
+                                            <p className="font-bold text-charcoal">Delivery Method</p>
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input 
+                                                    type="radio" 
+                                                    name="delivery"
+                                                    checked={deliveryOption === 'courier'}
+                                                    onChange={() => setDeliveryOption('courier')}
+                                                    className="w-4 h-4 text-aloe-green focus:ring-aloe-green"
+                                                />
+                                                <span className="text-medium-grey flex-1">Nationwide Courier</span>
+                                                <span className="font-semibold text-charcoal">R250</span>
+                                            </label>
+                                            <label className="flex items-center gap-3 cursor-pointer">
+                                                <input 
+                                                    type="radio" 
+                                                    name="delivery"
+                                                    checked={deliveryOption === 'collection'}
+                                                    onChange={() => setDeliveryOption('collection')}
+                                                    className="w-4 h-4 text-aloe-green focus:ring-aloe-green"
+                                                />
+                                                <span className="text-medium-grey flex-1">Collection (JHB)</span>
+                                                <span className="font-semibold text-charcoal">FREE</span>
+                                            </label>
+                                        </div>
+
+                                        <div className="flex justify-between text-medium-grey pt-4 border-t border-border-grey">
                                             <span>Subtotal</span>
                                             <span>R{formatPrice(getCartTotal())}</span>
                                         </div>
                                         <div className="flex justify-between text-medium-grey">
                                             <span>Shipping</span>
-                                            <span className="text-aloe-green font-bold">FREE</span>
+                                            <span className="text-charcoal font-semibold">
+                                                {deliveryOption === 'courier' ? 'R 250' : 'FREE'}
+                                            </span>
                                         </div>
                                         <div className="border-t border-border-grey pt-3 flex justify-between text-xl font-bold text-charcoal">
-                                            <span>Total</span>
-                                            <span>R{formatPrice(getCartTotal())}</span>
+                                            <span>Total (Excl. VAT)</span>
+                                            <span>R{formatPrice(getCartTotal() + deliveryCost)}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Promotional Credit Alert */}
+                                    <div className="bg-white border-l-4 border-aloe-green p-4 rounded-r-lg shadow-sm">
+                                        <div className="flex items-start gap-3">
+                                            <svg className="w-5 h-5 text-aloe-green mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                                            </svg>
+                                            <div>
+                                                <p className="text-sm font-bold text-charcoal">Lucky Number 10?</p>
+                                                <p className="text-xs text-medium-grey mt-0.5">Every 10th client receives <strong className="text-aloe-green">R100 in credit</strong> applied to their next order.</p>
+                                            </div>
                                         </div>
                                     </div>
 

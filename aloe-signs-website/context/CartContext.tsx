@@ -7,16 +7,17 @@ interface CartItem extends Product {
     quantity: number;
     cartId: string; // Unique ID for cart item (productId + options)
     selectedOptions?: {
-        quantity: number; // For matrix pricing, this is the batch size
-        sides: 'single' | 'double';
-        artwork: boolean;
+        quantity?: number; // For matrix pricing, this is the batch size
+        sides?: 'single' | 'double';
+        artwork?: boolean;
+        variant?: string; // For simple variant pricing
     };
     price: number; // Override price to be the calculated price per unit/batch
 }
 
 interface CartContextType {
     cart: CartItem[];
-    addToCart: (product: Product, options?: { quantity: number; sides: 'single' | 'double'; artwork: boolean }) => void;
+    addToCart: (product: Product, options?: { quantity?: number; sides?: 'single' | 'double'; artwork?: boolean; variant?: string }) => void;
     removeFromCart: (cartId: string) => void;
     updateQuantity: (cartId: string, quantity: number) => void;
     clearCart: () => void;
@@ -43,7 +44,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('aloe-cart', JSON.stringify(cart));
     }, [cart]);
 
-    const addToCart = useCallback((product: Product, options?: { quantity: number; sides: 'single' | 'double'; artwork: boolean }) => {
+    const addToCart = useCallback((product: Product, options?: { quantity?: number; sides?: 'single' | 'double'; artwork?: boolean; variant?: string }) => {
         setCart(prevCart => {
             // Generate unique ID based on options
             const optionsString = options ? JSON.stringify(options) : '';
@@ -65,7 +66,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             // Calculate price based on options
             let finalPrice = product.price;
 
-            if (product.pricingTiers && options) {
+            if (options?.variant && product.variants) {
+                const variantData = product.variants.find(v => v.name === options.variant);
+                if (variantData) {
+                    finalPrice = variantData.price;
+                }
+                if (options.artwork && product.artworkFee) {
+                    finalPrice += product.artworkFee;
+                }
+            } else if (product.pricingTiers && options?.quantity && options?.sides) {
                 const tier = product.pricingTiers.find(t => t.quantity === options.quantity);
                 if (tier) {
                     finalPrice = options.sides === 'single' ? tier.singlePrice : tier.doublePrice;
@@ -80,7 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 price: finalPrice,
                 quantity: 1,
                 cartId,
-                selectedOptions: options
+                selectedOptions: options as any
             }];
         });
     }, []);
