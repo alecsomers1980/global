@@ -14,7 +14,7 @@ const gridImages = [
     { src: '/images/3D.jpeg', alt: '3D Renders', label: '3D Renders', link: '/services/3d-renders' },
     { src: '/images/Tangible Visual Texture.jpeg', alt: 'Tangible Visual Texture', label: 'Tangible Visual Texture', link: '/services/tangible-visual-texture' },
     { src: '/images/safety.png', alt: 'Plant/Mines Regulatory Signs', label: 'Plant/Mines Regulatory Signs', link: '/services/regulatory-signs' },
-    { src: '/images/portfolio/set-building-main.jpg', alt: 'Site Activations', label: 'Site Activations', link: '/services/site-activations' },
+    { src: '/images/site.png', alt: 'Site Activations', label: 'Site Activations', link: '/services/site-activations' },
 ];
 
 export default function ImageGrid() {
