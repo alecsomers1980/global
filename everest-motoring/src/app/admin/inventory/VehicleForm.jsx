@@ -302,7 +302,7 @@ export default function VehicleForm({ initialData = null }) {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         {/* Scene 1 */}
                         <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
-                            <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">car_front</span>
+                            <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">directions_car</span>
                             <label className="block text-sm font-bold text-slate-700 mb-1">Scene 1: Front / Side</label>
                             <p className="text-xs text-slate-500 mb-4">Hero exterior shot.</p>
                             <input
