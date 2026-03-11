@@ -34,10 +34,9 @@ export default function ImageGrid() {
                     </p>
                 </div>
 
-                {/* Section Header */}
                 <div className="mb-20">
                     <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-6 uppercase">
-                        MAIN MONEY MAKERS <span className="text-aloe-green">(currently)</span>
+                        MAIN MONEY MAKERS
                     </h2>
                 </div>
 
