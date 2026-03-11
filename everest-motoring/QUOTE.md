@@ -86,7 +86,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 | **Finance Calculator & Pre-Approval** | Buyers calculate installments instantly. Integration with light credit-checking ensures your team only spends time on qualified buyers. |
 | **Trade-In Valuation Engine** | Customers upload details of their current car to get an estimate, generating high-quality leads and future inventory for your floor. |
 | **Direct WhatsApp Integration** | Instant "Chat about this car" buttons link directly to your sales team with the vehicle context attached. |
-| **Affiliate Tracking & Distribution** | Allow partners to generate referral links and earn commissions on closed sales. When a new car is listed, the system instantly generates and emails a premium "Media Kit" (AI video, high-res photos, and a custom spec sheet with their personalized WhatsApp link) so they can forward it to their network instantly. |
+| **Affiliate Tracking & Distribution** | Allow partners to generate referral links and earn commissions on closed sales. When a new car is listed, the system instantly generates and sends a premium "Media Kit" (AI video, high-res photos, and a custom spec sheet with their personalized WhatsApp link) via **both Email and WhatsApp** so they can forward it to their network instantly. |
 
 ### 3. The Omni-Channel Marketing Engine
 
@@ -173,7 +173,7 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 - This quotation is valid for **30 days** from the date of issue.
 - A signed SaaS Service Agreement is required before work commences.
 - The subscription is structured as a **12-month minimum term**.
-- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote.*
+- *Please note: Subscription fees to third-party listing platforms (e.g., AutoTrader) are billed directly to the dealership by those entities and are not included in this quote. Usage of the Meta WhatsApp Business API for affiliate video distribution is billed by Meta per message sent (approx. R0.70 ZAR per affiliate per car) and is not included in the base subscription.*
 
 ---
 

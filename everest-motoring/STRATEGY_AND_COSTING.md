@@ -18,7 +18,7 @@ These features are currently built into the Everest Motoring platform.
     *   Built-in tools for buyers to Book a Test Drive, Calculate Finance (`/finance`), and Value Their Trade-In (`/value-my-car`).
 5.  **Affiliate & Referral Tracking (with Auto-Distribution)**
     *   A portal (`/affiliate`) where partners can generate tracked links and drive sales for a commission.
-    *   **Automated Asset Distribution:** When a new car is published, the system instantly generates and emails a premium "Media Kit" to all registered affiliates. This kit includes the AI video, gallery photos, a premium specification notice, and their own personalized tracking link—empowering them to immediately push the car to their audiences.
+    *   **Automated Asset Distribution:** When a new car is published, the system instantly generates and sends a premium "Media Kit" to all registered affiliates via **both Email and WhatsApp**. This kit includes the AI video, gallery photos, a premium specification notice, and their own personalized tracking link so they can forward it directly to their WhatsApp contacts instantly.
 6.  **Lead Management Dashboard**
     *   Centralized hub for managing incoming purchase leads, trade-in requests, and tracking affiliate payouts.
 
@@ -89,18 +89,22 @@ Generating the cinematic videos and AI descriptions requires calling external AP
 **Total AI Cost per Car:** ~$2.00 - $3.25
 **Monthly AI Cost (20 cars + Blogging):** ~$40.50 - $65.50
 
-### 3. Future API Integrations (Optional add-ons for later)
-*   **WhatsApp Business API (Meta):** ~$15.00/mo (depending on conversation volume).
-*   **Ember Social Integration:** Built-in / Internal (Handles all zero-touch social media scheduling and publishing).
-*   **XML Syndication Feeds:** Built internally (Free), though external platforms (AutoTrader/Cars.co.za) will charge their own dealer subscription fees.
+### 3. WhatsApp Distribution Costs for Affiliates (Calculated for 30 Affiliates)
+While email is essentially free (via Resend), WhatsApp is the ultimate conversion tool because affiliates can simply hit "Forward" to their network. We use the official **Meta WhatsApp Business API**.
+
+*Meta charges per "Marketing Conversation" (a 24-hour window where you can send as many messages as you want to a user).*
+*   **Cost per SA Marketing Conversation:** ~$0.038 USD (Approx. R0.70 ZAR).
+*   **Monthly Volume calculation:** 20 cars per month × 30 affiliates = 600 individual alerts sent per month.
+*   **Total Monthly WhatsApp Cost:** ~600 × R0.70 = **R420.00 ZAR / month** (Approx. $23.00 USD).
 
 ---
 
 ### 📊 Monthly Summary
-To run the highly automated, AI-driven Everest Motoring showroom adding 20 cars a month with full SEO & Social Authority via Ember Social:
+To run the highly automated, AI-driven Everest Motoring showroom adding 20 cars a month with full SEO, Social Authority, and a 30-person WhatsApp Affiliate Network:
 
 *   **Fixed Infrastructure (Vercel/Supabase/Mux):** ~$45.00
 *   **Variable AI Costs (20 cars + Content):** ~$50.50
-*   **Estimated Total Tech Running Cost:** **~$95.50 / month** (Approx. R1,750 ZAR per month).
+*   **Variable WhatsApp API Costs (600 alerts):** ~$23.00
+*   **Estimated Total Tech Running Cost:** **~$118.50 / month** (Approx. R2,185 ZAR per month).
 
 *This represents an incredibly low overhead compared to hiring a full-time copywriter, videographer, and social media manager.*
