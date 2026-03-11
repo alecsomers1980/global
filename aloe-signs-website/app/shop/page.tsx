@@ -37,7 +37,7 @@ export default function ShopPage() {
                     title="Shop"
                     tagline="Professional signage products delivered fast"
                     description="Browse our collection of ready-made signs, hardware, and accessories built with the same Aloe Signs quality you expect."
-                    backgroundImage="/images/portfolio/shopfront-1.jpg"
+                    backgroundImage="/images/products/estate-boards.jpg"
                     compact={true}
                 />
 

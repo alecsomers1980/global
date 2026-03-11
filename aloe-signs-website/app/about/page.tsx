@@ -15,7 +15,7 @@ export default function AboutPage() {
                     title="About Aloe Signs"
                     tagline="Products that builds businesses"
                     description="For over 25 years, we've been helping South African businesses stand out with professional signage and branding solutions."
-                    backgroundImage="/images/portfolio/shopfront-1.jpg"
+                    backgroundImage="/images/HP.jpg"
                 />
 
                 {/* Heavy Artillery (Hardware) Section */}
