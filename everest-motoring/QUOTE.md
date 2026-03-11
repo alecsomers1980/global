@@ -110,7 +110,20 @@ The **Ember Automations Everest Platform** is a custom-built SaaS (Software as a
 | Inventory Admin / Data Entry | R6,000 – R10,000/mo | ✅ Centralized CRM and XML syndication |
 | **Total equivalent monthly cost** | **R26,000 – R50,000/mo** | **All included** |
 
-> **Our platform costs a fraction of what these salaries and services cost individually — and it operates instantly, consistently, and without sick days.**
+---
+
+## The Value Proposition & True Cost
+
+When evaluating the R12,000 monthly SaaS subscription, it is important to look at what the industry standard costs are to replicate this level of marketing, lead generation, and automation manually.
+
+To achieve the exact same output that the Everest Motoring platform provides automatically, a dealership would typically need to invest:
+- **R2,000 – R5,000/mo** for a standard website with basic inventory feeds.
+- **R15,000 – R25,000/mo** for a digital marketing agency to shoot videos, write SEO blogs, and manage weekly social media posting.
+- **R5,000 – R10,000/mo** for specialized automotive CRM and lead-routing software.
+
+**The Market Reality:** A dealership attempting to run a modern, video-first, SEO-optimized, and omni-channel operation spends between **R25,000 and R40,000+ per month**. 
+
+The Everest Motoring platform replaces an entire marketing department for less than half the cost of a junior employee's salary. It operates instantly, consistently, without sick days, and scales your sales capacity automatically.
 
 ---
 
