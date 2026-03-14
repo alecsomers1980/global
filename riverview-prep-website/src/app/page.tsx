@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import HexagonShowcase from "@/components/HexagonShowcase";
 import NewsletterHeader from "@/components/NewsletterHeader";
+import EventPosterSlider from "@/components/EventPosterSlider";
 import {
   BookOpen,
   Users,
@@ -119,6 +120,16 @@ const latestNews = [
     highlights: ["Cake Sale Success", "Tennis Win vs Penryn", "Art Showcase"],
     excerpt: "The school spirit was high during our annual Valentine's bake sale, and our tennis teams showed great form on the courts.",
     href: "/news/12-february-2026",
+  },
+  {
+    category: "Newsletter",
+    term: "Term 1",
+    issue: "Issue 02",
+    date: "29 Jan 2026",
+    title: "Welcome Back · New Grade 1s · Swimming Trials",
+    highlights: ["Grade 1 Welcome", "Swimming Gala Prep", "Extramurals"],
+    excerpt: "We welcome all our learners back for the 2026 academic year, with a special greeting to our new Grade 1 classes.",
+    href: "/news/29-january-2026",
   },
 ];
 
@@ -305,34 +316,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
             {/* Left: Poster Showcase */}
-            <div className="lg:col-span-2 relative group">
-              {/* Decorative backgrounds */}
-              <div className="absolute -top-4 -left-4 w-full h-full bg-brand-gold/10 rounded-[3rem] -z-10 group-hover:-translate-x-1 group-hover:-translate-y-1 transition-transform duration-700" />
-              
-              {/* Main Poster Card */}
-              <div className="relative aspect-[3/4.2] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
-                <Image
-                  src="https://images.unsplash.com/photo-1524230572899-a752b3835840?q=80&w=1200&auto=format&fit=crop"
-                  alt="School Event Poster"
-                  fill
-                  className="object-cover hover:scale-105 transition-transform duration-1000"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-green/90 via-transparent to-transparent" />
-                
-                {/* Poster Content */}
-                <div className="absolute bottom-10 left-8 right-8 text-white">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2.5 py-1 bg-brand-gold text-[9px] font-black uppercase tracking-widest rounded-full">Highlight</span>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 leading-tight">
-                    Annual Grade 6 & 7 <br />
-                    <span className="text-brand-gold font-serif italic">Kruger Camp</span>
-                  </h3>
-                  <button className="px-6 py-2.5 border border-white/30 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-brand-green transition-all">
-                    Register Now
-                  </button>
-                </div>
-              </div>
+            <div className="lg:col-span-2 relative">
+              <div className="absolute -top-4 -left-4 w-full h-full bg-brand-gold/10 rounded-[3rem] -z-10" />
+              <EventPosterSlider />
             </div>
 
             {/* Right: Event List */}
@@ -461,28 +447,47 @@ export default function Home() {
               All News <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {latestNews.map((article, i) => (
-              <a key={i} href={article.href} className="group block rounded-[2rem] overflow-hidden border border-brand-green/5 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white">
-                <div className="group-hover:scale-[1.02] transition-transform duration-700 origin-top">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Featured (Latest) Newsletter */}
+            {latestNews.length > 0 && (
+              <a href={latestNews[0].href} className="lg:col-span-2 group block rounded-[2rem] overflow-hidden border border-brand-green/5 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white flex flex-col h-full">
+                <div className="flex-grow h-full group-hover:scale-[1.01] transition-transform duration-700 origin-top">
                   <NewsletterHeader
-                    issue={article.issue}
-                    term={article.term}
-                    date={article.date}
-                    category={article.category}
-                    title={article.title}
-                    highlights={article.highlights}
-                    compact
+                    issue={latestNews[0].issue}
+                    term={latestNews[0].term}
+                    date={latestNews[0].date}
+                    category={latestNews[0].category}
+                    title={latestNews[0].title}
+                    highlights={latestNews[0].highlights}
+                    excerpt={latestNews[0].excerpt}
+                    fullHeight
                   />
                 </div>
-                <div className="p-8">
-                  <p className="text-sm text-brand-green/60 leading-relaxed mb-6">{article.excerpt}</p>
-                  <div className="flex items-center gap-2 text-brand-green font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition-colors">
-                    Read More <ArrowRight className="w-3 h-3" />
-                  </div>
-                </div>
               </a>
-            ))}
+            )}
+
+            {/* Other Newsletters Stacked */}
+            <div className="space-y-4 flex flex-col justify-between">
+              {latestNews.slice(1).map((article, i) => (
+                <a key={i} href={article.href} className="group block rounded-[1.5rem] overflow-hidden border border-brand-green/5 hover:shadow-xl transition-all duration-500 hover:-translate-y-1 bg-white flex flex-col">
+                  <div className="group-hover:scale-[1.01] transition-transform duration-700 origin-top">
+                    <NewsletterHeader
+                      issue={article.issue}
+                      term={article.term}
+                      date={article.date}
+                      category={article.category}
+                      title={article.title}
+                      compact
+                    />
+                  </div>
+                  <div className="p-4 border-t border-brand-green/5 flex-grow flex items-center justify-between bg-brand-cream/30">
+                    <div className="flex items-center gap-1.5 text-brand-green font-bold text-[9px] uppercase tracking-widest group-hover:text-brand-gold transition-colors">
+                      Read More <ArrowRight className="w-2.5 h-2.5" />
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>

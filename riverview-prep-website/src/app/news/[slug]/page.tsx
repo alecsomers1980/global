@@ -610,32 +610,37 @@ export default function NewsletterArticle({
                   return (
                     <div
                       key={si}
-                      className="rounded-[3rem] overflow-hidden border border-brand-green/8 shadow-xl"
+                      className="rounded-[3rem] overflow-hidden border border-brand-green/8 shadow-xl flex flex-col md:flex-row bg-brand-cream"
                     >
-                      <div className="relative h-64 md:h-80 overflow-hidden">
+                      {/* Left: Banner Image */}
+                      <div className="relative w-full md:w-[45%] aspect-video md:aspect-auto overflow-hidden">
                         <Image
                           src={section.image}
                           alt={section.title}
                           fill
                           className="object-cover object-top"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-brand-green/90 via-brand-green/20 to-transparent" />
-                        <div className="absolute bottom-8 left-8">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-brand-cream/10" />
+                      </div>
+
+                      {/* Right: Content details */}
+                      <div className="p-8 md:p-12 md:w-[55%] flex flex-col justify-center">
+                        <div className="mb-6">
                           <span className="px-3 py-1.5 bg-brand-gold text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-3 inline-block">
                             {section.label}
                           </span>
-                          <h3 className="text-3xl font-bold text-white">
+                          <h3 className="text-3xl font-bold text-brand-green">
                             {section.title}
                           </h3>
                           <p className="text-brand-gold font-serif italic text-lg">
                             {section.subtitle}
                           </p>
                         </div>
-                      </div>
-                      <div className="bg-brand-cream p-8 md:p-12">
-                        <p className="text-brand-green/70 leading-relaxed mb-8">
+                        
+                        <p className="text-brand-green/70 leading-relaxed mb-8 text-sm">
                           {section.description}
                         </p>
+                        
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                           {section.details.map((d, di) => (
                             <div key={di} className="flex items-start gap-3">
@@ -651,13 +656,16 @@ export default function NewsletterArticle({
                             </div>
                           ))}
                         </div>
-                        <Link
-                          href={section.cta.href}
-                          className="inline-flex items-center gap-3 px-8 py-4 bg-brand-green text-white font-bold rounded-full hover:bg-brand-green/90 transition-colors text-sm"
-                        >
-                          {section.cta.label}
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
+                        
+                        <div className="mt-4">
+                          <Link
+                            href={section.cta.href}
+                            className="inline-flex items-center gap-3 px-8 py-4 bg-brand-green text-white font-bold rounded-full hover:bg-brand-green/90 transition-colors text-sm"
+                          >
+                            {section.cta.label}
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   );

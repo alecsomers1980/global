@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SecondaryBanner from "@/components/SecondaryBanner";
 import {
   Calendar,
   MapPin,
@@ -79,9 +80,10 @@ export default function OliverWithATwistPage() {
   return (
     <main className="min-h-screen bg-white">
       <Header />
+      <SecondaryBanner title="Event Spotlight" subtitle="Oliver with a Twist" />
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative pt-48 pb-0 bg-brand-green overflow-hidden">
+      <section className="relative pt-12 pb-0 bg-brand-green overflow-hidden">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-gold/8 blur-[150px] rounded-full pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full pointer-events-none" />
 

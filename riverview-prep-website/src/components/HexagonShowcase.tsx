@@ -10,7 +10,7 @@ const hexagonData = [
     image: "/images/Gallery/Culture/IMG_6334 (2).jpg",
     className: "w-48 h-56 md:w-64 md:h-72",
     top: "5%",
-    left: "20%",
+    left: "15%",
     delay: 0,
     zIndex: 10,
   },
@@ -18,19 +18,28 @@ const hexagonData = [
     id: 2,
     image: "/images/Gallery/Sport/IMG_7306.jpg",
     className: "w-40 h-48 md:w-56 md:h-64",
-    top: "40%",
-    left: "50%",
+    top: "35%",
+    left: "42%",
     delay: 0.2,
     zIndex: 20,
   },
   {
     id: 3,
     color: "bg-brand-green",
-    className: "w-32 h-36 md:w-40 md:h-44",
-    top: "15%",
-    left: "70%",
+    className: "w-28 h-32 md:w-36 md:h-40",
+    top: "10%",
+    left: "75%",
     delay: 0.4,
     zIndex: 5,
+  },
+  {
+    id: 4,
+    image: "/images/Gallery/Culture/IMG_6444.jpg",
+    className: "w-36 h-42 md:w-48 md:h-54",
+    top: "55%",
+    left: "10%",
+    delay: 0.6,
+    zIndex: 15,
   },
   {
     id: 5,
@@ -40,6 +49,15 @@ const hexagonData = [
     left: "35%",
     delay: 0.8,
     zIndex: 5,
+  },
+  {
+    id: 6,
+    image: "/images/Gallery/Sport/Cricket 1st vs Baberton.jpg",
+    className: "w-42 h-50 md:w-56 md:h-68",
+    top: "50%",
+    left: "70%",
+    delay: 0.5,
+    zIndex: 12,
   },
 ];
 
@@ -106,7 +124,7 @@ const HexagonShowcase = () => {
                     src={hex.image}
                     alt="School Life"
                     fill
-                    className="object-cover transition-transform duration-1000 group-hover:rotate-1"
+                    className="object-cover object-top transition-transform duration-1000 group-hover:rotate-1"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-green/20 to-transparent opacity-40 group-hover:opacity-10 transition-opacity" />
                 </>
