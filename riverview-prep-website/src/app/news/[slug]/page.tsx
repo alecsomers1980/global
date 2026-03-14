@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import NewsletterHeader from "@/components/NewsletterHeader";
+import SecondaryBanner from "@/components/SecondaryBanner";
 
 // ─── NEWSLETTER DATA ──────────────────────────────────────────────────────────
 
@@ -489,9 +490,14 @@ export default function NewsletterArticle({
   return (
     <main className="min-h-screen bg-white">
       <Header />
+      
+      <SecondaryBanner 
+        title="Weekly Newsletters" 
+        subtitle={`${data.term} · ${data.issue} · ${data.date}`}
+      />
 
       {/* ── Masthead ─────────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-0 bg-white overflow-hidden">
+      <section className="relative pt-12 pb-0 bg-white overflow-hidden">
         {/* Back link */}
         <div className="container mx-auto px-6 mb-8">
           <Link

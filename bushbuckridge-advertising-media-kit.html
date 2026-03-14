@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bushbuckridge Directory & News Network — Advertising Packages 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest: #1b3a2d;
+      --forest-mid: #245c3e;
+      --forest-light: #2f7a52;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --gold-pale: #f5e9c4;
+      --cream: #faf7f0;
+      --white: #ffffff;
+      --ink: #1a1a1a;
+      --ink-mid: #3d3d3d;
+      --ink-light: #6b6b6b;
+      --border: #e0d8c8;
+      --tier1-color: #6b7280;
+      --tier2-color: #3b82f6;
+      --tier3-color: #8b5cf6;
+      --tier4-color: #f59e0b;
+      --tier5-color: #c9a84c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── COVER PAGE ── */
+    .cover {
+      min-height: 100vh;
+      background: var(--forest);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 80px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 20%, rgba(201,168,76,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 10% 80%, rgba(47,122,82,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cover-grid {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .cover-top { position: relative; z-index: 1; }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 100px;
+      margin-bottom: 40px;
+    }
+    .cover-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .cover h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.0;
+      letter-spacing: -2px;
+      margin-bottom: 8px;
+    }
+
+    .cover h1 span {
+      color: var(--gold);
+    }
+
+    .cover-sub {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      margin-top: 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .cover-divider {
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 32px 0;
+    }
+
+    .cover-desc {
+      max-width: 580px;
+      font-size: 17px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .cover-stats {
+      display: flex;
+      gap: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-stat label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .cover-stat strong {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .cover-stat span {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      display: block;
+      font-weight: 400;
+    }
+
+    .cover-bottom {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .cover-brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .cover-year {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.2);
+      font-weight: 300;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 60px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--forest-light);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--forest);
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-intro {
+      font-size: 17px;
+      color: var(--ink-light);
+      max-width: 680px;
+      line-height: 1.75;
+      margin-bottom: 48px;
+    }
+
+    /* ── AD ZONES TABLE ── */
+    .zones-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .zone-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .zone-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--forest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    .zone-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--forest);
+      margin-bottom: 4px;
+    }
+
+    .zone-card p {
+      font-size: 13px;
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+
+    .zone-limit {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--forest-light);
+      background: rgba(47,122,82,0.08);
+      border: 1px solid rgba(47,122,82,0.2);
+      padding: 3px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── PAGE BREAK ── */
+    .page-break { page-break-before: always; padding-top: 80px; }
+
+    /* ── TIERS ── */
+    .tier-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 28px;
+      page-break-inside: avoid;
+    }
+
+    .tier-card.featured {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold), 0 20px 60px rgba(201,168,76,0.12);
+    }
+
+    .tier-header {
+      padding: 32px 36px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+
+    .tier-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--forest);
+      letter-spacing: -0.5px;
+    }
+
+    .tier-tagline {
+      font-size: 14px;
+      color: var(--ink-light);
+      margin-top: 4px;
+      max-width: 420px;
+    }
+
+    .tier-price {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .tier-price .amount {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--forest);
+      line-height: 1;
+    }
+
+    .tier-price .amount.free {
+      color: #22c55e;
+    }
+
+    .tier-price .period {
+      font-size: 13px;
+      color: var(--ink-light);
+      display: block;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .tier-body {
+      padding: 0 36px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .tier-body.full { grid-template-columns: 1fr; }
+
+    .feature-group h5 {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .feature-list li {
+      font-size: 14px;
+      color: var(--ink-mid);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--forest-light);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .feature-list li.no::before {
+      content: '—';
+      color: var(--border);
+    }
+
+    .feature-list li.no {
+      color: #aaa;
+    }
+
+    .leaderboard-box {
+      margin-top: 20px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .leaderboard-box h6 {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 12px;
+    }
+
+    .leaderboard-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .leaderboard-row:last-child { border-bottom: none; }
+
+    .leaderboard-row span { color: var(--ink-mid); }
+
+    .lb-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    .lb-yes { background: rgba(47,122,82,0.1); color: var(--forest-light); }
+    .lb-no { background: rgba(0,0,0,0.04); color: #aaa; }
+    .lb-exclusive { background: rgba(201,168,76,0.15); color: #a07a1a; }
+    .lb-priority { background: rgba(139,92,246,0.1); color: #7c3aed; }
+
+    .upsell-box {
+      margin: 0 36px 28px;
+      background: linear-gradient(135deg, rgba(27,58,45,0.04), rgba(47,122,82,0.06));
+      border: 1px dashed rgba(47,122,82,0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: var(--forest);
+      line-height: 1.6;
+    }
+
+    .upsell-box strong {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── DOMINANT SPECIAL ── */
+    .tier-card.dominant {
+      background: var(--forest);
+      border-color: var(--gold);
+    }
+
+    .tier-card.dominant .tier-header { }
+
+    .tier-card.dominant .tier-name,
+    .tier-card.dominant .tier-price .amount,
+    .tier-card.dominant .feature-group h5 {
+      color: var(--white);
+    }
+
+    .tier-card.dominant .tier-tagline,
+    .tier-card.dominant .tier-price .period {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .tier-card.dominant .feature-list li {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .tier-card.dominant .feature-list li::before {
+      color: var(--gold);
+    }
+
+    .tier-card.dominant .feature-group h5 {
+      color: rgba(255,255,255,0.4);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .tier-card.dominant .leaderboard-box {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .tier-card.dominant .leaderboard-box h6 {
+      color: var(--gold);
+    }
+
+    .tier-card.dominant .leaderboard-row {
+      border-color: rgba(255,255,255,0.08);
+    }
+
+    .tier-card.dominant .leaderboard-row span {
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-section {
+      margin-top: 60px;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .compare-table thead tr {
+      background: var(--forest);
+    }
+
+    .compare-table thead th {
+      padding: 14px 16px;
+      text-align: left;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .compare-table thead th:first-child {
+      color: white;
+      border-radius: 12px 0 0 0;
+    }
+    .compare-table thead th:last-child {
+      border-radius: 0 12px 0 0;
+      background: rgba(201,168,76,0.3);
+      color: var(--gold-light);
+    }
+
+    .compare-table tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-table tbody tr:nth-child(even) td {
+      background: rgba(0,0,0,0.01);
+    }
+
+    .compare-table td {
+      padding: 12px 16px;
+      vertical-align: middle;
+    }
+
+    .compare-table td:first-child {
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .check { color: #22c55e; font-size: 16px; font-weight: 700; }
+    .cross { color: #e5e7eb; font-size: 16px; }
+    .value { color: var(--forest); font-weight: 700; font-size: 13px; }
+
+    .compare-table tfoot td {
+      padding: 18px 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--forest);
+      border-top: 2px solid var(--forest);
+    }
+
+    .compare-table tfoot td:last-child {
+      color: var(--gold);
+    }
+
+    /* ── NOTES ── */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .note-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+
+    .note-card h5 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--forest);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .note-card p {
+      font-size: 13px;
+      color: var(--ink-light);
+      line-height: 1.6;
+    }
+
+    /* ── BACK COVER ── */
+    .back-cover {
+      background: var(--forest);
+      padding: 80px;
+      text-align: center;
+      page-break-before: always;
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .back-cover h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -1px;
+    }
+
+    .back-cover h2 span { color: var(--gold); }
+
+    .back-cover p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.5);
+      max-width: 500px;
+    }
+
+    .back-cover .cta-row {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .back-cover .cta-item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 28px;
+    }
+
+    .back-cover .cta-item label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .back-cover .cta-item strong {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .back-cover .powered {
+      margin-top: 40px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      font-weight: 600;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: white; }
+      .cover, .back-cover { min-height: 100vh; }
+      .tier-card { break-inside: avoid; }
+      @page {
+        margin: 0;
+        size: A4;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- COVER PAGE                                 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-grid"></div>
+
+  <div class="cover-top">
+    <div class="cover-badge">Advertising Media Kit &bull; 2026</div>
+
+    <h1>
+      Bushbuckridge<br>
+      <span>Digital Network</span>
+    </h1>
+    <div class="cover-sub">Directory &amp; News Advertising Packages</div>
+
+    <div class="cover-divider"></div>
+
+    <p class="cover-desc">
+      Five platforms. One subscription. Reach every corner of the Bushbuckridge
+      community — from the WhatsApp chatbot they use to find services, to the
+      news feeds they read every morning.
+    </p>
+  </div>
+
+  <div class="cover-stats">
+    <div class="cover-stat">
+      <label>Platforms</label>
+      <strong>5</strong>
+      <span>Directory + 4 News Sites</span>
+    </div>
+    <div class="cover-stat">
+      <label>Ad Tiers</label>
+      <strong>5</strong>
+      <span>Free → Dominant</span>
+    </div>
+    <div class="cover-stat">
+      <label>WhatsApp</label>
+      <strong>5K+</strong>
+      <span>Community subscribers</span>
+    </div>
+    <div class="cover-stat">
+      <label>Starting at</label>
+      <strong>Free</strong>
+      <span>No setup fees</span>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-brand">Powered by Ember Automations</div>
+    <div class="cover-year">Bushbuckridge, Mpumalanga &bull; March 2026</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- AD ZONES                                   -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Your Advertising Channels</h2>
+  <p class="section-intro">
+    Ads across our network appear in seven distinct zones. Each zone has a fixed number of spots, creating real scarcity — and real value. Higher tiers unlock more zones and more dedicated time.
+  </p>
+
+  <div class="zones-grid">
+    <div class="zone-card">
+      <div class="zone-icon">📢</div>
+      <div>
+        <h4>Leaderboard Banner</h4>
+        <p>Full-width banner at the top of a page. The first thing every visitor sees. Cannot be scrolled past.</p>
+        <span class="zone-limit">Max 4 advertisers sharing rotation</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">📰</div>
+      <div>
+        <h4>In-Feed Sponsored Post</h4>
+        <p>Appears between news articles. Looks like editorial content — higher engagement than display ads.</p>
+        <span class="zone-limit">Max 4 advertisers per slot</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">🟦</div>
+      <div>
+        <h4>Sidebar Rectangle</h4>
+        <p>Displayed on article and listing pages in the right column. Rotates on every page load.</p>
+        <span class="zone-limit">Max 6 advertisers per slot</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">💬</div>
+      <div>
+        <h4>WhatsApp Community Slot</h4>
+        <p>A dedicated post in the morning or afternoon news broadcast. Lands directly in members' main inbox.</p>
+        <span class="zone-limit">Max 2 slots per day — no rotation</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">🤖</div>
+      <div>
+        <h4>WhatsApp Chatbot Result</h4>
+        <p>When a user searches for your business category, your listing appears automatically. Tier determines format and position.</p>
+        <span class="zone-limit">Bronze → Silver → Gold (carousel)</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">✉️</div>
+      <div>
+        <h4>Newsletter Placement</h4>
+        <p>Your brand in every email newsletter sent across the network. Sent weekly or monthly — cannot be scrolled past.</p>
+        <span class="zone-limit">1 advertiser per issue per site</span>
+      </div>
+    </div>
+    <div class="zone-card">
+      <div class="zone-icon">📲</div>
+      <div>
+        <h4>Social Auto-Post</h4>
+        <p>When breaking stories are auto-shared to Facebook, Instagram, and X, your branding is included on posts.</p>
+        <span class="zone-limit">Tier 3+ only</span>
+      </div>
+    </div>
+    <div class="zone-card" style="background: var(--forest); border-color: var(--forest);">
+      <div class="zone-icon" style="background: rgba(201,168,76,0.2);">⭐</div>
+      <div>
+        <h4 style="color: white;">Rotation Explained</h4>
+        <p style="color: rgba(255,255,255,0.55);">Think of it like a rotating billboard — each visitor sees a different ad. Dominant clients get a dedicated board that shows only their brand to every single visitor.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TIER 1                                      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="section-label">The Packages</div>
+  <h2 class="section-title">Five Tiers. Every Budget.</h2>
+
+  <div class="tier-card" style="border-top: 3px solid var(--tier1-color);">
+    <div class="tier-header">
+      <div>
+        <div class="tier-badge" style="background: rgba(107,114,128,0.1); color: var(--tier1-color);">⚪ Tier 1</div>
+        <div class="tier-name">Starter</div>
+        <div class="tier-tagline">Get your business discovered in Bushbuckridge — no cost, no commitment.</div>
+      </div>
+      <div class="tier-price">
+        <div class="amount free">Free</div>
+        <span class="period">No monthly fee</span>
+      </div>
+    </div>
+    <div class="tier-body full">
+      <div class="feature-group">
+        <h5>What's Included</h5>
+        <ul class="feature-list">
+          <li>Text listing in the Bushbuckridge Business Directory</li>
+          <li>Listed under your sector and local area</li>
+          <li>One-tap WhatsApp contact button on your listing</li>
+          <li>WhatsApp Chatbot — <strong>Bronze:</strong> text-only result, shown last when users search your category</li>
+          <li class="no">No logo or photo</li>
+          <li class="no">No business profile page</li>
+          <li class="no">No advertising on news sites</li>
+          <li class="no">No performance reports</li>
+        </ul>
+      </div>
+    </div>
+    <div class="upsell-box">
+      <strong>🚀 Smart Upsell — Built In</strong>
+      Every new Starter registration automatically receives a professional welcome email showing their plain listing beside a Premium showcase — with a direct upgrade link. Every free signup is a warm sales lead.
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TIER 2                                      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tier-card" style="border-top: 3px solid var(--tier2-color);">
+    <div class="tier-header">
+      <div>
+        <div class="tier-badge" style="background: rgba(59,130,246,0.1); color: var(--tier2-color);">🔵 Tier 2</div>
+        <div class="tier-name">Local</div>
+        <div class="tier-tagline">A professional, trusted presence for your local business.</div>
+      </div>
+      <div class="tier-price">
+        <div class="amount">R450</div>
+        <span class="period">per month</span>
+      </div>
+    </div>
+    <div class="tier-body">
+      <div class="feature-group">
+        <h5>Directory</h5>
+        <ul class="feature-list">
+          <li>Full business profile page — logo, description, services, hours, website, contact</li>
+          <li>Image or logo displayed on your listing card</li>
+          <li>Verified business badge (once approved)</li>
+          <li>WhatsApp Chatbot — <strong>Silver:</strong> image card with caption and contact link, shown before Starter</li>
+          <li>Monthly performance report: views, clicks, WhatsApp contacts</li>
+        </ul>
+      </div>
+      <div class="feature-group">
+        <h5>News Network &amp; Other</h5>
+        <ul class="feature-list">
+          <li class="no">No Spotlight Profile</li>
+          <li class="no">No news site advertising</li>
+          <li class="no">No newsletter placements</li>
+          <li class="no">No WhatsApp Community slots</li>
+          <li class="no">No social auto-post</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- TIERS 3–5 (new page)                       -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page page-break">
+
+  <!-- TIER 3 -->
+  <div class="tier-card" style="border-top: 3px solid var(--tier3-color);">
+    <div class="tier-header">
+      <div>
+        <div class="tier-badge" style="background: rgba(139,92,246,0.1); color: var(--tier3-color);">🟣 Tier 3</div>
+        <div class="tier-name">Community</div>
+        <div class="tier-tagline">Leaderboard presence on your category and secondary pages. Reach your most targeted audience.</div>
+      </div>
+      <div class="tier-price">
+        <div class="amount">R1,200</div>
+        <span class="period">per month</span>
+      </div>
+    </div>
+    <div class="tier-body">
+      <div class="feature-group">
+        <h5>Directory + Spotlight</h5>
+        <ul class="feature-list">
+          <li>Everything in Local</li>
+          <li>AI Spotlight Profile — AI writes your business story from a short questionnaire. Includes <strong>3 AI rewrites.</strong></li>
+          <li>Social auto-post — listing promoted on Facebook, Instagram &amp; X</li>
+          <li>Full monthly PDF performance report</li>
+        </ul>
+
+        <div class="leaderboard-box">
+          <h6>📍 Leaderboard Access — Tier 3</h6>
+          <div class="leaderboard-row">
+            <span>Directory Homepage</span>
+            <span class="lb-tag lb-no">Not included</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Your Category / Sector Page</span>
+            <span class="lb-tag lb-priority">Priority — max 3 rotating</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Secondary Pages (Events, Jobs, Opportunities, Find-a-Service)</span>
+            <span class="lb-tag lb-yes">Included — max 6 rotating</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>News Site Leaderboard</span>
+            <span class="lb-tag lb-no">Not included</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-group">
+        <h5>News Network</h5>
+        <ul class="feature-list">
+          <li>Sidebar ad on <strong>1 news site</strong> of your choice (rotates among 6 advertisers)</li>
+          <li class="no">No in-feed sponsored posts</li>
+          <li class="no">No newsletter placements</li>
+          <li class="no">No WhatsApp Community slots</li>
+        </ul>
+
+        <div style="margin-top: 16px; background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--ink-mid); line-height: 1.6;">
+          <strong style="color: var(--tier3-color); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;">Why category-page leaderboards matter</strong><br>
+          When someone searches "Electricians" in the directory, they land directly on your sector page — and your leaderboard is the first thing they see. This is your most targeted audience: people actively looking for exactly what you sell.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TIER 4 -->
+  <div class="tier-card featured" style="border-top: 3px solid var(--tier4-color);">
+    <div class="tier-header">
+      <div>
+        <div class="tier-badge" style="background: rgba(245,158,11,0.1); color: var(--tier4-color);">🟡 Tier 4 — Most Popular</div>
+        <div class="tier-name">Network</div>
+        <div class="tier-tagline">Full-network reach. Your brand across all five platforms simultaneously.</div>
+      </div>
+      <div class="tier-price">
+        <div class="amount">R3,500</div>
+        <span class="period">per month</span>
+      </div>
+    </div>
+    <div class="tier-body">
+      <div class="feature-group">
+        <h5>Directory + WhatsApp</h5>
+        <ul class="feature-list">
+          <li>Everything in Community</li>
+          <li>Featured badge — highlighted listing shown before unfeatured ones</li>
+          <li>WhatsApp Chatbot — <strong>Gold:</strong> scrollable carousel with high-res image, full info, "Visit Website" + "Message Business" buttons. <strong>Shown first in your category.</strong></li>
+          <li>WhatsApp Community — <strong>1 dedicated post per week</strong> in the broadcast group (direct to main inbox)</li>
+        </ul>
+
+        <div class="leaderboard-box">
+          <h6>📍 Leaderboard Access — Tier 4</h6>
+          <div class="leaderboard-row">
+            <span>Directory Homepage</span>
+            <span class="lb-tag lb-yes">Included — max 4 rotating</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Your Category / Sector Page</span>
+            <span class="lb-tag lb-yes">Priority — shown before Tier 3</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Secondary Pages</span>
+            <span class="lb-tag lb-yes">Included</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>News Site Leaderboard</span>
+            <span class="lb-tag lb-no">Not included</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-group">
+        <h5>All 4 News Sites</h5>
+        <ul class="feature-list">
+          <li>Sidebar ad across all 4 news sites</li>
+          <li>In-feed sponsored post on all 4 sites (rotates among 4 advertisers)</li>
+          <li>Newsletter sponsor mention — name &amp; link in every newsletter, all 4 sites</li>
+          <li>Full monthly PDF report — impressions, clicks, reach, WhatsApp, social</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TIER 5 -->
+  <div class="tier-card dominant">
+    <div class="tier-header">
+      <div>
+        <div class="tier-badge" style="background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3);">👑 Tier 5</div>
+        <div class="tier-name">Dominant</div>
+        <div class="tier-tagline">Complete ownership of your category across the entire Bushbuckridge digital network.</div>
+      </div>
+      <div class="tier-price">
+        <div class="amount" style="color: var(--gold);">R8K–R15K</div>
+        <span class="period">per month — based on category</span>
+      </div>
+    </div>
+    <div class="tier-body">
+      <div class="feature-group">
+        <h5>Directory + WhatsApp</h5>
+        <ul class="feature-list">
+          <li>Everything in Network</li>
+          <li><strong style="color: var(--gold);">Category exclusivity</strong> — no competitor appears in your sector in the WhatsApp chatbot</li>
+          <li>WhatsApp Community — <strong>1 dedicated post every morning</strong> (daily, every day of the month)</li>
+          <li>Homepage hero sponsorship block on the directory</li>
+        </ul>
+
+        <div class="leaderboard-box">
+          <h6>👑 Leaderboard Access — Dominant</h6>
+          <div class="leaderboard-row">
+            <span>Directory Homepage</span>
+            <span class="lb-tag lb-exclusive">Dedicated — no rotation</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Your Category / Sector Page</span>
+            <span class="lb-tag lb-exclusive">Exclusive — no competitors shown</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>All 4 News Sites</span>
+            <span class="lb-tag lb-exclusive">Dedicated — no rotation</span>
+          </div>
+          <div class="leaderboard-row">
+            <span>Newsletter</span>
+            <span class="lb-tag lb-exclusive">Full-width banner, all newsletters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-group">
+        <h5>Premium Exclusives</h5>
+        <ul class="feature-list">
+          <li>Full-width newsletter banner — top of every newsletter, all 4 sites</li>
+          <li>Monthly Partner Content article — AI-assisted branded article, published on all 4 news sites and promoted on social</li>
+          <li>Quarterly performance review — formal data presentation with campaign recommendations</li>
+          <li>First right of renewal — contacted 60 days before contract end before slot is offered to anyone else</li>
+        </ul>
+
+        <div style="margin-top: 16px; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6;">
+          <strong style="color: var(--gold); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;">Designed for major brands</strong><br>
+          Dominant is ideal for banks, telecoms, supermarkets, insurance brands, and government departments who want to own a category and ensure no competitor gains ground in the Bushbuckridge market.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- COMPARISON + NOTES (new page)              -->
+<!-- ══════════════════════════════════════════ -->
+<div class="page page-break">
+  <div class="section-label">At a Glance</div>
+  <h2 class="section-title">Full Tier Comparison</h2>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width: 26%">Feature</th>
+        <th>⚪ Starter</th>
+        <th>🔵 Local</th>
+        <th>🟣 Community</th>
+        <th>🟡 Network</th>
+        <th>👑 Dominant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Monthly Price</td>
+        <td><span class="value" style="color: #22c55e;">Free</span></td>
+        <td><span class="value">R450</span></td>
+        <td><span class="value">R1,200</span></td>
+        <td><span class="value">R3,500</span></td>
+        <td><span class="value">R8K–R15K</span></td>
+      </tr>
+      <tr>
+        <td>Directory listing</td>
+        <td>Text only</td>
+        <td>Image + profile page</td>
+        <td>Image + profile</td>
+        <td>Featured badge</td>
+        <td>Featured + hero block</td>
+      </tr>
+      <tr>
+        <td>WhatsApp Chatbot</td>
+        <td>Bronze (text, last)</td>
+        <td>Silver (image, 2nd)</td>
+        <td>Silver (image, 2nd)</td>
+        <td>Gold (carousel, 1st)</td>
+        <td>Gold + exclusive</td>
+      </tr>
+      <tr>
+        <td>Spotlight Profile</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="check">✓</span> (3 rewrites)</td>
+        <td><span class="check">✓</span></td>
+        <td><span class="check">✓</span></td>
+      </tr>
+      <tr>
+        <td>Category page leaderboard</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>Priority, max 3</td>
+        <td>Priority, before T3</td>
+        <td>Exclusive</td>
+      </tr>
+      <tr>
+        <td>Directory homepage leaderboard</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>Rotation, max 4</td>
+        <td>Dedicated</td>
+      </tr>
+      <tr>
+        <td>Secondary page leaderboard</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="check">✓</span> max 6</td>
+        <td><span class="check">✓</span></td>
+        <td><span class="check">✓</span></td>
+      </tr>
+      <tr>
+        <td>News site leaderboard</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>Dedicated, all 4</td>
+      </tr>
+      <tr>
+        <td>News sidebar</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>1 site</td>
+        <td>All 4 sites</td>
+        <td>All 4 sites</td>
+      </tr>
+      <tr>
+        <td>In-feed sponsored post</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>All 4 sites</td>
+        <td>All 4 sites</td>
+      </tr>
+      <tr>
+        <td>Newsletter placement</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>Name + link mention</td>
+        <td>Full banner, all sites</td>
+      </tr>
+      <tr>
+        <td>WhatsApp Community slot</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>1 post/week</td>
+        <td>1 post/day</td>
+      </tr>
+      <tr>
+        <td>Social auto-post</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="check">✓</span></td>
+        <td><span class="check">✓</span> + branding</td>
+        <td><span class="check">✓</span> + branding</td>
+      </tr>
+      <tr>
+        <td>Partner Content article</td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td><span class="cross">✗</span></td>
+        <td>Monthly</td>
+      </tr>
+      <tr>
+        <td>Performance report</td>
+        <td><span class="cross">✗</span></td>
+        <td>Basic</td>
+        <td>Full PDF</td>
+        <td>Full PDF</td>
+        <td>Full PDF + quarterly review</td>
+      </tr>
+      <tr>
+        <td>Upsell welcome email</td>
+        <td><span class="check">✓</span></td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- NOTES -->
+  <div class="section-label" style="margin-top: 60px;">Important Information</div>
+
+  <div class="notes-grid">
+    <div class="note-card">
+      <h5>💰 Pricing & VAT</h5>
+      <p>All prices shown exclude VAT. VAT will apply once Ember Automations is VAT registered. Monthly, 6-month, and 12-month contract terms are available — discounts apply for longer commitments.</p>
+    </div>
+    <div class="note-card">
+      <h5>🔒 Slot Limits Are Real</h5>
+      <p>WhatsApp Community daily slots are limited to 2 per day across all Network and Dominant clients. Homepage leaderboard slots are capped at 4. Once full, new clients are waitlisted. Act early.</p>
+    </div>
+    <div class="note-card">
+      <h5>💬 WhatsApp API Note</h5>
+      <p>The WhatsApp Chatbot (directory) runs on the Meta Business API. Approval takes 2–4 weeks. This is handled by Ember Automations on your behalf — no additional cost to you.</p>
+    </div>
+    <div class="note-card">
+      <h5>🏆 Category Exclusivity</h5>
+      <p>Dominant tier category exclusivity means no competitor appears in your sector in the WhatsApp chatbot. Pricing varies by category size and competition. Contact us for a tailored quote.</p>
+    </div>
+    <div class="note-card">
+      <h5>📅 Contracts & Cancellation</h5>
+      <p>A 30-day written notice is required to cancel or downgrade. Dominant clients receive 60 days' first-right-of-renewal notice before their slot is offered to any other advertiser.</p>
+    </div>
+    <div class="note-card">
+      <h5>📊 Reports & Transparency</h5>
+      <p>All paid tiers from Local upward receive performance data. Network and Dominant clients receive a full automated PDF report monthly covering impressions, clicks, WhatsApp engagement, and social reach.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- BACK COVER                                 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="back-cover">
+  <h2>Ready to <span>Grow?</span></h2>
+  <p>Start free, or jump straight to the tier that fits your ambition. Our team will have you live within days.</p>
+
+  <div class="cta-row">
+    <div class="cta-item">
+      <label>Email</label>
+      <strong>[your@email.com]</strong>
+    </div>
+    <div class="cta-item">
+      <label>Phone / WhatsApp</label>
+      <strong>[your number]</strong>
+    </div>
+    <div class="cta-item">
+      <label>Website</label>
+      <strong>bushbuckridgedirectory.co.za</strong>
+    </div>
+  </div>
+
+  <div class="powered">Ember Automations (Pty) Ltd &bull; Powering Local Media, Intelligently &bull; White River, Mpumalanga</div>
+</div>
+
+</body>
+</html>
