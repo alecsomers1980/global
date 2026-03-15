@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 const hexagonData = [
   {
     id: 1,
-    image: "/images/Gallery/Culture/IMG_6334 (2).jpg",
+    image: "/images/home/AboutUS.JPG",
     className: "w-48 h-56 md:w-64 md:h-72",
     top: "5%",
     left: "15%",
@@ -16,7 +16,7 @@ const hexagonData = [
   },
   {
     id: 2,
-    image: "/images/Gallery/Sport/IMG_7306.jpg",
+    image: "/images/home/IMG_5214 (2).jpg",
     className: "w-40 h-48 md:w-56 md:h-64",
     top: "35%",
     left: "42%",
@@ -34,7 +34,7 @@ const hexagonData = [
   },
   {
     id: 4,
-    image: "/images/Gallery/Culture/IMG_6444.jpg",
+    image: "/images/home/IMG_9246.JPG",
     className: "w-36 h-42 md:w-48 md:h-54",
     top: "55%",
     left: "10%",
@@ -52,12 +52,21 @@ const hexagonData = [
   },
   {
     id: 6,
-    image: "/images/Gallery/Sport/Cricket 1st vs Baberton.jpg",
+    image: "/images/Gallery/Sport/IMG_5742.jpg",
     className: "w-42 h-50 md:w-56 md:h-68",
     top: "50%",
     left: "70%",
     delay: 0.5,
     zIndex: 12,
+  },
+  {
+    id: 7,
+    image: "/images/Gallery/Culture/IMG_6388.jpg",
+    className: "w-32 h-36 md:w-44 md:h-50",
+    top: "70%",
+    left: "70%",
+    delay: 0.7,
+    zIndex: 18,
   },
 ];
 

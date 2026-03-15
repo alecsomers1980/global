@@ -75,11 +75,11 @@ const allSubValues = [
 ];
 
 const associations = [
-  { name: "ISASA", full: "Independent Schools Assoc. of SA" },
-  { name: "SANESA", full: "SA National Equestrian Schools Assoc." },
-  { name: "LSEN", full: "Limpopo Schools Education Network" },
-  { name: "DBE", full: "Dept. of Basic Education" },
-  { name: "SACSA", full: "SA Competitive Schools Assoc." },
+  { name: "ISASA", image: "/images/assoc/isasa.jpg", full: "Independent Schools Assoc. of SA" },
+  { name: "IQAA", image: "/images/assoc/iqaa.jpg", full: "Independent Quality Assurance Agency" },
+  { name: "Eco Schools", image: "/images/assoc/echo school.jpg", full: "WESSA Eco-Schools" },
+  { name: "MySchool", image: "/images/assoc/my school.jpg", full: "MySchool MyVillage MyPlanet" },
+  { name: "WESSA", image: "/images/assoc/wessa.jpg", full: "Wildlife & Environment Society of SA" },
 ];
 
 const eventTypeColours: Record<string, string> = {
@@ -141,6 +141,9 @@ const galleryImages = [
   { src: "/images/Gallery/Pre School/IMG_9293.JPG", alt: "Pre-school fun", tall: true },
   { src: "/images/Gallery/Sport/IMG_8757.JPG", alt: "Athletics", tall: false },
   { src: "/images/Gallery/Academics/IMG_5317.jpg", alt: "Academic excellence", tall: false },
+  { src: "/images/Gallery/Academics/IMG_5264.jpg", alt: "Science lab", tall: true },
+  { src: "/images/Gallery/Sport/IMG_5711.jpg", alt: "Athletics track", tall: false },
+  { src: "/images/Gallery/Sport/IMG_6544.jpg", alt: "Swimming prep", tall: false },
 ];
 
 const testimonials = [
@@ -317,7 +320,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
             {/* Left: Poster Showcase */}
             <div className="lg:col-span-2 relative">
-              <div className="absolute -top-4 -left-4 w-full h-full bg-brand-gold/10 rounded-[3rem] -z-10" />
+              <div className="absolute -top-6 -left-6 w-full h-full border border-brand-gold/20 rounded-tr-[5rem] rounded-bl-[5rem] -z-10 transition-transform duration-700 group-hover:translate-x-2 group-hover:-translate-y-2" />
               <EventPosterSlider />
             </div>
 
@@ -509,20 +512,28 @@ export default function Home() {
           {/* Masonry Grid */}
           <div className="columns-2 md:columns-3 gap-4 space-y-4">
             {galleryImages.map((img, i) => (
-              <div
-                key={i}
-                className={`relative overflow-hidden rounded-[1.5rem] group cursor-pointer break-inside-avoid ${
-                  img.tall ? "h-80" : "h-52"
-                }`}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-brand-green/0 group-hover:bg-brand-green/40 transition-all duration-500 flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div key={i} className="relative mb-8 break-inside-avoid group">
+                {/* Decorative Frame Behind */}
+                <div className="absolute -top-3 -right-3 w-full h-full border border-brand-gold/20 rounded-2xl -z-10 transition-transform duration-700 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                
+                {/* Accent Glow */}
+                <div className="absolute -bottom-4 -left-4 w-1/2 h-1/2 bg-brand-green/5 rounded-2xl -z-10 blur-xl" />
+
+                {/* Main Image Container */}
+                <div className={`relative overflow-hidden shadow-xl border-2 border-white transition-all duration-700 cursor-pointer
+                  ${img.tall ? "h-80" : "h-52"}
+                  ${i % 2 === 0 ? "rounded-tr-[3rem] rounded-bl-[3rem]" : "rounded-tl-[3rem] rounded-br-[3rem]"}
+                  group-hover:scale-[1.03] group-hover:shadow-2xl`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover object-top group-hover:scale-110 transition-transform duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-brand-green/0 group-hover:bg-brand-green/40 transition-all duration-500 flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -633,12 +644,16 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-10 md:gap-20">
             {associations.map((assoc) => (
               <div key={assoc.name} className="flex flex-col items-center gap-2 group">
-                <div className="w-16 h-16 rounded-2xl border border-brand-green/10 bg-brand-cream flex items-center justify-center group-hover:border-brand-gold/40 transition-colors duration-400">
-                  <span className="text-xs font-black text-brand-green/60 group-hover:text-brand-green transition-colors text-center leading-tight px-2">
-                    {assoc.name}
-                  </span>
+                <div className="w-28 h-28 rounded-2xl border border-white/10 bg-white items-center justify-center group-hover:border-brand-gold/40 transition-colors duration-400 overflow-hidden p-4 flex shadow-sm">
+                  <Image
+                    src={assoc.image}
+                    alt={assoc.name}
+                    width={110}
+                    height={110}
+                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
                 </div>
-                <span className="text-[9px] uppercase tracking-[0.15em] text-brand-green/30 text-center max-w-[100px] leading-snug">
+                <span className="text-[9px] uppercase tracking-[0.15em] text-brand-green/40 text-center max-w-[100px] leading-snug">
                   {assoc.full}
                 </span>
               </div>

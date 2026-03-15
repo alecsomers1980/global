@@ -29,7 +29,7 @@ export default function SecondaryBanner({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center space-y-4 px-6">
+      <div className="relative z-10 text-center space-y-4 px-6 pt-16">
         <div className="w-12 h-1 bg-brand-gold mx-auto rounded-full" />
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
           {title}

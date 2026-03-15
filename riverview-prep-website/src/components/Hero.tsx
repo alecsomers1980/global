@@ -59,14 +59,11 @@ export default function Hero() {
 
       <div className="container mx-auto px-6 relative z-20 pt-24">
         <div className="max-w-4xl mx-auto text-center hero-content">
-          <div className="inline-flex items-center gap-3 mb-8 px-5 py-2 rounded-full border border-brand-gold/30 bg-brand-gold/5 backdrop-blur-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
-            <span className="telemetry-monospace text-brand-gold text-[10px]">ESTABLISHED IN 1996 · MALELANE, MPUMALANGA</span>
-          </div>
 
-          <h1 className="text-5xl md:text-8xl font-bold text-white tracking-tight mb-8 leading-[0.9]">
-            Heritage is the <br />
-            <span className="drama-text text-brand-gold text-6xl md:text-9xl">INSPIRATION.</span>
+
+          <h1 className="text-4xl md:text-7xl font-bold text-white tracking-tight mb-8 leading-[0.9]">
+            Where Heritage <br />
+            Inspires <span className="drama-text text-brand-gold text-5xl md:text-8xl">EXCELLENCE.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-12 leading-relaxed">

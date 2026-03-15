@@ -12,10 +12,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 const navLinks = [
   { name: "About", href: "/about" },
-  { name: "News", href: "/news" },
   { name: "Admissions", href: "/admissions" },
   { name: "Academics", href: "/academics" },
-  { name: "Community", href: "/parent-portal" },
+  { name: "Co-Curriculum", href: "/beyond-the-classroom" },
+  { name: "News", href: "/news" },
+  { name: "Alumni", href: "/alumni" },
 ];
 
 export default function Header() {
@@ -25,7 +26,8 @@ export default function Header() {
   useEffect(() => {
     const trigger = ScrollTrigger.create({
       start: 50,
-      onToggle: (self) => setIsScrolled(self.isActive),
+      onEnter: () => setIsScrolled(true),
+      onLeaveBack: () => setIsScrolled(false),
     });
 
     return () => trigger.kill();
@@ -44,7 +46,6 @@ export default function Header() {
         ease: "power3.out",
       });
       gsap.to(".nav-link", { color: "#1B5E20", duration: 0.4 });
-      gsap.to(".header-logo", { filter: "brightness(1)", duration: 0.4 });
     } else {
       gsap.to(".floating-island", {
         backgroundColor: "transparent",
@@ -57,7 +58,6 @@ export default function Header() {
         ease: "power3.out",
       });
       gsap.to(".nav-link", { color: "#FFFFFF", duration: 0.4 });
-      gsap.to(".header-logo", { filter: "brightness(10)", duration: 0.4 });
     }
   }, [isScrolled]);
 
@@ -72,13 +72,13 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <Image
-            src="/images/logo.png"
+            src={isScrolled ? "/images/logo.png" : "/images/logo_t.png"}
             alt="Riverview Preparatory School"
             width={140}
             height={40}
             className={cn(
-              "header-logo h-10 w-auto object-contain transition-all duration-400",
-              isScrolled ? "" : "brightness-[10]"
+              "header-logo w-auto object-contain transition-all duration-500",
+              isScrolled ? "h-10" : "h-32"
             )}
             priority
           />

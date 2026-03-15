@@ -15,7 +15,7 @@ const eventBanners = [
   },
   {
     id: 2,
-    src: "https://images.unsplash.com/photo-1587132137056-bfbf0166836e?q=80&w=1200&auto=format&fit=crop",
+    src: "/images/events/Golf.png",
     title: "Annual Golf Day 2026",
     subtitle: "Join us at Malelane Golf Club for our fundraiser.",
     tag: "Fundraiser",
@@ -23,7 +23,7 @@ const eventBanners = [
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1501555088652-02191be7164b?q=80&w=1200&auto=format&fit=crop",
+    src: "/images/events/Kruger.png",
     title: "Kruger National Park Camp",
     subtitle: "Grade 6 & 7 wildlife and team building retreat.",
     tag: "Academic",
@@ -52,7 +52,7 @@ export default function EventPosterSlider() {
   const activeBanner = eventBanners[currentIndex];
 
   return (
-    <div className="relative aspect-[3/4.2] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white group">
+    <div className="relative aspect-[3/4.2] rounded-tr-[5rem] rounded-bl-[5rem] overflow-hidden shadow-2xl border-4 border-white group">
       
       {/* Absolute image layers for fade effect */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isTransitioning ? 'opacity-30' : 'opacity-100'}`}>
