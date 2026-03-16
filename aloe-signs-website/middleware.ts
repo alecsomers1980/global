@@ -1,4 +1,4 @@
-﻿import { createServerClient } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   const userEmail = user.email || '';
 
   if (isAdminRoute) {
-    if (userEmail === 'view@aloesigns.co.za' || !userEmail.endsWith('@aloesigns.co.za')) {
+    if (userEmail === 'view@aloesigns.co.za' /* || !userEmail.endsWith('@aloesigns.co.za') */) {
       return NextResponse.redirect(new URL('/portal/', request.url));
     }
   }

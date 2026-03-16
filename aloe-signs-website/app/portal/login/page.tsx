@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import { createClientSupabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ export default function PortalLogin() {
         const userEmail = data.user?.email;
         if (userEmail === 'view@aloesigns.co.za') {
             router.push('/home');
-        } else if (userEmail?.endsWith('@aloesigns.co.za')) {
+        } else if (userEmail?.endsWith('@aloesigns.co.za') || userEmail?.startsWith('info@') || userEmail === 'admin@rvr.co.za') {
             router.push('/portal/admin');
         } else {
             router.push('/portal/');

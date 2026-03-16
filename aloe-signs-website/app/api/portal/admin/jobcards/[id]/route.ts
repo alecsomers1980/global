@@ -1,0 +1,113 @@
+import { NextResponse } from 'next/server';
+import { sql } from '@vercel/postgres';
+import { createServerSupabase } from '@/lib/supabase-server';
+
+export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
+    try {
+        const supabase = await createServerSupabase();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user /* || (!user.email?.endsWith('@aloesigns.co.za') && user.email !== 'view@aloesigns.co.za') */) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        const { id } = await context.params;
+        const { rows } = await sql`SELECT * FROM jobcards WHERE id = ${id}`;
+        if (rows.length === 0) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+        return NextResponse.json({ jobcard: rows[0] });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
+}
+
+export async function PUT(req: Request, context: { params: Promise<{ id: string }> }) {
+    try {
+        const supabase = await createServerSupabase();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user /* || (!user.email?.endsWith('@aloesigns.co.za') && user.email !== 'view@aloesigns.co.za') */) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        const { id } = await context.params;
+        const body = await req.json();
+
+        const { rows } = await sql`
+            UPDATE jobcards SET
+                updated_at = CURRENT_TIMESTAMP,
+                invoice = ${body.invoice ?? null},
+                address = ${body.address ?? null},
+                email = ${body.email ?? null},
+                company = ${body.company ?? null},
+                contact_name = ${body.contact_name ?? null},
+                contact_phone = ${body.contact_phone ?? null},
+                entry_number = ${body.entry_number ?? null},
+                date = ${body.date ?? null},
+                design_notes = ${body.design_notes ?? null},
+                prod_flatbed = ${body.prod_flatbed ?? false},
+                prod_digital = ${body.prod_digital ?? false},
+                prod_vinyl_cut = ${body.prod_vinyl_cut ?? false},
+                prod_screen = ${body.prod_screen ?? false},
+                prod_applicate = ${body.prod_applicate ?? false},
+                prod_engineer = ${body.prod_engineer ?? false},
+                prod_outsource = ${body.prod_outsource ?? false},
+                track_quote = ${body.track_quote ?? false},
+                track_enter = ${body.track_enter ?? false},
+                track_send_proof = ${body.track_send_proof ?? false},
+                track_on_hold = ${body.track_on_hold ?? false},
+                track_approved = ${body.track_approved ?? false},
+                track_deliver = ${body.track_deliver ?? false},
+                track_installation = ${body.track_installation ?? false},
+                track_courier = ${body.track_courier ?? false},
+                track_deposit = ${body.track_deposit ?? false},
+                track_purchase_order = ${body.track_purchase_order ?? false},
+                track_complete = ${body.track_complete ?? false},
+                track_complete_by = ${body.track_complete_by ?? null},
+                status = ${body.status ?? 'Quoted'},
+                sub_total = ${body.sub_total || null},
+                vat_total = ${body.vat_total || null},
+                total = ${body.total || null},
+                order_no = ${body.order_no ?? null},
+                pro_inv = ${body.pro_inv ?? null},
+                final_invoice = ${body.final_invoice ?? null},
+                deposit_paid = ${body.deposit_paid ?? false},
+                cash_paid = ${body.cash_paid ?? false},
+                files_notes = ${body.files_notes ?? null},
+                material = ${body.material ?? null},
+                deliver_bakkie = ${body.deliver_bakkie ?? false},
+                deliver_truck = ${body.deliver_truck ?? false},
+                deliver_trailer = ${body.deliver_trailer ?? false},
+                install_generator = ${body.install_generator ?? false},
+                install_welder = ${body.install_welder ?? false},
+                install_shovels = ${body.install_shovels ?? false},
+                install_additional = ${body.install_additional ?? null},
+                track_collect = ${body.track_collect ?? false},
+                compiled_by = ${body.compiled_by ?? null},
+                materials_json = ${body.materials_json ? JSON.stringify(body.materials_json) : null},
+                files_json = ${body.files_json ? JSON.stringify(body.files_json) : null}
+            WHERE id = ${id}
+            RETURNING *
+        `;
+
+        return NextResponse.json({ jobcard: rows[0] });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
+    try {
+        const supabase = await createServerSupabase();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user /* || (!user.email?.endsWith('@aloesigns.co.za') && user.email !== 'view@aloesigns.co.za') */) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        const { id } = await context.params;
+        await sql`DELETE FROM jobcards WHERE id = ${id}`;
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("DELETE [id] jobcard ERROR:", error);
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    }
+}

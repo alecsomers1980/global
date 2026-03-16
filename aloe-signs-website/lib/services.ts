@@ -1,7 +1,8 @@
 import {
     Truck, Building2, Store, MapPin, Frame, FileText, Tag, PenTool,
     Car, Lightbulb, Palette, Shield, CheckCircle, Users, Clock, Award,
-    Maximize, Image, Flag, AlertTriangle, Speaker, Boxes, Package, Target
+    Maximize, Image, Flag, AlertTriangle, Speaker, Boxes, Package, Target,
+    Printer, Box
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 

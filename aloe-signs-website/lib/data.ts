@@ -31,7 +31,7 @@ export const productsList: Product[] = [
     // Billboards
     {
         id: 'billboards',
-        name: 'Billboard Installations',
+        name: 'Billboard Design, Print and Installation',
         category: 'billboards',
         description: 'Complete billboard manufacturing and installation service. Build an unmissable brand presence with our massive outdoor formats.\n\n*Excluding VAT\n*Includes installation on poles in & around JHB + PTA',
         size: 'Various Sizes',
@@ -62,7 +62,7 @@ export const productsList: Product[] = [
         price: 450,
         originalPrice: 3565,
         discount: 87,
-        image: '/images/products/estate-agent-main.jpg',
+        image: '/images/estate/600x400.jpg',
         features: [
             '5mm correx material',
             'Full color printing',
@@ -90,7 +90,7 @@ export const productsList: Product[] = [
         price: 950,
         originalPrice: 5190,
         discount: 85,
-        image: '/images/products/estate-agent-main.jpg',
+        image: '/images/estate/800x600.jpg',
         features: [
             '5mm correx material',
             'Full color printing',
@@ -118,7 +118,7 @@ export const productsList: Product[] = [
         price: 2130,
         originalPrice: 12710,
         discount: 87,
-        image: '/images/products/estate-agent-main.jpg',
+        image: '/images/estate/1200x800.jpg',
         features: [
             '5mm correx material',
             'Full color printing',

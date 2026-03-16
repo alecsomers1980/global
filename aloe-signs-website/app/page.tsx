@@ -1,10 +1,25 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LayoutGrid, Lock, Upload, ArrowRight } from 'lucide-react';
+import { createClientSupabase } from '@/lib/supabase';
 
 export default function UnderConstruction() {
+    const [user, setUser] = useState<any>(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const supabase = createClientSupabase();
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setUser(user);
+            if (user?.email) {
+                const isStaff = user.email.endsWith('@aloesigns.co.za') && user.email !== 'view@aloesigns.co.za';
+                setIsAdmin(isStaff);
+            }
+        });
+    }, []);
     return (
         <div className="min-h-[100dvh] bg-charcoal text-white flex flex-col relative overflow-x-hidden font-outfit">
             {/* Background Aesthetic */}
@@ -69,9 +84,9 @@ export default function UnderConstruction() {
                         </p>
                     </Link>
 
-                    {/* Staff Access */}
+                    {/* Staff Access / Admin Portal */}
                     <Link
-                        href="/portal/admin/login"
+                        href={isAdmin ? "/portal/admin" : user ? "/portal" : "/portal/login"}
                         className="group p-8 glass-card rounded-[2rem] border border-white/10 hover:border-aloe-green/50 transition-all duration-500 text-left relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-20 transition-opacity">
@@ -81,11 +96,15 @@ export default function UnderConstruction() {
                             <Lock size={24} />
                         </div>
                         <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                            Staff Login
+                            {isAdmin ? 'Admin Portal' : user ? 'Client Portal' : 'Staff Login'}
                             <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
                         </h3>
                         <p className="text-light-grey/60 text-sm leading-relaxed">
-                            Internal access for order management and file downloads.
+                            {isAdmin 
+                                ? 'Access the administrative dashboard and order management.' 
+                                : user 
+                                ? 'Go to your dashboard to manage artwork and view proofs.' 
+                                : 'Internal access for order management and file downloads.'}
                         </p>
                     </Link>
 
