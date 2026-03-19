@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Heart, Shield, BookOpen, Star, Feather, Award, Leaf } from "lucide-react";
+import { Heart, Shield, Feather, Leaf } from "lucide-react";
 import SecondaryBanner from "@/components/SecondaryBanner";
 
 export const metadata = {

@@ -6,8 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SecondaryBanner from "@/components/SecondaryBanner";
 import { 
-  Trophy, Music, Heart, Star, Shield,
-  Download, FileText, Quote, BookOpen, Compass
+  Trophy, Music, Star, Shield,
+  Download, Quote, BookOpen, Compass
 } from "lucide-react";
 
 const sportsList = [

@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SecondaryBanner from "@/components/SecondaryBanner";
 import { 
-  Heart, Star, BookOpen, Shield, 
+  Heart, Shield, 
   ChevronDown, FileText, Download,
   Compass, Lightbulb, Users
 } from "lucide-react";

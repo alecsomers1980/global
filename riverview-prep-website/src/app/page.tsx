@@ -7,9 +7,6 @@ import HexagonShowcase from "@/components/HexagonShowcase";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import EventPosterSlider from "@/components/EventPosterSlider";
 import {
-  BookOpen,
-  Users,
-  Trophy,
   Calendar,
   ArrowRight,
   Shield,
@@ -61,18 +58,6 @@ const coreValues = [
   },
 ];
 
-const allSubValues = [
-  "Dignity and Respect",
-  "Humour",
-  "Transparency",
-  "Motivation",
-  "Consistency",
-  "Loyalty",
-  "Trustworthiness",
-  "Hard Work",
-  "Self-worth and Growth",
-  "Justice and Fairness",
-];
 
 const associations = [
   { name: "ISASA", image: "/images/assoc/isasa.jpg", full: "Independent Schools Assoc. of SA" },

@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { Shield, Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
 
 const footerLinks = [
   {
@@ -33,20 +34,30 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Column */}
           <div className="space-y-6">
-            <Link href="/" className="flex items-center gap-2">
-              <Shield className="w-8 h-8 text-brand-gold" />
-              <span className="font-bold tracking-tight text-xl uppercase">
-                Riverview <span className="drama-text opacity-90">Prep</span>
-              </span>
+            <Link href="/" className="flex items-center gap-4 group">
+              <Image 
+                src="/images/logo_t.png" 
+                alt="Riverview Preparatory School Logo" 
+                width={50} 
+                height={50} 
+                className="h-auto w-auto brightness-0 invert"
+                priority
+              />
+              <div className="flex flex-col">
+                <span className="font-bold text-lg leading-tight group-hover:text-brand-gold transition-colors">Riverview</span>
+                <span className="font-light text-[10px] tracking-[0.2em] uppercase opacity-70 group-hover:text-brand-gold transition-colors">Preparatory School</span>
+              </div>
             </Link>
-            <p className="text-white/60 text-sm leading-relaxed max-w-xs">
+            
+            <p className="text-white/60 text-xs leading-relaxed max-w-xs">
               Fostering cognitive, physical, emotional, and social excellence in the heart of Malelane since 1996.
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-colors">
-                <Facebook className="w-5 h-5" />
+
+            <div className="flex items-center gap-4 pt-2">
+              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
+                <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-colors">
+              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>

@@ -16,7 +16,6 @@ interface NewsletterHeaderProps {
 export default function NewsletterHeader({
   issue,
   date,
-  category,
   term,
   title,
   highlights = [],

@@ -1,24 +1,15 @@
 'use client';
 
-import React, { useState } from "react";
-import Image from "next/image";
+import React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SecondaryBanner from "@/components/SecondaryBanner";
 import { 
-  Heart, Star, BookOpen, Quote, 
-  Send, Calendar, Award, Camera
+  Send, Award, Camera
 } from "lucide-react";
 
 export default function AlumniPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    yearLeft: '',
-    currentSatus: '',
-    memory: '',
-    subscribe: false
-  });
+  // State for form data (removed to fix lint errors, can be restored if needed for controlled inputs)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

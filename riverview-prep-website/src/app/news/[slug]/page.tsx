@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Calendar,
-  MapPin,
   Trophy,
   BookOpen,
   Users,
