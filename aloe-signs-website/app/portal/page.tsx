@@ -11,12 +11,16 @@ interface Proof { id: string; original_name: string; status: string; storage_pat
 interface Job { id: string; status: string; created_at: string; updated_at: string; print_job_files: JobFile[]; proofs: Proof[]; }
 
 const SC: Record<string, { bg: string; text: string; border: string }> = {
-    'Uploaded': { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
-    'Processing': { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' },
-    'Awaiting Proof Signoff': { bg: '#fce7f3', text: '#9d174d', border: '#f9a8d4' },
-    'Completed': { bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },
+    'Uploaded': { bg: 'rgba(59,130,246,0.1)', text: '#60a5fa', border: 'rgba(59,130,246,0.2)' },
+    'Processing': { bg: 'rgba(245,158,11,0.1)', text: '#fbbf24', border: 'rgba(245,158,11,0.2)' },
+    'Awaiting Proof Signoff': { bg: 'rgba(236,72,153,0.1)', text: '#f472b6', border: 'rgba(236,72,153,0.2)' },
+    'Completed': { bg: 'rgba(16,185,129,0.1)', text: '#34d399', border: 'rgba(16,185,129,0.2)' },
 };
-const PS: Record<string, { bg: string; text: string }> = { 'Pending': { bg: '#fef3c7', text: '#92400e' }, 'Edit Required': { bg: '#fee2e2', text: '#991b1b' }, 'Approved': { bg: '#d1fae5', text: '#065f46' } };
+const PS: Record<string, { bg: string; text: string }> = { 
+    'Pending': { bg: 'rgba(245,158,11,0.2)', text: '#fbbf24' }, 
+    'Edit Required': { bg: 'rgba(239,68,68,0.2)', text: '#f87171' }, 
+    'Approved': { bg: 'rgba(16,185,129,0.2)', text: '#34d399' } 
+};
 
 export default function PortalDashboard() {
     const router = useRouter();
@@ -46,44 +50,44 @@ export default function PortalDashboard() {
     }
 
     const proofJobs = jobs.filter(j => j.status === 'Awaiting Proof Signoff' && j.proofs.some(p => p.status === 'Pending'));
-    const card: React.CSSProperties = { background: '#fff', borderRadius: '12px', padding: '28px', marginBottom: '20px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', border: '1px solid #e5e7eb' };
+    const card: React.CSSProperties = { background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '28px', marginBottom: '20px', backdropFilter: 'blur(10px)', border: '1px solid rgba(132,204,22,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f3f4f6' }}>
-            <div style={{ background: '#2d2d2d', padding: '20px 0' }}>
+        <div style={{ minHeight: '100vh', background: 'transparent' }}>
+            <div style={{ background: 'rgba(0,0,0,0.4)', padding: '20px 0', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <Image src="/aloe-logo.png" alt="Aloe Signs" width={140} height={46} style={{ objectFit: 'contain' }} />
-                        <span style={{ color: '#9ca3af', fontSize: '13px', borderLeft: '1px solid #4b5563', paddingLeft: '16px' }}>Client Portal</span>
+                        <Image src="/aloe-logo.png" alt="Aloe Signs" width={140} height={46} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                        <span style={{ color: '#84cc16', fontSize: '13px', borderLeft: '1px solid rgba(255,b,c, 0.15)', paddingLeft: '16px', fontWeight: 600 }}>Client Portal</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <span style={{ color: '#9ca3af', fontSize: '13px' }}>{userName}</span>
-                        <button onClick={handleSignOut} style={{ background: 'transparent', border: '1px solid #6b7280', color: '#9ca3af', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}>Sign Out</button>
+                        <button onClick={handleSignOut} style={{ background: 'transparent', border: '1px solid rgba(132,204,22,0.3)', color: '#84cc16', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>Sign Out</button>
                     </div>
                 </div>
             </div>
             <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
                     <div>
-                        <h1 style={{ margin: '0 0 4px 0', fontSize: '26px', fontWeight: 700, color: '#2d2d2d' }}>Welcome{userName ? `, ${userName.split(' ')[0]}` : ''} 👋</h1>
-                        <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>Manage your print jobs and review proofs</p>
+                        <h1 style={{ margin: '0 0 4px 0', fontSize: '26px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>Welcome{userName ? `, ${userName.split(' ')[0]}` : ''} 👋</h1>
+                        <p style={{ margin: 0, color: '#9ca3af', fontSize: '14px' }}>Manage your print jobs and review proofs</p>
                     </div>
-                    <Link href="/portal/upload/artwork" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>＋ Upload Artwork</Link>
+                    <Link href="/portal/upload/artwork" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#84cc16', color: '#0a0a0a', fontWeight: 700, padding: '14px 28px', borderRadius: '10px', textDecoration: 'none', fontSize: '15px', boxShadow: '0 4px 24px rgba(132,204,22,0.3)' }}>＋ Upload Artwork</Link>
                 </div>
 
                 {proofJobs.length > 0 && (
                     <div style={{ marginBottom: '36px' }}>
-                        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🎨 Proofs Awaiting Your Signoff <span style={{ background: '#fce7f3', color: '#9d174d', fontSize: '12px', fontWeight: 700, padding: '3px 10px', borderRadius: '99px' }}>{proofJobs.length}</span></h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>🎨 Proofs Awaiting Your Signoff <span style={{ background: 'rgba(132,204,22,0.2)', color: '#84cc16', border: '1px solid rgba(132,204,22,0.3)', fontSize: '12px', fontWeight: 700, padding: '3px 10px', borderRadius: '99px' }}>{proofJobs.length}</span></h2>
                         {proofJobs.map(job => job.proofs.filter(p => p.status === 'Pending').map(proof => (
-                            <div key={proof.id} style={{ ...card, borderLeft: '4px solid #f472b6' }}>
+                            <div key={proof.id} style={{ ...card, borderLeft: '4px solid #84cc16' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
                                     <div>
-                                        <p style={{ margin: '0 0 4px 0', fontWeight: 700, color: '#2d2d2d', fontSize: '16px' }}>🎨 {proof.original_name}</p>
+                                        <p style={{ margin: '0 0 4px 0', fontWeight: 700, color: '#fff', fontSize: '16px' }}>🎨 {proof.original_name}</p>
                                         <p style={{ margin: 0, color: '#9ca3af', fontSize: '12px' }}>Uploaded {new Date(proof.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                     </div>
                                     <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button onClick={() => openLightbox(proof.storage_path)} style={{ background: '#f3f4f6', border: '1px solid #d1d5db', color: '#374151', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>👁️ View</button>
-                                        <button onClick={() => downloadFile(proof.storage_path, proof.original_name)} style={{ background: '#f3f4f6', border: '1px solid #d1d5db', color: '#374151', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>⬇️ Download</button>
+                                        <button onClick={() => openLightbox(proof.storage_path)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>👁️ View</button>
+                                        <button onClick={() => downloadFile(proof.storage_path, proof.original_name)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>⬇️ Download</button>
                                     </div>
                                 </div>
                                 {proof.proof_comments?.length > 0 && <div style={{ marginBottom: '12px' }}>{proof.proof_comments.map(c => (<div key={c.id} style={{ background: c.is_admin ? '#f0fce4' : '#f3f4f6', padding: '10px 14px', borderRadius: '8px', marginBottom: '6px', fontSize: '13px' }}><strong style={{ color: c.is_admin ? '#84cc16' : '#6b7280' }}>{c.is_admin ? 'Admin' : 'You'}:</strong> {c.comment}</div>))}</div>}
@@ -103,10 +107,10 @@ export default function PortalDashboard() {
                 )}
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '16px' }}>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2d2d2d', margin: 0 }}>📋 Artwork Uploaded</h2>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#fff', margin: 0 }}>📋 Artwork Uploaded</h2>
                     <div style={{ flex: '1 1 200px', maxWidth: '300px' }}>
                         <div style={{ position: 'relative' }}>
-                            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }}>🔍</span>
+                            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }}>🔍</span>
                             <input
                                 type="text"
                                 placeholder="Search by file name or description..."
@@ -116,7 +120,9 @@ export default function PortalDashboard() {
                                     width: '100%',
                                     padding: '8px 16px 8px 36px',
                                     borderRadius: '8px',
-                                    border: '1px solid #d1d5db',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    background: 'rgba(255,255,255,0.04)',
+                                    color: '#fff',
                                     fontSize: '14px',
                                     outline: 'none',
                                     boxSizing: 'border-box'
@@ -126,9 +132,9 @@ export default function PortalDashboard() {
                     </div>
                 </div>
 
-                {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#9ca3af' }}>Loading…</div>)
+                {loading ? (<div style={{ textAlign: 'center', padding: '60px 20px', color: '#6b7280' }}>Loading…</div>)
                     : jobs.length === 0 ? (
-                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#2d2d2d', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#6b7280', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#1a1a1a', color: '#fff', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
+                        <div style={card}><div style={{ textAlign: 'center', padding: '40px 20px' }}><div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div><h3 style={{ color: '#fff', margin: '0 0 8px 0' }}>No artwork yet</h3><p style={{ color: '#9ca3af', marginBottom: '24px' }}>Upload your first artwork.</p><Link href="/portal/upload/artwork" style={{ background: '#84cc16', color: '#0a0a0a', fontWeight: 700, padding: '12px 28px', borderRadius: '8px', textDecoration: 'none' }}>＋ Upload Artwork</Link></div></div>
                     ) : (() => {
                         const filteredJobs = jobs.filter(job => {
                             if (!searchQuery) return true;
@@ -165,17 +171,17 @@ export default function PortalDashboard() {
                                             {job.print_job_files?.map((f, idx) => (
                                                 <div key={f.id} style={{
                                                     padding: '12px',
-                                                    background: '#f9fafb',
+                                                    background: 'rgba(255,255,255,0.02)',
                                                     borderRadius: '8px',
-                                                    border: '1px solid #f3f4f6',
+                                                    border: '1px solid rgba(255,255,255,0.04)',
                                                     marginBottom: idx !== job.print_job_files.length - 1 ? '8px' : '0'
                                                 }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                                                         <span style={{ fontSize: '16px' }}>🎨</span>
-                                                        <span style={{ fontWeight: 700, color: '#374151', fontSize: '14px' }}>{f.display_name || f.original_name}</span>
+                                                        <span style={{ fontWeight: 700, color: '#fff', fontSize: '14px' }}>{f.display_name || f.original_name}</span>
                                                     </div>
                                                     {f.description && (
-                                                        <p style={{ margin: '0 0 0 24px', color: '#6b7280', fontSize: '13px', lineHeight: '1.4' }}>
+                                                        <p style={{ margin: '0 0 0 24px', color: '#9ca3af', fontSize: '13px', lineHeight: '1.4' }}>
                                                             {f.description}
                                                         </p>
                                                     )}
@@ -186,15 +192,15 @@ export default function PortalDashboard() {
                                             {job.proofs?.map(p => {
                                                 const ps = PS[p.status] || PS['Pending'];
                                                 return (
-                                                    <div key={p.id} style={{ marginTop: '12px', padding: '12px', background: '#f0fce4', borderRadius: '8px', border: '1px solid #d9f99d', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                                                    <div key={p.id} style={{ marginTop: '12px', padding: '12px', background: 'rgba(132,204,22,0.05)', borderRadius: '8px', border: '1px solid rgba(132,204,22,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                             <span style={{ fontSize: '16px' }}>👁️</span>
-                                                            <span style={{ fontWeight: 600, color: '#3f6212', fontSize: '13px' }}>Proof: {p.original_name}</span>
+                                                            <span style={{ fontWeight: 600, color: '#84cc16', fontSize: '13px' }}>Proof: {p.original_name}</span>
                                                             <span style={{ background: ps.bg, color: ps.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700 }}>{p.status}</span>
                                                         </div>
                                                         <div style={{ display: 'flex', gap: '8px' }}>
-                                                            <button onClick={() => openLightbox(p.storage_path)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>View</button>
-                                                            <button onClick={() => downloadFile(p.storage_path, p.original_name)} style={{ background: '#fff', border: '1px solid #bef264', color: '#4d7c0f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Download</button>
+                                                            <button onClick={() => openLightbox(p.storage_path)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>View</button>
+                                                            <button onClick={() => downloadFile(p.storage_path, p.original_name)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>Download</button>
                                                         </div>
                                                     </div>
                                                 );

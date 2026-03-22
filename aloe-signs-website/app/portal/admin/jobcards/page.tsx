@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-    'Quoted': { bg: '#f3f4f6', text: '#4b5563', border: '#d1d5db' },
-    'Approved': { bg: '#dbeafe', text: '#1d4ed8', border: '#93c5fd' },
-    'In Production': { bg: '#fef3c7', text: '#92400e', border: '#fcd34d' },
-    'On Hold': { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' },
-    'Completed': { bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },
+    'Quoted': { bg: 'rgba(75,85,99,0.2)', text: '#9ca3af', border: 'rgba(75,85,99,0.3)' },
+    'Approved': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
+    'In Production': { bg: 'rgba(245,158,11,0.2)', text: '#fbbf24', border: 'rgba(245,158,11,0.3)' },
+    'On Hold': { bg: 'rgba(239,68,68,0.2)', text: '#f87171', border: 'rgba(239,68,68,0.3)' },
+    'Completed': { bg: 'rgba(16,185,129,0.2)', text: '#34d399', border: 'rgba(16,185,129,0.3)' },
 };
 
 export default function JobcardsListPage() {
@@ -91,16 +91,16 @@ export default function JobcardsListPage() {
     });
 
     return (
-        <div className="min-h-[100dvh] bg-[#f3f4f6] font-outfit">
+        <div className="min-h-[100dvh] bg-transparent font-inter">
             {/* Header */}
-            <div className="bg-[#2d2d2d] py-5">
+            <div className="bg-black/40 backdrop-blur-md border-b border-white/5 py-5">
                 <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Image src="/aloe-logo.png" alt="Aloe Signs" width={140} height={46} className="object-contain" />
-                        <span className="text-amber-500 text-[13px] font-bold border-l border-gray-600 pl-4">⚙️ Admin Portal</span>
+                        <Image src="/aloe-logo.png" alt="Aloe Signs" width={140} height={46} className="object-contain filter brightness-0 invert" />
+                        <span className="text-[#84cc16] text-[13px] font-bold border-l border-white/10 pl-4">⚙️ Admin Portal</span>
                         <Link href="/portal/admin" className="text-gray-400 text-[13px] ml-4 hover:text-white transition-colors">← Back to Hub</Link>
                     </div>
-                    <button onClick={handleSignOut} className="bg-transparent border border-gray-500 text-gray-400 py-2 px-4 rounded-md cursor-pointer text-[13px] hover:text-white hover:border-white transition-colors">
+                    <button onClick={handleSignOut} className="bg-transparent border border-white/20 text-gray-400 py-2 px-4 rounded-md cursor-pointer text-[13px] hover:text-white hover:border-white transition-colors">
                         Sign Out
                     </button>
                 </div>
@@ -109,39 +109,39 @@ export default function JobcardsListPage() {
             <div className="max-w-[1200px] mx-auto px-5 py-8">
                 <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-[#2d2d2d] m-0">Production Jobcards</h1>
-                        <p className="text-gray-500 mt-1">Manage physical workflows and production stages.</p>
+                        <h1 className="text-3xl font-extrabold text-[#fff] m-0 letter-spacing-[-0.5px]">Production Jobcards</h1>
+                        <p className="text-gray-400 mt-1 text-sm">Manage physical workflows and production stages.</p>
                     </div>
-                    <button onClick={createNewJobcard} className="bg-[#1a1a1a] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-black transition-colors">
+                    <button onClick={createNewJobcard} className="bg-[#84cc16] text-[#0a0a0a] font-bold py-3 px-6 rounded-lg shadow-[0_4px_24px_rgba(132,204,22,0.3)] hover:bg-[#a3e635] hover:shadow-[0_4px_32px_rgba(132,204,22,0.4)] transition-all">
                         ＋ New Jobcard
                     </button>
                 </div>
 
                 {/* Search & Tabs */}
                 <div className="flex flex-wrap gap-4 mb-8 justify-between items-center">
-                    <div className="flex bg-gray-200 p-1 rounded-lg">
+                    <div className="flex bg-white/5 border border-white/10 p-1 rounded-lg backdrop-blur-md">
                         <button 
                             onClick={() => setViewMode('active')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-colors ${viewMode === 'active' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${viewMode === 'active' ? 'bg-[#84cc16] text-[#0a0a0a] shadow-md' : 'text-gray-400 hover:text-white'}`}
                         >
                             Active Jobs
                         </button>
                         <button 
                             onClick={() => setViewMode('completed')}
-                            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-colors ${viewMode === 'completed' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${viewMode === 'completed' ? 'bg-[#84cc16] text-[#0a0a0a] shadow-md' : 'text-gray-400 hover:text-white'}`}
                         >
                             Completed Jobs
                         </button>
                     </div>
 
                     <div className="relative w-full md:w-80">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
                         <input
                             type="text"
                             placeholder="Search company, name, order..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-aloe-green/50"
+                            className="w-full py-2 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50"
                         />
                     </div>
                 </div>
@@ -150,17 +150,17 @@ export default function JobcardsListPage() {
                 {loading ? (
                     <div className="text-center py-16 text-gray-400">Loading Jobcards...</div>
                 ) : filteredJobcards.length === 0 ? (
-                    <div className="text-center py-16 text-gray-400 bg-white rounded-xl border border-gray-200">
+                    <div className="text-center py-16 text-gray-400 bg-white/3 backdrop-blur-md border border-white/10 rounded-xl">
                         <div className="text-4xl mb-4">📝</div>
-                        <h3 className="text-gray-800 font-bold mb-2">No jobcards found</h3>
-                        <p className="text-sm">Create a new jobcard to start tracking production.</p>
+                        <h3 className="text-white font-bold mb-2">No jobcards found</h3>
+                        <p className="text-sm text-gray-400">Create a new jobcard to start tracking production.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-4">
                         {filteredJobcards.map(jc => {
                             const sc = STATUS_COLORS[jc.status] || STATUS_COLORS['Quoted'];
                             return (
-                                <Link href={`/portal/admin/jobcards/${jc.id}`} key={jc.id} className="block group bg-white rounded-xl border border-gray-200 p-5 hover:border-aloe-green/50 hover:shadow-md transition-all">
+                                <Link href={`/portal/admin/jobcards/${jc.id}`} key={jc.id} className="block group bg-white/3 backdrop-blur-md border border-white/5 rounded-xl p-5 hover:border-[#84cc16]/40 hover:bg-white/5 shadow-lg transition-all">
                                     <div className="flex items-center justify-between flex-wrap gap-4">
                                         <div className="flex items-center gap-6 flex-wrap flex-1">
                                             <span 
@@ -170,10 +170,10 @@ export default function JobcardsListPage() {
                                                 {jc.status}
                                             </span>
                                             <div>
-                                                <h3 className="text-lg font-bold text-gray-900 m-0 group-hover:text-aloe-green transition-colors">
+                                                <h3 className="text-lg font-bold text-white m-0 group-hover:text-[#84cc16] transition-colors">
                                                     {jc.company || jc.contact_name || 'Unnamed Jobcard'}
                                                 </h3>
-                                                <p className="text-xs text-gray-500 m-0 mt-1 flex gap-3">
+                                                <p className="text-xs text-gray-400 m-0 mt-1 flex gap-3">
                                                     <span>📅 {new Date(jc.created_at).toLocaleDateString('en-ZA')}</span>
                                                     {jc.order_no && <span>🏷️ Order #{jc.order_no}</span>}
                                                     <span>👤 {jc.contact_name || 'No contact'}</span>

@@ -25,8 +25,12 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [uploadEntries, setUploadEntries] = useState<FileEntry[]>([createEntry()]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
+    const [uploadingScan, setUploadingScan] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+    const [companySuggestions, setCompanySuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     const loadJobcard = useCallback(async () => {
         try {
@@ -63,6 +67,76 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         } else {
             setJobcard((prev: any) => ({ ...prev, [name]: value }));
         }
+    };
+
+    const handleCompanyChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setJobcard((prev: any) => ({ ...prev, company: value }));
+        
+        if (value.trim().length > 1) {
+            const supabase = createClientSupabase();
+            const { data } = await supabase.from('jobcards')
+                .select('company, contact_name, contact_phone, email, address')
+                .ilike('company', `%${value}%`)
+                .limit(5);
+            setCompanySuggestions(data || []);
+            setShowSuggestions(true);
+        } else {
+            setCompanySuggestions([]);
+            setShowSuggestions(false);
+        }
+    };
+
+    const selectCompany = (item: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            company: item.company,
+            contact_name: item.contact_name || prev.contact_name,
+            contact_phone: item.contact_phone || prev.contact_phone,
+            email: item.email || prev.email,
+            address: item.address || prev.address
+        }));
+        setShowSuggestions(false);
+    };
+
+    const handleScannedUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingScan(true);
+        const supabase = createClientSupabase();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `jobcards/${id}/scanned_${Date.now()}_${safeName}`;
+        
+        const { error: err } = await supabase.storage.from('client-uploads').upload(path, file);
+        if (err) { alert('Upload failed: ' + err.message); setUploadingScan(false); return; }
+        
+        setJobcard((prev: any) => ({ ...prev, scanned_jobcard_path: path }));
+        setUploadingScan(false);
+    };
+
+    const handleEngChange = (name: string, value: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            engineer_details_json: {
+                ...(prev.engineer_details_json || {}),
+                [name]: value
+            }
+        }));
+    };
+
+    const handleEngImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingScan(true);
+        const supabase = createClientSupabase();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `jobcards/${id}/engineer_${Date.now()}_${safeName}`;
+        
+        const { error: err } = await supabase.storage.from('client-uploads').upload(path, file);
+        if (err) { alert('Upload failed: ' + err.message); setUploadingScan(false); return; }
+        
+        handleEngChange('image_path', path);
+        setUploadingScan(false);
     };
 
     const handleSave = async () => {
@@ -183,13 +257,97 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         });
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">Loading...</div>;
-    if (!jobcard) return <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">Not Found</div>;
+    // Ensure Captured is ticked by default if missing
+    useEffect(() => {
+        if (jobcard && (!jobcard.status_workflow_json || !jobcard.status_workflow_json.captured)) {
+            const workflow = jobcard.status_workflow_json || {};
+            if (!workflow.captured) {
+                setJobcard((prev: any) => ({
+                    ...prev,
+                    status_workflow_json: {
+                        ...workflow,
+                        captured: { ticked: true, ticked_at: prev.created_at || new Date().toISOString() }
+                    }
+                }));
+            }
+        }
+    }, [jobcard]);
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Loading...</div>;
+    if (!jobcard) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Not Found</div>;
+
+    const calculateWorkflowStatus = (workflow: any) => {
+        if (!workflow) return 'Quoted';
+        
+        if (workflow.completed?.ticked) return 'Completed';
+        if (workflow.ready_collection?.ticked) return 'Ready';
+        
+        const top5 = ['captured', 'quote_sent', 'deposit_paid', 'proof_sent', 'approved'];
+        const allTop5Ticked = top5.every(k => workflow[k]?.ticked);
+        if (allTop5Ticked) return 'In-Production';
+        
+        if (workflow.approved?.ticked) return 'Approved';
+        if (workflow.proof_sent?.ticked) return 'Proof Sent';
+        if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
+        if (workflow.quote_sent?.ticked) return 'Quote Sent';
+        if (workflow.captured?.ticked) return 'Captured';
+        return 'Quoted';
+    };
+
+    const StatusCheckbox = ({ label, name }: { label: string; name: string }) => {
+        const workflow = jobcard.status_workflow_json || {};
+        const item = workflow[name] || { ticked: false };
+        const dateTicked = item.ticked_at ? new Date(item.ticked_at) : null;
+        const canUntick = !dateTicked || (Date.now() - dateTicked.getTime() < 24 * 60 * 60 * 1000);
+
+        const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const checked = e.target.checked;
+            if (!checked && !canUntick) {
+                alert("Cannot untick a status item more than a day later.");
+                return;
+            }
+            
+            const updatedWorkflow = {
+                ...workflow,
+                [name]: {
+                    ticked: checked,
+                    ticked_at: checked ? new Date().toISOString() : null
+                }
+            };
+
+            const newStatus = calculateWorkflowStatus(updatedWorkflow);
+            setJobcard((prev: any) => ({
+                ...prev,
+                status_workflow_json: updatedWorkflow,
+                status: newStatus
+            }));
+        };
+
+        return (
+            <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                        type="checkbox" 
+                        checked={!!item.ticked} 
+                        onChange={handleCheck} 
+                        disabled={name === 'captured'} 
+                        className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" 
+                    />
+                    <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
+                </label>
+                {dateTicked && (
+                    <span className="text-[9px] text-gray-400 font-medium">
+                        {dateTicked.toLocaleDateString([], {day:'2-digit', month:'2-digit'})} {dateTicked.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </span>
+                )}
+            </div>
+        );
+    };
 
     const InputLine = ({ label, name }: { label: string; name: string }) => (
         <div className="flex border-b border-gray-300">
             <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-center bg-gray-50">{label}</span>
-            <input type="text" name={name} value={jobcard[name] || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-transparent font-medium text-gray-800" />
+            <input type="text" name={name} value={jobcard[name] || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800" />
         </div>
     );
 
@@ -201,23 +359,18 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     );
 
     return (
-        <div className="min-h-[100dvh] bg-gray-200 p-4 md:p-8 font-outfit">
+        <div className="min-h-[100dvh] bg-transparent p-4 md:p-8 font-inter">
             <div className="max-w-[1000px] mx-auto">
                 <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-                    <Link href="/portal/admin/jobcards" className="text-gray-500 hover:text-gray-800 font-medium">← Back to Jobcards</Link>
+                    <Link href="/portal/admin/jobcards" className="text-[#84cc16] hover:text-[#84cc16]/80 font-semibold text-sm">← Back to Jobcards</Link>
                     <div className="flex gap-4">
-                        <select 
-                            name="status" 
-                            value={jobcard.status || 'Quoted'} 
-                            onChange={handleChange}
-                            className="bg-white border border-gray-300 rounded-md px-4 py-2 text-sm font-bold shadow-sm outline-none w-40"
-                        >
-                            {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                        <button onClick={handleDelete} disabled={deleting} className="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-md font-bold shadow-sm hover:bg-red-100 disabled:opacity-50">
+                        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-md px-4 py-2 text-sm font-bold shadow-sm flex items-center justify-center min-w-40 text-white">
+                             Status: {jobcard.status || 'Quoted'}
+                        </div>
+                        <button onClick={handleDelete} disabled={deleting} className="bg-red-500/10 text-red-500 border border-red-500/30 px-4 py-2 rounded-md font-bold shadow-sm hover:bg-red-500/20 disabled:opacity-50">
                             {deleting ? 'Deleting...' : 'Delete'}
                         </button>
-                        <button onClick={handleSave} disabled={saving} className="bg-[#1a1a1a] text-white px-6 py-2 rounded-md font-bold shadow-md hover:bg-black disabled:opacity-50">
+                        <button onClick={handleSave} disabled={saving} className="bg-[#84cc16] text-[#0a0a0a] px-6 py-2 rounded-md font-bold shadow-md hover:bg-[#84cc16]/90 disabled:opacity-50">
                             {saving ? 'Saving...' : 'Save Jobcard'}
                         </button>
                     </div>
@@ -227,30 +380,56 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                 <div className="bg-white shadow-xl max-w-[1000px] mx-auto border border-gray-300 p-8 text-gray-900" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,.03) 1px, transparent 1px)', backgroundSize: '100% 40px' }}>
                     
                     {/* Header Layout */}
-                    <div className="flex border border-black mb-6 flex-wrap lg:flex-nowrap">
+                    <div className="flex border border-black mb-6 flex-wrap lg:flex-nowrap" onClick={() => setShowSuggestions(false)}>
                         {/* Logo Box */}
-                        <div className="w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-black p-4 flex flex-col items-center justify-center bg-gray-50">
-                            <Image src="/aloe-logo.png" alt="Aloe Signs" width={120} height={40} className="object-contain" priority />
-                            <p className="text-[9px] tracking-widest uppercase mt-2 font-bold text-gray-600">Create Manufacture Install</p>
+                        <div className="w-full lg:w-36 border-b lg:border-b-0 lg:border-r border-black p-2 flex flex-col items-center justify-center bg-gray-50">
+                            <Image src="/aloe-logo.png" alt="Aloe Signs" width={90} height={30} className="object-contain" priority />
+                            <p className="text-[7px] tracking-widest uppercase mt-1 font-bold text-gray-600">Create Manufacture Install</p>
                         </div>
 
-                        {/* Middle Info */}
-                        <div className="w-full lg:w-[40%] border-b lg:border-b-0 lg:border-r border-black flex flex-col">
-                            <InputLine label="Invoice:" name="invoice" />
-                            <div className="flex border-b border-gray-300">
-                                <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-start bg-gray-50">Address:</span>
-                                <textarea name="address" value={jobcard.address || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-transparent font-medium resize-none text-gray-800" rows={2} />
+                        {/* Customer Info (Block 2) */}
+                        <div className="w-full lg:w-[40%] border-b lg:border-b-0 lg:border-r border-black flex flex-col relative" onClick={e => e.stopPropagation()}>
+                            <div className="flex border-b border-gray-300 relative">
+                                <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-center bg-gray-50">Company:</span>
+                                <div className="flex-1 relative">
+                                    <input 
+                                        type="text" 
+                                        name="company" 
+                                        value={jobcard.company || ''} 
+                                        onChange={handleCompanyChange} 
+                                        onFocus={() => { if (companySuggestions.length > 0) setShowSuggestions(true); }}
+                                        className="w-full py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800" 
+                                    />
+                                    {showSuggestions && companySuggestions.length > 0 && (
+                                        <div className="absolute left-0 right-0 top-full bg-white border border-gray-200 shadow-lg z-10 max-h-40 overflow-y-auto">
+                                            {companySuggestions.map((item, idx) => (
+                                                <div 
+                                                    key={idx} 
+                                                    onClick={() => selectCompany(item)} 
+                                                    className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 text-xs text-gray-800"
+                                                >
+                                                    <div className="font-bold">{item.company}</div>
+                                                    {item.contact_name && <div className="text-gray-500 text-[10px]">{item.contact_name}</div>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
+                            <InputLine label="Contact:" name="contact_name" />
+                            <InputLine label="Tel:" name="contact_phone" />
                             <InputLine label="Email:" name="email" />
                         </div>
 
-                        {/* Right Info */}
-                        <div className="w-full lg:w-[40%] flex flex-col">
-                            <InputLine label="Company:" name="company" />
-                            <InputLine label="Contact:" name="contact_name" />
-                            <InputLine label="Tel:" name="contact_phone" />
+                        {/* Job Info (Block 3) */}
+                        <div className="w-full lg:w-[35%] border-b lg:border-b-0 lg:border-r border-black flex flex-col">
+                            <InputLine label="Invoice:" name="invoice" />
+                            <div className="flex border-b border-gray-300 flex-1">
+                                <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-start bg-gray-50">Address:</span>
+                                <textarea name="address" value={jobcard.address || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium resize-none text-gray-800 h-full" rows={2} />
+                            </div>
                         </div>
-                        
+
                         {/* Entry box */}
                         <div className="w-full lg:w-32 border-t lg:border-t-0 lg:border-l border-black flex flex-col">
                             <div className="p-2 border-b border-gray-300 flex-1 bg-gray-50">
@@ -264,19 +443,35 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         </div>
                     </div>
 
+                    {/* Status Workflow Checklist Bar */}
+                    <div className="border border-black bg-white mb-6 flex divide-x divide-gray-300 shadow-sm">
+                        <div className="p-2 bg-gray-50 flex items-center border-r border-black">
+                            <span className="text-[10px] font-bold text-gray-600 uppercase">Workflow</span>
+                        </div>
+                        <div className="flex-1 flex justify-around p-1 flex-wrap gap-1">
+                            <StatusCheckbox label="Captured" name="captured" />
+                            <StatusCheckbox label="Quote Sent" name="quote_sent" />
+                            <StatusCheckbox label="Deposit Paid / PO" name="deposit_paid" />
+                            <StatusCheckbox label="Proof Sent" name="proof_sent" />
+                            <StatusCheckbox label="Approved" name="approved" />
+                            <StatusCheckbox label="Ready" name="ready_collection" />
+                            <StatusCheckbox label="Completed" name="completed" />
+                        </div>
+                    </div>
+
                     {/* Main Grid Area */}
                     <div className="flex border border-black min-h-[500px] flex-wrap lg:flex-nowrap">
                         {/* Design Canvas/Notes */}
                         <div className="flex-1 border-b lg:border-b-0 lg:border-r border-black flex flex-col relative bg-[#f8fafc]">
                             <div className="p-2 border-b border-gray-200 bg-white">
-                                <span className="text-xs font-bold text-gray-600 uppercase">Design Canvas / Instructions</span>
+                                <span className="text-xs font-bold text-gray-600 uppercase">Description</span>
                             </div>
                             <textarea 
                                 name="design_notes" 
                                 value={jobcard.design_notes || ''} 
                                 onChange={handleChange}
                                 placeholder="Paste design notes, instructions, sizes, or artwork links here..."
-                                className="flex-1 w-full bg-transparent p-4 resize-none focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aloe-green/20 text-sm h-full"
+                                className="flex-1 w-full bg-transparent text-gray-800 p-4 resize-none focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aloe-green/20 text-sm h-full"
                                 style={{
                                     backgroundImage: 'linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)',
                                     backgroundSize: '20px 20px',
@@ -292,7 +487,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <div className="p-2 bg-gray-100 border-b border-gray-300">
                                     <span className="text-xs font-bold text-gray-700 uppercase">Department</span>
                                 </div>
-                                <div className="grid grid-cols-2 gap-x-2">
+                                <div className="grid grid-cols-1 gap-x-2">
                                     <Toggle label="FlatBed" name="prod_flatbed" />
                                     <Toggle label="Digital" name="prod_digital" />
                                     <Toggle label="Vinyl cut" name="prod_vinyl_cut" />
@@ -302,6 +497,51 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <Toggle label="Outsource" name="prod_outsource" />
                                 </div>
                             </div>
+
+                            {jobcard.prod_engineer && (
+                                <div className="p-4 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-3">
+                                    <h4 className="font-bold text-xs text-gray-700 uppercase mb-1 border-b border-gray-200 pb-1">Engineer Specs Required:</h4>
+                                    <div className="flex flex-col gap-2">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Quantity</label>
+                                            <input type="text" value={jobcard.engineer_details_json?.quantity || ''} onChange={e => handleEngChange('quantity', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Material</label>
+                                            <textarea value={jobcard.engineer_details_json?.material || ''} onChange={e => handleEngChange('material', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="Material details..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Size (Height, Length, Width)</label>
+                                        <textarea value={jobcard.engineer_details_json?.size || ''} onChange={e => handleEngChange('size', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="List item names and sizes..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Angle</label>
+                                        <textarea value={jobcard.engineer_details_json?.angles || ''} onChange={e => handleEngChange('angles', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="Angle details..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 font-bold">Image Attachment</label>
+                                        {jobcard.engineer_details_json?.image_path ? (
+                                            <div className="flex items-center justify-between border border-gray-300 bg-white p-2 rounded">
+                                                <span className="text-xs text-green-600 font-bold">✓ Image Uploaded</span>
+                                                <div className="flex gap-1">
+                                                    <button type="button" onClick={() => openLightbox(jobcard.engineer_details_json.image_path)} className="text-[10px] font-bold border border-blue-200 text-blue-600 hover:bg-blue-50 rounded px-2 py-1">View</button>
+                                                    <button type="button" onClick={() => handleEngChange('image_path', null)} className="text-[10px] font-bold border border-red-200 text-red-600 hover:bg-red-50 rounded px-2 py-1">Remove</button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <label className="w-full flex items-center justify-center border border-dashed border-gray-400 rounded p-2 text-center cursor-pointer hover:bg-gray-100 bg-white">
+                                                <span className="text-xs text-gray-500 font-medium">+ Add Image</span>
+                                                <input type="file" onChange={handleEngImageUpload} className="hidden" />
+                                            </label>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 font-bold">Extra Comments</label>
+                                        <textarea value={jobcard.engineer_details_json?.extra_comments || ''} onChange={e => handleEngChange('extra_comments', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-20" placeholder="Any extra engineering comments..."></textarea>
+                                    </div>
+                                </div>
+                            )}
                             
                             {/* Collect/Delivery Section */}
                             <div className="border-b border-gray-300">
@@ -310,79 +550,171 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                                 <Toggle label="Deliver" name="track_deliver" />
                                 {jobcard.track_deliver && (
-                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 grid grid-cols-3 gap-2">
-                                        <label className="flex items-center gap-2"><input type="checkbox" name="deliver_bakkie" checked={!!jobcard.deliver_bakkie} onChange={handleChange} className="text-aloe-green" /> Bakkie</label>
-                                        <label className="flex items-center gap-2"><input type="checkbox" name="deliver_truck" checked={!!jobcard.deliver_truck} onChange={handleChange} className="text-aloe-green" /> Truck</label>
-                                        <label className="flex items-center gap-2"><input type="checkbox" name="deliver_trailer" checked={!!jobcard.deliver_trailer} onChange={handleChange} className="text-aloe-green" /> Trailer</label>
+                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                        <textarea name="delivery_address" value={jobcard.delivery_address || ''} onChange={handleChange} placeholder="Delivery Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
+                                        <div className="grid grid-cols-2 gap-2 mt-1">
+                                            <label className="flex items-center gap-2"><input type="checkbox" name="deliver_car" checked={!!jobcard.deliver_car} onChange={handleChange} className="text-aloe-green" /> Car</label>
+                                            <label className="flex items-center gap-2"><input type="checkbox" name="deliver_bakkie" checked={!!jobcard.deliver_bakkie} onChange={handleChange} className="text-aloe-green" /> Bakkie</label>
+                                            <label className="flex items-center gap-2"><input type="checkbox" name="deliver_truck" checked={!!jobcard.deliver_truck} onChange={handleChange} className="text-aloe-green" /> Truck</label>
+                                            <label className="flex items-center gap-2"><input type="checkbox" name="deliver_trailer" checked={!!jobcard.deliver_trailer} onChange={handleChange} className="text-aloe-green" /> Trailer</label>
+                                        </div>
                                     </div>
                                 )}
                                 
                                 <Toggle label="Installation" name="track_installation" />
                                 {jobcard.track_installation && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                        <textarea name="installation_address" value={jobcard.installation_address || ''} onChange={handleChange} placeholder="Installation Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-3 gap-2">
-                                            <label className="flex items-center gap-2"><input type="checkbox" name="install_generator" checked={!!jobcard.install_generator} onChange={handleChange} className="text-aloe-green" /> Generator</label>
-                                            <label className="flex items-center gap-2"><input type="checkbox" name="install_welder" checked={!!jobcard.install_welder} onChange={handleChange} className="text-aloe-green" /> Welder</label>
-                                            <label className="flex items-center gap-2"><input type="checkbox" name="install_shovels" checked={!!jobcard.install_shovels} onChange={handleChange} className="text-aloe-green" /> Shovels</label>
+                                            <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_bakkie" checked={!!jobcard.install_bakkie} onChange={handleChange} className="text-aloe-green" /> Bakkie</label>
+                                            <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_truck" checked={!!jobcard.install_truck} onChange={handleChange} className="text-aloe-green" /> Truck</label>
+                                            <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_trailer" checked={!!jobcard.install_trailer} onChange={handleChange} className="text-aloe-green" /> Trailer</label>
                                         </div>
-                                        <input type="text" name="install_additional" value={jobcard.install_additional || ''} onChange={handleChange} placeholder="Additional equipment..." className="w-full border border-gray-300 p-1 text-xs mt-1" />
+                                        <div className="grid grid-cols-2 gap-2 mt-2">
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Riggers</span>
+                                                <input type="text" name="install_riggers" value={jobcard.install_riggers || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Applicators</span>
+                                                <input type="text" name="install_applicators" value={jobcard.install_applicators || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Builders</span>
+                                                <input type="text" name="install_builders" value={jobcard.install_builders || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Minions</span>
+                                                <input type="text" name="install_minions" value={jobcard.install_minions || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Electrical</span>
+                                                <input type="text" name="install_electrical" value={jobcard.install_electrical || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                            </div>
+                                        </div>
+                                        <div className="mt-2 border-t border-gray-200 pt-2 flex items-center gap-4 text-[11px] sm:text-xs font-bold text-gray-700">
+                                            <span>Safety File Needed?</span>
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={jobcard.install_safety_file === true} 
+                                                    onChange={() => handleChange({ target: { name: 'install_safety_file', value: 'true', type: 'checkbox', checked: true } } as any)} 
+                                                    className="text-aloe-green w-4 h-4 rounded" 
+                                                />
+                                                Yes
+                                            </label>
+                                            <label className="flex items-center gap-1 cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={jobcard.install_safety_file === false} 
+                                                    onChange={() => handleChange({ target: { name: 'install_safety_file', value: 'false', type: 'checkbox', checked: false } } as any)} 
+                                                    className="text-aloe-green w-4 h-4 rounded" 
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                        <textarea name="install_additional" value={jobcard.install_additional || ''} onChange={handleChange} placeholder="Additional equipment..." className="w-full border border-gray-300 p-2 text-xs mt-1 resize-none h-16"></textarea>
                                     </div>
                                 )}
                                 
                                 <Toggle label="Courier" name="track_courier" />
+                                {jobcard.track_courier && (
+                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                        <textarea name="courier_address" value={jobcard.courier_address || ''} onChange={handleChange} placeholder="Courier Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
+                                    </div>
+                                )}
                                 <Toggle label="Collect" name="track_collect" />
                             </div>
 
-                            {/* Status Section */}
-                            <div className="border-b border-gray-300">
-                                <div className="p-2 bg-gray-100 border-b border-gray-300">
-                                    <span className="text-xs font-bold text-gray-700 uppercase">Status</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-2">
-                                    <Toggle label="On Hold" name="track_on_hold" />
-                                    <Toggle label="Quoted" name="track_quote" />
-                                    <Toggle label="Approved" name="track_approved" />
-                                    <Toggle label="Purchase order" name="track_purchase_order" />
-                                    <Toggle label="Completed" name="track_complete" />
-                                </div>
-                                <div className="px-3 py-2 border-b border-gray-200 flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-700">Compiled by:</span>
-                                    <input type="text" name="compiled_by" value={jobcard.compiled_by || ''} onChange={handleChange} className="w-32 text-sm border border-gray-300 p-0.5 px-1 focus:outline-none" />
-                                </div>
-                                <div className="px-3 py-2 border-b border-gray-200 flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-700">Complete by:</span>
-                                    <input type="text" name="track_complete_by" value={jobcard.track_complete_by || ''} onChange={handleChange} className="w-32 text-sm border border-gray-300 p-0.5 px-1 bg-yellow-50 focus:outline-none" />
-                                </div>
-                            </div>
+
                             
                             {/* Materials Section */}
-                            <div className="border-b border-gray-300 h-full">
+                            <div className="border-b border-gray-300 h-full flex flex-col">
                                 <div className="p-2 bg-gray-100 border-b border-gray-300">
                                     <span className="text-xs font-bold text-gray-700 uppercase">Materials</span>
                                 </div>
-                                <div className="grid grid-cols-2 gap-x-2 pb-2">
-                                    {MATERIALS.map(m => (
-                                        <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
-                                            <span className="text-sm font-medium text-gray-700">{m}</span>
-                                            <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
-                                        </label>
-                                    ))}
-                                </div>
+                                
+                                {/* Digital */}
+                                <Toggle label="Digital" name="mat_section_digital" />
+                                {jobcard.mat_section_digital && (
+                                    <div className="grid grid-cols-2 gap-x-2 py-2 border-b border-gray-300 bg-blue-50/50">
+                                        {MATERIALS.map(m => (
+                                            <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
+                                                <span className="text-sm font-medium text-gray-700">{m}</span>
+                                                <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Engineering */}
+                                <Toggle label="Engineering" name="mat_section_engineering" />
+                                {jobcard.mat_section_engineering && (
+                                    <div className="p-3 border-b border-gray-300 flex flex-col gap-3 bg-blue-50/50">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Tubing (Sizes & Quantities)</label>
+                                            <textarea 
+                                                name="mat_eng_tubing" 
+                                                value={jobcard.mat_eng_tubing || ''} 
+                                                onChange={handleChange} 
+                                                placeholder="e.g. 50x50mm - Qty 4" 
+                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                            ></textarea>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Sheets (Sizes & Quantities)</label>
+                                            <textarea 
+                                                name="mat_eng_sheets" 
+                                                value={jobcard.mat_eng_sheets || ''} 
+                                                onChange={handleChange} 
+                                                placeholder="e.g. 2450x1225mm - Qty 2" 
+                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Civil */}
+                                <Toggle label="Civil" name="mat_section_civil" />
+                                {jobcard.mat_section_civil && (
+                                    <div className="p-3 flex flex-col gap-3 bg-blue-50/50 border-b border-gray-300">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Concrete</label>
+                                            <textarea 
+                                                name="mat_civil_concrete" 
+                                                value={jobcard.mat_civil_concrete || ''} 
+                                                onChange={handleChange} 
+                                                placeholder="Concrete details..." 
+                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                            ></textarea>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Toolhire</label>
+                                            <textarea 
+                                                name="mat_civil_toolhire" 
+                                                value={jobcard.mat_civil_toolhire || ''} 
+                                                onChange={handleChange} 
+                                                placeholder="Toolhire details..." 
+                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Financials embedded bottom left logic */}
                             <div className="mt-auto bg-gray-50 flex flex-col border-t border-black">
                                 <div className="flex border-b border-gray-300">
                                     <span className="w-24 text-xs font-bold p-2">Sub Total</span>
-                                    <input type="number" step="0.01" name="sub_total" value={jobcard.sub_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50" />
+                                    <input type="number" step="0.01" name="sub_total" value={jobcard.sub_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
                                 </div>
                                 <div className="flex border-b border-gray-300">
                                     <span className="w-24 text-xs font-bold p-2">15% VAT</span>
-                                    <input type="number" step="0.01" name="vat_total" value={jobcard.vat_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50" />
+                                    <input type="number" step="0.01" name="vat_total" value={jobcard.vat_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
                                 </div>
                                 <div className="flex border-b border-black">
                                     <span className="w-24 text-xs font-bold p-2 bg-gray-100">Total</span>
-                                    <input type="number" step="0.01" name="total" value={jobcard.total || ''} onChange={handleChange} className="flex-1 w-full font-bold bg-white px-2 focus:outline-none focus:bg-blue-50" />
+                                    <input type="number" step="0.01" name="total" value={jobcard.total || ''} onChange={handleChange} className="flex-1 w-full font-bold bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
                                 </div>
                             </div>
                         </div>
@@ -394,28 +726,51 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         <div className="w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r border-black text-sm">
                             <div className="flex items-center p-2 border-b border-gray-300">
                                 <span className="w-20 font-bold text-gray-700">Order No:</span>
-                                <input type="text" name="order_no" value={jobcard.order_no || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium" />
+                                <input type="text" name="order_no" value={jobcard.order_no || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium text-gray-800" />
                             </div>
                             <div className="flex items-center p-2 border-b border-gray-300">
                                 <span className="w-20 font-bold text-gray-700">Pro Inv:</span>
-                                <input type="text" name="pro_inv" value={jobcard.pro_inv || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium" />
+                                <input type="text" name="pro_inv" value={jobcard.pro_inv || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium text-gray-800" />
                             </div>
                             <div className="flex items-center p-2">
                                 <span className="w-20 font-bold text-gray-700">Invoice:</span>
-                                <input type="text" name="final_invoice" value={jobcard.final_invoice || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium" />
+                                <input type="text" name="final_invoice" value={jobcard.final_invoice || ''} onChange={handleChange} className="flex-1 border-b border-gray-400 bg-transparent px-2 focus:outline-none focus:border-black font-medium text-gray-800" />
                             </div>
                         </div>
 
                         {/* Payment Checks */}
-                        <div className="w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r border-black text-sm p-4 justify-start gap-4">
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <span className="font-bold uppercase w-16 text-gray-700">Deposit:</span>
-                                <input type="checkbox" name="deposit_paid" checked={!!jobcard.deposit_paid} onChange={handleChange} className="w-5 h-5 rounded border-gray-400 cursor-pointer" />
-                            </label>
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <span className="font-bold uppercase w-16 text-gray-700">CASH:</span>
-                                <input type="checkbox" name="cash_paid" checked={!!jobcard.cash_paid} onChange={handleChange} className="w-5 h-5 rounded border-gray-400 cursor-pointer" />
-                            </label>
+                        <div className="w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r border-black text-sm p-4 justify-start gap-4 bg-white">
+                            <div className="flex flex-col gap-4 border-b border-gray-200 pb-4">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <span className="font-bold uppercase w-16 text-gray-700">Deposit:</span>
+                                    <input type="checkbox" name="deposit_paid" checked={!!jobcard.deposit_paid} onChange={handleChange} className="w-5 h-5 rounded border-gray-400 cursor-pointer" />
+                                </label>
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <span className="font-bold uppercase w-16 text-gray-700">CASH:</span>
+                                    <input type="checkbox" name="cash_paid" checked={!!jobcard.cash_paid} onChange={handleChange} className="w-5 h-5 rounded border-gray-400 cursor-pointer" />
+                                </label>
+                            </div>
+
+                            {/* Scanned Jobcard Area */}
+                            <div className="mt-auto">
+                                <span className="font-bold text-gray-700 text-xs block mb-2">Scanned Jobcard:</span>
+                                <div className="border border-gray-300 rounded p-3 bg-gray-50 flex items-center justify-between gap-2">
+                                    {jobcard.scanned_jobcard_path ? (
+                                        <div className="flex items-center justify-between w-full">
+                                            <span className="text-xs text-green-600 font-bold">✓ Uploaded</span>
+                                            <div className="flex gap-1">
+                                                <button onClick={() => openLightbox(jobcard.scanned_jobcard_path)} className="text-[10px] font-bold border border-blue-200 text-blue-600 hover:bg-blue-50 rounded px-2 py-1">View</button>
+                                                <button onClick={() => setJobcard((p: any) => ({ ...p, scanned_jobcard_path: null }))} className="text-[10px] font-bold border border-red-200 text-red-600 hover:bg-red-50 rounded px-2 py-1">Remove</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <label className="w-full flex items-center justify-center border border-dashed border-gray-400 rounded p-2 text-center cursor-pointer hover:bg-gray-100">
+                                            <span className="text-xs text-gray-500 font-medium">{uploadingScan ? 'Uploading...' : '+ Upload Scan'}</span>
+                                            <input type="file" onChange={handleScannedUpload} className="hidden" disabled={uploadingScan} />
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         {/* Files Uploaded Module */}

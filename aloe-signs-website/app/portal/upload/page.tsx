@@ -95,14 +95,14 @@ export default function UploadPage() {
 
     if (success) {
         return (
-            <div style={{ minHeight: '100vh', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                <div style={{ maxWidth: '480px', width: '100%', background: '#fff', borderRadius: '12px', padding: '48px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+            <div style={{ minHeight: '100vh', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ maxWidth: '480px', width: '100%', background: 'rgba(255,b,c, 0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '48px', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
                     <div style={{ fontSize: '56px', marginBottom: '16px' }}>🎉</div>
-                    <h2 style={{ color: '#2d2d2d', margin: '0 0 12px 0', fontSize: '24px' }}>Files Uploaded Successfully!</h2>
-                    <p style={{ color: '#6b7280', marginBottom: '12px' }}>Our team has been notified and will get back to you with a quote or update.</p>
-                    <p style={{ color: '#84cc16', fontWeight: 600, marginBottom: '28px' }}>Estimated delivery: <strong style={{ color: '#2d2d2d' }}>{form.deliveryDate}</strong></p>
+                    <h2 style={{ color: '#fff', margin: '0 0 12px 0', fontSize: '24px', fontWeight: 800 }}>Files Uploaded!</h2>
+                    <p style={{ color: '#9ca3af', marginBottom: '12px', fontSize: '15px' }}>Our team has been notified and will review your files shortly.</p>
+                    <p style={{ color: '#84cc16', fontWeight: 600, marginBottom: '28px', fontSize: '14px' }}>Estimated delivery: <strong style={{ color: '#fff' }}>{form.deliveryDate}</strong></p>
                     <button onClick={() => { setSuccess(false); setForm({ projectName: '', quantity: '', sizeWidth: '', sizeHeight: '', sizeUnit: 'mm', comments: '', deliveryDate: '', files: [] }); setProgress(0); if (fileRef.current) fileRef.current.value = ''; }}
-                        style={{ background: '#84cc16', color: '#2d2d2d', fontWeight: 700, padding: '12px 28px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }}>
+                        style={{ background: '#84cc16', color: '#0a0a0a', fontWeight: 700, padding: '14px 28px', border: 'none', borderRadius: '10px', cursor: 'pointer', fontSize: '15px', boxShadow: '0 4px 16px rgba(132,204,22,0.3)' }}>
                         Upload Another Job
                     </button>
                 </div>
@@ -111,36 +111,36 @@ export default function UploadPage() {
     }
 
     const inputStyle: React.CSSProperties = {
-        width: '100%', padding: '11px 14px', borderRadius: '8px', border: '1px solid #d1d5db',
-        fontSize: '15px', boxSizing: 'border-box', outline: 'none', background: '#fff',
-        color: '#1a202c'
+        width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)',
+        fontSize: '15px', boxSizing: 'border-box', outline: 'none', background: 'rgba(255,255,255,0.04)',
+        color: '#fff', transition: 'all 0.2s'
     };
     const labelStyle: React.CSSProperties = {
-        display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '6px',
+        display: 'block', fontSize: '13px', fontWeight: 600, color: '#9ca3af', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.3px'
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f3f4f6', padding: '20px' }}>
+        <div style={{ minHeight: '100vh', background: 'transparent', padding: '20px' }}>
             {/* Header */}
             <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-                <div style={{ background: '#2d2d2d', borderRadius: '12px 12px 0 0', padding: '28px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.05)', borderBottom: 'none', borderRadius: '16px 16px 0 0', padding: '28px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
                         <div style={{ fontSize: '24px', fontWeight: 800, color: '#84cc16', letterSpacing: '2px' }}>ALOE SIGNS</div>
                         <p style={{ color: '#9ca3af', margin: '4px 0 0 0', fontSize: '13px' }}>Client Upload Portal</p>
                     </div>
                     <button onClick={async () => { const s = createClientSupabase(); await s.auth.signOut(); router.push('/portal/login'); }}
-                        style={{ background: 'transparent', border: '1px solid #6b7280', color: '#9ca3af', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}>
+                        style={{ background: 'transparent', border: '1px solid rgba(132,204,22,0.3)', color: '#84cc16', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>
                         Sign Out
                     </button>
                 </div>
 
                 {/* Form */}
-                <div style={{ background: '#fff', borderRadius: '0 0 12px 12px', padding: '36px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}>
-                    <h1 style={{ margin: '0 0 6px 0', fontSize: '22px', fontWeight: 700, color: '#2d2d2d' }}>Submit a New Print Job</h1>
-                    <p style={{ margin: '0 0 32px 0', color: '#6b7280', fontSize: '14px' }}>Fill in your job requirements and upload your artwork files below.</p>
+                <div style={{ background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '0 0 16px 16px', padding: '36px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                    <h1 style={{ margin: '0 0 6px 0', fontSize: '22px', fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>Submit a New Print Job</h1>
+                    <p style={{ margin: '0 0 32px 0', color: '#9ca3af', fontSize: '14px' }}>Fill in your job requirements and upload your artwork files below.</p>
 
                     {error && (
-                        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '12px 16px', marginBottom: '24px', color: '#dc2626', fontSize: '14px' }}>
+                        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px 16px', marginBottom: '24px', color: '#fca5a5', fontSize: '14px' }}>
                             ⚠️ {error}
                         </div>
                     )}
@@ -193,12 +193,12 @@ export default function UploadPage() {
                         {/* File Upload */}
                         <label style={labelStyle}>Artwork Files</label>
                         <div onClick={() => fileRef.current?.click()}
-                            style={{ border: '2px dashed #84cc16', borderRadius: '10px', padding: '28px', textAlign: 'center', cursor: 'pointer', background: form.files.length ? '#f0fce4' : '#fafafa', marginBottom: '8px', transition: 'background 0.2s' }}>
+                            style={{ border: '2px dashed rgba(132,204,22,0.4)', borderRadius: '12px', padding: '28px', textAlign: 'center', cursor: 'pointer', background: form.files.length ? 'rgba(132,204,22,0.05)' : 'rgba(255,255,255,0.02)', marginBottom: '8px', transition: 'all 0.2s' }}>
                             <div style={{ fontSize: '32px', marginBottom: '8px' }}>📁</div>
-                            <p style={{ margin: 0, fontWeight: 600, color: '#2d2d2d', fontSize: '15px' }}>
+                            <p style={{ margin: 0, fontWeight: 700, color: '#fff', fontSize: '15px' }}>
                                 {form.files.length ? `${form.files.length} file(s) selected` : 'Click to select files'}
                             </p>
-                            <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '13px' }}>PDF, AI, EPS, TIFF, PNG, ZIP accepted · No size limit</p>
+                            <p style={{ margin: '4px 0 0 0', color: '#9ca3af', fontSize: '13px' }}>PDF, AI, EPS, TIFF, PNG, ZIP accepted · No size limit</p>
                             <input ref={fileRef} type="file" multiple onChange={handleFiles} accept=".pdf,.ai,.eps,.tiff,.tif,.png,.jpg,.jpeg,.svg,.zip,.psd" style={{ display: 'none' }} />
                         </div>
                         {form.files.length > 0 && (
