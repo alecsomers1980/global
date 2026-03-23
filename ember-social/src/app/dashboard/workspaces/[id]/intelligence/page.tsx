@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client-browser'
-import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare, Globe, Wand2, Plus, Check } from 'lucide-react'
 import Link from 'next/link'
 import type { Database } from '@/types/database'
 
@@ -13,6 +13,10 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
     const [intel, setIntel] = useState<Intelligence | null>(null)
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [analyzing, setAnalyzing] = useState(false)
+    const [generating, setGenerating] = useState(false)
+    const [websiteUrl, setWebsiteUrl] = useState('')
+    const [campaign, setCampaign] = useState<any>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -31,6 +35,48 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
 
         if (data) setIntel(data)
         setLoading(false)
+    }
+
+    const handleAnalyze = async () => {
+        if (!websiteUrl) return
+        setAnalyzing(true)
+        try {
+            const res = await fetch('/api/ai/analyze-website', {
+                method: 'POST',
+                body: JSON.stringify({ url: websiteUrl })
+            })
+            const data = await res.json()
+            if (data.error) throw new Error(data.error)
+
+            setIntel(prev => prev ? {
+                ...prev,
+                industry: data.industry,
+                target_audience: data.target_audience,
+                brand_voice: data.brand_voice,
+                goals: data.goals,
+                key_messages: data.key_messages
+            } : null)
+        } catch (error) {
+            console.error('Analysis failed:', error)
+        } finally {
+            setAnalyzing(false)
+        }
+    }
+
+    const handleGenerateCampaign = async () => {
+        setGenerating(true)
+        try {
+            const res = await fetch('/api/ai/campaign', {
+                method: 'POST',
+                body: JSON.stringify({ workspaceId: id })
+            })
+            const data = await res.json()
+            setCampaign(data)
+        } catch (error) {
+            console.error('Campaign generation failed:', error)
+        } finally {
+            setGenerating(false)
+        }
     }
 
     const handleSave = async (e: React.FormEvent) => {
@@ -86,14 +132,52 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
                         </div>
                     </div>
                 </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
-                    style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                    {saving ? 'Saving...' : 'Save Profile'}
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleGenerateCampaign}
+                        disabled={generating}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:bg-white/10"
+                        style={{ border: '1px solid #2a2a3d', background: '#1a1a27' }}>
+                        {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                        Generate Strategy
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
+                        style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {saving ? 'Saving...' : 'Save Profile'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Pomelli Style Analysis */}
+            <div className="glass-card p-6 border-dashed border-orange-500/30">
+                <div className="flex items-center gap-2 mb-4">
+                    <Globe className="w-4 h-4 text-orange-400" />
+                    <h2 className="font-semibold text-white">Extract Business DNA (Pomelli AI)</h2>
+                </div>
+                <div className="flex gap-2">
+                    <input
+                        type="url"
+                        placeholder="Enter client website URL (e.g. https://everestmotoring.co.za)"
+                        value={websiteUrl}
+                        onChange={e => setWebsiteUrl(e.target.value)}
+                        className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                        style={{ background: '#0a0a0f', border: '1px solid #1a1a27' }}
+                    />
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={analyzing || !websiteUrl}
+                        className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+                        style={{ background: 'rgba(249,115,22,0.1)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)' }}>
+                        {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Analyze Site'}
+                    </button>
+                </div>
+                <p className="text-[10px] mt-2" style={{ color: '#4a4a6a' }}>
+                    This will automatically populate the Industry, Audience, and Brand Voice sections using Google Pomelli-inspired AI models.
+                </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -202,6 +286,48 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
                     </div>
                 </div>
             </div>
+
+            {/* Campaign Result Section */}
+            {campaign && (
+                <div className="glass-card p-6 space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <Wand2 className="w-5 h-5 text-orange-400" />
+                            Next 30 Days Strategy
+                        </h2>
+                        <button onClick={() => setCampaign(null)} className="text-xs text-[#5a5a7a] hover:text-white">Clear</button>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {campaign.pillars?.map((pillar: any, i: number) => (
+                            <div key={i} className="p-4 rounded-xl space-y-3" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-orange-400" style={{ background: 'rgba(249,115,22,0.1)' }}>
+                                        {i + 1}
+                                    </div>
+                                    <h3 className="font-semibold text-white text-sm">{pillar.title}</h3>
+                                </div>
+                                <p className="text-xs" style={{ color: '#5a5a7a' }}>{pillar.description}</p>
+                                <div className="space-y-2 pt-2">
+                                    {pillar.post_ideas?.map((idea: string, j: number) => (
+                                        <div key={j} className="flex gap-2 group cursor-pointer">
+                                            <div className="mt-1 w-3 h-3 rounded-full border border-orange-500/30 flex items-center justify-center group-hover:bg-orange-500/20 transition-all">
+                                                <Plus className="w-2 h-2 text-orange-400 opacity-0 group-hover:opacity-100" />
+                                            </div>
+                                            <p className="text-[11px] flex-1 leading-relaxed" style={{ color: '#9090b0' }}>{idea}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex items-center justify-center py-4">
+                        <p className="text-[11px] text-[#3a3a5a] text-center max-w-md">
+                            Click a post idea to draft it automatically using the client's brand voice.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

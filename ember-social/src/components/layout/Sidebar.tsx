@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Flame, LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight } from 'lucide-react'
+import { Flame, LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight, Brain, PenLine, Wifi, Key } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Workspace {
@@ -19,14 +19,25 @@ interface SidebarProps {
 const navItems = [
     { label: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Clients', href: '/dashboard/workspaces', icon: Users },
-    { label: 'Calendar', href: '/dashboard/calendar', icon: Calendar },
-    { label: 'Inbox', href: '/dashboard/inbox', icon: Inbox },
-    { label: 'Analytics', href: '/dashboard/analytics', icon: BarChart2 },
-    { label: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
 export function Sidebar({ workspaces }: SidebarProps) {
     const pathname = usePathname()
+
+    // Extract workspace ID from pathname if active
+    const workspaceIdMatch = pathname.match(/\/dashboard\/workspaces\/([a-zA-Z0-9-]+)/)
+    const activeWorkspaceId = workspaceIdMatch ? workspaceIdMatch[1] : null
+    const isInsideWorkspace = activeWorkspaceId && activeWorkspaceId !== 'new'
+
+    const workspaceNavItems = isInsideWorkspace ? [
+        { label: 'Intelligence', href: `/dashboard/workspaces/${activeWorkspaceId}/intelligence`, icon: Brain },
+        { label: 'Compose', href: `/dashboard/workspaces/${activeWorkspaceId}/compose`, icon: PenLine },
+        { label: 'Calendar', href: `/dashboard/workspaces/${activeWorkspaceId}/calendar`, icon: Calendar },
+        { label: 'Inbox', href: `/dashboard/workspaces/${activeWorkspaceId}/inbox`, icon: Inbox },
+        { label: 'Analytics', href: `/dashboard/workspaces/${activeWorkspaceId}/analytics`, icon: BarChart2 },
+        { label: 'Platforms', href: `/dashboard/workspaces/${activeWorkspaceId}/platforms`, icon: Wifi },
+        { label: 'API Keys', href: `/dashboard/workspaces/${activeWorkspaceId}/api-keys`, icon: Key },
+    ] : []
 
     return (
         <aside className="flex flex-col h-full shrink-0 overflow-y-auto"
@@ -47,7 +58,7 @@ export function Sidebar({ workspaces }: SidebarProps) {
             {/* Main nav */}
             <nav className="px-3 mt-2 space-y-0.5">
                 {navItems.map(({ label, href, icon: Icon }) => {
-                    const active = href === '/dashboard' ? pathname === href : pathname.startsWith(href)
+                    const active = href === '/dashboard' ? pathname === href : (pathname === href || (href === '/dashboard/workspaces' && pathname.startsWith(href) && !isInsideWorkspace))
                     return (
                         <Link key={href} href={href}
                             className={cn(
@@ -64,6 +75,33 @@ export function Sidebar({ workspaces }: SidebarProps) {
                     )
                 })}
             </nav>
+
+            {/* Workspace Nav (Dynamic) */}
+            {isInsideWorkspace && (
+                <div className="mt-6 px-3">
+                    <span className="text-[10px] font-semibold uppercase tracking-widest px-3 mb-2 block" style={{ color: '#3a3a5a' }}>
+                        Workspace
+                    </span>
+                    <nav className="space-y-0.5">
+                        {workspaceNavItems.map(({ label, href, icon: Icon }) => {
+                            const active = pathname === href
+                            return (
+                                <Link key={href} href={href}
+                                    className={cn(
+                                        'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group',
+                                        active
+                                            ? 'text-white'
+                                            : 'text-[#5a5a7a] hover:text-white hover:bg-white/5'
+                                    )}
+                                    style={active ? { background: 'rgba(249,115,22,0.12)', color: '#fb923c' } : {}}>
+                                    <Icon className={cn('w-4 h-4', active ? 'text-orange-400' : 'text-[#3a3a5a] group-hover:text-[#7a7a9a]')} />
+                                    {label}
+                                </Link>
+                            )
+                        })}
+                    </nav>
+                </div>
+            )}
 
             {/* Clients section */}
             <div className="mt-6 px-3">

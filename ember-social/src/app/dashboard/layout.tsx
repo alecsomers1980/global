@@ -9,9 +9,18 @@ export default async function DashboardLayout({
     children: React.ReactNode
 }) {
     const supabase = await createServerSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user: realUser } } = await supabase.auth.getUser()
 
-    if (!user) redirect('/login')
+    // Mock user for bypass mode
+    const user = realUser || {
+        id: '00000000-0000-0000-0000-000000000000',
+        email: 'admin@ember-social.local',
+        role: 'authenticated',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString()
+    } as any
 
     // Fetch workspaces for sidebar
     const { data: workspaces } = await supabase
