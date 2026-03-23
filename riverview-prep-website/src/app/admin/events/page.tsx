@@ -56,13 +56,39 @@ export default function EventsPage() {
   async function deleteEvent(id: string) {
     if (!confirm('Are you sure you want to delete this event?')) return;
 
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', id);
+    try {
+      // 1. Fetch event to get image URLs for cleanup
+      const { data: event } = await supabase
+        .from('events')
+        .select('images')
+        .eq('id', id)
+        .single();
+      
+      if (event?.images && Array.isArray(event.images)) {
+        // 2. Delete all associated images from storage
+        await Promise.all(event.images.map(async (img: any) => {
+          if (img.url && img.url.includes('/images/')) {
+            await fetch('/api/delete-image', { 
+              method: 'POST', 
+              body: JSON.stringify({ imageUrl: img.url }) 
+            });
+          }
+        }));
+      }
 
-    if (!error) {
-      fetchEvents();
+      // 3. Delete the event record
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', id);
+
+      if (!error) {
+        fetchEvents();
+      } else {
+        throw error;
+      }
+    } catch (err: any) {
+      alert('Error deleting event: ' + err.message);
     }
   }
 

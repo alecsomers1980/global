@@ -18,7 +18,9 @@ export default function StaffAdminPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [originalImageUrl, setOriginalImageUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const supabase = createClient();
 
   const [formData, setFormData] = useState({
@@ -39,24 +41,107 @@ export default function StaffAdminPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (editingId) {
+      if (originalImageUrl && formData.image_url !== originalImageUrl && originalImageUrl.includes('/images/')) {
+        await fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: originalImageUrl }) });
+      }
       await supabase.from('staff').update(formData).eq('id', editingId);
     } else {
       await supabase.from('staff').insert([formData]);
     }
-    setShowForm(false); setEditingId(null);
+    
+    setShowForm(false);
+    setEditingId(null);
+    setOriginalImageUrl('');
     setFormData({ name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0 });
     fetchStaff();
+  }
+
+  function closeForm() {
+    if (formData.image_url && formData.image_url !== originalImageUrl && formData.image_url.includes('/images/')) {
+      fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: formData.image_url }) });
+    }
+    setShowForm(false);
+    setEditingId(null);
+    setOriginalImageUrl('');
+    setFormData({ name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0 });
+  }
+
+  const compressImage = async (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+          } else {
+            if (height > MAX_HEIGHT) { width = Math.round((width * MAX_HEIGHT) / height); height = MAX_HEIGHT; }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) resolve(new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: 'image/jpeg' }));
+            else resolve(file);
+          }, 'image/jpeg', 0.85);
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const originalFile = e.target.files[0];
+    setIsUploading(true);
+    
+    try {
+      const file = await compressImage(originalFile);
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+      
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData
+      });
+      
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      
+      if (formData.image_url && formData.image_url !== originalImageUrl && formData.image_url.includes('/images/')) {
+        await fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: formData.image_url }) });
+      }
+      
+      setFormData({ ...formData, image_url: data.publicUrl });
+    } catch (err: any) {
+      alert('Error uploading image: ' + err.message);
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   function startEdit(member: StaffMember) {
     setFormData({ name: member.name, role: member.role, category: member.category || 'Administration', bio: member.bio || '', image_url: member.image_url || '', sort_order: member.sort_order || 0 });
     setEditingId(member.id);
+    setOriginalImageUrl(member.image_url || '');
     setShowForm(true);
   }
 
-  async function handleDelete(id: string) {
+  async function handleDelete(member: StaffMember) {
     if (!confirm('Remove this staff member?')) return;
-    await supabase.from('staff').delete().eq('id', id);
+    if (member.image_url && member.image_url.includes('/images/')) {
+      await fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: member.image_url }) });
+    }
+    await supabase.from('staff').delete().eq('id', member.id);
     fetchStaff();
   }
 
@@ -94,7 +179,7 @@ export default function StaffAdminPage() {
 
       <div className="page-header">
         <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a2e1d' }}>Staff Directory</h2>
-        <button className="btn-primary" onClick={() => { setShowForm(true); setEditingId(null); setFormData({ name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0 }); }}>
+        <button className="btn-primary" onClick={() => { setEditingId(null); setOriginalImageUrl(''); setFormData({ name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0 }); setShowForm(true); }}>
           + Add Staff Member
         </button>
       </div>
@@ -109,13 +194,17 @@ export default function StaffAdminPage() {
         <div className="staff-grid">
           {staff.map(member => (
             <div key={member.id} className="staff-card">
-              <div className="staff-avatar">{member.name.charAt(0)}</div>
+              {member.image_url ? (
+                <img src={member.image_url} alt={member.name} className="staff-avatar" style={{ objectFit: 'cover' }} />
+              ) : (
+                <div className="staff-avatar">{member.name.charAt(0)}</div>
+              )}
               <div className="staff-name">{member.name}</div>
               <div className="staff-role">{member.role}</div>
               <span className="staff-category">{member.category}</span>
               <div className="staff-actions">
                 <button className="btn-sm" onClick={() => startEdit(member)}>Edit</button>
-                <button className="btn-sm del" onClick={() => handleDelete(member.id)}>Remove</button>
+                <button className="btn-sm del" onClick={() => handleDelete(member)}>Remove</button>
               </div>
             </div>
           ))}
@@ -123,7 +212,7 @@ export default function StaffAdminPage() {
       )}
 
       {showForm && (
-        <div className="form-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowForm(false); }}>
+        <div className="form-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
           <div className="form-modal">
             <h3>{editingId ? 'Edit Staff Member' : 'Add Staff Member'}</h3>
             <form onSubmit={handleSave}>
@@ -138,9 +227,19 @@ export default function StaffAdminPage() {
                 <div className="fg"><label>Sort Order</label><input type="number" value={formData.sort_order} onChange={e => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} /></div>
               </div>
               <div className="fg"><label>Bio</label><textarea rows={3} value={formData.bio} onChange={e => setFormData({ ...formData, bio: e.target.value })} /></div>
+              <div className="fg">
+                <label>Staff Image</label>
+                <input type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading} style={{ marginBottom: formData.image_url ? 12 : 0 }} />
+                {isUploading && <div style={{ fontSize: 12, color: '#c4a459', marginTop: 4 }}>Uploading...</div>}
+                {formData.image_url && (
+                  <div style={{ marginTop: 8 }}>
+                    <img src={formData.image_url} alt="Preview" style={{ width: 64, height: 64, borderRadius: 8, objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} />
+                  </div>
+                )}
+              </div>
               <div className="form-actions">
-                <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
-                <button type="submit" className="btn-save">{editingId ? 'Update' : 'Add Member'}</button>
+                <button type="button" className="btn-cancel" onClick={closeForm}>Cancel</button>
+                <button type="submit" className="btn-save" disabled={isUploading}>{editingId ? 'Update' : 'Add Member'}</button>
               </div>
             </form>
           </div>

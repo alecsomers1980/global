@@ -2,38 +2,62 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase-client";
 
-const eventBanners = [
-  {
-    id: 1,
-    src: "/images/oliver-with-a-twist.jpg",
-    title: "Oliver with a Twist",
-    subtitle: "Annual Grade 4-7 High School Play",
-    tag: "Cultural Highlight",
-    href: "/news/12-march-2026", // Example link mapped to news
-  },
-  {
-    id: 2,
-    src: "/images/events/Golf.png",
-    title: "Annual Golf Day 2026",
-    subtitle: "Join us at Malelane Golf Club for our fundraiser.",
-    tag: "Fundraiser",
-    href: "/calendar",
-  },
-  {
-    id: 3,
-    src: "/images/events/Kruger.png",
-    title: "Kruger National Park Camp",
-    subtitle: "Grade 6 & 7 wildlife and team building retreat.",
-    tag: "Academic",
-    href: "/calendar",
-  },
-];
+interface EventBanner {
+  id: string;
+  src: string;
+  title: string;
+  subtitle: string;
+  tag: string;
+  href: string;
+}
 
 export default function EventPosterSlider() {
+  const [eventBanners, setEventBanners] = useState<EventBanner[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    fetchFeaturedEvents();
+  }, []);
+
+  async function fetchFeaturedEvents() {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('is_featured', true)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        const banners: EventBanner[] = data.map((event: any) => {
+          const primaryImage = event.images?.find((img: any) => img.is_primary)?.url || 
+                              event.images?.[0]?.url || 
+                              "/images/placeholder-event.jpg";
+          
+          return {
+            id: event.id,
+            src: primaryImage,
+            title: event.title,
+            subtitle: event.description?.substring(0, 80) + "...",
+            tag: event.category || "Event",
+            href: `/events/${event.slug || event.id}`,
+          };
+        });
+        setEventBanners(banners);
+      }
+    } catch (err) {
+      console.error("Error fetching events:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (eventBanners.length <= 1) return;
@@ -43,11 +67,33 @@ export default function EventPosterSlider() {
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % eventBanners.length);
         setIsTransitioning(false);
-      }, 500); // Wait for fade out to complete before changing src info
-    }, 6000); // 6 Secs cycle
+      }, 500);
+    }, 6000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [eventBanners]);
+
+  if (loading) {
+    return (
+      <div className="relative aspect-[3/4.2] rounded-tr-[5rem] rounded-bl-[5rem] overflow-hidden shadow-2xl border-4 border-white bg-brand-cream/10 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-gold opacity-20" />
+      </div>
+    );
+  }
+
+  if (eventBanners.length === 0) {
+    return (
+      <div className="relative aspect-[3/4.2] rounded-tr-[5rem] rounded-bl-[5rem] overflow-hidden shadow-2xl border-4 border-white bg-brand-green/5 flex items-center justify-center p-12 text-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-brand-gold/10 flex items-center justify-center">
+            <ArrowRight className="w-6 h-6 text-brand-gold -rotate-45" />
+          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-green/40">Upcoming Events</p>
+          <p className="text-xs font-bold text-brand-green/30 italic">Check back soon for new events and cultural highlights.</p>
+        </div>
+      </div>
+    );
+  }
 
   const activeBanner = eventBanners[currentIndex];
 
@@ -66,7 +112,7 @@ export default function EventPosterSlider() {
         <div className="absolute inset-0 bg-gradient-to-t from-brand-green/95 via-brand-green/40 to-transparent" />
       </div>
 
-      {/* Decorative dots / indicators */}
+      {/* Indicators */}
       {eventBanners.length > 1 && (
         <div className="absolute top-6 right-8 flex gap-2 z-20">
           {eventBanners.map((_, i) => (
@@ -89,11 +135,11 @@ export default function EventPosterSlider() {
           </span>
         </div>
         
-        <h3 className="text-3xl font-bold mb-2 leading-tight tracking-tight">
+        <h3 className="text-3xl font-bold mb-2 leading-tight tracking-tight drop-shadow-lg">
           {activeBanner.title}
         </h3>
         
-        <p className="text-white/80 text-xs mb-5 max-w-sm">
+        <p className="text-white/80 text-xs mb-5 max-w-sm drop-shadow-md">
           {activeBanner.subtitle}
         </p>
 
