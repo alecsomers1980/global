@@ -558,6 +558,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             <label className="flex items-center gap-2"><input type="checkbox" name="deliver_bakkie" checked={!!jobcard.deliver_bakkie} onChange={handleChange} className="text-aloe-green" /> Bakkie</label>
                                             <label className="flex items-center gap-2"><input type="checkbox" name="deliver_truck" checked={!!jobcard.deliver_truck} onChange={handleChange} className="text-aloe-green" /> Truck</label>
                                             <label className="flex items-center gap-2"><input type="checkbox" name="deliver_trailer" checked={!!jobcard.deliver_trailer} onChange={handleChange} className="text-aloe-green" /> Trailer</label>
+                                            <label className="flex items-center gap-2"><input type="checkbox" name="deliver_courier" checked={!!jobcard.deliver_courier} onChange={handleChange} className="text-aloe-green" /> Courier</label>
                                         </div>
                                     </div>
                                 )}
@@ -618,12 +619,6 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     </div>
                                 )}
                                 
-                                <Toggle label="Courier" name="track_courier" jobcard={jobcard} handleChange={handleChange} />
-                                {jobcard.track_courier && (
-                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
-                                        <textarea name="courier_address" value={jobcard.courier_address || ''} onChange={handleChange} placeholder="Courier Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
-                                    </div>
-                                )}
                                 <Toggle label="Collect" name="track_collect" jobcard={jobcard} handleChange={handleChange} />
                             </div>
 
