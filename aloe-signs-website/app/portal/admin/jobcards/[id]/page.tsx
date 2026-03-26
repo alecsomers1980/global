@@ -12,6 +12,88 @@ const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed']
 interface FileEntry { id: string; file: File | null; name: string; description: string; }
 function createEntry(): FileEntry { return { id: Math.random().toString(36).slice(2), file: null, name: '', description: '' }; }
 
+const calculateWorkflowStatus = (workflow: any) => {
+    if (!workflow) return 'Quoted';
+    
+    if (workflow.completed?.ticked) return 'Completed';
+    if (workflow.ready_collection?.ticked) return 'Ready';
+    
+    const top5 = ['captured', 'quote_sent', 'deposit_paid', 'proof_sent', 'approved'];
+    const allTop5Ticked = top5.every(k => workflow[k]?.ticked);
+    if (allTop5Ticked) return 'In-Production';
+    
+    if (workflow.approved?.ticked) return 'Approved';
+    if (workflow.proof_sent?.ticked) return 'Proof Sent';
+    if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
+    if (workflow.quote_sent?.ticked) return 'Quote Sent';
+    if (workflow.captured?.ticked) return 'Captured';
+    return 'Quoted';
+};
+
+const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; name: string; jobcard: any; setJobcard: any }) => {
+    const workflow = jobcard.status_workflow_json || {};
+    const item = workflow[name] || { ticked: false };
+    const dateTicked = item.ticked_at ? new Date(item.ticked_at) : null;
+    const canUntick = !dateTicked || (Date.now() - dateTicked.getTime() < 24 * 60 * 60 * 1000);
+
+    const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        if (!checked && !canUntick) {
+            alert("Cannot untick a status item more than a day later.");
+            return;
+        }
+        
+        const updatedWorkflow = {
+            ...workflow,
+            [name]: {
+                ticked: checked,
+                ticked_at: checked ? new Date().toISOString() : null
+            }
+        };
+
+        const newStatus = calculateWorkflowStatus(updatedWorkflow);
+        setJobcard((prev: any) => ({
+            ...prev,
+            status_workflow_json: updatedWorkflow,
+            status: newStatus
+        }));
+    };
+
+    return (
+        <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                    type="checkbox" 
+                    checked={!!item.ticked} 
+                    onChange={handleCheck} 
+                    disabled={name === 'captured'} 
+                    className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" 
+                />
+                <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
+            </label>
+            {dateTicked && (
+                <span className="text-[9px] text-gray-400 font-medium">
+                    {dateTicked.toLocaleDateString([], {day:'2-digit', month:'2-digit'})} {dateTicked.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </span>
+            )}
+        </div>
+    );
+};
+
+const InputLine = ({ label, name, jobcard, handleChange }: { label: string; name: string; jobcard: any; handleChange: any }) => (
+    <div className="flex border-b border-gray-300">
+        <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-center bg-gray-50">{label}</span>
+        <input type="text" name={name} value={jobcard[name] || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800" />
+    </div>
+);
+
+const Toggle = ({ label, name, jobcard, handleChange }: { label: string; name: string; jobcard: any; handleChange: any }) => (
+    <label className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <input type="checkbox" name={name} checked={!!jobcard[name]} onChange={handleChange} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 focus:ring-aloe-green cursor-pointer" />
+    </label>
+);
+
 export default function JobcardEditPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const resolvedParams = use(params);
@@ -276,87 +358,6 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Loading...</div>;
     if (!jobcard) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Not Found</div>;
 
-    const calculateWorkflowStatus = (workflow: any) => {
-        if (!workflow) return 'Quoted';
-        
-        if (workflow.completed?.ticked) return 'Completed';
-        if (workflow.ready_collection?.ticked) return 'Ready';
-        
-        const top5 = ['captured', 'quote_sent', 'deposit_paid', 'proof_sent', 'approved'];
-        const allTop5Ticked = top5.every(k => workflow[k]?.ticked);
-        if (allTop5Ticked) return 'In-Production';
-        
-        if (workflow.approved?.ticked) return 'Approved';
-        if (workflow.proof_sent?.ticked) return 'Proof Sent';
-        if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
-        if (workflow.quote_sent?.ticked) return 'Quote Sent';
-        if (workflow.captured?.ticked) return 'Captured';
-        return 'Quoted';
-    };
-
-    const StatusCheckbox = ({ label, name }: { label: string; name: string }) => {
-        const workflow = jobcard.status_workflow_json || {};
-        const item = workflow[name] || { ticked: false };
-        const dateTicked = item.ticked_at ? new Date(item.ticked_at) : null;
-        const canUntick = !dateTicked || (Date.now() - dateTicked.getTime() < 24 * 60 * 60 * 1000);
-
-        const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const checked = e.target.checked;
-            if (!checked && !canUntick) {
-                alert("Cannot untick a status item more than a day later.");
-                return;
-            }
-            
-            const updatedWorkflow = {
-                ...workflow,
-                [name]: {
-                    ticked: checked,
-                    ticked_at: checked ? new Date().toISOString() : null
-                }
-            };
-
-            const newStatus = calculateWorkflowStatus(updatedWorkflow);
-            setJobcard((prev: any) => ({
-                ...prev,
-                status_workflow_json: updatedWorkflow,
-                status: newStatus
-            }));
-        };
-
-        return (
-            <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
-                <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                        type="checkbox" 
-                        checked={!!item.ticked} 
-                        onChange={handleCheck} 
-                        disabled={name === 'captured'} 
-                        className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" 
-                    />
-                    <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
-                </label>
-                {dateTicked && (
-                    <span className="text-[9px] text-gray-400 font-medium">
-                        {dateTicked.toLocaleDateString([], {day:'2-digit', month:'2-digit'})} {dateTicked.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </span>
-                )}
-            </div>
-        );
-    };
-
-    const InputLine = ({ label, name }: { label: string; name: string }) => (
-        <div className="flex border-b border-gray-300">
-            <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-center bg-gray-50">{label}</span>
-            <input type="text" name={name} value={jobcard[name] || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800" />
-        </div>
-    );
-
-    const Toggle = ({ label, name }: { label: string; name: string }) => (
-        <label className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <span className="text-sm font-medium text-gray-700">{label}</span>
-            <input type="checkbox" name={name} checked={!!jobcard[name]} onChange={handleChange} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 focus:ring-aloe-green cursor-pointer" />
-        </label>
-    );
 
     return (
         <div className="min-h-[100dvh] bg-transparent p-4 md:p-8 font-inter">
@@ -416,14 +417,14 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     )}
                                 </div>
                             </div>
-                            <InputLine label="Contact:" name="contact_name" />
-                            <InputLine label="Tel:" name="contact_phone" />
-                            <InputLine label="Email:" name="email" />
+                            <InputLine label="Contact:" name="contact_name" jobcard={jobcard} handleChange={handleChange} />
+                            <InputLine label="Tel:" name="contact_phone" jobcard={jobcard} handleChange={handleChange} />
+                            <InputLine label="Email:" name="email" jobcard={jobcard} handleChange={handleChange} />
                         </div>
 
                         {/* Job Info (Block 3) */}
                         <div className="w-full lg:w-[35%] border-b lg:border-b-0 lg:border-r border-black flex flex-col">
-                            <InputLine label="Invoice:" name="invoice" />
+                            <InputLine label="Invoice:" name="invoice" jobcard={jobcard} handleChange={handleChange} />
                             <div className="flex border-b border-gray-300 flex-1">
                                 <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-start bg-gray-50">Address:</span>
                                 <textarea name="address" value={jobcard.address || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium resize-none text-gray-800 h-full" rows={2} />
@@ -449,13 +450,13 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             <span className="text-[10px] font-bold text-gray-600 uppercase">Workflow</span>
                         </div>
                         <div className="flex-1 flex justify-around p-1 flex-wrap gap-1">
-                            <StatusCheckbox label="Captured" name="captured" />
-                            <StatusCheckbox label="Quote Sent" name="quote_sent" />
-                            <StatusCheckbox label="Deposit Paid / PO" name="deposit_paid" />
-                            <StatusCheckbox label="Proof Sent" name="proof_sent" />
-                            <StatusCheckbox label="Approved" name="approved" />
-                            <StatusCheckbox label="Ready" name="ready_collection" />
-                            <StatusCheckbox label="Completed" name="completed" />
+                            <StatusCheckbox label="Captured" name="captured" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Quote Sent" name="quote_sent" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Deposit Paid / PO" name="deposit_paid" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Proof Sent" name="proof_sent" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Approved" name="approved" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Ready" name="ready_collection" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Completed" name="completed" jobcard={jobcard} setJobcard={setJobcard} />
                         </div>
                     </div>
 
@@ -488,13 +489,13 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <span className="text-xs font-bold text-gray-700 uppercase">Department</span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-x-2">
-                                    <Toggle label="FlatBed" name="prod_flatbed" />
-                                    <Toggle label="Digital" name="prod_digital" />
-                                    <Toggle label="Vinyl cut" name="prod_vinyl_cut" />
-                                    <Toggle label="Screen" name="prod_screen" />
-                                    <Toggle label="Application" name="prod_applicate" />
-                                    <Toggle label="Engineer" name="prod_engineer" />
-                                    <Toggle label="Outsource" name="prod_outsource" />
+                                    <Toggle label="FlatBed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Digital" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Vinyl cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Outsource" name="prod_outsource" jobcard={jobcard} handleChange={handleChange} />
                                 </div>
                             </div>
 
@@ -548,7 +549,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <div className="p-2 bg-gray-100 border-b border-gray-300">
                                     <span className="text-xs font-bold text-gray-700 uppercase">Collect / Delivery</span>
                                 </div>
-                                <Toggle label="Deliver" name="track_deliver" />
+                                <Toggle label="Deliver" name="track_deliver" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_deliver && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
                                         <textarea name="delivery_address" value={jobcard.delivery_address || ''} onChange={handleChange} placeholder="Delivery Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
@@ -561,7 +562,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     </div>
                                 )}
                                 
-                                <Toggle label="Installation" name="track_installation" />
+                                <Toggle label="Installation" name="track_installation" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_installation && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
                                         <textarea name="installation_address" value={jobcard.installation_address || ''} onChange={handleChange} placeholder="Installation Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
@@ -617,13 +618,13 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     </div>
                                 )}
                                 
-                                <Toggle label="Courier" name="track_courier" />
+                                <Toggle label="Courier" name="track_courier" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_courier && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
                                         <textarea name="courier_address" value={jobcard.courier_address || ''} onChange={handleChange} placeholder="Courier Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                     </div>
                                 )}
-                                <Toggle label="Collect" name="track_collect" />
+                                <Toggle label="Collect" name="track_collect" jobcard={jobcard} handleChange={handleChange} />
                             </div>
 
 
@@ -635,7 +636,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                                 
                                 {/* Digital */}
-                                <Toggle label="Digital" name="mat_section_digital" />
+                                <Toggle label="Digital" name="mat_section_digital" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.mat_section_digital && (
                                     <div className="grid grid-cols-2 gap-x-2 py-2 border-b border-gray-300 bg-blue-50/50">
                                         {MATERIALS.map(m => (
@@ -648,7 +649,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 )}
 
                                 {/* Engineering */}
-                                <Toggle label="Engineering" name="mat_section_engineering" />
+                                <Toggle label="Engineering" name="mat_section_engineering" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.mat_section_engineering && (
                                     <div className="p-3 border-b border-gray-300 flex flex-col gap-3 bg-blue-50/50">
                                         <div>
@@ -675,7 +676,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 )}
 
                                 {/* Civil */}
-                                <Toggle label="Civil" name="mat_section_civil" />
+                                <Toggle label="Civil" name="mat_section_civil" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.mat_section_civil && (
                                     <div className="p-3 flex flex-col gap-3 bg-blue-50/50 border-b border-gray-300">
                                         <div>
