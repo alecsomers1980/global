@@ -1,42 +1,47 @@
-# Design System: Bushbuckridge Directory (Cinematic UI)
+# Design System: Bushbuckridge Community Directory
 
 ## 1. Visual Theme & Atmosphere
-- **Vibe**: Immersive, Premium, Vibrant, and Story-driven.
-- **Atmosphere**: A "Living Directory" that feels like a premium digital magazine or a cinematic portal into the local economy. 
-- **Style**: High-contrast, deep shadows, smooth motion, and "physical" depth. Use of glassmorphism and large background imagery.
+- **Vibe**: Clean, Efficient, Community-Driven, Professional.
+- **Atmosphere**: A "Utility Hub" — fast, trustworthy, and instantly usable on any device.
+- **Style**: Clean surfaces, clear hierarchy, strong typography, and purposeful color. No excessive glassmorphism — let the content breathe.
 
 ## 2. Color Palette & Roles
-- **Savannah Deep Green (#1B4332)**: Primary brand color, representing growth and the local landscape. Used for headers and primary backgrounds.
-- **Solar Gold (#FFD700)**: Accent color for "Spotlight", "Featured", and "Opportunities". Represents prosperity and excellence.
-- **Earth Slate (#2D3436)**: Neutral dark for text and deep shadows.
-- **Pure White (#FFFFFF)**: Main text on dark backgrounds and clean surfaces.
-- **Glass/Translucent (rgba(255, 255, 255, 0.05))**: For cinematic overlays and cards.
+- **Savannah Deep Green (#1B4332)**: Primary brand color. Used for headers, primary actions.
+- **Solar Gold (#FFD700)**: Accent for featured listings, upgrades, and CTAs.
+- **Earth Slate (#2D3436)**: Body text and strong headings.
+- **Muted Grey (#6B7280)**: Secondary text, descriptions, meta info.
+- **Background White (#FAFAFA)**: Clean page backgrounds.
+- **Card White (#FFFFFF)**: Clean card surfaces with subtle borders.
+- **Success Green (#16A34A)**: Active status, WhatsApp, confirmations.
+- **Warning Amber (#F59E0B)**: Pending status, notices.
+- **Error Red (#DC2626)**: Destructive actions, alerts.
 
 ## 3. Typography Rules
-- **Headings**: **Outfit** or **Inter** (Bold/Extra Bold) - *Modern, geometric, impactful.*
-- **Body**: **Inter** (Regular/Medium) - *Maximum legibility, clean.*
-- **Data/Badges**: **JetBrains Mono** or similar monospace - *For a technical, "directory" feel.*
+- **Headings**: **Outfit** (Bold/Extra Bold) — Modern, geometric, impactful.
+- **Body**: **Inter / Geist Sans** (Regular/Medium) — Maximum legibility, clean.
+- **Badges/Tags**: System font or monospace for a technical, data-driven feel.
 
 ## 4. Component Stylings
 * **Buttons**:
-    - **Primary**: "Savannah Green" with a subtle inner glow. Rounded-full (Pill-shaped).
-    - **Cinematic**: Transparent with a white border and a shimmer effect on hover.
+    - **Primary**: Savannah Green, rounded-xl, clean shadow.
+    - **Secondary**: Outline, subtle hover fill.
+    - **CTA**: Gold background for featured/upgrade actions.
 * **Cards**:
-    - **Premium Card**: Deep background with a 1px border (`border-white/10`). 
-    - **Elevation**: "Whisper-soft" diffused shadows that expand on hover.
-    - **Interactive**: 1.02x scale up on hover with a slight brightness boost.
+    - Clean white background, 1px border, rounded-2xl.
+    - Subtle shadow, gentle hover lift (translate-y-1).
+    - No glassmorphism or blur effects.
 * **Navigation**:
-    - **Floating Header**: Glassmorphism effect (`backdrop-blur-md`) with a thin bottom border.
+    - Fixed top header, white background, clean border-bottom.
+    - Green logo mark, clear link labels.
+    - Mobile: Sheet drawer with full nav.
 
 ## 5. Layout Principles
-- **Whitespace**: "Cinematic" margins (generous padding to let elements breathe).
-- **Hierarchy**: Use of "Motion Hierarchy" — elements fade in as the user scrolls.
-- **Imagery**: Full-bleed hero images with dark overlays to make text "pop".
+- **Mobile-First**: Designed for smartphones first, scales up elegantly.
+- **Whitespace**: Generous padding, let content breathe.
+- **Hierarchy**: Clear headings → descriptions → actions. No competing elements.
+- **Imagery**: Contained, not full-bleed. Business logos and photos in cards, not hero backgrounds.
 
-## 6. Design System Notes for Stitch Generation
-When generating screens, use:
-- `bg-[#1B4332]` for primary sections.
-- `text-[#FFD700]` for highlights.
-- `backdrop-blur-xl` for overlays.
-- `rounded-3xl` for large containers to give a modern, friendly feel.
-- `shadow-[0_20px_50px_rgba(0,0,0,0.3)]` for deep cinematic depth.
+## 6. Interaction Principles
+- **Subtle hovers**: slight lift, color shift — no dramatic scale/blur effects.
+- **Clear feedback**: Loading states, success/error toasts.
+- **Fast navigation**: Minimal page weight, instant transitions.

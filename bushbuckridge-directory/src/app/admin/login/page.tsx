@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -10,12 +10,12 @@ export default async function AdminLoginPage({
 }: {
     searchParams: Promise<{ message: string }>
 }) {
-    const supabase = await createClient()
+    const pb = await createClient()
     const resolvedParams = await searchParams;
-    const { data: { session } } = await supabase.auth.getSession()
+    const user = pb.authStore.model
 
     // If already logged in, redirect to dashboard
-    if (session) {
+    if (user) {
         redirect('/admin')
     }
 
@@ -24,15 +24,12 @@ export default async function AdminLoginPage({
 
         const email = formData.get('email') as string
         const password = formData.get('password') as string
-        const supabase = await createClient()
+        const pb = await createClient()
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-
-        if (error) {
-            return redirect(`/admin/login?message=${encodeURIComponent(error.message)}`)
+        try {
+            await pb.collection('users').authWithPassword(email, password)
+        } catch (error: any) {
+            return redirect(`/admin/login?message=${encodeURIComponent('Invalid credentials')}`)
         }
 
         return redirect('/admin')

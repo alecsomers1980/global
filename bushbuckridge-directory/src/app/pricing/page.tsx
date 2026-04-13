@@ -34,7 +34,7 @@ export default function PricingPage() {
             bgColor: 'bg-amber-50',
             features: [
                 'Everything in Standard',
-                'Business Logo & Gallery',
+                'Business Logo and an image',
                 'Social Media Integration',
                 'Website & Email Links',
                 'Verified Badge Status',
@@ -54,8 +54,8 @@ export default function PricingPage() {
             bgColor: 'bg-rose-50',
             features: [
                 'Everything in Enhanced',
+                'Business logo and gallery',
                 'Full Spotlight Article',
-                'Professional Photography',
                 'Featured Home Page Placement',
                 'Lead Management Dashboard',
                 'Monthly Performance Report'
@@ -75,7 +75,7 @@ export default function PricingPage() {
                 backgroundImage="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                     {packages.map((pkg) => (
                         <Card key={pkg.name} className={`group border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] flex flex-col transition-all duration-500 hover:-translate-y-4 hover:shadow-primary/5 ${pkg.featured ? 'ring-2 ring-primary relative overflow-hidden' : ''}`}>

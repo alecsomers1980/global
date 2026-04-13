@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow } from 'date-fns'
@@ -7,12 +7,18 @@ import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
 
 export default async function JobsPage() {
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: jobs, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('created_at', { ascending: false })
+    let jobs: any[] = []
+    let error = false
+    try {
+      const records = await pb.collection('jobs').getList(1, 50, {
+      })
+      jobs = records.items
+    } catch (e) {
+      console.error('Failed to fetch jobs', e)
+      error = true
+    }
 
     return (
         <div className="flex flex-col gap-12 pb-24">
@@ -23,7 +29,7 @@ export default async function JobsPage() {
                 backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 <div className="flex flex-col lg:flex-row gap-12">
                     <div className="flex-1 space-y-8">
                         {error ? (
@@ -53,7 +59,7 @@ export default async function JobsPage() {
                                                     <span className="text-xs font-black text-primary/40 uppercase tracking-widest">Local Business</span>
                                                     <div className="h-1 w-1 rounded-full bg-primary/20" />
                                                     <span className="text-xs font-black text-primary/40 uppercase tracking-widest flex items-center">
-                                                        <Clock className="h-3 w-3 mr-1" /> {formatDistanceToNow(new Date(job.created_at))} ago
+                                                        <Clock className="h-3 w-3 mr-1" /> {formatDistanceToNow(new Date(job.created))} ago
                                                     </span>
                                                 </div>
                                                 <h3 className="text-3xl font-black tracking-tight group-hover:text-primary transition-colors">

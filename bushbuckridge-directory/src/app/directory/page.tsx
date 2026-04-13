@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,49 +19,49 @@ export default async function DirectoryPage({
 }: {
     searchParams: Promise<{ q?: string; sector?: string; area?: string }>
 }) {
-    const supabase = await createClient()
+    const pb = await createClient()
     const resolvedParams = await searchParams;
 
     // 1. Fetch Taxonomies for Filters
-    const { data: sectors } = await supabase.from('sectors').select('id, name').order('name')
-    const { data: areas } = await supabase.from('areas').select('id, name').order('name')
+    let sectors: any[] = []
+    let areas: any[] = []
+    try {
+      const [sectorsRes, areasRes] = await Promise.all([
+        pb.collection('sectors').getFullList({ sort: 'name' }),
+        pb.collection('areas').getFullList({ sort: 'name' }),
+      ])
+      sectors = sectorsRes
+      areas = areasRes
+    } catch (e) {
+      console.error('Failed to fetch taxonomies', e)
+    }
 
     // 2. Build the Query for Businesses
-    let query = supabase
-        .from('businesses')
-        .select(`
-            *,
-            sectors ( name ),
-            areas ( name ),
-            posts ( slug )
-        `)
-        .eq('status', 'active')
-
+    let filter = 'status = "active"'
     if (resolvedParams.q) {
-        query = query.ilike('name', `%${resolvedParams.q}%`)
+        filter += ` && name ~ "${resolvedParams.q}"`
     }
     if (resolvedParams.sector && resolvedParams.sector !== 'all') {
-        query = query.eq('sector_id', resolvedParams.sector)
+        filter += ` && sector = "${resolvedParams.sector}"`
     }
     if (resolvedParams.area && resolvedParams.area !== 'all') {
-        query = query.eq('area_id', resolvedParams.area)
+        filter += ` && area = "${resolvedParams.area}"`
     }
 
-    const { data: fetchedBusinesses, error } = await query
-
-    // Sort: Featured first, then Premium > Enhanced > Standard, then Alphabetical
-    const tierWeight: Record<string, number> = { premium: 3, enhanced: 2, standard: 1 }
-    const businesses = fetchedBusinesses?.sort((a, b) => {
-        if (a.is_featured && !b.is_featured) return -1
-        if (!a.is_featured && b.is_featured) return 1
-
-        const weightA = tierWeight[a.package_tier || 'standard'] || 1
-        const weightB = tierWeight[b.package_tier || 'standard'] || 1
-
-        if (weightA !== weightB) return weightB - weightA
-
-        return a.name.localeCompare(b.name)
-    })
+    let businesses: any[] = []
+    let error = false
+    try {
+      const records = await pb.collection('businesses').getList(1, 50, {
+        filter,
+        expand: 'sector,area',
+        // PocketBase can handle some of this sorting
+        sort: '-is_featured, -package_tier, name',
+      })
+      businesses = records.items
+    } catch (e) {
+      console.error('Failed to fetch businesses', e)
+      error = true
+    }
 
     return (
         <div className="flex flex-col gap-12 pb-24">
@@ -71,7 +71,7 @@ export default async function DirectoryPage({
                 badge="DIRECTORY"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 {/* Header & Filter Section */}
                 <section className="bg-card/80 backdrop-blur-xl border rounded-[2rem] p-8 shadow-2xl mb-12">
                     <form className="grid gap-6 md:grid-cols-4 lg:grid-cols-5 items-end">
@@ -135,45 +135,50 @@ export default async function DirectoryPage({
                     )}
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {businesses?.map((biz) => (
-                            <Card key={biz.id} className={`group flex flex-col overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 rounded-[2rem] ${biz.is_featured ? 'ring-2 ring-secondary ring-offset-4 ring-offset-background' : ''}`}>
-                                {(biz.package_tier === 'premium' || biz.package_tier === 'enhanced') && (
-                                    <div className="h-40 bg-muted relative flex items-center justify-center overflow-hidden">
-                                        {biz.logo_url ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={biz.logo_url} alt={biz.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                        ) : (
-                                            <div className="bg-primary/5 h-full w-full flex items-center justify-center">
-                                                <span className="text-4xl font-black text-primary/10 select-none uppercase">{biz.name[0]}</span>
-                                            </div>
-                                        )}
-                                        {biz.is_featured && (
-                                            <Badge className="absolute top-4 right-4 shadow-lg bg-secondary text-secondary-foreground font-black px-3 py-1 rounded-full border-0">
-                                                <Star className="h-3 w-3 mr-1 fill-current" /> Featured
-                                            </Badge>
-                                        )}
-                                    </div>
-                                )}
+                        {businesses?.map((biz) => {
+                            const logoUrl = biz.logo 
+                              ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
+                              : null;
 
-                                <CardHeader className="pb-3 flex-1 px-8 pt-8">
-                                    <div className="flex justify-between items-start gap-2 mb-2">
-                                        <CardTitle className="line-clamp-2 text-xl font-bold tracking-tight group-hover:text-primary transition-colors leading-tight">{biz.name}</CardTitle>
-                                    </div>
-                                    <div className="flex items-center text-sm font-bold text-muted-foreground">
-                                        <MapPin className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                                        <span className="truncate">{biz.areas?.name || 'Local Area'}</span>
-                                    </div>
-                                </CardHeader>
+                            return (
+                                <Card key={biz.id} className={`group flex flex-col overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 rounded-[2rem] ${biz.is_featured ? 'ring-2 ring-secondary ring-offset-4 ring-offset-background' : ''}`}>
+                                    {(biz.package_tier === 'premium' || biz.package_tier === 'enhanced') && (
+                                        <div className="h-40 bg-muted relative flex items-center justify-center overflow-hidden">
+                                            {logoUrl ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img src={logoUrl} alt={biz.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                            ) : (
+                                                <div className="bg-primary/5 h-full w-full flex items-center justify-center">
+                                                    <span className="text-4xl font-black text-primary/10 select-none uppercase">{biz.name[0]}</span>
+                                                </div>
+                                            )}
+                                            {biz.is_featured && (
+                                                <Badge className="absolute top-4 right-4 shadow-lg bg-secondary text-secondary-foreground font-black px-3 py-1 rounded-full border-0">
+                                                    <Star className="h-3 w-3 mr-1 fill-current" /> Featured
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    )}
 
-                                <CardContent className="space-y-4 px-8">
-                                    <div className="flex flex-wrap gap-2">
-                                        <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider py-0.5 px-3 rounded-full">{biz.sectors?.name}</Badge>
-                                        {biz.is_verified && (
-                                            <Badge variant="outline" className="font-bold text-[10px] uppercase tracking-wider py-0.5 px-3 rounded-full text-green-600 border-green-200 bg-green-50/50">
-                                                <CheckCircle2 className="h-2.5 w-2.5 mr-1" /> Verified
-                                            </Badge>
-                                        )}
-                                    </div>
+                                    <CardHeader className="pb-3 flex-1 px-8 pt-8">
+                                        <div className="flex justify-between items-start gap-2 mb-2">
+                                            <CardTitle className="line-clamp-2 text-xl font-bold tracking-tight group-hover:text-primary transition-colors leading-tight">{biz.name}</CardTitle>
+                                        </div>
+                                        <div className="flex items-center text-sm font-bold text-muted-foreground">
+                                            <MapPin className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                                            <span className="truncate">{biz.expand?.area?.name || 'Local Area'}</span>
+                                        </div>
+                                    </CardHeader>
+
+                                    <CardContent className="space-y-4 px-8">
+                                        <div className="flex flex-wrap gap-2">
+                                            <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider py-0.5 px-3 rounded-full">{biz.expand?.sector?.name || 'Sector'}</Badge>
+                                            {biz.is_verified && (
+                                                <Badge variant="outline" className="font-bold text-[10px] uppercase tracking-wider py-0.5 px-3 rounded-full text-green-600 border-green-200 bg-green-50/50">
+                                                    <CheckCircle2 className="h-2.5 w-2.5 mr-1" /> Verified
+                                                </Badge>
+                                            )}
+                                        </div>
                                     {biz.description && (
                                         <p className="text-sm text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">
                                             {biz.description}
@@ -203,7 +208,7 @@ export default async function DirectoryPage({
                                     </Button>
                                 </CardFooter>
                             </Card>
-                        ))}
+                        )})}
 
                         {businesses?.length === 0 && (
                             <div className="col-span-full py-24 text-center space-y-6 bg-muted/30 rounded-[3rem] border border-dashed flex flex-col items-center justify-center">

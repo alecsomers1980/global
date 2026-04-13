@@ -1,6 +1,6 @@
-import { requireAdmin } from '@/utils/supabase/admin'
+import { requireAdmin } from '@/utils/pocketbase/admin'
 import Link from 'next/link'
-import { LayoutDashboard, Users, Briefcase, Calendar, Megaphone, FileText, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, FileText, Settings, LogOut } from 'lucide-react'
 
 export default async function AdminLayout({
     children,
@@ -36,6 +36,8 @@ export default async function AdminLayout({
                         <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3 px-4">Core Directory</p>
                         <NavLink href="/admin/businesses" icon={Briefcase}>Businesses</NavLink>
                         <NavLink href="/admin/subscriptions" icon={FileText}>Subscriptions</NavLink>
+                        <NavLink href="/admin/spotlight" icon={FileText}>Spotlight Articles</NavLink>
+                        <NavLink href="/admin/revenue" icon={DollarSign}>Revenue</NavLink>
                     </div>
 
                     <div className="mb-6">
@@ -43,7 +45,6 @@ export default async function AdminLayout({
                         <NavLink href="/admin/events" icon={Calendar}>Events</NavLink>
                         <NavLink href="/admin/jobs" icon={Users}>Jobs Hub</NavLink>
                         <NavLink href="/admin/opportunities" icon={Briefcase}>Opportunities</NavLink>
-                        <NavLink href="/admin/spotlight" icon={Megaphone}>Spotlight Articles</NavLink>
                     </div>
 
                     <div>

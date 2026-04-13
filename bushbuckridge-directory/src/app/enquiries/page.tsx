@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -11,16 +11,21 @@ import { Phone, Mail, MessageCircle } from 'lucide-react'
 export default function EnquiriesPage() {
     async function submitEnquiry(formData: FormData) {
         'use server'
-        const db = await createClient()
-        const { error } = await db.from('enquiries').insert({
-            type: 'general',
-            contact_person: String(formData.get('name')),
-            phone: formData.get('phone'),
-            email: formData.get('email'),
-            details: formData.get('message'),
-        })
-        if (!error) redirect('/enquiries/success')
-        else redirect('/enquiries?error=true')
+        const pb = await createClient()
+        try {
+            await pb.collection('enquiries').create({
+                type: 'general',
+                contact_person: String(formData.get('name')),
+                phone: String(formData.get('phone') || ''),
+                email: String(formData.get('email') || ''),
+                details: String(formData.get('message')),
+                status: 'new',
+            })
+            redirect('/enquiries/success')
+        } catch (e) {
+            console.error('Enquiry submission error:', e)
+            redirect('/enquiries?error=true')
+        }
     }
 
     return (

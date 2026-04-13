@@ -1,24 +1,55 @@
-import { requireAdmin } from '@/utils/supabase/admin'
-import { createClient } from '@/utils/supabase/server'
+import { requireAdmin } from '@/utils/pocketbase/admin'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 
-export default async function AdminEventsPage() {
+export default async function AdminEventsPage({
+    searchParams
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     await requireAdmin()
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: events, error } = await supabase
-        .from('events')
-        .select('*')
-        .order('date', { ascending: false })
+    const resolvedParams = await searchParams
+    const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
+
+    let events: any[] = []
+    try {
+        events = await pb.collection('events').getFullList({
+            sort: '-date',
+        })
+        
+        if (q) {
+            events = events.filter(ev => 
+                (ev.title || '').toLowerCase().includes(q) ||
+                (ev.venue || '').toLowerCase().includes(q)
+            )
+        }
+    } catch (e) {
+        console.error('Failed to fetch events', e)
+    }
 
     return (
         <div className="space-y-10">
-            <div>
-                <h1 className="text-4xl font-black tracking-tight text-primary">Events Management</h1>
-                <p className="text-muted-foreground font-medium mt-2 text-lg">Manage all local events on the platform.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-primary">Events Management</h1>
+                    <p className="text-muted-foreground font-medium mt-2 text-lg">Manage all local events on the platform.</p>
+                </div>
+                <form method="get" className="flex items-center gap-2">
+                    <input
+                        name="q"
+                        defaultValue={q}
+                        placeholder="Search events..."
+                        className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    />
+                    <button type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold text-sm shadow-md hover:bg-primary/90 transition-colors">
+                        Search
+                    </button>
+                </form>
             </div>
 
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -7,13 +7,20 @@ import { Calendar as CalendarIcon, MapPin, ExternalLink, Ticket, Sparkles, Arrow
 import SecondaryHeader from '@/components/SecondaryHeader'
 
 export default async function EventsPage() {
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: events, error } = await supabase
-        .from('events')
-        .select('*')
-        .order('date', { ascending: true }) // Upcoming events first
-        .gte('date', new Date().toISOString()) // Only future events
+    let events: any[] = []
+    let error = false
+    try {
+      const records = await pb.collection('events').getList(1, 50, {
+        filter: `date >= "${new Date().toISOString().replace('T', ' ')}"`,
+        sort: 'date',
+      })
+      events = records.items
+    } catch (e) {
+      console.error('Failed to fetch events', e)
+      error = true
+    }
 
     return (
         <div className="flex flex-col gap-12 pb-24">
@@ -24,7 +31,7 @@ export default async function EventsPage() {
                 backgroundImage="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 {error ? (
                     <div className="p-8 text-sm text-red-500 bg-red-50 rounded-[2rem] border border-red-200 shadow-sm text-center">
                         Failed to load events. Please refresh the page.
@@ -50,7 +57,12 @@ export default async function EventsPage() {
                                 <div className="relative h-72 overflow-hidden">
                                     <div
                                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                        style={{ backgroundImage: `url('${event.image_url || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=800&auto=format&fit=crop'}')` }}
+                                        style={{ 
+                                            backgroundImage: `url('${event.image 
+                                                ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${event.collectionId}/${event.id}/${event.image}`
+                                                : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=800&auto=format&fit=crop'
+                                            }')` 
+                                        }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                     <div className="absolute top-6 left-6 flex flex-col items-center justify-center h-16 w-16 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-white shadow-xl">

@@ -1,28 +1,27 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { LogOut, BarChart3, Settings, Building2 } from 'lucide-react'
+import { LogOut, BarChart3, Settings, Building2, CreditCard } from 'lucide-react'
 
 export default async function PortalLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const pb = await createClient()
+    const user = pb.authStore.model
 
     if (!user) {
         redirect('/login')
     }
 
-    // Fast check if user owns a business
-    const { data: businesses } = await supabase
-        .from('businesses')
-        .select('id, name')
-        .eq('owner_id', user.id)
-        .limit(1)
-
-    if (!businesses || businesses.length === 0) {
+    // Check if user is a business owner
+    let business: any = null
+    try {
+        business = await pb.collection('businesses').getFirstListItem(`owner = "${user.id}"`, {
+            select: 'id,name'
+        })
+    } catch (e) {
         // Not a business owner, redirect
         redirect('/')
     }
@@ -38,7 +37,7 @@ export default async function PortalLayout({
                         </div>
                         <div>
                             <h2 className="font-black text-lg text-primary leading-tight tracking-tight">Client Portal</h2>
-                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest truncate max-w-[150px]">{businesses[0].name}</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest truncate max-w-[150px]">{business.name}</p>
                         </div>
                     </Link>
                 </div>
@@ -47,13 +46,14 @@ export default async function PortalLayout({
                     <div className="mb-6">
                         <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3 px-4">Menu</p>
                         <NavLink href="/portal" icon={BarChart3}>Analytics Dashboard</NavLink>
-                        <NavLink href={`/business/${businesses[0].id}`} icon={Building2} external>View Live Profile</NavLink>
+                        <NavLink href={`/business/${business.id}`} icon={Building2} external>View Live Profile</NavLink>
+                        <NavLink href="/portal/billing" icon={CreditCard}>Billing & Subscription</NavLink>
                         <NavLink href="/portal/settings" icon={Settings}>Profile Settings</NavLink>
                     </div>
                 </nav>
 
                 <div className="p-6 border-t border-primary/5 bg-primary/5">
-                    <form action="/auth/signout" method="POST">
+                    <form action="/login" method="GET">
                         <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
                             <LogOut className="h-4 w-4" /> Sign Out
                         </button>

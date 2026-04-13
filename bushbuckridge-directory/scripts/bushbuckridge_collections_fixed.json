@@ -1,0 +1,669 @@
+[
+  {
+    "id": "sectors00000000",
+    "name": "sectors",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true,
+        "unique": true
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true,
+        "unique": true
+      }
+    ]
+  },
+  {
+    "id": "areas0000000000",
+    "name": "areas",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true,
+        "unique": true
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true,
+        "unique": true
+      }
+    ]
+  },
+  {
+    "id": "businesses00000",
+    "name": "businesses",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "sector",
+        "type": "relation",
+        "options": {
+          "collectionId": "sectors00000000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "area",
+        "type": "relation",
+        "options": {
+          "collectionId": "areas0000000000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "phone",
+        "type": "text"
+      },
+      {
+        "name": "whatsapp",
+        "type": "text"
+      },
+      {
+        "name": "email",
+        "type": "email"
+      },
+      {
+        "name": "description",
+        "type": "editor"
+      },
+      {
+        "name": "services_tags",
+        "type": "json"
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "pending",
+            "active",
+            "rejected"
+          ]
+        }
+      },
+      {
+        "name": "package_tier",
+        "type": "select",
+        "options": {
+          "values": [
+            "standard",
+            "enhanced",
+            "premium"
+          ]
+        }
+      },
+      {
+        "name": "is_featured",
+        "type": "bool"
+      },
+      {
+        "name": "is_verified",
+        "type": "bool"
+      },
+      {
+        "name": "logo",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "sector",
+        "type": "relation",
+        "options": {
+          "collectionId": "sectors00000000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "area",
+        "type": "relation",
+        "options": {
+          "collectionId": "areas0000000000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "phone",
+        "type": "text"
+      },
+      {
+        "name": "whatsapp",
+        "type": "text"
+      },
+      {
+        "name": "email",
+        "type": "email"
+      },
+      {
+        "name": "description",
+        "type": "editor"
+      },
+      {
+        "name": "services_tags",
+        "type": "json"
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "pending",
+            "active",
+            "rejected"
+          ]
+        }
+      },
+      {
+        "name": "package_tier",
+        "type": "select",
+        "options": {
+          "values": [
+            "standard",
+            "enhanced",
+            "premium"
+          ]
+        }
+      },
+      {
+        "name": "is_featured",
+        "type": "bool"
+      },
+      {
+        "name": "is_verified",
+        "type": "bool"
+      },
+      {
+        "name": "logo",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "jobs00000000000",
+    "name": "jobs",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "editor"
+      },
+      {
+        "name": "contact_info",
+        "type": "text"
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "editor"
+      },
+      {
+        "name": "contact_info",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "id": "events000000000",
+    "name": "events",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "date",
+        "type": "date"
+      },
+      {
+        "name": "venue",
+        "type": "text"
+      },
+      {
+        "name": "contact_info",
+        "type": "text"
+      },
+      {
+        "name": "image",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "date",
+        "type": "date"
+      },
+      {
+        "name": "venue",
+        "type": "text"
+      },
+      {
+        "name": "contact_info",
+        "type": "text"
+      },
+      {
+        "name": "image",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "opportunities00",
+    "name": "opportunities",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "select",
+        "options": {
+          "values": [
+            "Funding",
+            "Tenders",
+            "Training",
+            "Business Support"
+          ]
+        }
+      },
+      {
+        "name": "deadline",
+        "type": "date"
+      },
+      {
+        "name": "contact_info",
+        "type": "editor"
+      },
+      {
+        "name": "attachment",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "category",
+        "type": "select",
+        "options": {
+          "values": [
+            "Funding",
+            "Tenders",
+            "Training",
+            "Business Support"
+          ]
+        }
+      },
+      {
+        "name": "deadline",
+        "type": "date"
+      },
+      {
+        "name": "contact_info",
+        "type": "editor"
+      },
+      {
+        "name": "attachment",
+        "type": "file",
+        "options": {
+          "maxSelect": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "enquiries00000",
+    "name": "enquiries",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "type",
+        "type": "select",
+        "options": {
+          "values": [
+            "buy_spot",
+            "general"
+          ]
+        }
+      },
+      {
+        "name": "business_name",
+        "type": "text"
+      },
+      {
+        "name": "contact_person",
+        "type": "text"
+      },
+      {
+        "name": "phone",
+        "type": "text"
+      },
+      {
+        "name": "email",
+        "type": "email"
+      },
+      {
+        "name": "details",
+        "type": "editor"
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "new",
+            "contacted",
+            "resolved"
+          ]
+        }
+      }
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "type",
+        "type": "select",
+        "options": {
+          "values": [
+            "buy_spot",
+            "general"
+          ]
+        }
+      },
+      {
+        "name": "business_name",
+        "type": "text"
+      },
+      {
+        "name": "contact_person",
+        "type": "text"
+      },
+      {
+        "name": "phone",
+        "type": "text"
+      },
+      {
+        "name": "email",
+        "type": "email"
+      },
+      {
+        "name": "details",
+        "type": "editor"
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "new",
+            "contacted",
+            "resolved"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "subscriptions00",
+    "name": "subscriptions",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "name": "business",
+        "type": "relation",
+        "options": {
+          "collectionId": "businesses00000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "tier",
+        "type": "select",
+        "options": {
+          "values": [
+            "standard",
+            "enhanced",
+            "premium"
+          ]
+        }
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "active",
+            "expired",
+            "cancelled"
+          ]
+        }
+      },
+      {
+        "name": "expires_at",
+        "type": "date"
+      }
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "fields": [
+      {
+        "name": "business",
+        "type": "relation",
+        "options": {
+          "collectionId": "businesses00000",
+          "maxSelect": 1
+        }
+      },
+      {
+        "name": "tier",
+        "type": "select",
+        "options": {
+          "values": [
+            "standard",
+            "enhanced",
+            "premium"
+          ]
+        }
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "options": {
+          "values": [
+            "active",
+            "expired",
+            "cancelled"
+          ]
+        }
+      },
+      {
+        "name": "expires_at",
+        "type": "date"
+      }
+    ]
+  },
+  {
+    "id": "_pb_users_auth_",
+    "name": "users",
+    "type": "auth",
+    "system": false,
+    "schema": [
+      {
+        "name": "is_admin",
+        "type": "bool"
+      },
+      {
+        "name": "business_id",
+        "type": "relation",
+        "options": {
+          "collectionId": "businesses00000",
+          "maxSelect": 1
+        }
+      }
+    ],
+    "listRule": "id = @request.auth.id",
+    "viewRule": "id = @request.auth.id",
+    "createRule": "",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
+    "fields": [
+      {
+        "name": "is_admin",
+        "type": "bool"
+      },
+      {
+        "name": "business_id",
+        "type": "relation",
+        "options": {
+          "collectionId": "businesses00000",
+          "maxSelect": 1
+        }
+      }
+    ]
+  }
+]

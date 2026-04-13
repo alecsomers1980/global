@@ -1,24 +1,53 @@
-import { requireAdmin } from '@/utils/supabase/admin'
-import { createClient } from '@/utils/supabase/server'
+import { requireAdmin } from '@/utils/pocketbase/admin'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 
-export default async function AdminOpportunitiesPage() {
+export default async function AdminOpportunitiesPage({
+    searchParams
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     await requireAdmin()
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: opps, error } = await supabase
-        .from('opportunities')
-        .select('*')
-        .order('created_at', { ascending: false })
+    const resolvedParams = await searchParams
+    const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
+
+    let opps: any[] = []
+    try {
+        opps = await pb.collection('opportunities').getFullList()
+        
+        if (q) {
+            opps = opps.filter(opp => 
+                (opp.title || '').toLowerCase().includes(q) ||
+                (opp.category || '').toLowerCase().includes(q)
+            )
+        }
+    } catch (e) {
+        console.error('Failed to fetch opportunities', e)
+    }
 
     return (
         <div className="space-y-10">
-            <div>
-                <h1 className="text-4xl font-black tracking-tight text-primary">Opportunities</h1>
-                <p className="text-muted-foreground font-medium mt-2 text-lg">Manage tenders, funding, and business support opportunities.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-primary">Opportunities</h1>
+                    <p className="text-muted-foreground font-medium mt-2 text-lg">Manage tenders, funding, and business support opportunities.</p>
+                </div>
+                <form method="get" className="flex items-center gap-2">
+                    <input
+                        name="q"
+                        defaultValue={q}
+                        placeholder="Search opportunities..."
+                        className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    />
+                    <button type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold text-sm shadow-md hover:bg-primary/90 transition-colors">
+                        Search
+                    </button>
+                </form>
             </div>
 
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">

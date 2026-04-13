@@ -1,32 +1,58 @@
-import { requireAdmin } from '@/utils/supabase/admin'
-import { createClient } from '@/utils/supabase/server'
+import { requireAdmin } from '@/utils/pocketbase/admin'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import BusinessActionsMenu from './BusinessActionsMenu'
 
-export default async function AdminBusinessesPage() {
+export default async function AdminBusinessesPage({
+    searchParams
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     await requireAdmin()
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: businesses, error } = await supabase
-        .from('businesses')
-        .select(`
-            id, name, status, package_tier, is_verified, created_at,
-            sectors (name), areas (name)
-        `)
-        .order('created_at', { ascending: false })
+    const resolvedParams = await searchParams
+    const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
 
-    if (error) {
-        return <div className="p-8 text-red-500 bg-red-50 rounded-xl">Error loading businesses: {error.message}</div>
+    let businesses: any[] = []
+    try {
+        businesses = await pb.collection('businesses').getFullList({
+            expand: 'sector,area',
+        })
+        
+        if (q) {
+            businesses = businesses.filter(biz => 
+                (biz.name || '').toLowerCase().includes(q) ||
+                (biz.expand?.sector?.name || '').toLowerCase().includes(q) ||
+                (biz.expand?.area?.name || '').toLowerCase().includes(q) ||
+                (biz.status || '').toLowerCase().includes(q)
+            )
+        }
+    } catch (e) {
+        return <div className="p-8 text-red-500 bg-red-50 rounded-xl">Error loading businesses: {String(e)}</div>
     }
 
     return (
         <div className="space-y-10">
-            <div>
-                <h1 className="text-4xl font-black tracking-tight text-primary">Business Directory</h1>
-                <p className="text-muted-foreground font-medium mt-2 text-lg">Manage all listings, change tiers, and verify businesses.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-primary">Business Directory</h1>
+                    <p className="text-muted-foreground font-medium mt-2 text-lg">Manage all listings, change tiers, and verify businesses.</p>
+                </div>
+                <form method="get" className="flex items-center gap-2">
+                    <input
+                        name="q"
+                        defaultValue={q}
+                        placeholder="Search businesses..."
+                        className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    />
+                    <button type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold text-sm shadow-md hover:bg-primary/90 transition-colors">
+                        Search
+                    </button>
+                </form>
             </div>
 
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">
@@ -57,8 +83,8 @@ export default async function AdminBusinessesPage() {
                                     </TableCell>
                                     <TableCell className="py-6 px-4">
                                         <div className="flex flex-col gap-1">
-                                            <span className="text-sm font-bold text-muted-foreground">{(biz.sectors as any)?.name || 'N/A'}</span>
-                                            <span className="text-xs text-muted-foreground/60 font-medium">{(biz.areas as any)?.name || 'N/A'}</span>
+                                            <span className="text-sm font-bold text-muted-foreground">{biz.expand?.sector?.name || 'N/A'}</span>
+                                            <span className="text-xs text-muted-foreground/60 font-medium">{biz.expand?.area?.name || 'N/A'}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="py-6 px-4">
@@ -78,7 +104,7 @@ export default async function AdminBusinessesPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
-                                        {format(new Date(biz.created_at), 'MMM d, yyyy')}
+                                        {biz.created ? format(new Date(biz.created), 'MMM d, yyyy') : '-'}
                                     </TableCell>
                                     <TableCell className="py-6 px-8 text-right">
                                         <BusinessActionsMenu business={biz} />

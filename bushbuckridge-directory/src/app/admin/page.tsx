@@ -1,17 +1,39 @@
-import { requireAdmin } from '@/utils/supabase/admin'
-import { createClient } from '@/utils/supabase/server'
+import { requireAdmin } from '@/utils/pocketbase/admin'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Briefcase, Activity, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default async function AdminDashboardPage() {
     await requireAdmin()
-    const supabase = await createClient()
+    const pb = await createClient()
 
     // Fetch quick stats
-    const { count: businessCount } = await supabase.from('businesses').select('*', { count: 'exact', head: true })
-    const { count: pendingCount } = await supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('status', 'pending')
-    const { count: premiumCount } = await supabase.from('businesses').select('*', { count: 'exact', head: true }).eq('package_tier', 'premium')
-    const { count: enquiriesCount } = await supabase.from('enquiries').select('*', { count: 'exact', head: true }).eq('status', 'new')
+    let businessCount = 0
+    let pendingCount = 0
+    let premiumCount = 0
+    let enquiriesCount = 0
+
+    try {
+        const businesses = await pb.collection('businesses').getList(1, 1)
+        businessCount = businesses.totalItems
+
+        const pending = await pb.collection('businesses').getList(1, 1, {
+            filter: 'status = "pending"',
+        })
+        pendingCount = pending.totalItems
+
+        const premium = await pb.collection('businesses').getList(1, 1, {
+            filter: 'package_tier = "premium"',
+        })
+        premiumCount = premium.totalItems
+
+        const enquiries = await pb.collection('enquiries').getList(1, 1, {
+            filter: 'status = "new"',
+        })
+        enquiriesCount = enquiries.totalItems
+    } catch (e) {
+        console.error('Failed to fetch dashboard stats', e)
+    }
 
     return (
         <div className="space-y-10">

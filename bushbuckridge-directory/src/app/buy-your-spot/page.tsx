@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -10,30 +10,34 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 import { Sparkles, Send, ShieldCheck } from 'lucide-react'
 
 export default async function BuyYourSpotPage() {
-    const supabase = await createClient()
-    const { data: sectors } = await supabase.from('sectors').select('id, name').order('name')
-    const { data: areas } = await supabase.from('areas').select('id, name').order('name')
+    const pb = await createClient()
+    
+    let sectors: any[] = []
+    let areas: any[] = []
+    try {
+        sectors = await pb.collection('sectors').getFullList({ sort: 'name' })
+        areas = await pb.collection('areas').getFullList({ sort: 'name' })
+    } catch (e) {
+        console.error('Failed to fetch taxonomies', e)
+    }
 
     async function submitLead(formData: FormData) {
         'use server'
+        const pb = await createClient()
 
-        const db = await createClient()
-
-        // In a real app, you would add Zod validation here
-        const { error } = await db.from('enquiries').insert({
-            type: 'buy_spot',
-            business_name: formData.get('businessName'),
-            contact_person: String(formData.get('contactName')),
-            phone: formData.get('phone'),
-            email: formData.get('email'),
-            package_requested: formData.get('package'),
-            details: formData.get('notes'),
-        })
-
-        if (!error) {
+        try {
+            await pb.collection('enquiries').create({
+                type: 'buy_spot',
+                business_name: String(formData.get('businessName')),
+                contact_person: String(formData.get('contactName')),
+                phone: String(formData.get('phone')),
+                email: String(formData.get('email')),
+                details: `Package: ${formData.get('package')}\nNotes: ${formData.get('notes')}`,
+                status: 'new',
+            })
             redirect('/buy-your-spot/success')
-        } else {
-            console.error(error)
+        } catch (e) {
+            console.error('Lead submission error:', e)
             redirect('/buy-your-spot?error=true')
         }
     }
@@ -47,7 +51,7 @@ export default async function BuyYourSpotPage() {
                 backgroundImage="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <div className="container max-w-4xl mx-auto px-4 -mt-24 relative z-20">
+            <div className="container max-w-4xl mx-auto px-4 -mt-8 relative z-20">
                 <div className="grid lg:grid-cols-3 gap-12">
                     <div className="lg:col-span-2">
                         <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,28 +13,36 @@ export default async function FindServicePage({
 }: {
     searchParams: Promise<{ q?: string; sector?: string; area?: string }>
 }) {
-    const supabase = await createClient()
+    const pb = await createClient()
     const resolvedParams = await searchParams;
 
-    const { data: sectors } = await supabase.from('sectors').select('id, name').order('name')
-    const { data: areas } = await supabase.from('areas').select('id, name').order('name')
+    let sectors: any[] = []
+    let areas: any[] = []
+    let fetchedBusinesses: any[] = []
 
-    let query = supabase
-        .from('businesses')
-        .select('*, sectors(name), areas(name)')
-        .eq('status', 'active')
+    try {
+        sectors = await pb.collection('sectors').getFullList({ sort: 'name' })
+        areas = await pb.collection('areas').getFullList({ sort: 'name' })
 
-    if (resolvedParams.q) {
-        query = query.or(`name.ilike.%${resolvedParams.q}%,description.ilike.%${resolvedParams.q}%`)
-    }
-    if (resolvedParams.sector && resolvedParams.sector !== 'all') {
-        query = query.eq('sector_id', resolvedParams.sector)
-    }
-    if (resolvedParams.area && resolvedParams.area !== 'all') {
-        query = query.eq('area_id', resolvedParams.area)
-    }
+        let filterParts = ['status = "active"']
+        if (resolvedParams.q) {
+            filterParts.push(`(name ~ "${resolvedParams.q}" || description ~ "${resolvedParams.q}")`)
+        }
+        if (resolvedParams.sector && resolvedParams.sector !== 'all') {
+            filterParts.push(`sector = "${resolvedParams.sector}"`)
+        }
+        if (resolvedParams.area && resolvedParams.area !== 'all') {
+            filterParts.push(`area = "${resolvedParams.area}"`)
+        }
 
-    const { data: fetchedBusinesses } = await query
+        const records = await pb.collection('businesses').getFullList({
+            filter: filterParts.join(' && '),
+            expand: 'sector,area',
+        })
+        fetchedBusinesses = records
+    } catch (e) {
+        console.error('Data fetch error', e)
+    }
 
     // Sort: Featured first, then Premium > Enhanced > Standard, then Alphabetical
     const tierWeight: Record<string, number> = { premium: 3, enhanced: 2, standard: 1 }
@@ -60,7 +68,7 @@ export default async function FindServicePage({
                 badge="LOCAL SERVICES"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 {/* Search Header */}
                 <section className="max-w-4xl mx-auto mb-16">
                     <form className="bg-card/80 backdrop-blur-xl border rounded-[2rem] p-8 shadow-2xl flex flex-col gap-6">
@@ -127,7 +135,9 @@ export default async function FindServicePage({
                                         <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
-                                                src={biz.logo_url || 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
+                                                src={biz.logo 
+                                                    ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
+                                                    : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
                                                 alt={biz.name}
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                             />
@@ -145,7 +155,7 @@ export default async function FindServicePage({
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <Badge variant="secondary" className="px-3 py-0.5 rounded-full font-bold text-xs">
-                                                            {(biz.sectors as any)?.name}
+                                                            {biz.expand?.sector?.name || 'Service'}
                                                         </Badge>
                                                         {biz.is_verified && (
                                                             <span className="flex items-center py-1 px-3 bg-green-50 text-green-700 text-[10px] uppercase tracking-wider font-black rounded-full border border-green-100 italic">
@@ -155,7 +165,7 @@ export default async function FindServicePage({
                                                     </div>
                                                     <h3 className="text-3xl font-black tracking-tight text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-1">{biz.name}</h3>
                                                     <div className="flex items-center text-sm font-bold text-muted-foreground mt-1">
-                                                        <MapPin className="h-4 w-4 mr-1 text-primary" />{(biz.areas as any)?.name}
+                                                        <MapPin className="h-4 w-4 mr-1 text-primary" />{biz.expand?.area?.name || 'Bushbuckridge'}
                                                     </div>
                                                 </div>
                                             </div>

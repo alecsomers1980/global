@@ -2,35 +2,58 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/utils/pocketbase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Lock } from 'lucide-react'
+import { Lock, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [rememberMe, setRememberMe] = useState(false)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
-    const supabase = createClient()
+    const pb = createClient()
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-
-        if (error) {
-            toast.error(error.message)
-            setLoading(false)
-        } else {
+        try {
+            await pb.collection('users').authWithPassword(email, password)
+            
+            // Sync the auth store to a cookie so the middleware/RSC can see it
+            // If rememberMe is checked, set a 30 day maxAge. Otherwise, let it expire on session end.
+            const exportOptions = { 
+                httpOnly: false, 
+                secure: process.env.NODE_ENV === 'production', 
+                maxAge: rememberMe ? 60 * 60 * 24 * 30 : undefined 
+            };
+            document.cookie = pb.authStore.exportToCookie(exportOptions)
+            
             toast.success('Logged in successfully')
             router.push('/admin')
+            router.refresh()
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to authenticate')
+            setLoading(false)
+        }
+    }
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            toast.error('Please enter your email address first.')
+            return
+        }
+        try {
+            await pb.collection('users').requestPasswordReset(email)
+            toast.success('Password reset email sent (if an account exists).')
+        } catch (error: any) {
+            // PocketBase might throw an error if mail server isn't configured, but it's safe to catch.
+            toast.error(error.message || 'Failed to request password reset.')
         }
     }
 
@@ -52,6 +75,8 @@ export default function LoginPage() {
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="space-y-4">
                             <Input
+                                id="email"
+                                name="email"
                                 type="email"
                                 placeholder="Email address"
                                 value={email}
@@ -59,14 +84,44 @@ export default function LoginPage() {
                                 className="h-14 rounded-xl bg-white shadow-sm"
                                 required
                             />
-                            <Input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="h-14 rounded-xl bg-white shadow-sm"
-                                required
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="h-14 rounded-xl bg-white shadow-sm pr-12"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between mt-2">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary accent-primary" 
+                                    />
+                                    <span className="text-sm font-medium text-muted-foreground">Remember me</span>
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={handleForgotPassword}
+                                    className="text-sm font-bold text-primary hover:underline"
+                                >
+                                    Forgot password?
+                                </button>
+                            </div>
                         </div>
                         <Button
                             type="submit"

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -7,12 +7,19 @@ import { Briefcase, AlertCircle, Download, ExternalLink, Sparkles, TrendingUp } 
 import SecondaryHeader from '@/components/SecondaryHeader'
 
 export default async function OpportunitiesPage() {
-    const supabase = await createClient()
+    const pb = await createClient()
 
-    const { data: opps, error } = await supabase
-        .from('opportunities')
-        .select('*')
-        .order('deadline', { ascending: true })
+    let opps: any[] = []
+    let error = false
+    try {
+      const records = await pb.collection('opportunities').getList(1, 50, {
+        sort: 'deadline',
+      })
+      opps = records.items
+    } catch (e) {
+      console.error('Failed to fetch opportunities', e)
+      error = true
+    }
 
     const getCategoryColor = (cat: string) => {
         switch (cat) {
@@ -32,7 +39,7 @@ export default async function OpportunitiesPage() {
                 backgroundImage="https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <div className="container mx-auto px-4 -mt-24 relative z-20">
+            <div className="container mx-auto px-4 -mt-8 relative z-20">
                 {error ? (
                     <div className="p-8 text-sm text-red-500 bg-red-50 rounded-[2rem] border border-red-200 shadow-sm text-center">
                         Failed to load opportunities. Please refresh the page.
@@ -98,9 +105,9 @@ export default async function OpportunitiesPage() {
                                         </p>
                                     </CardContent>
                                     <CardFooter className="p-8 pt-0 gap-4">
-                                        {opp.attachment_url && (
+                                        {opp.attachment && (
                                             <Button variant="outline" className="h-14 flex-1 rounded-2xl font-black border-primary/10 shadow-sm" disabled={closed} asChild>
-                                                <a href={opp.attachment_url} target="_blank" rel="noopener noreferrer">
+                                                <a href={`${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${opp.collectionId}/${opp.id}/${opp.attachment}`} target="_blank" rel="noopener noreferrer">
                                                     <Download className="h-4 w-4 mr-2" /> Doc
                                                 </a>
                                             </Button>

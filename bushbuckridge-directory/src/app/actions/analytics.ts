@@ -1,19 +1,19 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 
 export type AnalyticsEventType = 'profile_view' | 'website_click' | 'whatsapp_click' | 'phone_click'
 
 export async function trackAnalyticsEvent(businessId: string, eventType: AnalyticsEventType) {
     try {
-        const supabase = await createClient()
+        const pb = await createClient()
 
-        // Don't await this so it doesn't block the UI response
-        supabase.from('analytics_events').insert({
-            business_id: businessId,
+        // PocketBase analytics event creation
+        pb.collection('analytics_events').create({
+            business: businessId,
             event_type: eventType,
-        }).then(({ error }) => {
-            if (error) console.error('Failed to log analytics event:', error)
+        }).catch(err => {
+            console.error('Failed to log analytics event:', err)
         })
 
         return { success: true }

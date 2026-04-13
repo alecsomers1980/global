@@ -1,22 +1,23 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { format, subDays } from 'date-fns'
 import { Eye, Globe, MessageCircle, Phone, LockKeyhole } from 'lucide-react'
 
 export default async function ClientPortalPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const pb = await createClient()
+    const user = pb.authStore.model
 
     if (!user) redirect('/login')
 
-    const { data: business } = await supabase
-        .from('businesses')
-        .select('*, subscriptions(status)')
-        .eq('owner_id', user.id)
-        .single()
-
-    if (!business) redirect('/')
+    let business: any = null
+    try {
+        business = await pb.collection('businesses').getFirstListItem(`owner = "${user.id}"`, {
+            expand: 'subscriptions',
+        })
+    } catch (e) {
+        redirect('/')
+    }
 
     const isPremium = business.package_tier === 'premium'
     const isEnhanced = business.package_tier === 'enhanced'
@@ -26,21 +27,21 @@ export default async function ClientPortalPage() {
     let stats = { views: 0, website: 0, whatsapp: 0, phone: 0 }
 
     if (hasAnalyticsAccess) {
-        const thirtyDaysAgo = subDays(new Date(), 30).toISOString()
+        const thirtyDaysAgo = subDays(new Date(), 30).toISOString().replace('T', ' ')
 
-        const { data: events } = await supabase
-            .from('analytics_events')
-            .select('event_type')
-            .eq('business_id', business.id)
-            .gte('created_at', thirtyDaysAgo)
+        try {
+            const events = await pb.collection('analytics_events').getFullList({
+                filter: `business = "${business.id}" && created >= "${thirtyDaysAgo}"`,
+            })
 
-        if (events) {
             events.forEach(e => {
                 if (e.event_type === 'profile_view') stats.views++
                 if (e.event_type === 'website_click') stats.website++
                 if (e.event_type === 'whatsapp_click') stats.whatsapp++
                 if (e.event_type === 'phone_click') stats.phone++
             })
+        } catch (e) {
+            console.error('Failed to fetch analytics', e)
         }
     }
 

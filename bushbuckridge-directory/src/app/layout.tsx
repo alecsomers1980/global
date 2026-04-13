@@ -18,8 +18,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Bushbuckridge Business Journal | DBIB",
-  description: "Doing Business in Bushbuckridge - The official directory and hub for local businesses.",
+  title: "Bushbuckridge Community Directory",
+  description: "Find trusted local businesses, job opportunities, and community events in the Bushbuckridge region.",
 };
 
 import Header from "@/components/Header";

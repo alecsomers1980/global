@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { notFound } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,8 +13,6 @@ import {
     Linkedin,
     MessageCircle,
     CheckCircle2,
-    Sparkles,
-    ArrowRight,
     Briefcase
 } from 'lucide-react'
 import Link from 'next/link'
@@ -27,37 +25,41 @@ export default async function BusinessProfilePage({
 }: {
     params: Promise<{ id: string }>
 }) {
-    const supabase = await createClient()
+    const pb = await createClient()
     const { id } = await params;
 
-    const { data: business, error } = await supabase
-        .from('businesses')
-        .select(`
-            *,
-            sectors (name),
-            areas (name),
-            posts (*)
-        `)
-        .eq('id', id)
-        .single()
-
-    if (error || !business) {
-        notFound()
+    let business: any = null
+    try {
+      business = await pb.collection('businesses').getOne(id, {
+        expand: 'sector,area',
+      })
+    } catch (e) {
+      notFound()
     }
+
+    const logoUrl = business.logo 
+      ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${business.collectionId}/${business.id}/${business.logo}`
+      : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=800&auto=format&fit=crop';
 
     // Record Profile View (fire and forget)
     trackAnalyticsEvent(business.id, 'profile_view')
+
+    const isEnhancedOrPremium = business.package_tier === 'enhanced' || business.package_tier === 'premium';
+    const isPremium = business.package_tier === 'premium';
+    const galleryArray = Array.isArray(business.gallery) 
+        ? business.gallery 
+        : (typeof business.gallery === 'string' && business.gallery ? [business.gallery] : []);
 
     return (
         <div className="flex flex-col pb-24">
             <SecondaryHeader
                 title={business.name}
                 subtitle={business.description?.substring(0, 150) + (business.description?.length > 150 ? '...' : '')}
-                badge={business.sectors?.name || 'BUSINESS PROFILE'}
-                backgroundImage={business.logo_url || 'https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=2000&auto=format&fit=crop'}
+                badge={business.expand?.sector?.name || 'BUSINESS PROFILE'}
+                backgroundImage={logoUrl}
             />
 
-            <div className="container mx-auto px-4 -mt-32 relative z-20">
+            <div className="container mx-auto px-4 -mt-12 relative z-20">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-12">
@@ -67,7 +69,7 @@ export default async function BusinessProfilePage({
                                     <div className="h-24 w-24 rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-white">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
-                                            src={business.logo_url || 'https://images.unsplash.com/photo-1577412647305-991150c7d163?q=80&w=800&auto=format&fit=crop'}
+                                            src={logoUrl}
                                             alt={business.name}
                                             className="h-full w-full object-cover"
                                         />
@@ -80,7 +82,7 @@ export default async function BusinessProfilePage({
                                 </div>
                                 <CardTitle className="text-4xl font-black tracking-tight text-primary">{business.name}</CardTitle>
                                 <div className="flex items-center text-lg font-bold text-muted-foreground mt-2">
-                                    <MapPin className="h-5 w-5 mr-2 text-primary" /> {business.areas?.name}
+                                    <MapPin className="h-5 w-5 mr-2 text-primary" /> {business.expand?.area?.name || 'Bushbuckridge'}
                                 </div>
                             </CardHeader>
                             <CardContent className="p-10 pt-6">
@@ -102,40 +104,28 @@ export default async function BusinessProfilePage({
                                         </div>
                                     </div>
                                 )}
+
+                                {isEnhancedOrPremium && galleryArray.length > 0 && (
+                                    <div className="mt-12">
+                                        <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-6">
+                                            {isPremium ? 'Featured Gallery' : 'Featured Image'}
+                                        </h3>
+                                        <div className={isPremium ? "grid grid-cols-2 gap-4" : ""}>
+                                            {(isPremium ? galleryArray : [galleryArray[0]]).map((img: string, i: number) => (
+                                                <div key={img} className={`rounded-[2rem] overflow-hidden border-2 border-primary/5 shadow-lg group ${isPremium ? 'h-48' : 'h-80 w-full'}`}>
+                                                    <img 
+                                                        src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${business.collectionId}/${business.id}/${img}`}
+                                                        alt={`${business.name} image ${i+1}`}
+                                                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
 
-                        {/* Associated Spotlight Articles */}
-                        {business.posts && business.posts.length > 0 && (
-                            <div className="space-y-8">
-                                <h2 className="text-3xl font-black tracking-tight text-primary flex items-center gap-3">
-                                    <Sparkles className="h-8 w-8 text-secondary" /> Feature Stories
-                                </h2>
-                                <div className="grid sm:grid-cols-2 gap-8">
-                                    {business.posts.map((post: any) => (
-                                        <Card key={post.id} className="group overflow-hidden border-0 bg-card/40 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 rounded-[2.5rem]">
-                                            <div className="relative h-48 overflow-hidden">
-                                                <div
-                                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                                    style={{ backgroundImage: `url('${post.image_url || '/hero.png'}')` }}
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                            </div>
-                                            <CardHeader className="p-8">
-                                                <CardTitle className="text-xl font-black tracking-tight line-clamp-2 group-hover:text-primary transition-colors">
-                                                    {post.title}
-                                                </CardTitle>
-                                                <Button variant="link" asChild className="p-0 h-auto mt-4 text-primary font-bold">
-                                                    <Link href={`/spotlight/${post.slug}`}>
-                                                        Read Story <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            </CardHeader>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     {/* Sidebar */}
@@ -168,7 +158,7 @@ export default async function BusinessProfilePage({
                                     </div>
                                 )}
 
-                                {business.website && (
+                                {isEnhancedOrPremium && business.website && (
                                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/50 border border-primary/5 group hover:border-primary/20 transition-all">
                                         <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
                                             <Globe className="h-6 w-6" />
@@ -182,7 +172,7 @@ export default async function BusinessProfilePage({
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-primary/10">
-                                {business.whatsapp && (
+                                {isEnhancedOrPremium && business.whatsapp && (
                                     <Button className="col-span-2 h-16 bg-[#25D366] hover:bg-[#1ea855] text-white font-black text-lg rounded-2xl shadow-lg shadow-green-600/20" asChild>
                                         <TrackLink href={`https://wa.me/${business.whatsapp.replace(/\D/g, '').replace(/^0/, '27')}`} businessId={business.id} eventType="whatsapp_click" target="_blank" rel="noopener noreferrer">
                                             <MessageCircle className="h-5 w-5 mr-3" /> WhatsApp
@@ -190,12 +180,12 @@ export default async function BusinessProfilePage({
                                     </Button>
                                 )}
 
-                                {business.facebook && (
+                                {isEnhancedOrPremium && business.facebook && (
                                     <Button variant="outline" size="icon" className="h-16 w-full rounded-2xl border-primary/5 bg-white/50 shadow-sm" asChild>
                                         <a href={business.facebook} target="_blank" rel="noopener noreferrer"><Facebook className="h-6 w-6 text-primary/40" /></a>
                                     </Button>
                                 )}
-                                {business.instagram && (
+                                {isEnhancedOrPremium && business.instagram && (
                                     <Button variant="outline" size="icon" className="h-16 w-full rounded-2xl border-primary/5 bg-white/50 shadow-sm" asChild>
                                         <a href={business.instagram} target="_blank" rel="noopener noreferrer"><Instagram className="h-6 w-6 text-primary/40" /></a>
                                     </Button>
