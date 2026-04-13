@@ -62,7 +62,7 @@ export default async function Home() {
   try {
     const spotlightRes = await pb.collection('spotlight_articles').getList(1, 7, {
       filter: 'status = "published"',
-      sort: '-created',
+      sort: '-id',
       expand: 'business_id',
     })
     spotlightArticles = spotlightRes.items
@@ -152,74 +152,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Premium Partners Carousel - Styled like ColorAds Featured Ads */}
-      <section className="py-20 overflow-hidden bg-muted/30">
-        <div className="container mx-auto px-4 mb-12">
-          <h2 className="text-4xl font-extrabold text-center mb-4">Premium Partners</h2>
-          <p className="text-center text-muted-foreground text-lg mb-4">Discover the top-rated businesses powering our economy.</p>
-          <div className="w-24 h-1 bg-primary mx-auto mb-8 rounded-full" />
-        </div>
-        
-        <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-10 px-4 -mx-4 md:mx-0 md:px-0">
-          <div className="flex gap-8 px-4 md:mx-auto">
-            {(premiumPartners.length > 0 ? premiumPartners : []).map((partner) => {
-              const bgImgUrls = [
-                "https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&q=80",
-                "https://images.unsplash.com/photo-1586528116311-ad8ed7c66364?w=500&q=80",
-                "https://images.unsplash.com/photo-1563720223185-11003d516b34?w=500&q=80",
-                "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=500&q=80",
-                "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=500&q=80"
-              ];
-              // Fallback randomized image if no logo is provided
-              const randImg = bgImgUrls[partner.id.charCodeAt(0) % bgImgUrls.length];
-              const logoUrl = partner.logo 
-                ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${partner.collectionId}/${partner.id}/${partner.logo}` 
-                : randImg;
 
-              return (
-                <div key={partner.id} className="snap-center shrink-0 w-[340px] bg-card rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-300 border border-border/50 group overflow-hidden flex flex-col">
-                  <div className="relative h-56 bg-muted block">
-                    <Link href={`/business/${partner.id}`} className="absolute inset-0 z-10" />
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${logoUrl}')` }} />
-                    {/* Category Pill Tag */}
-                    <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground font-semibold px-3 py-1 shadow-lg border-0 z-20">
-                      {partner.expand?.sector?.name || partner.package_tier.charAt(0).toUpperCase() + partner.package_tier.slice(1) || 'Business'}
-                    </Badge>
-                    {/* Favorite Heart Icon */}
-                    <div className="absolute top-4 right-4 h-9 w-9 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-secondary hover:text-secondary-foreground transition-colors cursor-pointer z-20">
-                      <Heart className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <div className="p-6 flex flex-col flex-1 bg-card relative z-20">
-                    <Link href={`/business/${partner.id}`}>
-                      <h3 className="text-2xl font-bold text-primary hover:text-secondary transition-colors mb-2 line-clamp-1">{partner.name}</h3>
-                    </Link>
-                    <div className="flex items-center text-muted-foreground text-sm font-medium mb-4">
-                      <MapPin className="h-4 w-4 mr-1.5" /> {partner.expand?.area?.name || 'Local Area'}
-                    </div>
-                    <div className="mt-auto pt-4 border-t border-border/50 flex flex-col gap-4">
-                      <div className="flex items-center gap-1">
-                         <Star className="h-4 w-4 fill-secondary text-secondary" />
-                         <Star className="h-4 w-4 fill-secondary text-secondary" />
-                         <Star className="h-4 w-4 fill-secondary text-secondary" />
-                         <Star className="h-4 w-4 fill-secondary text-secondary" />
-                         <Star className="h-4 w-4 fill-secondary text-secondary" />
-                         <span className="text-sm text-muted-foreground ml-2 font-medium">(5.0)</span>
-                      </div>
-                      <Button className="w-full font-bold" asChild>
-                        <Link href={`/business/${partner.id}`}>
-                          View Premium Profile <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
 
-          </div>
-        </div>
-      </section>
 
       {/* Popular Categories - Styled like ColorAds Popular Categories */}
       <section className="py-20 bg-background">

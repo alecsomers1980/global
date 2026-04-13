@@ -23,7 +23,7 @@ export default async function ArticlesIndexPage({
             : 'status = "published"'
         const records = await pb.collection('spotlight_articles').getList(1, 50, {
             filter,
-            sort: '-created',
+            sort: '-id',
             expand: 'business_id',
         })
         articles = records.items

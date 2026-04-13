@@ -88,7 +88,7 @@ export default async function ArticleDetailPage({
                             )}
                             <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
                                 <Calendar className="h-4 w-4 text-primary" />
-                                <span>{new Date(article.created).toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                <span>{article.created ? new Date(article.created).toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Featured Article'}</span>
                             </div>
                             <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-0 font-black text-xs">
                                 {article.layout === 'hero_top' ? 'Hero Layout' : article.layout === 'gallery_grid' ? 'Gallery Layout' : 'Standard'}

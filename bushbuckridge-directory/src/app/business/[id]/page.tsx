@@ -21,6 +21,7 @@ import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import { trackAnalyticsEvent } from '@/app/actions/analytics'
 import { TrackLink } from '@/components/TrackLink'
+import GalleryLightbox from '@/components/GalleryLightbox'
 
 export default async function BusinessProfilePage({
     params,
@@ -122,19 +123,14 @@ export default async function BusinessProfilePage({
                                 {isEnhancedOrPremium && galleryArray.length > 0 && (
                                     <div className="mt-12">
                                         <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-6">
-                                            {isPremium ? 'Featured Gallery' : 'Featured Image'}
+                                            {isPremium ? 'Business Gallery' : 'Featured Image'}
                                         </h3>
-                                        <div className={isPremium ? "grid grid-cols-2 gap-4" : ""}>
-                                            {(isPremium ? galleryArray : [galleryArray[0]]).map((img: string, i: number) => (
-                                                <div key={img} className={`rounded-[2rem] overflow-hidden border-2 border-primary/5 shadow-lg group ${isPremium ? 'h-48' : 'h-80 w-full'}`}>
-                                                    <img 
-                                                        src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${business.collectionId}/${business.id}/${img}`}
-                                                        alt={`${business.name} image ${i+1}`}
-                                                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <GalleryLightbox
+                                            images={(isPremium ? galleryArray : [galleryArray[0]]).map((img: string) =>
+                                                `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${business.collectionId}/${business.id}/${img}`
+                                            )}
+                                            businessName={business.name}
+                                        />
                                     </div>
                                 )}
                             </CardContent>
@@ -165,7 +161,7 @@ export default async function BusinessProfilePage({
                     {/* Sidebar */}
                     <aside className="space-y-8">
                         <div className="bg-primary/5 backdrop-blur-md border rounded-[3rem] p-10 lg:sticky lg:top-32 shadow-xl">
-                            <h3 className="font-black text-2xl mb-8 tracking-tight text-primary">Connect with <br /><span className="text-secondary italic">Us</span></h3>
+                            <h3 className="font-black text-2xl mb-8 tracking-tight text-primary">Connect with <span className="text-secondary italic">Us</span></h3>
 
                             <div className="space-y-6">
                                 {business.phone && (
@@ -215,13 +211,18 @@ export default async function BusinessProfilePage({
                                 )}
 
                                 {isEnhancedOrPremium && business.facebook && (
-                                    <Button variant="outline" size="icon" className="h-16 w-full rounded-2xl border-primary/5 bg-white/50 shadow-sm" asChild>
-                                        <a href={business.facebook} target="_blank" rel="noopener noreferrer"><Facebook className="h-6 w-6 text-primary/40" /></a>
+                                    <Button variant="outline" className="h-14 w-full rounded-2xl border-[#1877F2]/20 bg-[#1877F2]/5 hover:bg-[#1877F2]/10 shadow-sm font-bold text-[#1877F2] gap-3" asChild>
+                                        <a href={business.facebook} target="_blank" rel="noopener noreferrer"><Facebook className="h-5 w-5" /> Facebook</a>
                                     </Button>
                                 )}
                                 {isEnhancedOrPremium && business.instagram && (
-                                    <Button variant="outline" size="icon" className="h-16 w-full rounded-2xl border-primary/5 bg-white/50 shadow-sm" asChild>
-                                        <a href={business.instagram} target="_blank" rel="noopener noreferrer"><Instagram className="h-6 w-6 text-primary/40" /></a>
+                                    <Button variant="outline" className="h-14 w-full rounded-2xl border-[#E4405F]/20 bg-[#E4405F]/5 hover:bg-[#E4405F]/10 shadow-sm font-bold text-[#E4405F] gap-3" asChild>
+                                        <a href={business.instagram} target="_blank" rel="noopener noreferrer"><Instagram className="h-5 w-5" /> Instagram</a>
+                                    </Button>
+                                )}
+                                {isEnhancedOrPremium && business.linkedin && (
+                                    <Button variant="outline" className="h-14 w-full rounded-2xl border-[#0A66C2]/20 bg-[#0A66C2]/5 hover:bg-[#0A66C2]/10 shadow-sm font-bold text-[#0A66C2] gap-3" asChild>
+                                        <a href={business.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin className="h-5 w-5" /> LinkedIn</a>
                                     </Button>
                                 )}
                             </div>
