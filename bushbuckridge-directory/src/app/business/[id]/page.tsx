@@ -13,7 +13,9 @@ import {
     Linkedin,
     MessageCircle,
     CheckCircle2,
-    Briefcase
+    Briefcase,
+    Newspaper,
+    ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
@@ -49,6 +51,18 @@ export default async function BusinessProfilePage({
     const galleryArray = Array.isArray(business.gallery) 
         ? business.gallery 
         : (typeof business.gallery === 'string' && business.gallery ? [business.gallery] : []);
+
+    // Fetch spotlight article for this business (premium only)
+    let spotlightArticle: any = null
+    if (isPremium) {
+        try {
+            spotlightArticle = await pb.collection('spotlight_articles').getFirstListItem(
+                `business_id = "${business.id}" && status = "published"`
+            )
+        } catch (e) {
+            // No spotlight article exists
+        }
+    }
 
     return (
         <div className="flex flex-col pb-24">
@@ -125,6 +139,26 @@ export default async function BusinessProfilePage({
                                 )}
                             </CardContent>
                         </Card>
+
+                        {/* Spotlight Article Cross-Link */}
+                        {isPremium && spotlightArticle && (
+                            <Link href={`/articles/${spotlightArticle.id}`} className="group block">
+                                <div className="relative bg-gradient-to-br from-[#1B4332] to-[#2D6A4F] rounded-[3rem] p-8 md:p-10 overflow-hidden shadow-2xl border border-emerald-400/10">
+                                    <div className="absolute top-0 right-0 -mt-16 -mr-16 w-60 h-60 bg-secondary/10 rounded-full blur-[80px] animate-pulse" />
+                                    <div className="relative z-10 flex items-center gap-6">
+                                        <div className="h-16 w-16 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                            <Newspaper className="h-8 w-8 text-secondary" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <Badge className="bg-secondary text-secondary-foreground font-black text-[10px] px-3 py-1 mb-2 shadow-lg">SPOTLIGHT FEATURE</Badge>
+                                            <h3 className="text-xl font-black text-white tracking-tight mb-1">Read our In-Depth Spotlight</h3>
+                                            <p className="text-white/60 font-medium text-sm line-clamp-1">Discover the full story behind {business.name}</p>
+                                        </div>
+                                        <ArrowRight className="h-6 w-6 text-secondary shrink-0 group-hover:translate-x-2 transition-transform" />
+                                    </div>
+                                </div>
+                            </Link>
+                        )}
 
                     </div>
 

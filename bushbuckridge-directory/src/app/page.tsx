@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Search, MapPin, Briefcase, Calendar, Star, Layers, ArrowRight, Users, Zap, Heart, Car, Armchair, HomeIcon, Book, Monitor, Pizza } from 'lucide-react'
+import { Search, MapPin, Briefcase, Calendar, Star, Layers, ArrowRight, Users, Zap, Heart, Car, Armchair, HomeIcon, Book, Monitor, Pizza, Newspaper } from 'lucide-react'
 import { createClient } from '@/utils/pocketbase/server'
 
 // Quick Tiles
@@ -55,6 +55,19 @@ export default async function Home() {
     eventCount = eventRes.totalItems
   } catch (e) {
     console.error('Failed to fetch stats', e)
+  }
+
+  // Fetch Spotlight Articles
+  let spotlightArticles: any[] = []
+  try {
+    const spotlightRes = await pb.collection('spotlight_articles').getList(1, 7, {
+      filter: 'status = "published"',
+      sort: '-created',
+      expand: 'business_id',
+    })
+    spotlightArticles = spotlightRes.items
+  } catch (e) {
+    console.error('Failed to fetch spotlight articles', e)
   }
 
   return (
@@ -304,6 +317,84 @@ export default async function Home() {
           })}
         </div>
       </section>
+
+      {/* Spotlight Articles Section */}
+      {spotlightArticles.length > 0 && (
+        <section className="py-20 bg-muted/20">
+          <div className="container mx-auto px-4">
+            <div className="flex items-end justify-between mb-12">
+              <div>
+                <Badge className="mb-4 bg-secondary/10 text-secondary border-0 font-black text-xs px-4 py-1.5 uppercase tracking-widest">
+                  <Newspaper className="h-3 w-3 mr-2" /> Community Features
+                </Badge>
+                <h2 className="text-5xl font-extrabold tracking-tight mb-2">Spotlight Articles</h2>
+                <p className="text-muted-foreground text-lg italic">In-depth features on our premium business partners.</p>
+              </div>
+              <Button variant="ghost" size="lg" className="hover:bg-primary/5 font-bold" asChild>
+                <Link href="/articles">View All Articles &rarr;</Link>
+              </Button>
+            </div>
+
+            {/* Hero: Latest Article */}
+            {(() => {
+              const hero = spotlightArticles[0]
+              const heroBiz = hero.expand?.business_id
+              const heroImages = Array.isArray(hero.images) ? hero.images : (typeof hero.images === 'string' && hero.images ? [hero.images] : [])
+              const heroThumb = heroImages.length > 0
+                ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${hero.collectionId}/${hero.id}/${heroImages[0]}`
+                : 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80'
+              const heroPreview = (hero.content || '').replace(/<[^>]*>/g, '').substring(0, 200)
+
+              return (
+                <Link href={`/articles/${hero.id}`} className="group block mb-10">
+                  <div className="relative h-80 md:h-[28rem] rounded-[3rem] overflow-hidden shadow-2xl border border-primary/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={heroThumb} alt={heroBiz?.name || 'Spotlight'} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute bottom-8 left-8 right-8">
+                      <Badge className="bg-secondary text-secondary-foreground font-black text-xs px-4 py-1.5 mb-4 shadow-lg">LATEST SPOTLIGHT</Badge>
+                      <h3 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-3 line-clamp-2">{heroBiz?.name || 'Featured Business'}</h3>
+                      <p className="text-white/70 font-medium text-base md:text-lg line-clamp-2 max-w-2xl">{heroPreview || 'Read the full feature...'}</p>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })()}
+
+            {/* Thumbnail Grid: Remaining Articles */}
+            {spotlightArticles.length > 1 && (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {spotlightArticles.slice(1, 7).map((article) => {
+                  const biz = article.expand?.business_id
+                  const imgs = Array.isArray(article.images) ? article.images : (typeof article.images === 'string' && article.images ? [article.images] : [])
+                  const thumb = imgs.length > 0
+                    ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${article.collectionId}/${article.id}/${imgs[0]}`
+                    : 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80'
+                  const preview = (article.content || '').replace(/<[^>]*>/g, '').substring(0, 100)
+
+                  return (
+                    <Link key={article.id} href={`/articles/${article.id}`} className="group">
+                      <div className="bg-card rounded-[2rem] shadow-xl overflow-hidden border border-border/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                        <div className="relative h-44 overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={thumb} alt={biz?.name || 'Spotlight'} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          <Badge className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground font-black text-[10px] px-3 py-1 shadow-lg">SPOTLIGHT</Badge>
+                        </div>
+                        <div className="p-5">
+                          <h4 className="font-black text-lg text-primary mb-2 line-clamp-1">{biz?.name || 'Featured'}</h4>
+                          <p className="text-muted-foreground text-sm font-medium line-clamp-2 mb-3">{preview || 'Read the feature...'}</p>
+                          <span className="text-primary font-black text-sm flex items-center">Read More <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" /></span>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Premium CTA Banner (replaces Journal) */}
       <section className="container mx-auto px-4">

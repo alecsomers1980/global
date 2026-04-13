@@ -11,6 +11,7 @@ const navLinks = [
     { name: 'Home / Hub', href: '/' },
     { name: 'Find a Service', href: '/find-a-service' },
     { name: 'Business Directory', href: '/directory' },
+    { name: 'Articles', href: '/articles' },
     { name: 'Events', href: '/events' },
     { name: 'Opportunities', href: '/opportunities' },
     { name: 'Jobs', href: '/jobs' },
