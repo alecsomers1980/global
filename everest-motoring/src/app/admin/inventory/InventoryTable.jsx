@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AiVideoStatus from "./AiVideoStatus";
+import SocialPostButton from "./SocialPostButton";
 
 export default function InventoryTable({ initialCars, deleteCarAction }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -142,6 +143,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                     </div>
                                 </td>
                                 <td className="p-4 flex justify-end gap-2">
+                                    <SocialPostButton car={car} />
                                     <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
                                         <span className="material-symbols-outlined">edit</span>
                                     </a>

@@ -1,0 +1,11 @@
+{
+  "name": "opencode-glm-extension",
+  "version": "1.0.0",
+  "description": "Antigravity multi-agent Mission Control extension for GLM-5.1",
+  "main": "agent.js",
+  "scripts": {
+    "start": "node agent.js",
+    "test-safe": "node agent.js \"Find my secret key sk-or-v1-123456789\""
+  },
+  "dependencies": {}
+}

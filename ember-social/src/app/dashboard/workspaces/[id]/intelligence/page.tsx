@@ -48,16 +48,31 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
             const data = await res.json()
             if (data.error) throw new Error(data.error)
 
-            setIntel(prev => prev ? {
-                ...prev,
-                industry: data.industry,
-                target_audience: data.target_audience,
-                brand_voice: data.brand_voice,
-                goals: data.goals,
-                key_messages: data.key_messages
-            } : null)
-        } catch (error) {
+            setIntel(prev => {
+                const base = prev || {
+                    id: '',
+                    workspace_id: id,
+                    industry: '',
+                    target_audience: '',
+                    brand_voice: '',
+                    goals: '',
+                    current_month_focus: '',
+                    key_messages: [],
+                    do_not_post: [],
+                    last_updated_at: new Date().toISOString()
+                }
+                return {
+                    ...base,
+                    industry: data.industry || base.industry,
+                    target_audience: data.target_audience || base.target_audience,
+                    brand_voice: data.brand_voice || base.brand_voice,
+                    goals: data.goals || base.goals,
+                    key_messages: data.key_messages || base.key_messages
+                } as Intelligence
+            })
+        } catch (error: any) {
             console.error('Analysis failed:', error)
+            alert(error.message || 'Analysis failed. Please try again.')
         } finally {
             setAnalyzing(false)
         }
@@ -84,21 +99,23 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
         if (!intel) return
         setSaving(true)
 
-        await supabase
-            .from('client_intelligence')
-            .update({
-                industry: intel.industry,
-                target_audience: intel.target_audience,
-                brand_voice: intel.brand_voice,
-                goals: intel.goals,
-                current_month_focus: intel.current_month_focus,
-                key_messages: intel.key_messages,
-                do_not_post: intel.do_not_post,
-                last_updated_at: new Date().toISOString()
-            } as never)
-            .eq('id', intel.id)
+        try {
+            const res = await fetch('/api/ai/save-intelligence', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ workspaceId: id, intel })
+            })
+            const result = await res.json()
+            if (result.error) throw new Error(result.error)
 
-        setSaving(false)
+            // Refresh content to get the real ID if it was a new record
+            fetchIntel(id)
+        } catch (error: any) {
+            console.error('Save failed:', error)
+            alert('Failed to save profile: ' + error.message)
+        } finally {
+            setSaving(false)
+        }
     }
 
     if (loading) {

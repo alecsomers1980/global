@@ -4,8 +4,8 @@ import crypto from 'crypto'
 
 export async function POST(req: Request) {
     try {
-        const { workspaceId, name } = await req.json()
-        if (!workspaceId || !name) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
+        const { workspaceId, name: label } = await req.json()
+        if (!workspaceId || !label) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
 
         const supabase = await createServerSupabaseClient()
 
@@ -17,14 +17,12 @@ export async function POST(req: Request) {
         // 2. Hash the token for DB storage (never store raw keys!)
         // In a real production app we'd use bcrypt or Argon2
         const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex')
-        const keyPrefix = rawKey.substring(0, 7) // Store just the prefix for UI identification
 
         // 3. Insert into DB
         const { error } = await supabase.from('workspace_api_keys').insert({
             workspace_id: workspaceId,
-            name,
-            key_hash: keyHash, // We only store the hash
-            key_prefix: keyPrefix
+            label,
+            key_hash: keyHash,
         } as never)
 
         if (error) throw error

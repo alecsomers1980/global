@@ -1,0 +1,41 @@
+﻿
+Path                                                                                  LineNumber Line                                                   
+----                                                                                  ---------- ----                                                   
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                     4 EMAIL_FROM=""Aloe Signs Shop" <shop@aloesigns.co.za>"  
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    18 PGUSER="neondb_owner"                                  
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    26 POSTGRES_USER="neondb_owner"                           
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    27 SMTP_HOST="smtp.aloesigns.co.za"                       
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    28 SMTP_PASSWORD="8w54a60973E6hG"                         
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    29 SMTP_PORT="587"                                        
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    30 SMTP_USER="shop@aloesigns.co.za"                       
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local                    36 UPLOAD_NOTIFICATION_EMAIL="melissa@aloesigns.co.za\r\n"
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local          4 EMAIL_FROM=""Aloe Signs Shop" <shop@aloesigns.co.za>"  
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         18 PGUSER="neondb_owner"                                  
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         26 POSTGRES_USER="neondb_owner"                           
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         27 SMTP_HOST="smtp.aloesigns.co.za"                       
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         28 SMTP_PASSWORD="8w54a60973E6hG"                         
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         29 SMTP_PORT="587"                                        
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         30 SMTP_USER="shop@aloesigns.co.za"                       
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local         36 UPLOAD_NOTIFICATION_EMAIL="melissa@aloesigns.co.za\r\n"
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.example                        16 RESEND_FROM_EMAIL=noreply@emberautomations.co.za       
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.example                        30 # Google (YouTube)                                     
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.example                        31 GOOGLE_CLIENT_ID=                                      
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.example                        32 GOOGLE_CLIENT_SECRET=                                  
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local                          14 # Resend (email)                                       
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local                          16 RESEND_FROM_EMAIL=noreply@emberautomations.co.za       
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local                          30 # Google (YouTube)                                     
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local                          31 GOOGLE_CLIENT_ID=your_google_client_id                 
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local                          32 GOOGLE_CLIENT_SECRET=your_google_client_secret         
+C:\Users\info\OneDrive\Documents\Antigravity\everest-motoring\.env.example                     7 GOOGLE_GEMINI_API_KEY=your-gemini-api-key              
+C:\Users\info\OneDrive\Documents\Antigravity\everest-motoring\.env.local                       7 GOOGLE_GEMINI_API_KEY=AIzaSyB8rqOv3CweLhOl4k0DAMShoA...
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 2 ADMIN_NOTIFICATION_EMAIL="tanya@rvrinc.co.za"          
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 5 SMTP_FROM="noreply@roetsvanrensburg.co.za"             
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 6 SMTP_FROM_NAME="RVR Inc. Attorneys"                    
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 7 SMTP_HOST="mail.roetsvanrensburg.co.za"                
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 8 SMTP_PASS="3286K1sHz5Y434"                             
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                 9 SMTP_PORT="465"                                        
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                10 SMTP_SECURE="true"                                     
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local                                11 SMTP_USER="website@roetsvanrensburg.co.za"             
+
+
+

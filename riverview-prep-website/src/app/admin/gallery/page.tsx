@@ -2,62 +2,133 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-client';
+import Link from 'next/link';
 import Image from 'next/image';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  album_count?: number;
+}
 
 interface Album {
   id: string;
+  category_id: string;
   name: string;
+  slug: string;
   description: string;
-  cover_image: string;
+  cover_image_url: string;
   created_at: string;
   image_count?: number;
+  category_name?: string;
 }
 
 export default function GalleryAdminPage() {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState<'album' | 'category' | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [view, setView] = useState<'albums' | 'categories'>('albums');
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
-  const [formData, setFormData] = useState({
-    name: '', description: '', cover_image: '',
+  const [albumData, setAlbumData] = useState({
+    name: '', description: '', cover_image_url: '', category_id: '', slug: ''
   });
 
-  const fetchAlbums = useCallback(async () => {
+  const [categoryData, setCategoryData] = useState({
+    name: '', description: '', slug: ''
+  });
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('gallery_albums').select('*').order('created_at', { ascending: false });
-    if (error) setError(error.message);
-    else { setAlbums(data || []); setError(null); }
-    setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    
+    // Fetch Categories
+    const { data: cats, error: catErr } = await supabase.from('gallery_categories').select('*').order('sort_order', { ascending: true });
+    if (catErr) { setError(catErr.message); setLoading(false); return; }
+    setCategories(cats || []);
 
-  useEffect(() => { fetchAlbums(); }, [fetchAlbums]);
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    if (editingId) {
-      await supabase.from('gallery_albums').update(formData).eq('id', editingId);
-    } else {
-      await supabase.from('gallery_albums').insert([formData]);
+    // Fetch Albums with Category names
+    const { data: albs, error: albErr } = await supabase
+      .from('gallery_albums')
+      .select(`*, gallery_categories(name)`)
+      .order('created_at', { ascending: false });
+    
+    if (albErr) setError(albErr.message);
+    else { 
+      setAlbums((albs || []).map((a: any) => ({
+        ...a,
+        category_name: a.gallery_categories?.name
+      }))); 
+      setError(null); 
     }
-    setShowForm(false); setEditingId(null);
-    setFormData({ name: '', description: '', cover_image: '' });
-    fetchAlbums();
+    
+    setLoading(false);
+  }, [supabase]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  async function handleSaveAlbum(e: React.FormEvent) {
+    e.preventDefault();
+    const slug = albumData.slug || albumData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const data = { ...albumData, slug };
+
+    if (editingId) {
+      await supabase.from('gallery_albums').update(data).eq('id', editingId);
+    } else {
+      await supabase.from('gallery_albums').insert([data]);
+    }
+    setShowForm(null); setEditingId(null);
+    setAlbumData({ name: '', description: '', cover_image_url: '', category_id: '', slug: '' });
+    fetchData();
   }
 
-  function startEdit(album: Album) {
-    setFormData({ name: album.name, description: album.description || '', cover_image: album.cover_image || '' });
+  async function handleSaveCategory(e: React.FormEvent) {
+    e.preventDefault();
+    const slug = categoryData.slug || categoryData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const data = { ...categoryData, slug };
+
+    if (editingId) {
+      await supabase.from('gallery_categories').update(data).eq('id', editingId);
+    } else {
+      await supabase.from('gallery_categories').insert([data]);
+    }
+    setShowForm(null); setEditingId(null);
+    setCategoryData({ name: '', description: '', slug: '' });
+    fetchData();
+  }
+
+  function startEditAlbum(album: Album) {
+    setAlbumData({ 
+      name: album.name, 
+      description: album.description || '', 
+      cover_image_url: album.cover_image_url || '',
+      category_id: album.category_id || '',
+      slug: album.slug || ''
+    });
     setEditingId(album.id);
-    setShowForm(true);
+    setShowForm('album');
   }
 
-  async function handleDelete(id: string) {
+  function startEditCategory(cat: Category) {
+    setCategoryData({ name: cat.name, description: cat.description || '', slug: cat.slug || '' });
+    setEditingId(cat.id);
+    setShowForm('category');
+  }
+
+  async function handleDeleteAlbum(id: string) {
     if (!confirm('Delete this album and all its images?')) return;
     await supabase.from('gallery_albums').delete().eq('id', id);
-    fetchAlbums();
+    fetchData();
+  }
+
+  async function handleDeleteCategory(id: string) {
+    if (!confirm('Delete this category? Albums inside will be orphaned or deleted based on DB rules.')) return;
+    await supabase.from('gallery_categories').delete().eq('id', id);
+    fetchData();
   }
 
   return (
@@ -94,36 +165,70 @@ export default function GalleryAdminPage() {
       `}</style>
 
       <div className="page-header">
-        <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a2e1d' }}>Gallery</h2>
-        <button className="btn-primary" onClick={() => { setShowForm(true); setEditingId(null); setFormData({ name: '', description: '', cover_image: '' }); }}>
-          + Create Album
-        </button>
+        <div className="flex flex-col gap-1">
+          <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a2e1d' }}>Media Gallery</h2>
+          <div className="flex gap-4 border-b border-black/5 mt-4">
+            <button className={`pb-2 px-1 text-sm font-bold transition-all ${view === 'albums' ? 'text-brand-green border-b-2 border-brand-green' : 'text-black/30'}`} onClick={() => setView('albums')}>Albums</button>
+            <button className={`pb-2 px-1 text-sm font-bold transition-all ${view === 'categories' ? 'text-brand-green border-b-2 border-brand-green' : 'text-black/30'}`} onClick={() => setView('categories')}>Categories</button>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          {view === 'categories' ? (
+             <button className="btn-primary" onClick={() => { setShowForm('category'); setEditingId(null); setCategoryData({ name: '', description: '', slug: '' }); }}>
+               + New Category
+             </button>
+          ) : (
+            <button className="btn-primary" onClick={() => { setShowForm('album'); setEditingId(null); setAlbumData({ name: '', description: '', cover_image_url: '', category_id: '', slug: '' }); }}>
+               + Create Album
+             </button>
+          )}
+        </div>
       </div>
 
       {error ? (
-        <div className="error-state"><p style={{ fontWeight: 700 }}>Table not found</p><p style={{ fontSize: 13, marginTop: 8 }}>Run the SQL script to create the gallery_albums table.</p></div>
+        <div className="error-state"><p style={{ fontWeight: 700 }}>Database Sync Error</p><p style={{ fontSize: 13, marginTop: 8 }}>{error}</p></div>
       ) : loading ? (
-        <div className="empty-state">Loading...</div>
+        <div className="empty-state">Loading gallery data...</div>
+      ) : view === 'categories' ? (
+        <div className="albums-grid">
+          {categories.map(cat => (
+            <div key={cat.id} className="album-card">
+              <div className="album-info">
+                <div className="flex justify-between items-start">
+                  <div className="album-name">{cat.name}</div>
+                  <span className="text-[10px] font-bold bg-slate-100 px-2 py-0.5 rounded text-slate-500">{cat.slug}</span>
+                </div>
+                <div className="album-desc">{cat.description || 'No description'}</div>
+                <div className="album-actions">
+                  <button className="btn-sm" onClick={() => startEditCategory(cat)}>Edit</button>
+                  <button className="btn-sm del" onClick={() => handleDeleteCategory(cat.id)}>Delete</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : albums.length === 0 ? (
         <div className="empty-state">
           <p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>No albums yet</p>
-          <p style={{ fontSize: 14 }}>Create your first album to start organizing photos.</p>
+          <p style={{ fontSize: 14 }}>Organize your photos by creating an album first.</p>
         </div>
       ) : (
         <div className="albums-grid">
           {albums.map(album => (
             <div key={album.id} className="album-card">
               <div className="album-cover">
-                {album.cover_image ? (
-                  <Image src={album.cover_image} alt={album.name} fill style={{ objectFit: 'cover' }} />
+                {album.cover_image_url ? (
+                  <Image src={album.cover_image_url} alt={album.name} fill style={{ objectFit: 'cover' }} />
                 ) : '🖼️'}
+                <div className="absolute top-3 left-3 px-2 py-1 bg-white/90 backdrop-blur rounded-md text-[9px] font-bold uppercase tracking-wider text-brand-green shadow-sm">{album.category_name || 'Uncategorized'}</div>
               </div>
               <div className="album-info">
                 <div className="album-name">{album.name}</div>
                 <div className="album-desc">{album.description || 'No description'}</div>
                 <div className="album-actions">
-                  <button className="btn-sm" onClick={() => startEdit(album)}>Edit</button>
-                  <button className="btn-sm del" onClick={() => handleDelete(album.id)}>Delete</button>
+                  <Link href={`/admin/gallery/albums/${album.id}`} className="btn-sm" style={{ background: '#164e24', color: '#fff', border: 'none' }}>Manage Photos</Link>
+                  <button className="btn-sm" onClick={() => startEditAlbum(album)}>Edit</button>
+                  <button className="btn-sm del" onClick={() => handleDeleteAlbum(album.id)}>Delete</button>
                 </div>
               </div>
             </div>
@@ -131,17 +236,43 @@ export default function GalleryAdminPage() {
         </div>
       )}
 
-      {showForm && (
-        <div className="form-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowForm(false); }}>
+      {showForm === 'album' && (
+        <div className="form-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowForm(null); }}>
           <div className="form-modal">
             <h3>{editingId ? 'Edit Album' : 'Create Album'}</h3>
-            <form onSubmit={handleSave}>
-              <div className="fg"><label>Album Name</label><input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. Sports Day 2026" /></div>
-              <div className="fg"><label>Description</label><textarea rows={3} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} /></div>
-              <div className="fg"><label>Cover Image URL</label><input value={formData.cover_image} onChange={e => setFormData({ ...formData, cover_image: e.target.value })} placeholder="Optional — paste an image URL" /></div>
+            <form onSubmit={handleSaveAlbum}>
+              <div className="fg">
+                <label>Album Name</label>
+                <input required value={albumData.name} onChange={e => setAlbumData({ ...albumData, name: e.target.value })} placeholder="e.g. Sports Day 2026" />
+              </div>
+              <div className="fg">
+                <label>Category</label>
+                <select required value={albumData.category_id} onChange={e => setAlbumData({ ...albumData, category_id: e.target.value })} style={{ width: '100%', padding: '11px', background: '#f8fafc', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '10px' }}>
+                  <option value="">Select a category...</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="fg"><label>Description</label><textarea rows={3} value={albumData.description} onChange={e => setAlbumData({ ...albumData, description: e.target.value })} /></div>
+              <div className="fg"><label>Cover Image URL (Optional)</label><input value={albumData.cover_image_url} onChange={e => setAlbumData({ ...albumData, cover_image_url: e.target.value })} placeholder="Will use first image if empty" /></div>
               <div className="form-actions">
-                <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
+                <button type="button" className="btn-cancel" onClick={() => setShowForm(null)}>Cancel</button>
                 <button type="submit" className="btn-save">{editingId ? 'Update' : 'Create Album'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showForm === 'category' && (
+        <div className="form-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowForm(null); }}>
+          <div className="form-modal">
+            <h3>{editingId ? 'Edit Category' : 'Create Category'}</h3>
+            <form onSubmit={handleSaveCategory}>
+              <div className="fg"><label>Category Name</label><input required value={categoryData.name} onChange={e => setCategoryData({ ...categoryData, name: e.target.value })} placeholder="e.g. Sport" /></div>
+              <div className="fg"><label>Description</label><textarea rows={3} value={categoryData.description} onChange={e => setCategoryData({ ...categoryData, description: e.target.value })} /></div>
+              <div className="form-actions">
+                <button type="button" className="btn-cancel" onClick={() => setShowForm(null)}>Cancel</button>
+                <button type="submit" className="btn-save">{editingId ? 'Update' : 'Create Category'}</button>
               </div>
             </form>
           </div>

@@ -162,8 +162,31 @@ create policy "Agency admins manage API keys"
   using (auth.role() = 'authenticated');
 
 -- ================================================
+-- BRAND KITS (visual identity per client)
+-- ================================================
+create table public.brand_kits (
+  id uuid primary key default uuid_generate_v4(),
+  workspace_id uuid references public.workspaces(id) on delete cascade,
+  logo_url text,
+  primary_color text default '#f97316',
+  secondary_color text default '#1a1a27',
+  accent_color text default '#fbbf24',
+  font_preference text default 'Inter',
+  watermark_url text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(workspace_id)
+);
+
+alter table public.brand_kits enable row level security;
+create policy "Agency admins manage brand kits"
+  on public.brand_kits for all
+  using (auth.role() = 'authenticated');
+
+-- ================================================
 -- Indexes for performance
 -- ================================================
+create index brand_kits_workspace_id_idx on public.brand_kits(workspace_id);
 create index posts_workspace_id_idx on public.posts(workspace_id);
 create index posts_status_idx on public.posts(status);
 create index posts_scheduled_at_idx on public.posts(scheduled_at);

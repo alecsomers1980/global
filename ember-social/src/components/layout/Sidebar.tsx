@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Flame, LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight, Brain, PenLine, Wifi, Key } from 'lucide-react'
+import { Flame, LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight, Brain, PenLine, Wifi, Key, Palette, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Workspace {
@@ -31,7 +31,9 @@ export function Sidebar({ workspaces }: SidebarProps) {
 
     const workspaceNavItems = isInsideWorkspace ? [
         { label: 'Intelligence', href: `/dashboard/workspaces/${activeWorkspaceId}/intelligence`, icon: Brain },
+        { label: 'Brand Kit', href: `/dashboard/workspaces/${activeWorkspaceId}/brand-kit`, icon: Palette },
         { label: 'Compose', href: `/dashboard/workspaces/${activeWorkspaceId}/compose`, icon: PenLine },
+        { label: 'Approvals', href: `/dashboard/workspaces/${activeWorkspaceId}/approvals`, icon: ShieldCheck },
         { label: 'Calendar', href: `/dashboard/workspaces/${activeWorkspaceId}/calendar`, icon: Calendar },
         { label: 'Inbox', href: `/dashboard/workspaces/${activeWorkspaceId}/inbox`, icon: Inbox },
         { label: 'Analytics', href: `/dashboard/workspaces/${activeWorkspaceId}/analytics`, icon: BarChart2 },

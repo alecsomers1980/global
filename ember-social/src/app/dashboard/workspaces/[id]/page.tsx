@@ -1,9 +1,10 @@
 import { createServerSupabaseClient } from '@/lib/supabase/client'
+export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
     ArrowLeft, Brain, Wifi, WifiOff, PenLine, Calendar,
-    Inbox, BarChart2, Key, AlertTriangle
+    Inbox, BarChart2, Key, AlertTriangle, Palette, ShieldCheck
 } from 'lucide-react'
 import { PLATFORM_LABELS, PLATFORM_COLORS, formatDate } from '@/lib/utils'
 
@@ -26,6 +27,13 @@ export default async function WorkspacePage({ params }: Props) {
             .limit(5),
     ])
 
+    // Separate query so it doesn't break the page if posts table has no data
+    const { count: pendingCount } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('workspace_id', id)
+        .eq('status', 'pending_approval')
+
     const intelAny = intel as any
     const recentPostsAny = recentPosts as any[]
 
@@ -38,10 +46,12 @@ export default async function WorkspacePage({ params }: Props) {
 
     const tabs = [
         { label: 'Compose', href: `/dashboard/workspaces/${id}/compose`, icon: PenLine },
+        { label: 'Approvals', href: `/dashboard/workspaces/${id}/approvals`, icon: ShieldCheck, badge: pendingCount },
         { label: 'Calendar', href: `/dashboard/workspaces/${id}/calendar`, icon: Calendar },
         { label: 'Inbox', href: `/dashboard/workspaces/${id}/inbox`, icon: Inbox },
         { label: 'Analytics', href: `/dashboard/workspaces/${id}/analytics`, icon: BarChart2 },
         { label: 'Intelligence', href: `/dashboard/workspaces/${id}/intelligence`, icon: Brain },
+        { label: 'Brand Kit', href: `/dashboard/workspaces/${id}/brand-kit`, icon: Palette },
         { label: 'Platforms', href: `/dashboard/workspaces/${id}/platforms`, icon: Wifi },
         { label: 'API Keys', href: `/dashboard/workspaces/${id}/api-keys`, icon: Key },
     ]
@@ -77,12 +87,18 @@ export default async function WorkspacePage({ params }: Props) {
 
             {/* Quick action tabs */}
             <div className="flex gap-2 flex-wrap">
-                {tabs.map(({ label, href, icon: Icon }) => (
+                {tabs.map(({ label, href, icon: Icon, badge }: any) => (
                     <Link key={href} href={href}
                         className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10"
                         style={{ background: '#1a1a27', color: '#8a8aaa', border: '1px solid #2a2a3d' }}>
                         <Icon className="w-4 h-4" />
                         {label}
+                        {badge > 0 && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
+                                style={{ background: 'rgba(251,191,36,0.2)', color: '#fbbf24' }}>
+                                {badge}
+                            </span>
+                        )}
                     </Link>
                 ))}
             </div>

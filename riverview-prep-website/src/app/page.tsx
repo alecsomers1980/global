@@ -12,13 +12,9 @@ import EventPosterSlider from "@/components/EventPosterSlider";
 import { createClient } from "@/lib/supabase-client";
 import {
   Calendar,
-  ArrowRight,
   Shield,
   Heart,
   Star,
-  Quote,
-  Camera,
-  Phone,
   MapPin,
   Loader2,
 } from "lucide-react";
@@ -124,7 +120,7 @@ const testimonials = [
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
-interface EventItem {
+interface CalendarEventItem {
   id: string;
   day: string;
   dateStr: string;
@@ -132,48 +128,52 @@ interface EventItem {
   title: string;
   type: string;
   location: string;
-  slug: string;
 }
 
 export default function Home() {
-  const [upcomingEvents, setUpcomingEvents] = useState<EventItem[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<CalendarEventItem[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [currentMonthLabel, setCurrentMonthLabel] = useState('');
   const supabase = createClient();
 
   useEffect(() => {
-    fetchEvents();
+    fetchCalendarEvents();
   }, []);
 
-  async function fetchEvents() {
+  async function fetchCalendarEvents() {
     try {
-      const { data, error } = await supabase
-        .from('events')
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      setCurrentMonthLabel(now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+
+      const { data } = await supabase
+        .from('calendar_entries')
         .select('*')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false }) // In a real app, sort by actual date
-        .limit(5);
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date', { ascending: true });
 
       if (data) {
-        const mapped = data.map((ev: any) => {
-          // Extract date from schedules or fallback
-          const firstSchedule = ev.schedules?.[0];
-          const dateObj = firstSchedule?.date ? new Date(firstSchedule.date) : new Date();
-          
+        const mapped = data.map((entry: any) => {
+          const dateObj = new Date(entry.date + 'T00:00:00');
           return {
-            id: ev.id,
+            id: entry.id,
             day: dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
             dateStr: dateObj.getDate().toString(),
             month: dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-            title: ev.title,
-            type: ev.category || 'Event',
-            location: ev.venue || 'Campus',
-            slug: ev.slug || ev.id,
+            title: entry.title,
+            type: entry.type || 'Academic',
+            location: entry.location || 'Campus',
           };
         });
         setUpcomingEvents(mapped);
       }
     } catch (err) {
-      console.error("Failed to fetch events:", err);
+      console.error("Failed to fetch calendar events:", err);
     } finally {
       setLoadingEvents(false);
     }
@@ -267,7 +267,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. Upcoming Events ──────────────────────────────────────────── */}
+      {/* ── 5. Upcoming Events (from calendar_entries this month) ────────────── */}
       <section className="py-28 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
@@ -277,6 +277,12 @@ export default function Home() {
                 Upcoming <span className="drama-text text-brand-gold">Events.</span>
               </h2>
             </div>
+            {currentMonthLabel && (
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-green/40">
+                <Calendar className="w-4 h-4 text-brand-gold" />
+                {currentMonthLabel}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
@@ -291,9 +297,8 @@ export default function Home() {
                 </div>
               ) : upcomingEvents.length > 0 ? (
                 upcomingEvents.map((event, i) => (
-                  <Link
+                  <div
                     key={i}
-                    href={`/events/${event.slug}`}
                     className="group flex gap-6 p-6 rounded-[2rem] border border-brand-green/5 bg-brand-cream hover:border-brand-gold/30 hover:bg-white hover:shadow-xl transition-all duration-500"
                   >
                     <div className="flex-shrink-0 w-16 flex flex-col items-center justify-center bg-brand-green text-white rounded-2xl py-3 gap-1 shadow-lg group-hover:scale-105 transition-transform">
@@ -303,7 +308,7 @@ export default function Home() {
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <div className="flex items-center gap-3 mb-2">
-                         <span className={`inline-block px-3 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${eventTypeColours[event.type] || 'bg-brand-green text-white'}`}>
+                        <span className={`inline-block px-3 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${eventTypeColours[event.type] || 'bg-brand-green text-white'}`}>
                           {event.type}
                         </span>
                       </div>
@@ -314,16 +319,13 @@ export default function Home() {
                         <MapPin className="w-3 h-3 text-brand-gold" /> {event.location}
                       </p>
                     </div>
-                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-10 h-10 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold">
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </Link>
+                  </div>
                 ))
               ) : (
                 <div className="p-12 text-center bg-brand-cream/50 rounded-3xl border-2 border-dashed border-brand-green/5">
-                  <p className="text-sm font-bold text-brand-green/40 mt-2">No upcoming events scheduled at this time.</p>
+                  <Calendar className="w-10 h-10 text-brand-green/10 mx-auto mb-3" />
+                  <p className="text-sm font-bold text-brand-green/40">No events scheduled for {currentMonthLabel}.</p>
+                  <p className="text-xs text-brand-green/25 mt-1">Add entries via the admin calendar.</p>
                 </div>
               )}
             </div>

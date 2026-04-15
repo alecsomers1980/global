@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tindlovu Group — Operations Discovery Questionnaire | Ember Automations</title>
+    <meta name="description" content="Operations discovery questionnaire for Tindlovu Restaurant Group, prepared by Ember Automations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================
+           EMBER AUTOMATIONS DESIGN SYSTEM
+           Brand: Light-first, Ember Orange, Inter
+        ======================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ember-500: #f97316;
+            --ember-600: #ea580c;
+            --ember-700: #c2410c;
+            --ember-100: #ffedd5;
+            --ember-50: #fff7ed;
+            --ember-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
+            /* Light Scale */
+            --bg-page: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-surface-raised: #ffffff;
+            --border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-muted: #64748b;
+            --text-inverse: #ffffff;
+            --dark-600: #e2e8f0; /* used for nav/pills */
+            --dark-500: #f1f5f9; /* used for inputs */
+            --glow: rgba(249, 115, 22, 0.08);
+            --success: #10b981;
+            --success-muted: rgba(16, 185, 129, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 24px;
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            height: 36px;
+            width: auto;
+        }
+
+        .save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .save-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .save-dot.saved {
+            background: var(--success);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .save-dot.saving {
+            background: var(--ember-500);
+            animation: pulse 1s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            text-align: center;
+            padding: 64px 24px 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(249, 115, 22, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ember-600);
+            background: rgba(249, 115, 22, 0.08);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+            border-radius: 20px;
+            padding: 6px 16px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(28px, 5vw, 44px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            margin-bottom: 16px;
+            color: #0f172a;
+        }
+
+        .hero h1 span {
+            background: var(--ember-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .progress-bar-wrapper {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ember-600);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--ember-gradient);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* Section nav pills */
+        .section-nav {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .section-pill {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .section-pill:hover {
+            background: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        .section-pill.active {
+            background: rgba(249, 115, 22, 0.1);
+            color: var(--ember-700);
+            border-color: rgba(249, 115, 22, 0.2);
+        }
+
+        .section-pill.complete {
+            background: var(--success-muted);
+            color: #065f46;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* ========== SECTION ========== */
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 32px;
+        }
+
+        .section-number {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ember-600);
+            margin-bottom: 8px;
+        }
+
+        .section-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* ========== QUESTION CARD ========== */
+        .question-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: rgba(249, 115, 22, 0.2);
+        }
+
+        .question-card:focus-within {
+            border-color: rgba(249, 115, 22, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .question-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .question-label .q-num {
+            color: var(--ember-600);
+            margin-right: 4px;
+        }
+
+        .question-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            background: #fffbeb;
+            border-left: 3px solid var(--ember-500);
+            border-radius: 0 8px 8px 0;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+            border-top: 1px solid #fef3c7;
+            border-bottom: 1px solid #fef3c7;
+            border-right: 1px solid #fef3c7;
+        }
+
+        .example-box strong {
+            color: var(--ember-700);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* ========== INPUTS ========== */
+        textarea,
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #1e293b;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+        }
+
+        textarea:focus,
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
+            border-color: var(--ember-500);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        textarea::placeholder,
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        /* Ranking inputs */
+        .ranking-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .ranking-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ranking-row span {
+            flex: 1;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .ranking-row select {
+            width: 60px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px;
+            color: #1e293b;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .ranking-row select:focus {
+            border-color: var(--ember-500);
+        }
+
+        /* ========== NAVIGATION BUTTONS ========== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            gap: 16px;
+        }
+
+        .btn {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 14px 28px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-primary {
+            background: var(--ember-500);
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--ember-600);
+            box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ========== COMPLETION SCREEN ========== */
+        .completion-screen {
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .completion-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success-muted);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .completion-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--success);
+        }
+
+        .completion-screen h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .completion-screen p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto 32px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+            background: #ffffff;
+        }
+
+        .footer a {
+            color: var(--ember-600);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 640px) {
+            .hero {
+                padding: 48px 20px 32px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .question-card {
+                padding: 20px;
+            }
+
+            .nav-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .nav-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .section-nav {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .section-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .progress-bar-wrapper {
+                padding: 16px;
+            }
+        }
+
+        /* Saved toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #ffffff;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 200;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Resume banner */
+        .resume-banner {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .resume-banner p {
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .resume-banner p strong {
+            color: var(--ember-700);
+        }
+
+        .resume-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-sm {
+            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <img src="../brand/logo-light.png" alt="Ember Automations" class="logo" id="logoImg">
+            <div class="save-indicator" id="saveIndicator">
+                <div class="save-dot" id="saveDot"></div>
+                <span id="saveText">Not started</span>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- HERO -->
+    <section class="hero" id="heroSection">
+        <div class="hero-badge">Operations Discovery</div>
+        <h1>Tindlovu Group<br><span>Questionnaire</span></h1>
+        <p>Help us understand your operations so we can build the perfect management system for your restaurant group. Your answers are saved automatically — stop and continue anytime.</p>
+    </section>
+
+    <!-- PROGRESS -->
+    <div class="progress-container">
+        <div class="progress-bar-wrapper">
+            <div class="progress-header">
+                <span class="progress-label">Your Progress</span>
+                <span class="progress-percent" id="progressPercent">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="section-nav" id="sectionNav"></div>
+        </div>
+
+        <!-- Resume banner (hidden by default) -->
+        <div class="resume-banner" id="resumeBanner" style="display: none;">
+            <p>Welcome back! You have <strong>saved progress</strong> from a previous session.</p>
+            <div class="resume-actions">
+                <button class="btn btn-sm btn-secondary" onclick="clearAndRestart()">Start Over</button>
+                <button class="btn btn-sm btn-primary" onclick="resumeProgress()">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <main class="main" id="formMain">
+        <!-- Sections are rendered by JS -->
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Prepared by <a href="https://emberautomations.co.za" target="_blank">Ember Automations</a> · White River, Mpumalanga</p>
+        <p style="margin-top: 4px;">© 2026 Ember Automations (Pty) Ltd</p>
+    </footer>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Progress saved
+    </div>
+
+    <script>
+    // ===========================================
+    // QUESTIONNAIRE DATA
+    // ===========================================
+    const STORAGE_KEY = 'tindlovu_questionnaire_v1';
+    const sections = [
+        {
+            id: 'business',
+            title: 'Business Overview',
+            description: 'Tell us about your restaurants, branches, and overall business structure.',
+            icon: '🏢',
+            questions: [
+                {
+                    id: 'branches_count',
+                    label: 'How many branches do you currently operate?',
+                    type: 'textarea',
+                    placeholder: 'List the number and names of your locations...',
+                    example: 'We have 7 locations — Mopani, Letaba, Olifants, Berg en Dal, Afsaal, Satara, and Camps Bay. Two more opening next year.'
+                },
+                {
+                    id: 'curio_branches',
+                    label: 'Which branches have a curio shop attached?',
+                    type: 'textarea',
+                    placeholder: 'List the branches with curio shops...',
+                    example: 'Letaba, Berg en Dal, and Afsaal have curio shops. Olifants has a small curio stand but not a full shop.'
+                },
+                {
+                    id: 'branch_managers',
+                    label: 'Who runs each branch day-to-day? Is there a branch manager at every site?',
+                    type: 'textarea',
+                    placeholder: 'Describe your management structure...',
+                    example: 'Each branch has a branch manager and a shift supervisor. Camps Bay has two shift supervisors because of high volume.'
+                },
+                {
+                    id: 'communication',
+                    label: 'How does head office currently communicate with branches?',
+                    type: 'textarea',
+                    placeholder: 'WhatsApp, email, calls, meetings...',
+                    example: 'Mostly WhatsApp groups. Some emails. We have a weekly Zoom call with all managers on Mondays.'
+                },
+                {
+                    id: 'different_brands',
+                    label: 'Do any branches operate under a different trading name or brand?',
+                    type: 'textarea',
+                    placeholder: 'Describe any brand variations...',
+                    example: 'No, they\'re all Tindlovu. But the Camps Bay restaurant has a slightly different menu style.'
+                }
+            ]
+        },
+        {
+            id: 'cashup',
+            title: 'Cashup Process',
+            description: 'Understanding your current cashup workflow is critical — this is where we can save you the most time.',
+            icon: '💰',
+            questions: [
+                {
+                    id: 'cashup_process',
+                    label: 'Describe your current cashup process step by step.',
+                    type: 'textarea',
+                    placeholder: 'Walk us through what happens at the end of a shift...',
+                    example: 'At end of shift, the cashier counts the cash drawer, fills in an Excel template, takes photos of the Z-report and deposit slip, then sends everything to the manager via WhatsApp. Manager checks it and forwards to head office.'
+                },
+                {
+                    id: 'cashup_frequency',
+                    label: 'How often do cashups happen? End of each shift? End of day?',
+                    type: 'textarea',
+                    placeholder: 'How many times per day, and does it vary by branch...',
+                    example: 'Twice a day — after lunch shift and after dinner. At Afsaal it\'s only once because they close at 4pm.'
+                },
+                {
+                    id: 'payment_methods',
+                    label: 'What payment methods do your customers use?',
+                    type: 'textarea',
+                    placeholder: 'Cash, card (which machines), mobile payments...',
+                    example: 'Cash (about 40%), card (Yoco machines — about 50%), and we accept Snapscan/Zapper at Camps Bay (about 10%). No online payments.'
+                },
+                {
+                    id: 'cashup_problems',
+                    label: 'What are the most common problems with your current cashup process?',
+                    type: 'textarea',
+                    placeholder: 'List your biggest frustrations...',
+                    example: 'Cashiers make calculation errors in Excel. Photos are sometimes blurry or missing. Sometimes the WhatsApp messages get lost in the group chat. It takes head office 2-3 days to catch a discrepancy.'
+                },
+                {
+                    id: 'pos_system',
+                    label: 'Do you currently use a POS system? If yes, which one?',
+                    type: 'textarea',
+                    placeholder: 'Name the POS system or describe your current setup...',
+                    example: 'We use Pilot POS at 4 branches and the others just use a basic cash register. We\'re planning to standardise but haven\'t decided yet.'
+                },
+                {
+                    id: 'shortage_process',
+                    label: 'What happens when a cashup shows a shortage or overage?',
+                    type: 'textarea',
+                    placeholder: 'Describe the investigation and resolution process...',
+                    example: 'Manager investigates. If it\'s more than R100 short, the regional manager gets involved. We keep a record in a spreadsheet but it\'s not easy to track patterns.'
+                }
+            ]
+        },
+        {
+            id: 'stock',
+            title: 'Stock Management',
+            description: 'Tell us about your inventory processes, stock takes, and the challenges you face.',
+            icon: '📦',
+            questions: [
+                {
+                    id: 'stock_take_process',
+                    label: 'How do you currently do stock takes?',
+                    type: 'textarea',
+                    placeholder: 'Describe your current process...',
+                    example: 'Monthly stock take using printed sheets. Staff walk around and count everything, write it on paper, then someone types it into Excel. It takes a full day and we usually find errors.'
+                },
+                {
+                    id: 'stock_take_frequency',
+                    label: 'How often should stock takes ideally happen?',
+                    type: 'textarea',
+                    placeholder: 'What frequency would work best for your operations...',
+                    example: 'We\'d love to do weekly spot checks on high-value items (meat, alcohol) and full stock takes monthly.'
+                },
+                {
+                    id: 'stock_problems',
+                    label: 'What are your biggest stock-related problems?',
+                    type: 'textarea',
+                    placeholder: 'Shrinkage, waste, running out of items...',
+                    example: 'Shrinkage — especially with meat and alcohol. We can\'t tell if it\'s theft, waste, or just counting errors. Also, some branches run out of items because nobody ordered in time.'
+                },
+                {
+                    id: 'stock_separation',
+                    label: 'Do the restaurant and curio shop have completely separate stock, or is there overlap?',
+                    type: 'textarea',
+                    placeholder: 'Describe how stock is separated between restaurant and curio...',
+                    example: 'Completely separate. The restaurant has food and drinks, the curio shop has crafts, souvenirs, and some packaged foods like biltong and rusks.'
+                },
+                {
+                    id: 'waste_tracking',
+                    label: 'How do you track waste and spoilage?',
+                    type: 'textarea',
+                    placeholder: 'Describe your current waste tracking (or lack thereof)...',
+                    example: 'We don\'t really track it properly right now. Kitchen throws things away and it\'s not recorded. We know it\'s a problem but we have no data.'
+                }
+            ]
+        },
+        {
+            id: 'ordering',
+            title: 'Ordering',
+            description: 'How stock flows from suppliers into your branches.',
+            icon: '🛒',
+            questions: [
+                {
+                    id: 'ordering_process',
+                    label: 'How do branches currently order stock?',
+                    type: 'textarea',
+                    placeholder: 'Describe the current ordering workflow...',
+                    example: 'Branch manager checks what\'s needed, WhatsApps a list to the regional manager, who then calls the supplier or sends an email. There\'s no standard template.'
+                },
+                {
+                    id: 'order_authority',
+                    label: 'Who has authority to place orders? Is there an approval process?',
+                    type: 'textarea',
+                    placeholder: 'Describe the ordering authority and approval chain...',
+                    example: 'Branch managers can order dry goods up to R5,000. Anything above that or any alcohol orders need regional manager approval. It\'s informal though.'
+                },
+                {
+                    id: 'supplier_count',
+                    label: 'How many suppliers do you work with?',
+                    type: 'textarea',
+                    placeholder: 'Approximate number and any regional differences...',
+                    example: 'About 12-15 regular suppliers. Each branch might have 2-3 local suppliers as well. The Kruger branches use different suppliers than Camps Bay.'
+                },
+                {
+                    id: 'delivery_checking',
+                    label: 'How are deliveries currently checked in?',
+                    type: 'textarea',
+                    placeholder: 'Describe the delivery receiving process...',
+                    example: 'Manager or kitchen staff check the delivery against the invoice. They sign the delivery note. Sometimes items are short or wrong quality and they have to phone the supplier.'
+                },
+                {
+                    id: 'auto_ordering',
+                    label: 'Would you like the system to suggest orders based on stock levels?',
+                    type: 'textarea',
+                    placeholder: 'Would automated ordering suggestions be helpful...',
+                    example: 'Yes, that would be amazing! Especially for staples that we always need. But for fresh produce somebody needs to check quality, so we\'d still want manual ordering for that.'
+                }
+            ]
+        },
+        {
+            id: 'reporting',
+            title: 'Reporting',
+            description: 'Understanding what information you need to make better business decisions.',
+            icon: '📊',
+            questions: [
+                {
+                    id: 'current_reports',
+                    label: 'What reports does head office currently look at?',
+                    type: 'textarea',
+                    placeholder: 'List the reports you currently receive or create...',
+                    example: 'Just the Excel cashup sheets. We look at monthly revenue by branch. Our accountant pulls financial reports quarterly. We don\'t have real-time visibility.'
+                },
+                {
+                    id: 'desired_reports',
+                    label: 'What reports do you wish you had?',
+                    type: 'textarea',
+                    placeholder: 'Describe the data you\'d love to see...',
+                    example: 'Daily sales comparison across branches. Food cost percentage per branch. Stock variance reports. Which menu items are selling best. Over/short trends by staff member.'
+                },
+                {
+                    id: 'report_access',
+                    label: 'Who needs access to reports?',
+                    type: 'textarea',
+                    placeholder: 'List the roles that should see reports and their access level...',
+                    example: 'The owner, the operations manager, regional managers, and the accountant. Branch managers should only see their own branch.'
+                },
+                {
+                    id: 'accountant_software',
+                    label: 'Do you have an accountant or bookkeeper? What software do they use?',
+                    type: 'textarea',
+                    placeholder: 'Accountant/bookkeeper details and their software...',
+                    example: 'Yes, we have an external accountant who uses Xero. We\'d love if the system could export data in a format they can easily import.'
+                }
+            ]
+        },
+        {
+            id: 'technology',
+            title: 'Technology & Connectivity',
+            description: 'Understanding your tech landscape is crucial — especially for remote Kruger locations.',
+            icon: '📱',
+            questions: [
+                {
+                    id: 'devices',
+                    label: 'What devices do staff at branches have access to?',
+                    type: 'textarea',
+                    placeholder: 'Smartphones, tablets, desktops, printers...',
+                    example: 'Everyone has a smartphone (Android mostly). Some branches have a desktop PC. The Camps Bay branch has a tablet. No printers at picnic spots.'
+                },
+                {
+                    id: 'internet',
+                    label: 'How is the internet connectivity at each branch?',
+                    type: 'textarea',
+                    placeholder: 'Describe the connectivity at each location...',
+                    example: 'Camps Bay has fibre — no issues. The Kruger branches have mobile data (Vodacom/MTN). It\'s usually okay but can be slow or drop out. Afsaal has the worst signal.'
+                },
+                {
+                    id: 'loadshedding',
+                    label: 'How does load shedding affect your operations?',
+                    type: 'textarea',
+                    placeholder: 'Generators, UPS, or no backup...',
+                    example: 'We have generators at the main camps but the picnic spots run out of fuel sometimes. When power is out, we can\'t use the POS machines and do everything manually.'
+                },
+                {
+                    id: 'cloud_storage',
+                    label: 'Are you currently using Google Drive or any cloud storage?',
+                    type: 'textarea',
+                    placeholder: 'Describe your current file storage setup...',
+                    example: 'We have a Google Drive but it\'s a mess — files everywhere, no proper folder structure. Some managers save things there, others use WhatsApp only.'
+                },
+                {
+                    id: 'email_system',
+                    label: 'Do you have a company email system (e.g. Gmail, Outlook)?',
+                    type: 'textarea',
+                    placeholder: 'Describe your email setup...',
+                    example: 'Yes, all managers have @tindlovu.co.za email addresses through Google Workspace.'
+                }
+            ]
+        },
+        {
+            id: 'curio',
+            title: 'Curio Shops',
+            description: 'Your curio shops have unique inventory and sales needs — let\'s understand them.',
+            icon: '🎨',
+            questions: [
+                {
+                    id: 'curio_products',
+                    label: 'What types of products do your curio shops sell?',
+                    type: 'textarea',
+                    placeholder: 'Describe the range of products...',
+                    example: 'Handmade crafts from local artists, animal carvings, jewelry, t-shirts, caps, postcards, packaged snacks (biltong, dried fruit), and some Kruger-branded souvenirs.'
+                },
+                {
+                    id: 'curio_tracking',
+                    label: 'How do you currently track curio shop sales?',
+                    type: 'textarea',
+                    placeholder: 'Describe your current sales tracking method...',
+                    example: 'Manual receipt books. Cash goes into a separate float and gets included in the daily cashup. We have a basic price list pinned on the wall.'
+                },
+                {
+                    id: 'curio_consignment',
+                    label: 'Do you buy curio stock outright, or are some items on consignment from artists?',
+                    type: 'textarea',
+                    placeholder: 'Describe your purchasing model...',
+                    example: 'Mix of both. We buy crafts outright from some suppliers. Local community artisans leave items on consignment — we pay them monthly for what sold.'
+                },
+                {
+                    id: 'curio_cashup',
+                    label: 'Do you want the curio shop to have its own cashup, or combine it with the restaurant?',
+                    type: 'textarea',
+                    placeholder: 'Separate or combined cashups...',
+                    example: 'Separate cashup would be better so we can see the revenue split. But one person often manages both, so it shouldn\'t be complicated to do two cashups.'
+                }
+            ]
+        },
+        {
+            id: 'functions',
+            title: 'Functions & Events',
+            description: 'Tell us about the weddings, conferences, and tour groups you host.',
+            icon: '🎪',
+            questions: [
+                {
+                    id: 'event_types',
+                    label: 'What types of functions and events do you host (e.g., weddings, conferences, corporate)?',
+                    type: 'textarea',
+                    placeholder: 'List event types and frequencies...',
+                    example: 'We do about 10-15 weddings a year and 30+ corporate or tour group lunches. Functions happen mostly at Letaba and Camps Bay.'
+                },
+                {
+                    id: 'booking_management',
+                    label: 'How do branches currently manage function bookings, calendars, and venue availability?',
+                    type: 'textarea',
+                    placeholder: 'Describe your booking workflow...',
+                    example: 'Right now it is managed via a shared Google Calendar. Regional management checks with the branch before confirming any date.'
+                },
+                {
+                    id: 'menu_packages',
+                    label: 'Do you offer standard set menus/packages for events, or is every function quoted separately?',
+                    type: 'textarea',
+                    placeholder: 'Describe menu and pricing structure...',
+                    example: 'We have standard Buffets & Braai menus for tour groups, but weddings are typically quoted completely custom based on what they want.'
+                },
+                {
+                    id: 'billing_deposits',
+                    label: 'How do you track deposits, payments, and final invoices for these events?',
+                    type: 'textarea',
+                    placeholder: 'Describe financial tracking for events...',
+                    example: 'Deposits are paid into the main bank account, accountant reflects it in Xero. Branch just gets a notification that the function is \'Cleared to proceed\'. There is no central tracking of deposit statuses for future dates.'
+                },
+                {
+                    id: 'operations_challenges',
+                    label: 'Are there any specific operations challenges with handling events in the Kruger Park spots (e.g. equipment, noise, hours)?',
+                    type: 'textarea',
+                    placeholder: 'Describe any site-specific constraints...',
+                    example: 'Timing is strict because of camp gate closure times. Noise must be controlled. Sometimes bringing in external decor or AV requires prior SANParks approval.'
+                }
+            ]
+        },
+        {
+            id: 'priorities',
+            title: 'Priorities & Pain Points',
+            description: 'Help us understand what matters most so we can focus on the highest-impact improvements first.',
+            icon: '🎯',
+            questions: [
+                {
+                    id: 'one_fix',
+                    label: 'If you could fix ONE thing about your current operations immediately, what would it be?',
+                    type: 'textarea',
+                    placeholder: 'Your single biggest pain point...',
+                    example: 'The cashup process. It takes too long, it\'s inaccurate, and by the time we see the numbers it\'s too late to act on problems.'
+                },
+                {
+                    id: 'ranking',
+                    label: 'Rank the following features by importance (1 = most important, 7 = least):',
+                    type: 'ranking',
+                    options: [
+                        'Digital cashups with photo upload',
+                        'Stock take on phone/tablet',
+                        'Ordering system with approvals',
+                        'Daily/weekly/monthly reports',
+                        'Google Drive auto-backup',
+                        'Curio shop management',
+                        'Functions & event tracking'
+                    ],
+                    example: '1 = Digital cashups, 2 = Reports, 3 = Stock take, 4 = Ordering, 5 = Curio shop, 6 = Functions, 7 = Google Drive'
+                },
+                {
+                    id: 'frustrations',
+                    label: 'Are there any specific frustrations not covered in the sections above?',
+                    type: 'textarea',
+                    placeholder: 'Anything else that slows you down or causes problems...',
+                    example: 'Staff turnover is high, so the system needs to be dead simple. If it\'s complicated, people won\'t use it. Also, SANParks has specific requirements for operating in the park that might affect what we can do.'
+                },
+                {
+                    id: 'past_software',
+                    label: 'Have you tried any software or apps before that didn\'t work out? What went wrong?',
+                    type: 'textarea',
+                    placeholder: 'Previous attempts and why they failed...',
+                    example: 'We tried using Google Forms for stock counts but nobody remembered to fill them in. We also looked at GAAP but the setup cost was too high for what we needed.'
+                }
+            ]
+        },
+
+    ];
+
+    // ===========================================
+    // STATE
+    // ===========================================
+    let currentSection = 0;
+    let answers = {};
+
+    // ===========================================
+    // INITIALIZATION
+    // ===========================================
+    function init() {
+        renderSectionNav();
+        renderSections();
+        checkForSavedProgress();
+        updateProgress();
+        showSection(currentSection);
+        attachAutoSave();
+    }
+
+    function checkForSavedProgress() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                answers = data.answers || {};
+                const lastSection = data.lastSection || 0;
+
+                // Populate fields
+                Object.keys(answers).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) {
+                        if (el.tagName === 'SELECT') {
+                            el.value = answers[key];
+                        } else {
+                            el.value = answers[key];
+                        }
+                    }
+                });
+
+                // Show resume banner
+                const filledCount = Object.values(answers).filter(v => v && v.trim()).length;
+                if (filledCount > 0) {
+                    currentSection = lastSection;
+                    document.getElementById('resumeBanner').style.display = 'flex';
+                }
+            } catch(e) {
+                console.error('Failed to load saved data', e);
+            }
+        }
+    }
+
+    function resumeProgress() {
+        document.getElementById('resumeBanner').style.display = 'none';
+        showSection(currentSection);
+        updateProgress();
+    }
+
+    function clearAndRestart() {
+        if (confirm('Are you sure? This will clear all your saved answers.')) {
+            localStorage.removeItem(STORAGE_KEY);
+            answers = {};
+            currentSection = 0;
+
+            // Clear all inputs
+            document.querySelectorAll('textarea, input, select').forEach(el => {
+                el.value = el.tagName === 'SELECT' ? '' : '';
+            });
+
+            document.getElementById('resumeBanner').style.display = 'none';
+            showSection(0);
+            updateProgress();
+        }
+    }
+
+    // ===========================================
+    // RENDERING
+    // ===========================================
+    function renderSectionNav() {
+        const nav = document.getElementById('sectionNav');
+        nav.innerHTML = sections.map((s, i) => 
+            `<button class="section-pill" data-index="${i}" onclick="goToSection(${i})" id="pill-${i}">
+                ${s.icon} ${s.title}
+            </button>`
+        ).join('');
+    }
+
+    function renderSections() {
+        const main = document.getElementById('formMain');
+        let html = '';
+
+        sections.forEach((section, si) => {
+            html += `<div class="form-section" id="section-${si}">`;
+            html += `<div class="section-header">
+                        <div class="section-number">Section ${si + 1} of ${sections.length}</div>
+                        <h2>${section.icon} ${section.title}</h2>
+                        <p>${section.description}</p>
+                     </div>`;
+
+            section.questions.forEach((q, qi) => {
+                const qNum = `${si + 1}.${qi + 1}`;
+                html += `<div class="question-card">`;
+                html += `<label class="question-label" for="${q.id}">
+                            <span class="q-num">${qNum}</span> ${q.label}
+                         </label>`;
+
+                if (q.example) {
+                    html += `<div class="example-box">
+                                <strong>Example answer:</strong><br>${q.example}
+                             </div>`;
+                }
+
+                if (q.type === 'ranking') {
+                    html += `<div class="ranking-grid">`;
+                    q.options.forEach((opt, oi) => {
+                        const selectId = `${q.id}_${oi}`;
+                        html += `<div class="ranking-row">
+                                    <span>${opt}</span>
+                                    <select id="${selectId}" data-answer-key="${selectId}">
+                                        <option value="">—</option>
+                                        ${q.options.map((_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                                    </select>
+                                 </div>`;
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<textarea id="${q.id}" placeholder="${q.placeholder || ''}" rows="4" data-answer-key="${q.id}"></textarea>`;
+                }
+
+                html += `</div>`;
+            });
+
+            // Navigation
+            html += `<div class="nav-buttons">`;
+            if (si > 0) {
+                html += `<button class="btn btn-secondary" onclick="prevSection()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                            Previous
+                         </button>`;
+            } else {
+                html += `<div></div>`;
+            }
+
+            if (si < sections.length - 1) {
+                html += `<button class="btn btn-primary" onclick="nextSection()">
+                            Next Section
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                         </button>`;
+            } else {
+                html += `<button class="btn btn-success" onclick="submitForm()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            Submit Questionnaire
+                         </button>`;
+            }
+            html += `</div>`;
+            html += `</div>`;
+        });
+
+        // Completion screen
+        html += `<div class="form-section" id="section-complete">
+                    <div class="completion-screen">
+                        <div class="completion-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                        </div>
+                        <h2>Thank You, Jo Anne!</h2>
+                        <p>Your questionnaire has been completed and saved. The Ember Automations team will review your responses and get back to you with a tailored proposal.</p>
+                        <button class="btn btn-primary" onclick="reviewAnswers()">Review My Answers</button>
+                    </div>
+                 </div>`;
+
+        main.innerHTML = html;
+    }
+
+    // ===========================================
+    // NAVIGATION
+    // ===========================================
+    function showSection(index) {
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        
+        const section = document.getElementById(`section-${index}`);
+        if (section) {
+            section.classList.add('active');
+        }
+
+        // Update pills
+        document.querySelectorAll('.section-pill').forEach(p => p.classList.remove('active'));
+        const pill = document.getElementById(`pill-${index}`);
+        if (pill) pill.classList.add('active');
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        currentSection = index;
+        saveProgress();
+    }
+
+    function nextSection() {
+        if (currentSection < sections.length - 1) {
+            showSection(currentSection + 1);
+            updateProgress();
+        }
+    }
+
+    function prevSection() {
+        if (currentSection > 0) {
+            showSection(currentSection - 1);
+            updateProgress();
+        }
+    }
+
+    function goToSection(index) {
+        showSection(index);
+        updateProgress();
+    }
+
+    // ===========================================
+    // PROGRESS TRACKING
+    // ===========================================
+    function updateProgress() {
+        const totalQuestions = getTotalFields();
+        const answeredCount = getAnsweredCount();
+        const percent = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+
+        document.getElementById('progressPercent').textContent = percent + '%';
+        document.getElementById('progressFill').style.width = percent + '%';
+
+        // Update section pills with completion status
+        sections.forEach((section, i) => {
+            const pill = document.getElementById(`pill-${i}`);
+            if (!pill) return;
+            
+            const sectionComplete = isSectionComplete(section);
+            pill.classList.toggle('complete', sectionComplete);
+        });
+    }
+
+    function getTotalFields() {
+        let count = 0;
+        sections.forEach(s => {
+            s.questions.forEach(q => {
+                if (q.type === 'ranking') {
+                    count += q.options.length;
+                } else {
+                    count++;
+                }
+            });
+        });
+        return count;
+    }
+
+    function getAnsweredCount() {
+        let count = 0;
+        document.querySelectorAll('[data-answer-key]').forEach(el => {
+            if (el.value && el.value.trim()) count++;
+        });
+        return count;
+    }
+
+    function isSectionComplete(section) {
+        return section.questions.every(q => {
+            if (q.type === 'ranking') {
+                return q.options.every((_, i) => {
+                    const el = document.getElementById(`${q.id}_${i}`);
+                    return el && el.value;
+                });
+            }
+            const el = document.getElementById(q.id);
+            return el && el.value && el.value.trim();
+        });
+    }
+
+    // ===========================================
+    // SAVE / LOAD
+    // ===========================================
+    function saveProgress() {
+        const data = {};
+        document.querySelectorAll('[data-answer-key]').forEach(el => {
+            data[el.id] = el.value;
+        });
+        answers = data;
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            answers: data,
+            lastSection: currentSection,
+            lastSaved: new Date().toISOString()
+        }));
+
+        // Update indicator
+        const dot = document.getElementById('saveDot');
+        const text = document.getElementById('saveText');
+        dot.className = 'save-dot saved';
+        text.textContent = 'Saved';
+    }
+
+    function showSaveToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function attachAutoSave() {
+        let saveTimeout;
+        document.querySelectorAll('[data-answer-key]').forEach(el => {
+            el.addEventListener('input', () => {
+                // Show saving state
+                const dot = document.getElementById('saveDot');
+                const text = document.getElementById('saveText');
+                dot.className = 'save-dot saving';
+                text.textContent = 'Saving...';
+
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    saveProgress();
+                    updateProgress();
+                    showSaveToast();
+                }, 800);
+            });
+        });
+    }
+
+    // ===========================================
+    // SUBMISSION
+    // ===========================================
+    function submitForm() {
+        saveProgress();
+
+        // Show completion screen
+        document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-complete').classList.add('active');
+        
+        // Update pills
+        document.querySelectorAll('.section-pill').forEach(p => p.classList.remove('active'));
+
+        // Update progress to 100%
+        document.getElementById('progressPercent').textContent = '100%';
+        document.getElementById('progressFill').style.width = '100%';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function reviewAnswers() {
+        showSection(0);
+        updateProgress();
+    }
+
+    // ===========================================
+    // INIT
+    // ===========================================
+    window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

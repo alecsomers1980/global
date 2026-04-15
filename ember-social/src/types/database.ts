@@ -214,6 +214,41 @@ export interface Database {
                     tags?: string[] | null
                 }
             }
+            brand_kits: {
+                Row: {
+                    id: string
+                    workspace_id: string
+                    logo_url: string | null
+                    primary_color: string
+                    secondary_color: string
+                    accent_color: string
+                    font_preference: string
+                    watermark_url: string | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    workspace_id: string
+                    logo_url?: string | null
+                    primary_color?: string
+                    secondary_color?: string
+                    accent_color?: string
+                    font_preference?: string
+                    watermark_url?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    logo_url?: string | null
+                    primary_color?: string
+                    secondary_color?: string
+                    accent_color?: string
+                    font_preference?: string
+                    watermark_url?: string | null
+                    updated_at?: string
+                }
+            }
             workspace_api_keys: {
                 Row: {
                     id: string

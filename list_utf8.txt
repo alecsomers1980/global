@@ -1,0 +1,10 @@
+﻿C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.local
+C:\Users\info\OneDrive\Documents\Antigravity\aloe-signs-website\.env.production.local
+C:\Users\info\OneDrive\Documents\Antigravity\bushbuckridge-news\.env.local
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.example
+C:\Users\info\OneDrive\Documents\Antigravity\ember-social\.env.local
+C:\Users\info\OneDrive\Documents\Antigravity\everest-motoring\.env.example
+C:\Users\info\OneDrive\Documents\Antigravity\everest-motoring\.env.local
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.example
+C:\Users\info\OneDrive\Documents\Antigravity\rvrinc\.env.local
+C:\Users\info\OneDrive\Documents\Antigravity\spanslab\.env.local

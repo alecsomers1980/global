@@ -12,15 +12,23 @@ export async function POST(req: Request) {
 
         const rawKey = authHeader.replace('Bearer ', '')
         const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex')
+        console.log('--- DEBUG: TRIGGER API ---')
+        console.log('Incoming rawKey length:', rawKey.length)
+        console.log('Incoming keyHash:', keyHash)
 
         const supabase = await createServerSupabaseClient()
 
         // 2. Lookup Key in DB
-        const { data: keyRecord } = await supabase
+        const { data: keyRecord, error: dbError } = await supabase
             .from('workspace_api_keys')
             .select('id, workspace_id')
             .eq('key_hash', keyHash)
             .single()
+
+        if (dbError) {
+          console.log('DB Search error:', dbError.message)
+        }
+        console.log('KeyRecord found:', !!keyRecord)
 
         if (!keyRecord) {
             return NextResponse.json({ error: 'Unauthorized key' }, { status: 401 })
@@ -43,17 +51,20 @@ export async function POST(req: Request) {
 
         // 5. Insert Post into Database
         // Triggers default to 'pending_approval' unless explicitly requested otherwise (if logic allowed)
+        const approval_token = crypto.randomUUID()
+
         const { data: post, error: insertError } = await supabase
             .from('posts')
             .insert({
                 workspace_id: keyAny.workspace_id,
                 content,
                 platforms,
+                media_urls: Array.isArray(media_urls) && media_urls.length > 0 ? media_urls : null,
                 scheduled_at: scheduled_at ? new Date(scheduled_at).toISOString() : null,
                 status: 'pending_approval',
-                // Note: media_urls would go into a relation or JSONB column depending on phase 2 schema
+                approval_token,
             } as never)
-            .select('id, status')
+            .select('id, status, approval_token')
             .single()
 
         if (insertError) throw insertError

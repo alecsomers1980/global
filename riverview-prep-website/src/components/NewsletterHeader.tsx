@@ -46,20 +46,23 @@ export default function NewsletterHeader({
         <div className="flex flex-col h-full justify-between z-10 relative">
           
           <div className={`flex items-center gap-3 ${compact ? 'mb-1' : 'mb-3'}`}>
-             <div>
-                <h2 className={`font-black uppercase tracking-tighter text-black leading-none text-brand-green ${compact ? 'text-2xl' : 'text-3xl'}`}>
-                  Newsletter
-                </h2>
-                <div className={`flex flex-wrap gap-x-3 gap-y-1 font-bold uppercase tracking-widest text-[#A4C639] ${compact ? 'text-[9px]' : 'text-[10px]'} mt-1`}>
-                  {term && <span>{term}</span>}
-                  {issue && <span>{issue}</span>}
-                  <span>{date}</span>
+             <div className="flex flex-col">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-8 h-[2px] bg-brand-gold"></span>
+                  <h2 className={`font-black uppercase tracking-[0.3em] text-brand-green leading-none ${compact ? 'text-xs' : 'text-sm'}`}>
+                    The Riverview Reporter
+                  </h2>
+                </div>
+                <div className={`flex flex-wrap gap-x-4 gap-y-1 font-bold uppercase tracking-widest text-brand-green/40 ${compact ? 'text-[8px]' : 'text-[10px]'} mt-1`}>
+                  {term && <span className="flex items-center gap-2"><span className="w-1 h-1 bg-brand-gold rounded-full"></span> {term}</span>}
+                  {issue && <span className="flex items-center gap-2"><span className="w-1 h-1 bg-brand-gold rounded-full"></span> {issue}</span>}
+                  <span className="flex items-center gap-2"><span className="w-1 h-1 bg-brand-gold rounded-full"></span> {date}</span>
                 </div>
              </div>
           </div>
 
           <div className={`${compact ? 'pt-1 space-y-1' : 'pt-2 space-y-3'} z-10 max-w-xl`}>
-            <h3 className={`font-bold text-gray-800 leading-snug line-clamp-2 pr-8 ${compact ? 'text-sm' : 'text-lg'}`}>
+            <h3 className={`font-serif font-black text-brand-green leading-tight pr-8 ${compact ? 'text-lg' : 'text-4xl'}`}>
               {title}
             </h3>
             

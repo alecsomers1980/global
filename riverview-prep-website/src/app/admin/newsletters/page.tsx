@@ -40,6 +40,18 @@ export default function NewslettersAdminPage() {
     fetchNewsletters();
   }
 
+  async function handleCopyEmailHtml(slug: string) {
+    try {
+      const res = await fetch(`/api/newsletter/${slug}/email`);
+      if (!res.ok) throw new Error('Failed to generate email');
+      const html = await res.text();
+      await navigator.clipboard.writeText(html);
+      alert('Email HTML copied to clipboard! You can now paste it into your mailer.');
+    } catch (err) {
+      alert('Error copying email HTML: ' + err);
+    }
+  }
+
   return (
     <div>
       <style>{`
@@ -57,6 +69,8 @@ export default function NewslettersAdminPage() {
         .nl-btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; }
         .nl-btn-edit { background: #f8fafc; border: 1px solid rgba(0,0,0,0.06); color: rgba(0,0,0,0.5); }
         .nl-btn-edit:hover { background: rgba(22,78,36,0.04); color: #164e24; border-color: rgba(22,78,36,0.1); }
+        .nl-btn-copy { background: none; border: 1px solid rgba(196,164,89,0.3); color: #c4a459; }
+        .nl-btn-copy:hover { background: rgba(196,164,89,0.05); }
         .nl-btn-del { background: none; border: 1px solid rgba(239,68,68,0.15); color: rgba(239,68,68,0.5); }
         .nl-btn-del:hover { background: rgba(239,68,68,0.05); color: #ef4444; }
         .empty-state { padding: 60px; text-align: center; color: rgba(0,0,0,0.3); background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; }
@@ -93,6 +107,7 @@ export default function NewslettersAdminPage() {
               <p className="nl-excerpt">{nl.excerpt || 'No excerpt provided.'}</p>
               <div className="nl-actions">
                 <Link href={`/admin/newsletters/edit/${nl.id}`} className="nl-btn nl-btn-edit">Edit</Link>
+                <button onClick={() => handleCopyEmailHtml(nl.slug)} className="nl-btn nl-btn-copy" title="Copy table-based HTML to clipboard for use in an email client">Email HTML</button>
                 <button onClick={() => handleDelete(nl.id)} className="nl-btn nl-btn-del">Delete</button>
               </div>
             </div>
