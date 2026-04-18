@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       if (verifyData.status && verifyData.data.status === 'success') {
         // Payment successful — update records
         const now = new Date()
-        const expiresAt = addMonths(now, 1)
+        const expiresAt = addMonths(now, 12)
 
         // Update payment
         await pb.collection('payments').update(payment.id, {
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
         // Update business tier
         await pb.collection('businesses').update(payment.business, {
-          package_tier: payment.expand?.subscription?.tier || 'standard',
+          package_tier: payment.expand?.subscription?.tier || 'basic',
           status: 'active',
         })
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     // Dev mode fallback or no key — auto-approve
     const now = new Date()
-    const expiresAt = addMonths(now, 1)
+    const expiresAt = addMonths(now, 12)
 
     await pb.collection('payments').update(payment.id, { status: 'successful', paid_at: now.toISOString() })
     await pb.collection('subscriptions').update(payment.subscription, { 
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
       expires_at: expiresAt.toISOString() 
     })
     await pb.collection('businesses').update(payment.business, { 
-      package_tier: payment.expand?.subscription?.tier || 'standard', 
+      package_tier: payment.expand?.subscription?.tier || 'basic', 
       status: 'active' 
     })
 

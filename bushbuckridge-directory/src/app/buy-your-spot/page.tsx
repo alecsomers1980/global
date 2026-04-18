@@ -110,14 +110,14 @@ export default async function BuyYourSpotPage() {
 
                                     <div className="space-y-3">
                                         <Label htmlFor="package" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Requested Package</Label>
-                                        <Select name="package" defaultValue="standard">
+                                        <Select name="package" defaultValue="pro-lead">
                                             <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10">
                                                 <SelectValue placeholder="Select a package" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-2xl">
-                                                <SelectItem value="standard">Standard Listing (Free)</SelectItem>
-                                                <SelectItem value="enhanced">Enhanced Listing</SelectItem>
-                                                <SelectItem value="premium">Premium Showcase</SelectItem>
+                                                <SelectItem value="basic">Basic Listing — R199/yr (excl. VAT)</SelectItem>
+                                                <SelectItem value="pro-lead">Pro Lead Package — R799/yr (excl. VAT)</SelectItem>
+                                                <SelectItem value="pro-business">Pro Business Listing — R10 500/yr (excl. VAT)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>

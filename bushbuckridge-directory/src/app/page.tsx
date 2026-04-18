@@ -4,17 +4,37 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Search, MapPin, Briefcase, Calendar, Star, Layers, ArrowRight, Users, Zap, Heart, Car, Armchair, HomeIcon, Book, Monitor, Pizza, Newspaper } from 'lucide-react'
+import {
+  Search, MapPin, Briefcase, Calendar, Star, Layers, ArrowRight, Users, Zap, Heart, Newspaper, Quote,
+  Sprout, Plane, ShoppingBag, Truck, HardHat, Recycle, HeartPulse, GraduationCap,
+  Factory, ShieldCheck, Palette, UtensilsCrossed,
+} from 'lucide-react'
+
+const POPULAR_CATEGORIES = [
+  { name: 'Agriculture and Agri-business', icon: Sprout, color: 'bg-emerald-100 text-emerald-700' },
+  { name: 'Community and Social Services', icon: Users, color: 'bg-pink-100 text-pink-700' },
+  { name: 'Construction and Infrastructure', icon: HardHat, color: 'bg-amber-100 text-amber-700' },
+  { name: 'Education and Training', icon: GraduationCap, color: 'bg-indigo-100 text-indigo-700' },
+  { name: 'Food, Beverage and Licensed Trade', icon: UtensilsCrossed, color: 'bg-red-100 text-red-700' },
+  { name: 'Health and Wellness', icon: HeartPulse, color: 'bg-rose-100 text-rose-700' },
+  { name: 'Manufacturing and Industrial Services', icon: Factory, color: 'bg-slate-100 text-slate-700' },
+  { name: 'Media, Creative and Digital Services', icon: Palette, color: 'bg-fuchsia-100 text-fuchsia-700' },
+  { name: 'Professional and Business Services', icon: Briefcase, color: 'bg-blue-100 text-blue-700' },
+  { name: 'Retail and Informal Trade', icon: ShoppingBag, color: 'bg-orange-100 text-orange-700' },
+  { name: 'Security, Cleaning and Property Care', icon: ShieldCheck, color: 'bg-teal-100 text-teal-700' },
+  { name: 'Tourism and Hospitality', icon: Plane, color: 'bg-sky-100 text-sky-700' },
+  { name: 'Transport and Logistics', icon: Truck, color: 'bg-yellow-100 text-yellow-700' },
+  { name: 'Waste and Environmental Services', icon: Recycle, color: 'bg-lime-100 text-lime-700' },
+]
 import { createClient } from '@/utils/pocketbase/server'
 
 // Quick Tiles
 const quickTiles = [
-  { name: 'Directory', icon: Layers, href: '/directory', color: 'bg-blue-100 text-blue-600' },
   { name: 'Find a Service', icon: Search, href: '/find-a-service', color: 'bg-emerald-100 text-emerald-600' },
   { name: 'Opportunities', icon: Briefcase, href: '/opportunities', color: 'bg-purple-100 text-purple-600' },
   { name: 'Jobs', icon: Users, href: '/jobs', color: 'bg-orange-100 text-orange-600' },
   { name: 'Events', icon: Calendar, href: '/events', color: 'bg-rose-100 text-rose-600' },
-  { name: 'Get Listed', icon: Zap, href: '/list-your-business', color: 'bg-yellow-100 text-yellow-600' },
+  { name: 'List Your Business', icon: Zap, href: '/list-your-business', color: 'bg-yellow-100 text-yellow-600' },
 ]
 
 export default async function Home() {
@@ -115,14 +135,14 @@ export default async function Home() {
 
       {/* Quick Tiles - Cinematic */}
       <section className="container mx-auto px-4 -mt-20 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
           {quickTiles.map((tile) => {
             const Icon = tile.icon
             return (
               <Link
                 key={tile.name}
                 href={tile.href}
-                className="group flex flex-col items-center gap-4 p-8 rounded-[2.5rem] border bg-card/80 backdrop-blur-xl text-card-foreground shadow-xl transition-all hover:shadow-2xl hover:-translate-y-2 hover:border-primary/50"
+                className="group flex flex-col items-center gap-4 p-8 rounded-[2.5rem] border bg-card/80 backdrop-blur-xl text-card-foreground shadow-xl transition-all hover:shadow-2xl hover:-translate-y-2 hover:border-primary/50 w-[calc(50%-0.75rem)] sm:w-[calc(33.333%-1rem)] lg:w-[calc(20%-1.2rem)]"
               >
                 <div className={`p-5 rounded-2xl transition-transform group-hover:scale-110 ${tile.color}`}>
                   <Icon className="h-7 w-7" />
@@ -155,35 +175,98 @@ export default async function Home() {
 
 
 
-      {/* Popular Categories - Styled like ColorAds Popular Categories */}
+      {/* Editor Spotlight — Ophelia Mnisi */}
+      <section className="container mx-auto px-4">
+        <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-[#1B4332] via-[#2d5a47] to-[#1B4332] text-white shadow-2xl">
+          <div className="absolute top-0 right-0 -mt-24 -mr-24 w-[28rem] h-[28rem] bg-secondary/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 left-0 -mb-24 -ml-24 w-[20rem] h-[20rem] bg-white/5 rounded-full blur-[80px]" />
+
+          <div className="relative z-10 grid lg:grid-cols-5 gap-12 p-12 md:p-16 items-center">
+            <div className="lg:col-span-2 flex justify-center">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-secondary/20 rounded-full blur-2xl" />
+                <div className="relative h-72 w-72 md:h-80 md:w-80 rounded-full overflow-hidden border-4 border-secondary/40 shadow-2xl bg-white/5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/ophelia-mnisi.jpg"
+                    alt="Ophelia Mnisi, Editor of Bushbuckridge and Director of Mbuyelo Media"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
+                  <Badge className="bg-secondary text-secondary-foreground font-black px-5 py-2 rounded-full shadow-xl uppercase tracking-widest text-xs">
+                    Editor Spotlight
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-3 space-y-6">
+              <Badge className="bg-white/10 backdrop-blur-md text-white font-bold px-4 py-1.5 border border-white/20 uppercase tracking-widest text-xs">
+                In Focus
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                Ophelia Mnisi
+              </h2>
+              <p className="text-xl text-secondary font-bold italic">
+                Editor of Bushbuckridge &amp; Director of Mbuyelo Media
+              </p>
+              <div className="h-1 w-24 bg-secondary rounded-full" />
+
+              <div className="relative pl-8">
+                <Quote className="absolute left-0 top-0 h-6 w-6 text-secondary/70" />
+                <p className="text-white/80 text-lg font-medium leading-relaxed italic">
+                  At the heart of Bushbuckridge's storytelling stands Ophelia Mnisi — a voice
+                  championing local enterprise, community resilience and the region's
+                  unmatched creative spirit. Through Mbuyelo Media, she shines a light on
+                  the people and businesses shaping the Lowveld's future.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button size="lg" className="h-14 px-8 text-base font-black bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 rounded-2xl shadow-xl" asChild>
+                  <Link href="/articles">
+                    Read Her Editorials <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" className="h-14 px-8 text-base font-bold bg-white text-[#1B4332] hover:bg-white/90 rounded-2xl shadow-xl" asChild>
+                  <a href="mailto:editor@dbib.co.za">
+                    Contact the Editor
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Categories — 14 industries (alphabetical) */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
+            <Badge variant="outline" className="mb-4 px-4 py-1 text-xs font-black uppercase tracking-widest">
+              Explore Local Industries
+            </Badge>
             <h2 className="text-4xl font-extrabold mb-3">Popular Categories</h2>
             <p className="text-muted-foreground font-medium mb-6">Discover businesses spanning a wide array of local services</p>
             <div className="w-16 h-1 bg-primary mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center max-w-6xl mx-auto">
-            {[
-              { icon: Car, name: "Cars & Vehicles", count: "1,921" },
-              { icon: Armchair, name: "Furniture", count: "2,339" },
-              { icon: HomeIcon, name: "Real Estate", count: "4,398" },
-              { icon: Book, name: "Books", count: "3,298" },
-              { icon: Monitor, name: "Electronics", count: "2,932" },
-              { icon: Pizza, name: "Food & Dining", count: "183" },
-            ].map((cat, idx) => {
-              const IconData = cat.icon;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 max-w-7xl mx-auto">
+            {POPULAR_CATEGORIES.map((cat) => {
+              const Icon = cat.icon
               return (
-                <div key={idx} className="flex flex-col items-center group cursor-pointer">
-                  <div className="text-primary mb-6 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-110">
-                    <IconData className="h-14 w-14 stroke-[1.5]" />
+                <Link
+                  key={cat.name}
+                  href={`/find-a-service?category=${encodeURIComponent(cat.name)}`}
+                  className="group flex items-center gap-4 p-5 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/40 transition-all"
+                >
+                  <div className={`p-3 rounded-xl shrink-0 ${cat.color} transition-transform group-hover:scale-110`}>
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <h4 className="font-semibold text-foreground text-sm tracking-wide mb-3">{cat.name}</h4>
-                  <Badge variant="secondary" className="bg-muted text-muted-foreground px-4 py-1 tracking-widest font-bold text-[10px] rounded-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    {cat.count}
-                  </Badge>
-                </div>
+                  <span className="font-bold text-sm text-foreground leading-tight flex-1">{cat.name}</span>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                </Link>
               )
             })}
           </div>
@@ -198,7 +281,7 @@ export default async function Home() {
             <p className="text-muted-foreground text-lg italic">The crown jewels of the Bushbuckridge business community.</p>
           </div>
           <Button variant="ghost" size="lg" className="hover:bg-primary/5 font-bold" asChild>
-            <Link href="/directory">View Full Directory &rarr;</Link>
+            <Link href="/find-a-service">Browse Services &rarr;</Link>
           </Button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -338,24 +421,23 @@ export default async function Home() {
           <div className="absolute bottom-0 left-0 -mb-32 -ml-32 w-[20rem] h-[20rem] bg-white/5 rounded-full blur-[80px]" />
 
           <div className="relative z-10 max-w-2xl text-center md:text-left">
-            <Badge className="mb-6 bg-secondary text-secondary-foreground font-bold px-4 py-1 shadow-lg">Community Hub</Badge>
             <h2 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">Ready to Grow <br /><span className="text-secondary">Your Business?</span></h2>
             <p className="text-white/70 mb-10 text-xl font-medium max-w-lg">
               List your business in the Bushbuckridge Community Directory and connect with customers across the region. Self-service portal included.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="h-16 px-10 text-lg font-extrabold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-2xl shadow-xl transition-transform hover:scale-105" asChild>
+              <Button size="lg" className="h-16 px-10 text-lg font-extrabold bg-secondary text-white hover:bg-secondary/90 rounded-2xl shadow-xl transition-transform hover:scale-105" asChild>
                 <Link href="/list-your-business"><Zap className="mr-3 h-6 w-6" /> Get Listed Today</Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-16 px-10 text-lg font-bold border-white/20 text-white hover:bg-white/10 rounded-2xl" asChild>
-                <Link href="/pricing">View Pricing <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Button size="lg" className="h-16 px-10 text-lg font-bold bg-white text-[#1B4332] hover:bg-white/90 rounded-2xl shadow-xl" asChild>
+                <Link href="/list-your-business">View Packages <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
             </div>
           </div>
           <div className="relative z-10 hidden md:flex items-center justify-center">
             <div className="w-64 h-80 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl flex flex-col items-center justify-center -rotate-6 transition-all duration-500 hover:rotate-0 hover:scale-110 group cursor-pointer">
               <div className="w-16 h-1 bg-secondary/80 rounded-full mb-6" />
-              <span className="text-2xl font-black text-center px-6 leading-relaxed">BUSHBUCKRIDGE <br /><span className="text-secondary">DIRECTORY</span> <br /><span className="text-sm font-medium text-white/40 tracking-widest uppercase mt-4 block">Your Community Hub</span></span>
+              <span className="text-2xl font-black text-center px-6 leading-relaxed">DOING BUSINESS IN <br /><span className="text-secondary">BUSHBUCKRIDGE</span> <br /><span className="text-sm font-medium text-white/40 tracking-widest uppercase mt-4 block">2026 / 2027</span></span>
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ export default function BuyYourSpotSuccessPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button asChild>
-                    <Link href="/directory">Browse the Directory</Link>
+                    <Link href="/find-a-service">Browse Services</Link>
                 </Button>
                 <Button variant="outline" asChild>
                     <Link href="/">Back to Home</Link>

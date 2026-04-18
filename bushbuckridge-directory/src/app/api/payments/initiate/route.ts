@@ -1,11 +1,11 @@
 import { createClient } from '@/utils/pocketbase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Paystack pricing tiers in ZAR cents
+// Paystack pricing tiers in ZAR cents (excl. VAT)
 const TIER_PRICING: Record<string, number> = {
-  standard: 19900,   // R199.00
-  enhanced: 49900,   // R499.00
-  premium: 99900,    // R999.00
+  basic: 19900,            // R199.00 excl. VAT
+  'pro-lead': 79900,       // R799.00 excl. VAT
+  'pro-business': 1050000, // R10 500.00 excl. VAT
 }
 
 export async function POST(request: NextRequest) {

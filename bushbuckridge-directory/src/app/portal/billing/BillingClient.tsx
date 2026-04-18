@@ -7,21 +7,21 @@ import { CreditCard, CheckCircle, Clock, AlertCircle, ArrowUpRight } from 'lucid
 import { useState } from 'react'
 
 const TIER_LABELS: Record<string, string> = {
-  standard: 'Standard',
-  enhanced: 'Enhanced',
-  premium: 'Premium',
+  basic: 'Basic Listing',
+  'pro-lead': 'Pro Lead Package',
+  'pro-business': 'Pro Business Listing',
 }
 
 const TIER_PRICES: Record<string, string> = {
-  standard: 'R199',
-  enhanced: 'R499',
-  premium: 'R999',
+  basic: 'R199',
+  'pro-lead': 'R799',
+  'pro-business': 'R10 500',
 }
 
 const TIER_FEATURES: Record<string, string[]> = {
-  standard: ['Basic listing', 'Contact details shown', 'Category placement'],
-  enhanced: ['Everything in Standard', 'Priority placement', 'Analytics dashboard', 'Photo gallery'],
-  premium: ['Everything in Enhanced', 'Featured badge', 'Homepage spotlight', 'Full analytics', 'Priority support'],
+  basic: ['Business name', 'Business description', 'Business address', 'Contact details', 'Business Logo'],
+  'pro-lead': ['Business name', 'Business description', 'Business address', 'Contact details', 'Company logo', '3 Photos', 'WhatsApp link', 'Links to Social Media pages'],
+  'pro-business': ['Business name', 'Business description', 'Business logo', 'Photo Gallery (10 Max)', 'Full business profile', 'Website link', 'WhatsApp link', 'Social Media links', '4 News updates', 'CSI publications'],
 }
 
 interface BillingClientProps {
@@ -124,7 +124,7 @@ export default function BillingClient({ business, subscription, payments }: Bill
       <div>
         <h2 className="text-lg font-bold text-gray-900 mb-4">Available Plans</h2>
         <div className="grid sm:grid-cols-3 gap-4">
-          {(['standard', 'enhanced', 'premium'] as const).map((tier) => {
+          {(['basic', 'pro-lead', 'pro-business'] as const).map((tier) => {
             const isCurrentTier = business.package_tier === tier
             return (
               <Card key={tier} className={`border rounded-xl transition-all ${isCurrentTier ? 'border-primary bg-primary/5 shadow-md' : 'border-gray-200 shadow-sm hover:shadow-md'}`}>
@@ -133,7 +133,8 @@ export default function BillingClient({ business, subscription, payments }: Bill
                     <h3 className="font-bold text-base capitalize">{TIER_LABELS[tier]}</h3>
                     {isCurrentTier && <Badge className="bg-primary text-white text-xs">Current</Badge>}
                   </div>
-                  <p className="text-2xl font-extrabold text-gray-900 mb-4">{TIER_PRICES[tier]}<span className="text-sm font-normal text-gray-400">/month</span></p>
+                  <p className="text-2xl font-extrabold text-gray-900 mb-1">{TIER_PRICES[tier]}<span className="text-sm font-normal text-gray-400">/year</span></p>
+                  <p className="text-xs text-gray-400 mb-4">excl. VAT</p>
                   <ul className="space-y-1.5 mb-5">
                     {TIER_FEATURES[tier].map((feature) => (
                       <li key={feature} className="text-sm text-gray-600 flex items-start gap-2">
