@@ -17,7 +17,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
             return;
         }
 
-        if (videoUrl.startsWith('mux:')) {
+        if (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:')) {
             setIsActive(false);
             setIsError(false);
             return;
@@ -29,15 +29,15 @@ export default function AiVideoStatus({ carId, videoUrl }) {
             return;
         }
 
-        if (videoUrl.startsWith('ai_') || videoUrl === 'mux_ingesting') {
+        if (videoUrl.startsWith('ai_') || videoUrl === 'mux_ingesting' || videoUrl === 'cf_ingesting') {
             setIsActive(true);
             setIsError(false);
             setStatusText('Rendering...');
         }
     }, [videoUrl]);
 
-    // If it's already safely sitting in Mux:
-    if (videoUrl && videoUrl.startsWith('mux:')) {
+    // If it's already safely hosted (Mux or Cloudflare):
+    if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
         return (
             <div className="mt-2 px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200 text-xs font-bold flex items-center gap-1.5 w-max">
                 <span className="material-symbols-outlined text-[14px]">play_circle</span>

@@ -1,0 +1,306 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { getLeadsForCar, markCarAsSold, getSaleForCar } from "./sale_actions";
+import SaleVideoPicker from "./SaleVideoPicker";
+
+export default function MarkSoldButton({ car }) {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [leads, setLeads] = useState([]);
+    const [selectedLeadId, setSelectedLeadId] = useState("");
+    const [existingSale, setExistingSale] = useState(null);
+    const [form, setForm] = useState({
+        buyer_name: "",
+        buyer_email: "",
+        buyer_phone: "",
+        notes: "",
+    });
+
+    const isSold = car.status === "sold";
+
+    useEffect(() => {
+        if (!open) return;
+        let cancelled = false;
+        setLoading(true);
+        (async () => {
+            try {
+                const [leadsData, sale] = await Promise.all([
+                    isSold ? Promise.resolve([]) : getLeadsForCar(car.id),
+                    isSold ? getSaleForCar(car.id) : Promise.resolve(null),
+                ]);
+                if (cancelled) return;
+                setLeads(leadsData || []);
+                setExistingSale(sale);
+                if (sale) {
+                    setForm({
+                        buyer_name: sale.buyer_name || "",
+                        buyer_email: sale.buyer_email || "",
+                        buyer_phone: sale.buyer_phone || "",
+                        notes: sale.notes || "",
+                    });
+                }
+            } catch (err) {
+                console.error("MarkSoldButton load error:", err);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [open, car.id, isSold]);
+
+    function handleLeadSelect(leadId) {
+        setSelectedLeadId(leadId);
+        if (!leadId) return;
+        const lead = leads.find((l) => l.id === leadId);
+        if (lead) {
+            setForm((f) => ({
+                ...f,
+                buyer_name: lead.client_name || "",
+                buyer_email: lead.client_email || "",
+                buyer_phone: lead.client_phone || "",
+            }));
+        }
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            const fd = new FormData(e.target);
+            fd.set("car_id", car.id);
+            if (selectedLeadId) fd.set("lead_id", selectedLeadId);
+            const result = await markCarAsSold(fd);
+            if (result?.error) {
+                alert(result.error);
+            } else {
+                setOpen(false);
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Failed to mark as sold.");
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    return (
+        <>
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className={`transition-colors p-2 ${isSold
+                    ? "text-slate-400 hover:text-slate-700"
+                    : "text-slate-400 hover:text-green-600"
+                    }`}
+                title={isSold ? "View Sale Details" : "Mark as Sold"}
+            >
+                <span className="material-symbols-outlined">
+                    {isSold ? "handshake" : "sell"}
+                </span>
+            </button>
+
+            {open && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                            <div>
+                                <h2 className="text-xl font-bold text-slate-900">
+                                    {existingSale ? "Sale Record" : "Mark as Sold"}
+                                </h2>
+                                <p className="text-sm text-slate-500">
+                                    {car.year} {car.make} {car.model}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setOpen(false)}
+                                className="text-slate-400 hover:text-slate-700"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        {loading ? (
+                            <div className="p-12 text-center text-slate-500">
+                                <span className="material-symbols-outlined animate-spin text-3xl">sync</span>
+                                <p className="mt-2 text-sm">Loading...</p>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                                {existingSale && (
+                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 space-y-1">
+                                        <div>
+                                            <strong>Sold on:</strong>{" "}
+                                            {new Date(existingSale.sold_at).toLocaleDateString()}
+                                        </div>
+                                        {existingSale.review_email_sent_at ? (
+                                            <div>
+                                                <strong>Review email sent:</strong>{" "}
+                                                {new Date(existingSale.review_email_sent_at).toLocaleDateString()}
+                                            </div>
+                                        ) : existingSale.review_email_scheduled_for ? (
+                                            <div>
+                                                <strong>Review email scheduled for:</strong>{" "}
+                                                {new Date(existingSale.review_email_scheduled_for).toLocaleString()}
+                                            </div>
+                                        ) : (
+                                            <div className="text-amber-700">
+                                                No review email scheduled (no buyer email captured).
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {!existingSale && leads.length > 0 && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                                            Existing leads on this vehicle
+                                        </label>
+                                        <select
+                                            value={selectedLeadId}
+                                            onChange={(e) => handleLeadSelect(e.target.value)}
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white"
+                                        >
+                                            <option value="">— Manual entry —</option>
+                                            {leads.map((lead) => (
+                                                <option key={lead.id} value={lead.id}>
+                                                    {lead.client_name}
+                                                    {lead.client_email ? ` (${lead.client_email})` : ""} — {lead.status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <p className="text-xs text-slate-500 mt-1">
+                                            Pick a lead to auto-fill, or leave blank to enter manually.
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                                            Buyer Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="buyer_name"
+                                            required
+                                            disabled={!!existingSale}
+                                            value={form.buyer_name}
+                                            onChange={(e) => setForm({ ...form, buyer_name: e.target.value })}
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                                            Buyer Phone
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            name="buyer_phone"
+                                            disabled={!!existingSale}
+                                            value={form.buyer_phone}
+                                            onChange={(e) => setForm({ ...form, buyer_phone: e.target.value })}
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                        Buyer Email
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="buyer_email"
+                                        disabled={!!existingSale}
+                                        value={form.buyer_email}
+                                        onChange={(e) => setForm({ ...form, buyer_email: e.target.value })}
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                    />
+                                    {!existingSale && (
+                                        <p className="text-xs text-slate-500 mt-1">
+                                            If provided, a review request email will be scheduled for 4 days from now.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                        Delivery Photo
+                                    </label>
+                                    {existingSale?.delivery_photo_url ? (
+                                        <img
+                                            src={existingSale.delivery_photo_url}
+                                            alt="Delivery"
+                                            className="rounded-lg max-h-64 border border-slate-200"
+                                        />
+                                    ) : existingSale ? (
+                                        <p className="text-sm text-slate-500 italic">No photo on file.</p>
+                                    ) : (
+                                        <>
+                                            <input
+                                                type="file"
+                                                name="delivery_photo"
+                                                accept="image/png, image/jpeg, image/webp"
+                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                            />
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                Customer collecting their car. Will be reused for a video clip later.
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+
+                                {existingSale && existingSale.delivery_photo_url && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                                            Handover Video (Seedance 2)
+                                        </label>
+                                        <SaleVideoPicker
+                                            sale={existingSale}
+                                            onUpdated={(patch) => setExistingSale((s) => ({ ...s, ...patch }))}
+                                        />
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">Notes</label>
+                                    <textarea
+                                        name="notes"
+                                        rows="3"
+                                        disabled={!!existingSale}
+                                        value={form.notes}
+                                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600 resize-none"
+                                    ></textarea>
+                                </div>
+
+                                <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+                                    <button
+                                        type="button"
+                                        onClick={() => setOpen(false)}
+                                        className="px-6 py-3 border border-slate-300 rounded-lg font-bold text-slate-700 hover:bg-slate-50"
+                                    >
+                                        {existingSale ? "Close" : "Cancel"}
+                                    </button>
+                                    {!existingSale && (
+                                        <button
+                                            type="submit"
+                                            disabled={submitting}
+                                            className="px-6 py-3 bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-white font-bold rounded-lg"
+                                        >
+                                            {submitting ? "Saving..." : "Confirm Sale"}
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}

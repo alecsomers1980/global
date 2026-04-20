@@ -3,21 +3,71 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import LeadForm from "./LeadForm";
 import VehicleGallery from "./VehicleGallery";
+import { buildVehicleJsonLd } from "@/utils/seo/vehicleSchema";
+import { getVehicleUrl } from "@/utils/url/vehicleUrl";
+import {
+    computeFallbackMetaTitle,
+    computeFallbackMetaDescription,
+} from "@/utils/ai/seoGenerator";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function resolveCar(supabase, param, columns) {
+    if (UUID_REGEX.test(param)) {
+        return await supabase.from("cars").select(columns).eq("id", param).single();
+    }
+    // Slug format: "...-{8char-hex}" — match by uuid range on the leading 8 hex chars.
+    // Plain ilike on a uuid column fails at Postgres (type mismatch), so we use gte/lte
+    // bounds that cover every uuid starting with shortId.
+    const shortId = param.split("-").pop();
+    if (/^[0-9a-f]{8}$/i.test(shortId)) {
+        const lo = `${shortId}-0000-0000-0000-000000000000`;
+        const hi = `${shortId}-ffff-ffff-ffff-ffffffffffff`;
+        return await supabase
+            .from("cars")
+            .select(columns)
+            .gte("id", lo)
+            .lte("id", hi)
+            .limit(1)
+            .single();
+    }
+    return { data: null, error: new Error("Invalid identifier") };
+}
 
 export async function generateMetadata({ params }) {
     const { id } = await params;
     const supabase = await createClient();
-    const { data: car } = await supabase
-        .from("cars")
-        .select("make, model, year")
-        .eq("id", id)
-        .single();
+    const { data: car } = await resolveCar(
+        supabase,
+        id,
+        "id, make, model, year, price, mileage, transmission, fuel_type, main_image_url, seo_meta_title, seo_meta_description"
+    );
 
     if (!car) return { title: "Vehicle Not Found" };
 
+    const title = car.seo_meta_title || computeFallbackMetaTitle(car);
+    const description = car.seo_meta_description || computeFallbackMetaDescription(car);
+    const canonicalUrl = getVehicleUrl(car, SITE_URL);
+
     return {
-        title: `${car.year} ${car.make} ${car.model} | Everest Motoring`,
-        description: `Premium pre-owned ${car.year} ${car.make} ${car.model} for sale in Mpumalanga.`,
+        title,
+        description,
+        alternates: { canonical: canonicalUrl },
+        openGraph: {
+            title,
+            description,
+            url: canonicalUrl,
+            type: "website",
+            images: car.main_image_url ? [{ url: car.main_image_url }] : [],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: car.main_image_url ? [car.main_image_url] : [],
+        },
     };
 }
 
@@ -25,17 +75,20 @@ export default async function CarDetailsPage({ params }) {
     const { id } = await params;
     const supabase = await createClient();
 
-    const { data: car, error } = await supabase
-        .from("cars")
-        .select("*")
-        .eq("id", id)
-        .single();
+    const { data: car, error } = await resolveCar(supabase, id, "*");
 
     if (error || !car) {
         notFound();
     }
 
+    const jsonLd = buildVehicleJsonLd(car, { siteUrl: SITE_URL });
+
     return (
+        <>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <div className="bg-background-alt min-h-screen py-12 px-4 lg:px-12">
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -139,5 +192,6 @@ export default async function CarDetailsPage({ params }) {
                 </div>
             </div>
         </div>
+        </>
     );
 }

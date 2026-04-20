@@ -3,6 +3,7 @@ import Link from "next/link";
 import HomeSearchWidget from "@/components/HomeSearchWidget";
 import NewsletterForm from "@/components/NewsletterForm";
 import { createClient } from "@/utils/supabase/server";
+import { getVehiclePath } from "@/utils/url/vehicleUrl";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -94,7 +95,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
             {featuredCars && featuredCars.map((car) => (
-              <Link key={car.id} href={`/inventory/${car.id}`} className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
+              <Link key={car.id} href={getVehiclePath(car)} className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">
                     {car.is_featured ? 'Featured' : 'Used'}

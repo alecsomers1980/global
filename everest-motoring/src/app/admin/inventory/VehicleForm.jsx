@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
+import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
 
 const CAR_FEATURES = {
     "Safety & Security": ["ABS", "Airbags", "Alarm System", "ISOFIX", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor"],
@@ -150,6 +151,7 @@ export default function VehicleForm({ initialData = null }) {
             carPayload.description = await optimizeDescriptionAction(carPayload, carPayload.description);
 
             // 3. Insert or Update
+            let savedCarId = isEditing ? initialData.id : null;
             if (isEditing) {
                 const { error: dbError } = await supabase
                     .from('cars')
@@ -164,6 +166,7 @@ export default function VehicleForm({ initialData = null }) {
                     .select()
                     .single();
                 if (dbError) throw dbError;
+                savedCarId = insertedData.id;
 
                 // Step 4: Autonomous AI Video Generation!
                 // If they didn't provide a manual YouTube link, we queue it
@@ -171,6 +174,14 @@ export default function VehicleForm({ initialData = null }) {
                     setUploadProgress(95);
                     await queueAiWalkaround(insertedData.id);
                 }
+            }
+
+            // Best-effort IndexNow ping — never block the save UX
+            if (savedCarId) {
+                pingVehicleUrls([savedCarId]).catch((err) => console.warn("IndexNow ping failed:", err));
+                // Auto-generate SEO metadata + image alts in the background.
+                // Fire-and-forget; admin doesn't wait for Gemini.
+                autoFixSeoForCar(savedCarId).catch((err) => console.warn("Auto SEO failed:", err));
             }
 
             setUploadProgress(100);

@@ -1,46 +1,234 @@
 "use server";
 
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
+import { getVehicleUrl as buildVehicleUrl } from "@/utils/url/vehicleUrl";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
+const CONTACT = {
+    phone: "013 750 0812",
+    email: "sales@everestmotoring.co.za",
+    location: "White River, Mpumalanga",
+};
+
+function formatPrice(price) {
+    return new Intl.NumberFormat("en-ZA").format(price);
+}
+
+function getVehicleUrl(car) {
+    return buildVehicleUrl(car, SITE_URL);
+}
+
+function getVideoUrl(car) {
+    if (
+        car.video_url &&
+        !car.video_url.startsWith("ai_") &&
+        !car.video_url.startsWith("mux_") &&
+        !car.video_url.startsWith("cf_") &&
+        !car.video_url.startsWith("error")
+    ) {
+        // Cloudflare Stream MP4 download URL
+        if (car.video_url.startsWith("cf:")) {
+            const uid = car.video_url.replace("cf:", "");
+            const subdomain = process.env.CLOUDFLARE_STREAM_SUBDOMAIN;
+            return `https://${subdomain}/${uid}/downloads/default.mp4`;
+        }
+        // Mux legacy static MP4 URL (FB/IG don't accept HLS/m3u8)
+        if (car.video_url.startsWith("mux:")) {
+            const playbackId = car.video_url.replace("mux:", "");
+            return `https://stream.mux.com/${playbackId}/capped-1080p.mp4`;
+        }
+        return car.video_url;
+    }
+    return null;
+}
+
+function getAllMedia(car) {
+    const media = [];
+    if (car.main_image_url) media.push(car.main_image_url);
+    if (car.gallery_urls && Array.isArray(car.gallery_urls)) {
+        car.gallery_urls.forEach((url) => {
+            if (url && !media.includes(url)) media.push(url);
+        });
+    }
+    return media;
+}
+
+function buildFeedPost(car) {
+    const price = formatPrice(car.price);
+    const url = getVehicleUrl(car);
+    const images = getAllMedia(car);
+
+    const lines = [
+        `🚗 ${car.year} ${car.make} ${car.model}`,
+        `💰 Price: R ${price}`,
+    ];
+    if (car.mileage) lines.push(`📏 Mileage: ${car.mileage.toLocaleString("en-ZA")} km`);
+    if (car.transmission) lines.push(`⚙️ ${car.transmission}`);
+    if (car.fuel_type) lines.push(`⛽ ${car.fuel_type}`);
+
+    lines.push("");
+    if (car.description) {
+        lines.push(car.description.length > 300 ? car.description.slice(0, 300) + "..." : car.description);
+        lines.push("");
+    }
+
+    if (car.features && car.features.length > 0) {
+        lines.push("✅ " + car.features.slice(0, 6).join(" • "));
+        lines.push("");
+    }
+
+    lines.push(`🔗 View & enquire: ${url}`);
+    lines.push("");
+    lines.push(`📞 ${CONTACT.phone}`);
+    lines.push(`📧 ${CONTACT.email}`);
+    lines.push(`📍 ${CONTACT.location}`);
+    lines.push("");
+    lines.push("#EverestMotoring #PreOwned #UsedCars #Mpumalanga #WhiteRiver");
+
+    return {
+        content: lines.join("\n"),
+        media_urls: images,
+        platforms: ["facebook", "instagram"],
+    };
+}
+
+function buildReelPost(car) {
+    const price = formatPrice(car.price);
+    const url = getVehicleUrl(car);
+    const video = getVideoUrl(car);
+    const images = getAllMedia(car);
+
+    const lines = [
+        `🔥 ${car.year} ${car.make} ${car.model} — R ${price}`,
+        "",
+        car.description
+            ? car.description.length > 150
+                ? car.description.slice(0, 150) + "..."
+                : car.description
+            : `Premium pre-owned ${car.make} ${car.model} available now at Everest Motoring.`,
+        "",
+        `👉 Link in bio or DM us!`,
+        `📞 ${CONTACT.phone}`,
+        `🔗 ${url}`,
+        "",
+        "#EverestMotoring #CarReels #UsedCars #CarDealer #Mpumalanga #CarsOfSouthAfrica",
+    ];
+
+    return {
+        content: lines.join("\n"),
+        media_urls: video ? [video, ...images.slice(0, 2)] : images.slice(0, 3),
+        platforms: ["instagram", "tiktok", "youtube"],
+    };
+}
+
+function buildVideoPost(car) {
+    const price = formatPrice(car.price);
+    const url = getVehicleUrl(car);
+    const video = getVideoUrl(car);
+    const images = getAllMedia(car);
+
+    const lines = [
+        `${car.year} ${car.make} ${car.model} | Full Walkthrough`,
+        "",
+        `Price: R ${price}`,
+    ];
+    if (car.mileage) lines.push(`Mileage: ${car.mileage.toLocaleString("en-ZA")} km`);
+    if (car.transmission) lines.push(`Transmission: ${car.transmission}`);
+    if (car.fuel_type) lines.push(`Fuel: ${car.fuel_type}`);
+    lines.push("");
+
+    if (car.description) {
+        lines.push(car.description);
+        lines.push("");
+    }
+
+    if (car.features && car.features.length > 0) {
+        lines.push("Features:");
+        car.features.forEach((f) => lines.push(`• ${f}`));
+        lines.push("");
+    }
+
+    lines.push("━━━━━━━━━━━━━━━━━━━━");
+    lines.push(`🏢 Everest Motoring — Premium Pre-Owned Vehicles`);
+    lines.push(`📞 Call: ${CONTACT.phone}`);
+    lines.push(`📧 Email: ${CONTACT.email}`);
+    lines.push(`📍 ${CONTACT.location}`);
+    lines.push(`🌐 ${url}`);
+    lines.push("━━━━━━━━━━━━━━━━━━━━");
+    lines.push("");
+    lines.push(
+        "#EverestMotoring #CarReview #PreOwned #UsedCars #CarDealer #Mpumalanga #WhiteRiver #CarsOfSouthAfrica"
+    );
+
+    return {
+        content: lines.join("\n"),
+        media_urls: video ? [video, ...images] : images,
+        platforms: ["youtube", "facebook"],
+    };
+}
+
+function getScheduleTimes() {
+    // All posts go out same day — feed at 10:00, reel at 13:00, video at 17:00 SAST
+    // The trigger API handles daily car limits (max 2 cars/day) and bumps to next day if needed
+    return {
+        feedTime: "08:00",   // 10:00 SAST
+        reelTime: "11:00",   // 13:00 SAST
+        videoTime: "15:00",  // 17:00 SAST
+    };
+}
+
+async function sendToEmber(payload, apiKey, apiUrl) {
+    const response = await fetch(`${apiUrl}/api/trigger`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || response.statusText);
+    }
+
+    return response.json();
+}
+
 export async function createSocialPost(car) {
     const apiKey = process.env.EMBER_SOCIAL_API_KEY;
     if (!apiKey) {
         return { success: false, error: "EMBER_SOCIAL_API_KEY is not configured." };
     }
 
-    const priceFormatted = new Intl.NumberFormat('en-ZA').format(car.price);
-    const content = `New Arrival! 🚗💨\n\n${car.year} ${car.make} ${car.model}\nPrice: R ${priceFormatted}\n${car.mileage ? `Mileage: ${car.mileage} km\n` : ''}\n${car.description || ""}`;
-
-    const media_urls = [];
-    if (car.video_url && !car.video_url.startsWith('ai_') && !car.video_url.startsWith('mux_') && !car.video_url.startsWith('error')) {
-        media_urls.push(car.video_url); 
-    }
-    if (car.main_image_url) {
-        media_urls.push(car.main_image_url);
-    }
-    
-    const payload = {
-        content,
-        media_urls,
-        platforms: ['facebook', 'instagram', 'youtube'] 
-    };
+    const apiUrl = process.env.EMBER_SOCIAL_URL || "http://localhost:3000";
+    const times = getScheduleTimes();
 
     try {
-        const apiUrl = process.env.EMBER_SOCIAL_URL || "http://localhost:3000"; 
-        const response = await fetch(`${apiUrl}/api/trigger`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(payload)
-        });
+        // Send all 3 post types with preferred times — the trigger API will
+        // assign the actual date (today or next available day, max 2 cars/day)
+        const posts = [
+            { ...buildFeedPost(car), preferred_time: times.feedTime, vehicle_id: car.id },
+            { ...buildReelPost(car), preferred_time: times.reelTime, vehicle_id: car.id },
+            { ...buildVideoPost(car), preferred_time: times.videoTime, vehicle_id: car.id },
+        ];
 
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error || response.statusText);
+        const results = [];
+        for (const post of posts) {
+            const data = await sendToEmber(post, apiKey, apiUrl);
+            results.push(data.post_id);
         }
 
-        const data = await response.json();
-        return { success: true, postId: data.post_id };
+        // Record the share timestamp on the car so the admin UI can show it's been shared
+        const supabase = await createClient();
+        await supabase
+            .from("cars")
+            .update({ social_shared_at: new Date().toISOString() })
+            .eq("id", car.id);
+        revalidatePath("/admin/inventory");
+
+        return { success: true, postIds: results, count: results.length };
     } catch (error) {
         console.error("Error posting to Ember Social:", error);
         return { success: false, error: error.message };

@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import AiVideoStatus from "./AiVideoStatus";
 import InventoryTable from "./InventoryTable";
+import SeoBatchButton from "./SeoBatchButton";
+import { pingDeletedVehicle } from "./seo_actions";
 
 export const metadata = {
     title: "Admin Dashboard | Everest Motoring",
@@ -20,6 +22,14 @@ export default async function AdminDashboardPage() {
         if (!carId) return;
 
         const supabaseAdmin = await createAdminClient();
+
+        // Fetch the row first so we can build the canonical URL for IndexNow after delete
+        const { data: car } = await supabaseAdmin
+            .from("cars")
+            .select("id, make, model, year")
+            .eq("id", carId)
+            .single();
+
         const { error } = await supabaseAdmin.from("cars").delete().eq("id", carId);
 
         if (error) {
@@ -27,6 +37,9 @@ export default async function AdminDashboardPage() {
         } else {
             revalidatePath("/admin/inventory");
             revalidatePath("/inventory"); // Wipe the public cache too
+            if (car) {
+                pingDeletedVehicle(car).catch((err) => console.warn("IndexNow ping failed:", err));
+            }
         }
     }
 
@@ -38,12 +51,15 @@ export default async function AdminDashboardPage() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto w-full">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
                 <h1 className="text-3xl font-bold text-slate-900">Manage Inventory</h1>
-                <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-md font-bold text-white shadow-sm flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">add</span>
-                    Add Vehicle
-                </a>
+                <div className="flex items-center gap-3">
+                    <SeoBatchButton />
+                    <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-md font-bold text-white shadow-sm flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">add</span>
+                        Add Vehicle
+                    </a>
+                </div>
             </div>
 
             <InventoryTable initialCars={cars || []} deleteCarAction={deleteCar} />

@@ -5,6 +5,7 @@ import { generateVehicleScript, optimizeVehicleDescription } from "@/utils/ai/sc
 import { startCinematicClips, pollCinematicTask } from "@/utils/ai/videoEngineProvider";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createMuxAssetFromUrl } from "@/utils/ai/muxService";
+import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
 import { revalidatePath } from "next/cache";
 
 // 1. Mark as Pending (Called by VehicleForm on Submit)
@@ -107,27 +108,33 @@ export async function stitchVideoAction(carId, clipUrls) {
         console.log('[AI Server Action] Sending clips to Fal.ai for stitching...');
         const finalStitchedUrl = await stitchVideosWithFal(clipUrls);
 
-        await supabase.from('cars').update({ video_url: 'mux_ingesting' }).eq('id', carId);
+        await supabase.from('cars').update({ video_url: 'cf_ingesting' }).eq('id', carId);
         return { success: true, finalStitchedUrl };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
-// 6. Ingest Mux
+// 6. Ingest Cloudflare Stream
 export async function ingestMuxAction(carId, finalStitchedUrl) {
     try {
-        console.log('[AI Server Action] Ingesting final stitched video into Mux...');
-        const muxData = await createMuxAssetFromUrl(finalStitchedUrl, carId);
+        console.log('[AI Server Action] Ingesting final stitched video into Cloudflare Stream...');
+        const cfData = await createStreamFromUrl(finalStitchedUrl, { car_id: carId });
+        // Enable MP4 downloads for Facebook/Instagram publishing
+        try {
+            await enableDownloads(cfData.uid);
+        } catch (e) {
+            console.warn(`[AI Server Action] enableDownloads failed for ${cfData.uid}:`, e.message);
+        }
 
         const supabase = await createAdminClient();
         await supabase.from('cars').update({
-            video_url: `mux:${muxData.playbackId}`
+            video_url: `cf:${cfData.uid}`
         }).eq('id', carId);
 
         revalidatePath("/admin/inventory");
         revalidatePath("/inventory");
-        return { success: true, playbackId: muxData.playbackId };
+        return { success: true, cloudflareUid: cfData.uid };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -160,11 +167,11 @@ export async function checkHeyGenVideoStatus(carId) {
             return { status: 'failed', error: data.video_url.replace('error: ', '') };
         }
 
-        if (data.video_url.startsWith('mux:')) {
-            return { status: 'ready', playbackId: data.video_url.split(':')[1] };
+        if (data.video_url.startsWith('mux:') || data.video_url.startsWith('cf:')) {
+            return { status: 'ready', id: data.video_url.split(':')[1] };
         }
 
-        if (data.video_url.startsWith('ai_') || data.video_url === 'mux_ingesting') {
+        if (data.video_url.startsWith('ai_') || data.video_url === 'mux_ingesting' || data.video_url === 'cf_ingesting') {
             // Let the UI know what specific phase we are in
             return { status: 'processing', phase: data.video_url };
         }

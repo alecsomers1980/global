@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import PageBanner from "@/components/PageBanner";
 import InventoryFilter from "./InventoryFilter";
+import { altForImage } from "@/utils/ai/seoGenerator";
+import { getVehiclePath } from "@/utils/url/vehicleUrl";
 
 export const metadata = {
     title: "Inventory | Everest Motoring",
@@ -65,7 +67,7 @@ export default async function InventoryPage({ searchParams }) {
                             {cars && cars.map((car) => (
                                 <Link
                                     key={car.id}
-                                    href={`/inventory/${car.id}`}
+                                    href={getVehiclePath(car)}
                                     className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col"
                                 >
                                     {/* Thumbnail Area */}
@@ -73,7 +75,7 @@ export default async function InventoryPage({ searchParams }) {
                                         {car.main_image_url ? (
                                             <Image
                                                 src={car.main_image_url}
-                                                alt={`${car.year} ${car.make} ${car.model}`}
+                                                alt={altForImage(car, car.main_image_url, 0, 1)}
                                                 fill
                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                 className="object-cover group-hover:scale-105 transition-transform duration-500"

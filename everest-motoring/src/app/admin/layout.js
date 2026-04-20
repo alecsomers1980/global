@@ -41,6 +41,7 @@ export default async function AdminLayout({ children }) {
                     <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                         <a href="/admin" className="text-slate-300 hover:text-white transition-colors">Dashboard</a>
                         <a href="/admin/inventory" className="text-slate-300 hover:text-white transition-colors">Inventory</a>
+                        <a href="/admin/news" className="text-slate-300 hover:text-white transition-colors">News</a>
                         <a href="/admin/leads" className="text-slate-300 hover:text-white transition-colors">Car Inquiries</a>
                         <a href="/admin/assign" className="text-slate-300 hover:text-white transition-colors">Assign Vehicle</a>
                         <a href="/admin/trade-ins" className="text-slate-300 hover:text-white transition-colors">Trade-In Requests</a>

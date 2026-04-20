@@ -3,6 +3,8 @@
 import { useState } from "react";
 import AiVideoStatus from "./AiVideoStatus";
 import SocialPostButton from "./SocialPostButton";
+import MarkSoldButton from "./MarkSoldButton";
+import SeoFixButton from "./SeoFixButton";
 
 export default function InventoryTable({ initialCars, deleteCarAction }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -141,9 +143,17 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                     <div className="mt-1">
                                         <AiVideoStatus carId={car.id} videoUrl={car.video_url} />
                                     </div>
+                                    {car.social_shared_at && (
+                                        <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md border border-blue-200">
+                                            <span className="material-symbols-outlined text-[12px]">share</span>
+                                            Shared
+                                        </div>
+                                    )}
                                 </td>
                                 <td className="p-4 flex justify-end gap-2">
+                                    <SeoFixButton car={car} />
                                     <SocialPostButton car={car} />
+                                    <MarkSoldButton car={car} />
                                     <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
                                         <span className="material-symbols-outlined">edit</span>
                                     </a>

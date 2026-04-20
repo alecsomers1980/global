@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import MuxPlayer from "@mux/mux-player-react";
+import { altForImage } from "@/utils/ai/seoGenerator";
 
 export default function VehicleGallery({ car }) {
     const allImages = [];
@@ -21,7 +22,14 @@ export default function VehicleGallery({ car }) {
             {/* Top Gallery / Main Video Hero */}
             <div className="relative h-[400px] md:h-[600px] bg-slate-900 overflow-hidden">
                 {activeMedia === 'video' ? (
-                    car.video_url.startsWith('mux:') ? (
+                    car.video_url.startsWith('cf:') ? (
+                        <iframe
+                            src={`https://${process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_SUBDOMAIN}/${car.video_url.split(':')[1]}/iframe?autoplay=true`}
+                            className="w-full h-full"
+                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                            allowFullScreen
+                        />
+                    ) : car.video_url.startsWith('mux:') ? (
                         <MuxPlayer
                             streamType="on-demand"
                             playbackId={car.video_url.split(':')[1]}
@@ -46,9 +54,11 @@ export default function VehicleGallery({ car }) {
                 ) : activeMedia !== null && allImages[activeMedia] ? (
                     <Image
                         src={allImages[activeMedia]}
-                        alt={`${car.year} ${car.make} ${car.model}`}
+                        alt={altForImage(car, allImages[activeMedia], activeMedia, allImages.length)}
                         fill
                         priority
+                        fetchPriority="high"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1280px"
                         className="object-cover"
                     />
                 ) : (
@@ -82,7 +92,14 @@ export default function VehicleGallery({ car }) {
                             onClick={() => setActiveMedia(idx)}
                             className={`relative w-32 h-20 md:w-40 md:h-28 flex-shrink-0 snap-start rounded-lg overflow-hidden border-2 shadow-sm cursor-pointer transition-all ${activeMedia === idx ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-slate-200 hover:border-primary/50 hover:scale-105'}`}
                         >
-                            <Image src={url} alt={`Gallery ${idx + 1}`} fill className="object-cover" />
+                            <Image
+                                src={url}
+                                alt={altForImage(car, url, idx, allImages.length)}
+                                fill
+                                sizes="(max-width: 768px) 128px, 160px"
+                                loading="lazy"
+                                className="object-cover"
+                            />
                         </div>
                     ))}
                 </div>

@@ -25,6 +25,7 @@ export default function Header({ siteConfig }) {
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/">Home</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/inventory">Buy a Car</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/value-my-car">Value My Car</Link>
+                <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/news">Latest News</Link>
                 <Link className="text-sm font-medium text-slate-300 transition-colors hover:text-white" href="/about">About</Link>
             </nav>
             <div className="flex items-center gap-4">
@@ -68,6 +69,13 @@ export default function Header({ siteConfig }) {
                             onClick={closeMobileMenu}
                         >
                             Value My Car
+                        </Link>
+                        <Link
+                            className="text-base font-medium text-slate-300 transition-colors hover:text-white border-b border-white/10 pb-2"
+                            href="/news"
+                            onClick={closeMobileMenu}
+                        >
+                            Latest News
                         </Link>
                         <Link
                             className="text-base font-medium text-slate-300 transition-colors hover:text-white border-b border-white/10 pb-2"
