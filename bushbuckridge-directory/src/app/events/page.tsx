@@ -46,7 +46,7 @@ export default async function EventsPage() {
     return (
         <div className="flex flex-col gap-12 pb-24">
             <SecondaryHeader
-                title="Upcoming Events"
+                title="Not To Be Missed Events"
                 subtitle="Monthly events across Bushbuckridge — networking, training, markets, workshops and community gatherings."
                 badge="LOCAL GATHERINGS"
                 backgroundImage="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=2000&auto=format&fit=crop"

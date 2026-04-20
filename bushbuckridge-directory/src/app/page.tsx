@@ -93,7 +93,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Cinematic Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden pt-32 text-white">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 text-white">
         {/* Optimized Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -107,34 +107,26 @@ export default async function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-background" />
         </div>
 
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <Badge variant="outline" className="mb-6 bg-white/10 text-white border-white/20 backdrop-blur-md px-6 py-1.5 text-sm font-medium tracking-wide uppercase">
-            Empowering the Bushbuckridge Economy
-          </Badge>
-          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-extrabold tracking-tight text-white max-w-5xl mx-auto mb-8 leading-[0.9]">
-            The Digital Heart of <span className="text-secondary italic">Bushbuckridge</span>
-          </h1>
-          <p className="text-xl text-white/80 max-w-2xl mx-auto mb-12 font-medium">
-            Discover trusted local services, premium business opportunities, and the thriving commercial landscape of the Lowveld.
-          </p>
+      </section>
 
-          <div className="max-w-3xl mx-auto glass-dark p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
-              <Input
-                placeholder="Search for services or businesses..."
-                className="pl-12 border-0 focus-visible:ring-0 shadow-none h-14 text-lg bg-transparent text-white placeholder:text-white/40"
-              />
-            </div>
-            <Button size="lg" className="h-14 px-10 text-lg font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all rounded-xl shadow-lg shadow-secondary/20">
-              Search Now
-            </Button>
+      {/* Search Bar Section - Floating Overlap */}
+      <section className="container mx-auto px-4 -mt-12 relative z-30">
+        <div className="max-w-3xl mx-auto glass-dark p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+            <Input
+              placeholder="Search for services or businesses..."
+              className="pl-12 border-0 focus-visible:ring-0 shadow-none h-14 text-lg bg-transparent text-white placeholder:text-white/40"
+            />
           </div>
+          <Button size="lg" className="h-14 px-10 text-lg font-bold bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all rounded-xl shadow-lg shadow-secondary/20">
+            Search Now
+          </Button>
         </div>
       </section>
 
       {/* Quick Tiles - Cinematic */}
-      <section className="container mx-auto px-4 -mt-20 relative z-20">
+      <section className="container mx-auto px-4 mt-12 relative z-20">
         <div className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
           {quickTiles.map((tile) => {
             const Icon = tile.icon
