@@ -102,6 +102,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 mat_section_digital = ${body.mat_section_digital ?? false},
                 mat_section_engineering = ${body.mat_section_engineering ?? false},
                 mat_section_civil = ${body.mat_section_civil ?? false},
+                items_json = ${body.items_json ? JSON.stringify(body.items_json) : null},
                 materials_json = ${body.materials_json ? JSON.stringify(body.materials_json) : null},
                 files_json = ${body.files_json ? JSON.stringify(body.files_json) : null},
                 status_workflow_json = ${body.status_workflow_json ? JSON.stringify(body.status_workflow_json) : null},

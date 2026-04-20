@@ -355,6 +355,31 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }
     }, [jobcard]);
 
+    // Adds a new blank item to the array
+    const handleAddItem = () => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            items_json: [...(prev.items_json || []), { quantity: '', size: '', price: '', description: '' }]
+        }));
+    };
+
+    // Removes an item at a specific index
+    const handleRemoveItem = (index: number) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            items_json: (prev.items_json || []).filter((_: any, i: number) => i !== index)
+        }));
+    };
+
+    // Updates a specific field in a specific item
+    const handleItemChange = (index: number, field: string, value: string) => {
+        setJobcard((prev: any) => {
+            const updatedItems = [...(prev.items_json || [])];
+            updatedItems[index] = { ...updatedItems[index], [field]: value };
+            return { ...prev, items_json: updatedItems };
+        });
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Loading...</div>;
     if (!jobcard) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Not Found</div>;
 
@@ -462,23 +487,117 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
 
                     {/* Main Grid Area */}
                     <div className="flex border border-black min-h-[500px] flex-wrap lg:flex-nowrap">
-                        {/* Design Canvas/Notes */}
+                        {/* Design Canvas/Items & Notes */}
                         <div className="flex-1 border-b lg:border-b-0 lg:border-r border-black flex flex-col relative bg-[#f8fafc]">
-                            <div className="p-2 border-b border-gray-200 bg-white">
-                                <span className="text-xs font-bold text-gray-600 uppercase">Description</span>
+                            
+                            {/* Items Table Section */}
+                            <div className="flex-1 flex flex-col overflow-hidden border-b border-gray-300">
+                                <div className="p-2 border-b border-gray-200 bg-white flex-shrink-0">
+                                    <span className="text-xs font-bold text-gray-600 uppercase">Items</span>
+                                </div>
+                                
+                                <div className="flex-1 overflow-y-auto">
+                                    <table className="w-full text-sm text-left text-gray-600 border-collapse">
+                                        <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b sticky top-0 z-10">
+                                            <tr>
+                                                <th className="px-2 py-2 w-16">Qty</th>
+                                                <th className="px-2 py-2 w-24">Size</th>
+                                                <th className="px-2 py-2 w-32">Price (Excl.)</th>
+                                                <th className="px-2 py-2">Description</th>
+                                                <th className="px-2 py-2 w-10"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(jobcard.items_json || []).map((item: any, index: number) => (
+                                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50/50 group">
+                                                    <td className="px-1 py-1">
+                                                        <input 
+                                                            type="number" 
+                                                            min="0"
+                                                            value={item.quantity || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                        />
+                                                    </td>
+                                                    <td className="px-1 py-1">
+                                                        <input 
+                                                            type="text" 
+                                                            value={item.size || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'size', e.target.value)}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                        />
+                                                    </td>
+                                                    <td className="px-1 py-1">
+                                                        <input 
+                                                            type="number" 
+                                                            step="0.01" 
+                                                            min="0"
+                                                            value={item.price || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                        />
+                                                    </td>
+                                                    <td className="px-1 py-1">
+                                                        <input 
+                                                            type="text" 
+                                                            value={item.description || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                        />
+                                                    </td>
+                                                    <td className="px-1 py-1 text-center">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => handleRemoveItem(index)}
+                                                            className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                                                            title="Remove item"
+                                                        >
+                                                            {/* Trashcan Icon */}
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {(!jobcard.items_json || jobcard.items_json.length === 0) && (
+                                                <tr>
+                                                    <td colSpan={5} className="text-center py-4 text-gray-400 italic text-xs">
+                                                        No items added yet.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="flex-shrink-0 p-2 bg-white border-t border-gray-200">
+                                    <button 
+                                        type="button" 
+                                        onClick={handleAddItem}
+                                        className="w-full py-1.5 border-2 border-dashed border-gray-300 rounded text-sm font-medium text-gray-500 hover:border-black hover:text-black transition-colors"
+                                    >
+                                        + Add Item
+                                    </button>
+                                </div>
                             </div>
-                            <textarea 
-                                name="design_notes" 
-                                value={jobcard.design_notes || ''} 
-                                onChange={handleChange}
-                                placeholder="Paste design notes, instructions, sizes, or artwork links here..."
-                                className="flex-1 w-full bg-transparent text-gray-800 p-4 resize-none focus:outline-none focus:ring-2 focus:ring-inset focus:ring-aloe-green/20 text-sm h-full"
-                                style={{
-                                    backgroundImage: 'linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)',
-                                    backgroundSize: '20px 20px',
-                                    lineHeight: '20px'
-                                }}
-                            />
+
+                            {/* Other Notes Section */}
+                            <div className="flex-1 flex flex-col overflow-hidden min-h-[140px]">
+                                <div className="p-2 border-b border-gray-200 bg-white flex-shrink-0">
+                                    <span className="text-xs font-bold text-gray-600 uppercase">Other Notes</span>
+                                </div>
+                                <textarea 
+                                    name="design_notes" 
+                                    value={jobcard.design_notes || ''} 
+                                    onChange={handleChange}
+                                    placeholder="Paste design notes, instructions, or artwork links here..."
+                                    className="flex-1 w-full bg-transparent text-gray-800 p-4 resize-none focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 text-sm"
+                                    style={{
+                                        backgroundImage: 'linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)',
+                                        backgroundSize: '20px 20px',
+                                        lineHeight: '20px'
+                                    }}
+                                />
+                            </div>
                         </div>
 
                         {/* Toggles & Checklists */}
