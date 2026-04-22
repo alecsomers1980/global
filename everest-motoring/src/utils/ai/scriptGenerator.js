@@ -1,5 +1,30 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Gemini Flash occasionally returns 503 "high demand". Retry transient errors with backoff.
+async function geminiCallWithRetry(fn, label, maxAttempts = 4) {
+    let lastErr;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (err) {
+            lastErr = err;
+            const status = err?.status || err?.response?.status;
+            const transient = status === 503 || status === 429 || status === 500 || status === 504;
+            console.warn(`[Gemini ${label}] attempt ${attempt}/${maxAttempts} failed (status=${status}): ${err.message}`);
+            if (!transient || attempt === maxAttempts) throw err;
+            const delay = Math.min(1000 * 2 ** (attempt - 1), 8000);
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
+    throw lastErr;
+}
+
+function pickFeaturedPair(features, pool) {
+    if (!features || features.length === 0) return [];
+    const matches = features.filter(f => pool.some(p => f.toLowerCase().includes(p.toLowerCase())));
+    return matches.slice(0, 2);
+}
+
 export async function generateVehicleScript(car) {
     if (!process.env.GOOGLE_GEMINI_API_KEY) {
         throw new Error("Missing GOOGLE_GEMINI_API_KEY in environment variables.");
@@ -82,32 +107,71 @@ Example Output:
 ]
 `;
 
-        const result = await model.generateContent(prompt);
+        const result = await geminiCallWithRetry(() => model.generateContent(prompt), "script");
         const text = result.response.text();
 
-        // Clean up markdown code blocks if the LLM wrapped the JSON
-        const cleanText = text.replace(/\`\`\`json/g, '').replace(/\`\`\`/g, '').trim();
-        return JSON.parse(cleanText);
+        // Extract the first JSON array from the response; tolerate stray prose/markdown.
+        const match = text.match(/\[[\s\S]*\]/);
+        const jsonText = match ? match[0] : text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(jsonText);
 
     } catch (error) {
-        console.error("Error generating script with Gemini:", error);
+        console.error("Error generating script with Gemini — using feature-aware fallback:", error.message);
 
-        // Fallback generic script for 4 scenes if Gemini fails or rate limits
+        // Feature-aware fallback: weave the actual car features into the voiceovers so
+        // the video still sounds specific even when Gemini is unavailable.
         const presenterDesc = "A professional, attractive white female presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an 'Everest Motoring' logo";
 
+        const techPool = ["Apple CarPlay", "Android Auto", "Touchscreen", "Navigation", "Premium Audio", "Bluetooth", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor", "Cruise Control"];
+        const comfortPool = ["Leather Seats", "Climate Control", "Air Conditioning", "Sunroof", "Keyless Entry", "Power Windows", "4WD/AWD", "Alloy Wheels"];
+
+        const tech = pickFeaturedPair(car.features, techPool);
+        const comfort = pickFeaturedPair(car.features, comfortPool);
+
+        const techLine = tech.length > 0
+            ? `Featuring ${tech.join(' and ')}, technology that puts you in complete control.`
+            : `Technology that puts you in complete control, right at your fingertips.`;
+
+        const comfortLine = comfort.length > 0
+            ? `With ${comfort.join(' and ')}, every journey becomes exceptional.`
+            : `Designed for exceptional comfort on every journey.`;
+
+        const transmissionFuel = [car.transmission, car.fuel_type].filter(Boolean).join(' ');
+        const hookLine = transmissionFuel
+            ? `Introducing the striking ${car.year} ${car.make} ${car.model}, a ${transmissionFuel} masterpiece.`
+            : `Introducing the striking ${car.year} ${car.make} ${car.model}.`;
+
         return [
-            { scene: 1, location: "exterior", visual_prompt: `Very slow, subtle cinematic push-in shot with a tiny pan of the ${car.year} ${car.make} ${car.model}. Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: 'Introducing the striking ${car.make} ${car.model}.'` },
-            { scene: 2, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in interior POV shot of the ${car.make} ${car.model}. Do not pan left or right. The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: 'Experience unparalleled technology right at your fingertips.'` },
-            { scene: 3, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in shot of the back passenger area of the ${car.make} ${car.model}. Do not pan. Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: 'Designed for exceptional comfort on every journey.'` },
+            { scene: 1, location: "exterior", visual_prompt: `Very slow, subtle cinematic push-in shot with a tiny pan of the ${car.year} ${car.make} ${car.model}. Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: '${hookLine}'` },
+            { scene: 2, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in interior POV shot of the ${car.make} ${car.model}. Do not pan left or right. The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: '${techLine}'` },
+            { scene: 3, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in shot of the back passenger area of the ${car.make} ${car.model}. Do not pan. Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: '${comfortLine}'` },
             { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Very slow, subtle cinematic push-in shot. She looks directly into the camera with a warm, inviting smile and gestures welcomingly. AUDIO: South African English Female Voiceover: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
         ];
     }
 }
 
+function buildFallbackDescription(car, manualDescription) {
+    const priceFormatted = car.price ? new Intl.NumberFormat('en-ZA').format(car.price) : null;
+    const features = (car.features || []).slice(0, 8);
+    const specs = [];
+    if (car.mileage) specs.push(`${new Intl.NumberFormat('en-ZA').format(car.mileage)} km on the clock`);
+    if (car.transmission) specs.push(car.transmission.toLowerCase());
+    if (car.fuel_type) specs.push(car.fuel_type.toLowerCase());
+
+    const specLine = specs.length > 0 ? `Presented with ${specs.join(', ')}.` : '';
+    const featureLine = features.length > 0
+        ? `Key features include ${features.join(', ')}.`
+        : '';
+    const priceLine = priceFormatted ? ` Priced at ${priceFormatted} South African Rand.` : '';
+    const manualLine = manualDescription ? ` ${manualDescription}` : '';
+
+    return `Discover this exceptional ${car.year} ${car.make} ${car.model} at Everest Motoring in White River. ${specLine} ${featureLine}${manualLine}${priceLine} Contact Everest Motoring today to book your test drive or inquire about our tailored finance options.`.replace(/\s+/g, ' ').trim();
+}
+
 export async function optimizeVehicleDescription(car, manualDescription) {
     if (!process.env.GOOGLE_GEMINI_API_KEY) {
-        console.warn("[SEO Content] No GEMINI API KEY found. Skipping description optimization.");
-        return manualDescription;
+        console.warn("[SEO Content] No GEMINI API KEY found. Using fallback description.");
+        return buildFallbackDescription(car, manualDescription);
     }
 
     try {
@@ -170,15 +234,15 @@ Strict Instructions:
             requestParts.push(imagePart);
         }
 
-        console.log("[SEO Content] Calling Gemini 1.5 Flash for generation...");
-        const result = await model.generateContent(requestParts);
+        console.log("[SEO Content] Calling Gemini 2.5 Flash for generation...");
+        const result = await geminiCallWithRetry(() => model.generateContent(requestParts), "description");
         const finalDescription = result.response.text().trim();
         console.log("[SEO Content] Successfully generated optimized description.");
 
         return finalDescription;
     } catch (error) {
-        console.error("[SEO Content] Error optimizing description with Gemini:", error);
-        return manualDescription; // Fallback to raw text
+        console.error("[SEO Content] Error optimizing description — using features-based fallback:", error.message);
+        return buildFallbackDescription(car, manualDescription);
     }
 }
 
