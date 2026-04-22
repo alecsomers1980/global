@@ -49,18 +49,44 @@ export default function PublicCalendar() {
       const startDate = formatDateKey(year, month, 1);
       const endDate = formatDateKey(year, month, getDaysInMonth(year, month));
       
-      const { data, error } = await supabase
+      // 1. Fetch from calendar_entries
+      const { data: calData, error: calError } = await supabase
         .from('calendar_entries')
         .select('*')
         .gte('date', startDate)
         .lte('date', endDate)
         .order('date', { ascending: true });
 
-      if (!error && data) {
-        setEvents(data);
-      } else {
-        setEvents([]);
+      // 2. Fetch from events (the ones managed in "Manage Events")
+      const { data: eventData, error: eventError } = await supabase
+        .from('events')
+        .select('id, event_date, title, venue, category, description, status')
+        .gte('event_date', startDate)
+        .lte('event_date', endDate)
+        .neq('status', 'draft');
+
+      let combined: CalendarEntry[] = [];
+
+      if (!calError && calData) {
+        combined = [...calData];
       }
+
+      if (!eventError && eventData) {
+        const mappedEvents: CalendarEntry[] = eventData.map(e => ({
+          id: e.id,
+          date: e.event_date,
+          title: e.title,
+          location: e.venue,
+          type: e.category,
+          description: e.description
+        }));
+        combined = [...combined, ...mappedEvents];
+      }
+      
+      // Sort combined events by date
+      combined.sort((a, b) => a.date.localeCompare(b.date));
+      
+      setEvents(combined);
       setLoading(false);
     };
 

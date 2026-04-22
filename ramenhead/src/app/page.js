@@ -70,11 +70,13 @@ export default function Home() {
   return (
     <>
       <Script 
-        src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js" 
+        src="/masonry.pkgd.min.js" 
+        strategy="afterInteractive"
         onLoad={initMasonry}
       />
       <Script 
-        src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js" 
+        src="/imagesloaded.pkgd.min.js" 
+        strategy="afterInteractive"
         onLoad={initMasonry}
       />
 
@@ -97,6 +99,7 @@ export default function Home() {
               width={600}
               height={800}
               className="grid-image"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               loading={index < 2 ? "eager" : "lazy"}
               priority={index < 2}
             />

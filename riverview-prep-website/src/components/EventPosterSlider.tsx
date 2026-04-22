@@ -28,18 +28,39 @@ export default function EventPosterSlider() {
   async function fetchFeaturedEvents() {
     setLoading(true);
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const todayStr = new Date().toISOString().split('T')[0];
+      const today = new Date(todayStr);
+
+      // Fetch all featured events that are not drafts
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('is_featured', true)
-        .eq('status', 'published')
-        .gte('display_end_date', today)
-        .lte('display_start_date', today)
+        .neq('status', 'draft')
         .order('created_at', { ascending: false });
 
       if (data) {
-        const banners: EventBanner[] = data.map((event: any) => {
+        // Filter in JS to handle NULL dates and various statuses correctly
+        const filteredData = data.filter((event: any) => {
+          const displayStart = event.display_start_date ? new Date(event.display_start_date) : null;
+          const displayEnd = event.display_end_date ? new Date(event.display_end_date) : null;
+          const eventDate = event.event_date ? new Date(event.event_date) : null;
+
+          // 1. If we have explicit display dates, respect them
+          if (displayStart && displayEnd) {
+            return new Date(todayStr) >= displayStart && new Date(todayStr) <= displayEnd;
+          }
+
+          // 2. If no display dates but we have an event date, show it if it's in the future (or today)
+          if (eventDate) {
+            return eventDate >= today;
+          }
+
+          // 3. Fallback: just show it if it's featured and not a draft
+          return true;
+        });
+
+        const banners: EventBanner[] = filteredData.map((event: any) => {
           const primaryImage = event.images?.find((img: any) => img.is_primary)?.url || 
                               event.images?.[0]?.url || 
                               "/images/placeholder-event.jpg";
