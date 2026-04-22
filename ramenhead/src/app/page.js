@@ -78,7 +78,7 @@ export default function Home() {
         onLoad={initMasonry}
       />
 
-      <article style={{display: 'none'}}>
+      <article className="hidden-article">
         <h1>Ramenhead: Authentic Japanese Ramen in Cape Town</h1>
         <p>Ramenhead is a premium ramen restaurant with locations at Speaker&apos;s Corner and Time Out Market in Cape Town. We specialize in authentic freshly made noodles, 18-hour simmered Tonkotsu broths, and high-quality Japanese ingredients. Our menu includes classic ramen, vegan options, and a curated selection of sake.</p>
       </article>
@@ -96,7 +96,7 @@ export default function Home() {
               alt={`Ramenhead atmosphere and dishes - ${file}`}
               width={600}
               height={800}
-              style={{ width: '100%', height: 'auto' }}
+              className="grid-image"
               loading={index < 2 ? "eager" : "lazy"}
               priority={index < 2}
             />
@@ -104,37 +104,38 @@ export default function Home() {
         ))}
       </div>
 
-      <div className={`modal ${isOpen ? 'modalShow' : ''}`}>
-        <div className="modalBackground" onClick={closeModal}></div>
-        <div className="modalContent">
-          <div className="modalControls">
-            <svg id="control-prev" onClick={prevImage} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ebe3d7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{cursor: 'pointer', transform: 'rotate(180deg)'}}>
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-            <svg id="control-next" onClick={nextImage} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ebe3d7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{cursor: 'pointer'}}>
-              <polyline points="9 18 15 12 9 6"></polyline>
+      {isOpen && (
+        <div className="modal">
+          <div className="modalBackground" onClick={closeModal}></div>
+          <div className="modalContent">
+            <div className="modalControls">
+              <svg id="control-prev" onClick={prevImage} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ebe3d7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="modal-nav-button modal-prev">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <svg id="control-next" onClick={nextImage} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ebe3d7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="modal-nav-button">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </div>
+            <div className="modalImage">
+              <Image 
+                id="modalImageTarget" 
+                src={`/assets/${imageFiles[currentIndex]}`} 
+                alt="Full size ramenhead image"
+                width={1200}
+                height={1600}
+                className="modal-image-target"
+              />
+            </div>
+          </div>
+          <div className="modalClose" onClick={closeModal}>
+            <svg id="control-close" width="37" height="37" viewBox="0 0 37 37">
+              <path d="M36.863,18.682A18.181,18.181,0,1,1,18.681.5,18.182,18.182,0,0,1,36.863,18.682Z" fill="none" stroke="#ebe3d7" strokeMiterlimit="10" strokeWidth="1" />
+              <line x2="9.706" y2="9.706" transform="translate(14.912 8.962)" fill="none" stroke="#ebe3d7" strokeMiterlimit="10" strokeWidth="1" />
+              <line x1="9.705" y2="9.732" transform="translate(14.92 18.669)" fill="none" stroke="#ebe3d7" strokeMiterlimit="10" strokeWidth="1" />
             </svg>
           </div>
-          <div className="modalImage">
-            <Image 
-              id="modalImageTarget" 
-              src={`/assets/${imageFiles[currentIndex]}`} 
-              alt="Full size ramenhead image"
-              width={1200}
-              height={1600}
-              style={{ maxHeight: '80vh', width: 'auto', objectFit: 'contain' }}
-            />
-          </div>
         </div>
-        <div className="modalClose" onClick={closeModal}>
-          <svg id="Component_3_2" width="27.342" height="27.398" viewBox="0 0 27.342 27.398">
-            <g transform="translate(0 0)">
-              <line x2="26.635" y2="26.635" transform="translate(0.354 0.374)" fill="none" stroke="#ebe3d7" strokeMiterlimit="10" strokeWidth="1" />
-              <line x1="26.617" y2="26.692" transform="translate(0.365 0.353)" fill="none" stroke="#ebe3d7" strokeMiterlimit="10" strokeWidth="1" />
-            </g>
-          </svg>
-        </div>
-      </div>
+      )}
     </>
   )
 }

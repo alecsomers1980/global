@@ -199,6 +199,93 @@ a {
   display: none;
 }
 
+a.button {
+  display: block;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 2.1px;
+  padding: 13px 21px 11px;
+  background-color: #EE3526;
+  color: #000000;
+  text-align: center;
+  width: fit-content;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.3s ease;
+}
+
+a.button:hover {
+  opacity: 0.8;
+}
+
+a.button.alt {
+  background-color: #EE3526;
+  color: #000000;
+}
+
+/* Audit Fixes: Moving Inline Styles to CSS */
+.footer-section-title {
+  margin-top: 56px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.footer-logo-link {
+  background-color: transparent !important;
+  padding: 0 !important;
+  display: inline-block;
+}
+
+.footer-logo-img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.location-spacing {
+  margin-top: 12px;
+}
+
+.button-spacing {
+  margin-top: 8px;
+}
+
+.footer-disclaimer {
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.hidden-article {
+  display: none;
+}
+
+.grid-image {
+  width: 100%;
+  height: auto;
+}
+
+.modal-image-target {
+  max-height: 80vh;
+  width: auto;
+  object-fit: contain;
+}
+
+.modal-nav-button {
+  cursor: pointer;
+}
+
+.modal-prev {
+  transform: rotate(180deg);
+}
+
+.copy-text {
+  width: 80%;
+}
+
 .messageContent {
   font-family: "Poppins", sans-serif;
   font-size: 15px;
