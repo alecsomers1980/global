@@ -1,0 +1,381 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  color: #a6a39f;
+  background: #000;
+  overflow-x: hidden;
+}
+
+a {
+  color: #a6a39f;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+.images {
+  width: 80%;
+  margin: 0 auto 56px;
+  /* display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  gap: 30px; */
+}
+
+.grid-item, 
+.grid-sizer { 
+  width: 33.3333%; 
+  margin-bottom: 30px;
+}
+
+@media screen and (max-width: 1280px) {
+  .grid-item, 
+  .grid-sizer { 
+    width: 50%; 
+    margin-bottom: 30px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .grid-item, 
+  .grid-sizer { 
+    width: 50%; 
+    margin-bottom: 30px;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .grid-item, 
+  .grid-sizer { 
+    width: 100%; 
+    margin-bottom: 30px;
+  }
+}
+
+.images .image {
+  display: block;
+  padding: 0 15px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: 300ms ease-in-out;
+  /* width: 100%; */
+}
+
+.image img {
+  width: 100%;
+  display: block;
+}
+
+.images .image:hover {
+  /* transform: scale(1.07); */
+  opacity: 0.6;
+}
+
+.images .image:nth-of-type(1) {
+}
+
+.images .image:nth-of-type(2) {
+}
+
+.images .image:nth-of-type(3) {
+}
+
+.images .image:nth-of-type(4) {
+  /* margin-top: -8%; */
+}
+
+.images .image:nth-of-type(5) {
+}
+
+.images .image:nth-of-type(6) {
+  /* margin-top: -55%; */
+}
+
+.images .image:nth-of-type(7) {
+}
+
+.images .image:nth-of-type(8) {
+  /* margin-top: -45%; */
+}
+
+.images .image:nth-of-type(11) {
+  /* margin-top: -45%; */
+}
+
+.images .image:nth-of-type(12) {
+  /* margin-top: -15%; */
+}
+
+.groupImage {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: -25%;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  transition: 400ms ease-in-out;
+}
+
+.modalClose {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 50%;
+  transition: 300ms ease-in-out;
+  width: 48px;
+  height: 48px;
+}
+
+.modalClose svg {
+  width: 100%;
+  height: 100%;
+}
+
+.modalClose svg line {
+  stroke-width: 1.5px;
+  transition: 300ms ease-in-out;
+}
+
+.modalClose:hover {
+  background: #fff;
+}
+
+.modalClose:hover line {
+  stroke: #000;
+}
+
+.modalBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.modalContent {
+  position: absolute;
+  /* top: 128px; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalShow {
+  left: 0;
+}
+
+.modalControls {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  z-index: 200;
+  padding: 0 32px;
+}
+
+.modalControls svg {
+  cursor: pointer;
+  width: 38px;
+  height: 38px;
+}
+
+.modalControls svg * {
+  transition: 300ms ease-in-out;
+}
+
+.modalControls svg:hover path {
+  fill: #fff;
+}
+
+.modalControls svg:hover line {
+  stroke: #000;
+}
+
+.modalControls #control-prev {
+  transform: rotate(180deg);
+}
+
+@media screen and (max-width: 1280px) {
+  .images .image:nth-of-type(1) {
+  }
+
+  .images .image:nth-of-type(2) {
+  }
+
+  .images .image:nth-of-type(3) {
+  }
+
+  .images .image:nth-of-type(4) {
+    /* margin-top: -10%; */
+  }
+
+  .images .image:nth-of-type(5) {
+  }
+
+  .images .image:nth-of-type(6) {
+    /* margin-top: -58%; */
+  }
+
+  .images .image:nth-of-type(7) {
+  }
+
+  .images .image:nth-of-type(8) {
+    /* margin-top: -45%; */
+  }
+
+  .images .image:nth-of-type(11) {
+    /* margin-top: -45%; */
+  }
+
+  .images .image:nth-of-type(12) {
+    /* margin-top: -15%; */
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .images .image:nth-of-type(1) {
+  }
+
+  .images .image:nth-of-type(2) {
+  }
+
+  .images .image:nth-of-type(3) {
+    /* margin-top: -8%; */
+  }
+
+  .images .image:nth-of-type(4) {
+    /* margin-top: 0; */
+  }
+
+  .images .image:nth-of-type(5) {
+    /* margin-top: -40%; */
+  }
+
+  .images .image:nth-of-type(6) {
+    /* margin-top: -115%; */
+    /* grid-row: 4; */
+  }
+
+  .groupImage {
+    /* display: none; */
+    /* margin-top: -118%; */
+  }
+
+  .images .image:nth-of-type(8) {
+    /* margin-top: -2%; */
+    /* display: none; */
+  }
+
+  .images .image:nth-of-type(9) {
+    /* display: none; */
+  }
+
+  .images .image:nth-of-type(10) {
+    /* display: none; */
+  }
+
+  .images .image:nth-of-type(11) {
+    /* margin-top: -86%; */
+    /* display: none; */
+  }
+
+  .images .image:nth-of-type(12) {
+    /* margin-top: -2%; */
+    /* display: none; */
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .images .image:nth-of-type(1) {
+    /* margin-top: -13%; */
+  }
+  .images .image:nth-of-type(3) {
+    /* margin-top: -10%; */
+  }
+  .images .image:nth-of-type(2) {
+    /* margin-top: -12%; */
+  }
+  .images .image:nth-of-type(4) {
+    /* margin-top: -4%; */
+  }
+  .images .image:nth-of-type(5) {
+    /* margin-top: -44%; */
+  }
+  .images .image:nth-of-type(6) {
+    /* margin-top: -120%; */
+  }
+  .images .image:nth-of-type(7) {
+    /* margin-top: -2%; */
+  }
+  .images .image:nth-of-type(10) {
+    /* margin-top: -4%; */
+  }
+  .images .image:nth-of-type(11) {
+    /* margin-top: -95%; */
+  }
+  .images .image:nth-of-type(12) {
+    /* margin-top: -4%; */
+  }
+
+  .images .groupImage {
+    /* margin-top: -110%; */
+  }
+}
+
+.modalImage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 80vh;
+}
+
+.modalImage img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media screen and (max-width: 568px) {
+  .modalImage {
+    width: 100%;
+  }
+  .modalImage img {
+    width: 100%;
+  }
+  .images {
+    gap: 16px;
+  }
+  .modalControls {
+    padding: 16px;
+  }
+  .modalClose {
+    top: 12px;
+    right: 12px;
+  }
+}
