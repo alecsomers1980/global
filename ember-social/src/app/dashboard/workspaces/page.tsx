@@ -56,7 +56,7 @@ export default async function WorkspacesPage() {
                         const scheduledPosts = (ws.posts as any[])?.filter(p => p.status === 'scheduled').length ?? 0
 
                         return (
-                            <Link key={ws.id} href={`/dashboard/workspaces/${ws.id}`}
+                            <Link key={ws.id} href={`/dashboard/workspaces/${ws.slug || ws.id}`}
                                 className="glass-card p-5 transition-all hover:scale-[1.01] hover:ember-glow group block">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">

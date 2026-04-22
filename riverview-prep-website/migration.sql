@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS events (
   category TEXT DEFAULT 'Academic',
   is_featured BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'upcoming',
+  display_start_date TEXT,
+  display_end_date TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -123,13 +125,13 @@ CREATE TABLE IF NOT EXISTS settings (
 -- -------------------------------------------
 
 -- Events (the main events table used by Events page + Analytics)
-INSERT INTO events (title, event_date, venue, category, is_featured, status)
+INSERT INTO events (title, event_date, venue, category, is_featured, status, display_start_date, display_end_date)
 VALUES 
-  ('School Play: Oliver with a Twist', '2026-03-20', 'Main Hall', 'Culture', true, 'upcoming'),
-  ('Individual Photo Day', '2026-03-25', 'Campus', 'Academic', false, 'upcoming'),
-  ('Grade 7 Mentor Induction', '2026-03-27', 'Chapel', 'Academic', false, 'upcoming'),
-  ('U13 Athletics Meet', '2026-04-12', 'Komatipoort', 'Sports', true, 'upcoming'),
-  ('School Golf Day', '2026-07-25', 'Malelane Golf Club', 'Community', true, 'upcoming')
+  ('School Play: Oliver with a Twist', '2026-03-20', 'Main Hall', 'Culture', true, 'upcoming', '2026-02-01', '2026-03-21'),
+  ('Individual Photo Day', '2026-03-25', 'Campus', 'Academic', false, 'upcoming', '2026-03-01', '2026-03-26'),
+  ('Grade 7 Mentor Induction', '2026-03-27', 'Chapel', 'Academic', false, 'upcoming', '2026-03-01', '2026-03-28'),
+  ('U13 Athletics Meet', '2026-04-12', 'Komatipoort', 'Sports', true, 'upcoming', '2026-03-01', '2026-04-13'),
+  ('School Golf Day', '2026-07-25', 'Malelane Golf Club', 'Community', true, 'upcoming', '2026-05-01', '2026-07-26')
 ON CONFLICT DO NOTHING;
 
 -- Calendar Entries

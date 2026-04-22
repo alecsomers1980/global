@@ -46,8 +46,8 @@ export default function Footer({ siteConfig }) {
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/news">Latest News</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/portal">Client Portal</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/affiliate">Affiliate Program</Link></li>
-                            <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="#">Privacy Policy</Link></li>
-                            <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="#">Terms &amp; Conditions</Link></li>
+                            <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/privacy">Privacy Policy</Link></li>
+                            <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/terms">Terms &amp; Conditions</Link></li>
                         </ul>
                     </div>
 
@@ -60,11 +60,17 @@ export default function Footer({ siteConfig }) {
 
                 </div>
 
-                {/* Copyright */}
-                <div className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row text-sm">
+                <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row text-xs">
                     <p className="text-slate-500">
                         &copy; {new Date().getFullYear()} {name}. All rights reserved.
                     </p>
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-slate-600">
+                        <span>{siteConfig?.companyName || "Everest Motoring (Pty) Ltd"}</span>
+                        <span className="hidden sm:inline">|</span>
+                        <span>Reg No: {siteConfig?.registrationNumber || "[Reg No]"}</span>
+                        <span className="hidden sm:inline">|</span>
+                        <span>VAT: {siteConfig?.vatNumber || "[VAT No]"}</span>
+                    </div>
                 </div>
             </div>
         </footer>

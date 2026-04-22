@@ -142,7 +142,7 @@ export default async function DashboardPage() {
                     ) : (
                         <div className="space-y-2">
                             {workspaces?.slice(0, 8).map((ws: any) => (
-                                <Link key={ws.id} href={`/dashboard/workspaces/${ws.id}`}
+                                <Link key={ws.id} href={`/dashboard/workspaces/${ws.slug || ws.id}`}
                                     className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-white/5 group">
                                     <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
                                         style={{ background: `hsl(${ws.name.charCodeAt(0) * 7 % 360}, 60%, 35%)` }}>

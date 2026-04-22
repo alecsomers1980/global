@@ -538,11 +538,11 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         />
                                                     </td>
                                                     <td className="px-1 py-1">
-                                                        <input 
-                                                            type="text" 
+                                                        <textarea 
                                                             value={item.description || ''} 
                                                             onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                            rows={2}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 resize-y min-h-[40px]"
                                                         />
                                                     </td>
                                                     <td className="px-1 py-1 text-center">

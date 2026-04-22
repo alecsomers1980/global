@@ -36,11 +36,11 @@ export default function Footer() {
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-4 group">
               <Image 
-                src="/images/logo_t.png" 
+                src="/images/logo.png" 
                 alt="Riverview Preparatory School Logo" 
                 width={50} 
                 height={50} 
-                className="h-auto w-auto brightness-0 invert"
+                className="h-auto w-auto"
                 priority
               />
               <div className="flex flex-col">

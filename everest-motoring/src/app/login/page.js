@@ -1,4 +1,5 @@
 import ClientAuthForms from "./ClientAuthForms";
+import SignUpTracker from "@/components/SignUpTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +14,11 @@ export default async function LoginPage({ searchParams }) {
     const message = params?.message;
     const isRegisteringClient = params?.register === 'client';
     const carId = params?.car_id || '';
+    const registered = params?.registered;
 
     return (
         <div className="min-h-[calc(100vh-80px)] bg-slate-50 flex items-center justify-center p-4 py-12">
+            <SignUpTracker method={registered || ""} when={!!registered} />
             <ClientAuthForms
                 initialIsRegisteringClient={isRegisteringClient}
                 carId={carId}

@@ -38,7 +38,7 @@ export default function NewWorkspacePage() {
         // Create default client intelligence record
         await supabase.from('client_intelligence').insert({ workspace_id: workspaceData.id } as any)
 
-        router.push(`/dashboard/workspaces/${workspaceData.id}`)
+        router.push(`/dashboard/workspaces/${workspaceData.slug || workspaceData.id}`)
     }
 
     return (

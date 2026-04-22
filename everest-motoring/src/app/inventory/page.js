@@ -20,8 +20,11 @@ export default async function InventoryPage({ searchParams }) {
 
     let query = supabase
         .from("cars")
-        .select("*")
-        .eq("status", "available");
+        .select("*, sales(sold_at)");
+        
+    // We cannot easily do complex OR conditions with joined tables in Supabase JS, 
+    // so we fetch available and sold, then filter in memory for the 1-week rule.
+    query = query.in("status", ["available", "sold"]);
 
     if (make) query = query.ilike('make', `%${make}%`);
     if (model) query = query.ilike('model', `%${model}%`);
@@ -40,11 +43,27 @@ export default async function InventoryPage({ searchParams }) {
         query = query.contains('features', featArr);
     }
 
-    const { data: cars, error } = await query.order("created_at", { ascending: false });
+    const { data: allCars, error } = await query.order("created_at", { ascending: false });
 
     if (error) {
         console.error("Error fetching vehicles:", error.message || error, JSON.stringify(error));
     }
+
+    // Filter sold cars older than 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const cars = (allCars || []).filter(car => {
+        if (car.status === "available") return true;
+        if (car.status === "sold") {
+            const soldAtStr = car.sales?.[0]?.sold_at;
+            if (!soldAtStr) return false; // If marked sold but no sale record, hide it as a fallback
+            const soldAtDate = new Date(soldAtStr);
+            return soldAtDate >= sevenDaysAgo;
+        }
+        return false;
+    });
+
 
     return (
         <div className="bg-background-alt min-h-screen">
@@ -88,9 +107,15 @@ export default async function InventoryPage({ searchParams }) {
 
                                         {/* Status Badge */}
                                         <div className="absolute top-4 left-4">
-                                            <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-green-700 font-bold text-xs uppercase tracking-wider rounded-md border border-white/20 shadow-lg">
-                                                {car.status === 'available' ? 'Available' : 'Reserved'}
-                                            </span>
+                                            {car.status === 'sold' ? (
+                                                <span className="px-3 py-1 bg-slate-900/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg border border-slate-700">
+                                                    Sold
+                                                </span>
+                                            ) : (
+                                                <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-green-700 font-bold text-xs uppercase tracking-wider rounded-md border border-white/20 shadow-lg">
+                                                    {car.status === 'available' ? 'Available' : 'Reserved'}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 

@@ -176,28 +176,42 @@ export async function pollSeedanceClip(taskId) {
 }
 
 export const SEEDANCE_STYLE_PROMPTS = {
-    timelapse: `Cinematic 8-second sequence. Seconds 0-2: The camera holds steady on the subjects in daylight. Seconds 2-6: A rapid hyper-lapse effect begins; clouds race across the sky, shadows lengthen rapidly, and the sun sets in fast-forward. Seconds 6-8: The time-lapse stops smoothly at dusk, the car's headlights and taillights illuminate brightly against the dark environment. Photorealistic, 4k.`,
-    showroom: `8-second cinematic lighting transformation. The environment starts as a standard bright dealership. Over the next 3 seconds, the background lights forcefully shut off row by row from back to front, plunging the background into deep, cinematic blackness. The final 3 seconds feature a slow, creeping push-in as a single, dramatic overhead softbox illuminates only the client and the car's metallic paint. 8k resolution, commercial aesthetic.`,
-    orbit: `Dynamic FPV drone shot, 8 seconds total. The camera begins with a slow pan, then suddenly accelerates into a high-speed, motion-blurred 180-degree orbit around the client and the car. Halfway through, the camera speed-ramps into extreme, buttery slow-motion. The environment reflects dramatically in the car's paint during the slow-motion phase. Action camera style, wide-angle lens, hyper-realistic.`,
+    dream_drive: `Cinematic 8-second horizontal sequence, 16:9 landscape framing. Seconds 0-3: Camera holds on the client and the car inside the showroom. Seconds 3-5: The background seamlessly morphs — showroom walls dematerialize and reform into an epic coastal highway at golden-hour sunset, warm light flooding in, wind whipping hair and clothes. Seconds 5-8: The car's wheels begin to spin with convincing motion blur, headlights flare brightly against the deepening sky, and the camera pulls back slightly as the dream environment fully comes alive. Photorealistic, 4k, cinematic lens flare, anamorphic aesthetic.`,
+    reveal: `Cinematic 8-second horizontal sequence, 16:9 landscape framing, leading up to the handover moment. Seconds 0-3: A silk cover drapes the car; an unseen hand gracefully pulls it away in slow-motion, the fabric billowing and cascading toward the floor. Seconds 3-6: A fast-forward time-lapse of the sun setting behind the client and vehicle, city lights flickering on around them in rapid succession, people and traffic streaking past. Seconds 6-8: The time-lapse halts and holds exactly on the final handover pose — the client and car perfectly lit under dusk sky and warm ambient city glow. Hyper-realistic, 4k, shallow depth of field.`,
+    hero_orbit: `Dynamic 8-second horizontal sequence, 16:9 landscape framing, simulated drone sweep. The camera performs a smooth 180-degree 3D orbit around the client and the car, rising slightly on approach and descending on departure, keeping both in frame. Apply a stylized high-octane cinematic filter throughout: heightened contrast, saturated rim-lighting, subtle neon reflections on the paint, gentle chromatic aberration at frame edges, volumetric light rays. The client holds a confident, heroic pose. Wide-angle lens, graphic-novel color grade, cyberpunk-adjacent aesthetic.`,
+    pixel_build: `Cinematic 8-second horizontal sequence, 16:9 landscape framing. IMPORTANT: preserve the exact background, environment, lighting, and all people from the input image unchanged — do not relocate or restyle the setting. Second 0-1: The person or people from the original photo stand in their same positions, visibly smiling and excited about their new car. If there are multiple people in the photo, keep every one of them in frame, all equally animated and excited — faces lit up, genuine smiles. Seconds 1-7: Thousands of glowing transparent digital voxels and bright cyan data streams rapidly materialize from the ground and the air around them, assembling the car piece-by-piece in an accelerated tech-forward construction sequence — wheels first, then chassis, then body panels, then glass, then headlights pulsing on with a satisfying snap. The people react with growing excitement as the car takes shape. Seconds 7-8: The car is fully solid, complete, and brand-new looking, parked beside the people; everyone smiles and shows real excitement directly at camera. The original background stays the same throughout. Hyper-realistic, futuristic, satisfying tech aesthetic, 4k. Audio: subtle ambient environment sound matching the original scene, rising synth swell during the build, soft mechanical clicks and energy whooshes as panels assemble, satisfying final 'snap' as the car completes.`,
 };
+
+export function buildSeedancePrompt(styleKey, { buyerName } = {}) {
+    const template = SEEDANCE_STYLE_PROMPTS[styleKey];
+    if (!template) return null;
+    const firstName = (buyerName || '').trim().split(/\s+/)[0] || 'friend';
+    return template.replace(/\{firstName\}/g, firstName);
+}
 
 export const SEEDANCE_STYLES = [
     {
-        key: 'timelapse',
-        label: 'Day-to-Night Time-Lapse',
-        tagline: 'Best for outside handovers',
-        description: 'Clouds race, sun sets, headlights bloom. The car as an enduring monument.',
+        key: 'dream_drive',
+        label: 'Dream Drive Transition',
+        tagline: 'Escapist flair',
+        description: 'Showroom morphs into a coastal highway sunset — wheels spin, headlights flare.',
     },
     {
-        key: 'showroom',
-        label: 'Showroom Blackout',
-        tagline: 'Best for dealership floors',
-        description: 'Lights shut off row-by-row into a dramatic spotlight reveal.',
+        key: 'reveal',
+        label: 'Time-Lapse Reveal',
+        tagline: 'Dramatic handover',
+        description: 'Silk cover pulls away, sun sets, city lights bloom — ends on the handover pose.',
     },
     {
-        key: 'orbit',
-        label: 'Speed Ramp Orbit',
-        tagline: 'High-energy, edgy',
-        description: 'FPV drone whip-pan into buttery slow-motion around client + car.',
+        key: 'hero_orbit',
+        label: 'Stylized Hero Walkaround',
+        tagline: 'Social punch',
+        description: '3D drone orbit with cinematic/graphic-novel grade and neon rim-light.',
+    },
+    {
+        key: 'pixel_build',
+        label: 'Pixel Build',
+        tagline: 'Tech-forward',
+        description: 'Car assembles around the client from glowing voxels — ends with a personalized congratulations overlay.',
     },
 ];

@@ -2,6 +2,40 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
 import crypto from 'crypto'
 
+const MAX_CARS_PER_DAY = 2
+
+async function getNextAvailableDate(supabase: any, workspaceId: string): Promise<string> {
+    // Find the next date that has fewer than MAX_CARS_PER_DAY distinct vehicles scheduled
+    // Start from today (SAST = UTC+2)
+    const now = new Date()
+
+    for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
+        const checkDate = new Date(now)
+        checkDate.setDate(checkDate.getDate() + dayOffset)
+        const dateStr = checkDate.toISOString().split('T')[0] // YYYY-MM-DD
+
+        // Count distinct vehicle_ids scheduled on this date
+        const { data: posts } = await supabase
+            .from('posts')
+            .select('vehicle_id')
+            .eq('workspace_id', workspaceId)
+            .gte('scheduled_at', `${dateStr}T00:00:00Z`)
+            .lt('scheduled_at', `${dateStr}T23:59:59Z`)
+            .not('vehicle_id', 'is', null)
+
+        const uniqueVehicles = new Set((posts || []).map((p: any) => p.vehicle_id))
+
+        if (uniqueVehicles.size < MAX_CARS_PER_DAY) {
+            return dateStr
+        }
+    }
+
+    // Fallback: 30 days out
+    const fallback = new Date(now)
+    fallback.setDate(fallback.getDate() + 30)
+    return fallback.toISOString().split('T')[0]
+}
+
 export async function POST(req: Request) {
     try {
         // 1. Authenticate Request
@@ -12,23 +46,15 @@ export async function POST(req: Request) {
 
         const rawKey = authHeader.replace('Bearer ', '')
         const keyHash = crypto.createHash('sha256').update(rawKey).digest('hex')
-        console.log('--- DEBUG: TRIGGER API ---')
-        console.log('Incoming rawKey length:', rawKey.length)
-        console.log('Incoming keyHash:', keyHash)
 
         const supabase = await createServerSupabaseClient()
 
         // 2. Lookup Key in DB
-        const { data: keyRecord, error: dbError } = await supabase
+        const { data: keyRecord } = await supabase
             .from('workspace_api_keys')
             .select('id, workspace_id')
             .eq('key_hash', keyHash)
             .single()
-
-        if (dbError) {
-          console.log('DB Search error:', dbError.message)
-        }
-        console.log('KeyRecord found:', !!keyRecord)
 
         if (!keyRecord) {
             return NextResponse.json({ error: 'Unauthorized key' }, { status: 401 })
@@ -43,28 +69,46 @@ export async function POST(req: Request) {
 
         // 4. Parse Payload
         const payload = await req.json()
-        const { content, platforms, scheduled_at, media_urls } = payload
+        const { content, platforms, scheduled_at, media_urls, preferred_time, vehicle_id } = payload
 
         if (!content || !platforms || !Array.isArray(platforms) || platforms.length === 0) {
             return NextResponse.json({ error: 'Missing content or platforms array' }, { status: 400 })
         }
 
-        // 5. Insert Post into Database
-        // Triggers default to 'pending_approval' unless explicitly requested otherwise (if logic allowed)
+        // 5. Smart scheduling
+        let finalScheduledAt: string | null = null
+
+        if (scheduled_at) {
+            // Explicit date provided — use it directly
+            finalScheduledAt = new Date(scheduled_at).toISOString()
+        } else if (preferred_time && vehicle_id) {
+            // Smart scheduling: find next available day, apply preferred time
+            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id)
+            finalScheduledAt = `${availableDate}T${preferred_time}:00Z`
+        }
+
+        // 6. Insert Post
         const approval_token = crypto.randomUUID()
+
+        const insertData: Record<string, any> = {
+            workspace_id: keyAny.workspace_id,
+            content,
+            platforms,
+            media_urls: Array.isArray(media_urls) && media_urls.length > 0 ? media_urls : null,
+            scheduled_at: finalScheduledAt,
+            status: 'pending_approval',
+            approval_token,
+        }
+
+        // Store vehicle_id if provided (for scheduling logic)
+        if (vehicle_id) {
+            insertData.vehicle_id = vehicle_id
+        }
 
         const { data: post, error: insertError } = await supabase
             .from('posts')
-            .insert({
-                workspace_id: keyAny.workspace_id,
-                content,
-                platforms,
-                media_urls: Array.isArray(media_urls) && media_urls.length > 0 ? media_urls : null,
-                scheduled_at: scheduled_at ? new Date(scheduled_at).toISOString() : null,
-                status: 'pending_approval',
-                approval_token,
-            } as never)
-            .select('id, status, approval_token')
+            .insert(insertData as never)
+            .select('id, status, approval_token, scheduled_at')
             .single()
 
         if (insertError) throw insertError
@@ -74,7 +118,8 @@ export async function POST(req: Request) {
             success: true,
             message: 'Post queued successfully',
             post_id: postAny?.id,
-            status: postAny?.status
+            status: postAny?.status,
+            scheduled_at: postAny?.scheduled_at,
         }, { status: 201 })
 
     } catch (error: any) {

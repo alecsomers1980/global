@@ -104,7 +104,6 @@ export default async function Home() {
             quality={90}
             className="object-cover object-center scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-background" />
         </div>
 
       </section>

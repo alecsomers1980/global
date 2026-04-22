@@ -123,9 +123,10 @@ export function Sidebar({ workspaces }: SidebarProps) {
                         <p className="px-3 py-2 text-xs" style={{ color: '#3a3a5a' }}>No clients yet</p>
                     )}
                     {workspaces.map((ws) => {
-                        const active = pathname.startsWith(`/dashboard/workspaces/${ws.id}`)
+                        const identifier = ws.slug || ws.id
+                        const active = pathname.startsWith(`/dashboard/workspaces/${identifier}`) || pathname.startsWith(`/dashboard/workspaces/${ws.id}`)
                         return (
-                            <Link key={ws.id} href={`/dashboard/workspaces/${ws.id}`}
+                            <Link key={ws.id} href={`/dashboard/workspaces/${identifier}`}
                                 className={cn(
                                     'flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all',
                                     active ? 'text-white' : 'text-[#5a5a7a] hover:text-white hover:bg-white/5'

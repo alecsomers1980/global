@@ -6,7 +6,24 @@ export default function TradeInStatusSelector({ requestId, currentStatus }) {
     const handleChange = (e) => {
         const form = e.target.form;
         if (form) {
-            form.requestSubmit();
+            const newStatus = e.target.value;
+            if (newStatus === 'offer_made') {
+                const offerValue = prompt("Please enter the offer value (e.g. 150000):");
+                if (offerValue !== null && offerValue.trim() !== '') {
+                    // Inject hidden input
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "offerValue";
+                    input.value = offerValue;
+                    form.appendChild(input);
+                    form.requestSubmit();
+                } else {
+                    // Cancelled, revert select
+                    e.target.value = currentStatus;
+                }
+            } else {
+                form.requestSubmit();
+            }
         }
     };
 

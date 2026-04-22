@@ -1,151 +1,145 @@
-import { createClient, createAdminClient } from "@/utils/supabase/server";
-import AffiliateApprovalToggle from "./AffiliateApprovalToggle";
+import { createAdminClient } from "@/utils/supabase/server";
+import AffiliateRow from "./AffiliateRow";
 import AffiliateTopActions from "./AffiliateTopActions";
 
-export const metadata = { title: "Affiliate Manager | Everest Admin" };
+export const metadata = { title: "Affiliate Network Manager | Everest Admin" };
 
 export default async function AdminAffiliatesPage() {
     const supabase = await createAdminClient();
 
-    // 1. Fetch all profiles with the 'affiliate' role
+    // 1. Fetch all affiliate profiles
     const { data: affiliates } = await supabase
         .from('profiles')
-        .select('*, is_approved')
+        .select('*')
         .eq('role', 'affiliate')
         .order('created_at', { ascending: false });
 
-    // 2. Fetch ALL leads to calculate organic metrics for each affiliate
+    // 2. Fetch ALL leads (with car + client info) to compute metrics
     const { data: leads } = await supabase
         .from('leads')
-        .select('id, affiliate_id, status, cars(price)');
+        .select('id, affiliate_id, client_name, status, created_at, cars(year, make, model, price)');
 
-    // 3. Aggregate metrics per affiliate
-    const affiliateMetrics = affiliates?.map(affiliate => {
-        const affiliateLeads = leads?.filter(l => l.affiliate_id === affiliate.id) || [];
-
+    // 3. Build metrics + attach leads per affiliate
+    const affiliateMetrics = (affiliates || []).map(affiliate => {
+        const affiliateLeads = (leads || []).filter(l => l.affiliate_id === affiliate.id);
         const totalLeads = affiliateLeads.length;
         const closedWon = affiliateLeads.filter(l => l.status === 'closed_won').length;
-
-        // Estimated pending commissions (Flat R1000 per potential sale)
         const estPending = affiliateLeads.reduce((sum, lead) => {
-            if (['new', 'contacted', 'finance_pending'].includes(lead.status)) {
-                return sum + 1000;
-            }
+            if (['new', 'contacted', 'finance_pending'].includes(lead.status)) return sum + 1000;
             return sum;
         }, 0);
+        return { ...affiliate, totalLeads, closedWon, estPending, leads: affiliateLeads };
+    });
 
-        return { ...affiliate, totalLeads, closedWon, estPending };
-    }) || [];
+    // 4. Split into pending vs active
+    const pendingAffiliates = affiliateMetrics.filter(a => !a.is_approved);
+    const activeAffiliates = affiliateMetrics.filter(a => a.is_approved === true);
 
-    const networkTotalLeads = leads?.filter(l => l.affiliate_id !== null).length || 0;
-    const networkClosedWon = leads?.filter(l => l.affiliate_id !== null && l.status === 'closed_won').length || 0;
+    // 5. Network summary stats
+    const networkLeads = (leads || []).filter(l => l.affiliate_id !== null);
+    const networkTotalLeads = networkLeads.length;
+    const networkClosedWon = networkLeads.filter(l => l.status === 'closed_won').length;
 
     return (
-        <div className="p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between">
+        <div className="p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto w-full">
+            <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900 font-display">Affiliate Network Management</h1>
-                    <p className="text-slate-500 mt-1">Monitor your referral network performance and pipeline velocity.</p>
+                    <p className="text-slate-500 mt-1">Monitor your referral network, approve applications, and track pipeline velocity.</p>
                 </div>
                 <AffiliateTopActions affiliates={affiliateMetrics} />
             </div>
 
-            {/* Network Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Total Affiliates</p>
-                            <span className="text-3xl font-bold text-slate-900">{affiliates?.length || 0}</span>
-                        </div>
-                        <span className="material-symbols-outlined text-4xl text-amber-500/20">group</span>
-                    </div>
+            {/* ── Network Overview Cards ── */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Affiliates</p>
+                    <span className="text-3xl font-bold text-slate-900">{affiliates?.length || 0}</span>
                 </div>
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Network Leads</p>
-                            <span className="text-3xl font-bold text-slate-900">{networkTotalLeads}</span>
-                        </div>
-                        <span className="material-symbols-outlined text-4xl text-blue-500/20">trending_up</span>
-                    </div>
+                <div className={`p-5 rounded-xl border shadow-sm ${pendingAffiliates.length > 0 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200'}`}>
+                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${pendingAffiliates.length > 0 ? 'text-amber-600' : 'text-slate-400'}`}>Pending Approval</p>
+                    <span className={`text-3xl font-bold ${pendingAffiliates.length > 0 ? 'text-amber-700' : 'text-slate-900'}`}>{pendingAffiliates.length}</span>
                 </div>
-                <div className="bg-slate-900 p-6 rounded-xl shadow-md border-t-4 border-t-green-500">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Network Closed Deals</p>
-                            <span className="text-3xl font-bold text-white">{networkClosedWon}</span>
-                        </div>
-                        <span className="material-symbols-outlined text-4xl text-green-500/20">handshake</span>
-                    </div>
+                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Network Leads</p>
+                    <span className="text-3xl font-bold text-slate-900">{networkTotalLeads}</span>
+                </div>
+                <div className="bg-slate-900 p-5 rounded-xl shadow-md border-t-4 border-t-green-500">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Network Closed</p>
+                    <span className="text-3xl font-bold text-white">{networkClosedWon}</span>
                 </div>
             </div>
 
-            {/* Affiliates Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                    <h2 className="text-lg font-bold text-slate-800">Registered Affiliates</h2>
+            {/* ── Section: Pending Approval ── */}
+            {pendingAffiliates.length > 0 && (
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-3">
+                        <h2 className="text-lg font-bold text-slate-800">Pending Approval</h2>
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold">
+                            {pendingAffiliates.length}
+                        </span>
+                    </div>
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden shadow-sm">
+                        <div className="overflow-x-auto">
+                            <AffiliatesTable affiliates={pendingAffiliates} allLeads={leads || []} isPending />
+                        </div>
+                    </div>
                 </div>
+            )}
 
-                {affiliates && affiliates.length > 0 ? (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[1000px]">
-                            <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm uppercase tracking-wider">
-                                    <th className="p-4 font-bold">Salesperson</th>
-                                    <th className="p-4 font-bold">Contact</th>
-                                    <th className="p-4 font-bold text-center">Tracking Code</th>
-                                    <th className="p-4 font-bold text-center">Total Leads</th>
-                                    <th className="p-4 font-bold text-center">Closed Won</th>
-                                    <th className="p-4 font-bold text-right">Pending Commissions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {affiliateMetrics.map((aff) => (
-                                    <tr key={aff.id} className="hover:bg-slate-50/50 transition-colors">
-                                        <td className="p-4">
-                                            <p className="font-bold text-slate-900 text-lg">{aff.first_name} {aff.last_name}</p>
-                                            <p className="text-xs text-slate-500">Joined {new Date(aff.created_at).toLocaleDateString('en-ZA')}</p>
-                                        </td>
-                                        <td className="p-4 text-sm text-slate-600">
-                                            <div className="flex flex-col gap-2 items-start">
-                                                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-sm">phone</span>{aff.phone}</span>
-                                                <AffiliateApprovalToggle affiliate={aff} />
-                                            </div>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            <span className="inline-block px-3 py-1 bg-amber-50 text-amber-700 font-bold tracking-widest uppercase border border-amber-200 rounded">
-                                                {aff.affiliate_code || 'NONE'}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 font-bold">
-                                                {aff.totalLeads}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-center">
-                                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-50 text-green-700 font-bold">
-                                                {aff.closedWon}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 text-right font-bold text-slate-800 text-lg">
-                                            R {new Intl.NumberFormat('en-ZA').format(aff.estPending)}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <div className="p-16 text-center">
-                        <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">group_off</span>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">No Affiliates Found</h3>
-                        <p className="text-slate-500 max-w-sm mx-auto">
-                            Share the application link (<span className="block mt-1 font-mono text-xs bg-slate-100 p-1 rounded">/register</span>) with external salespeople to grow your network.
-                        </p>
-                    </div>
-                )}
+            {/* ── Section: Active Affiliates ── */}
+            <div>
+                <div className="flex items-center gap-3 mb-3">
+                    <h2 className="text-lg font-bold text-slate-800">Registered & Active Affiliates</h2>
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold">
+                        {activeAffiliates.length}
+                    </span>
+                </div>
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    {activeAffiliates.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <AffiliatesTable affiliates={activeAffiliates} allLeads={leads || []} />
+                        </div>
+                    ) : (
+                        <div className="p-16 text-center">
+                            <span className="material-symbols-outlined text-5xl text-slate-300 mb-4">group_off</span>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">No Active Affiliates Yet</h3>
+                            <p className="text-slate-500 max-w-sm mx-auto">
+                                Approve pending applications above, or invite new affiliates to grow your network.
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
+    );
+}
+
+// ── Shared table shell (server component, passes rows to client AffiliateRow) ──
+function AffiliatesTable({ affiliates, allLeads, isPending = false }) {
+    return (
+        <table className="w-full text-left border-collapse min-w-[900px]">
+            <thead>
+                <tr className="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider bg-slate-50/70">
+                    <th className="p-4 font-bold">Salesperson</th>
+                    <th className="p-4 font-bold">Phone</th>
+                    <th className="p-4 font-bold text-center">Tracking Code</th>
+                    <th className="p-4 font-bold text-center">Leads</th>
+                    <th className="p-4 font-bold text-center">Closed Won</th>
+                    <th className="p-4 font-bold text-right">Pending Commission</th>
+                    <th className="p-4 font-bold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {affiliates.map(aff => (
+                    <AffiliateRow
+                        key={aff.id}
+                        aff={aff}
+                        affiliateLeads={aff.leads}
+                        isPending={isPending}
+                    />
+                ))}
+            </tbody>
+        </table>
     );
 }

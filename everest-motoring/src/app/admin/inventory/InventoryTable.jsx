@@ -9,7 +9,7 @@ import SeoFixButton from "./SeoFixButton";
 export default function InventoryTable({ initialCars, deleteCarAction }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [makeFilter, setMakeFilter] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("active_only");
     const [featureFilter, setFeatureFilter] = useState("");
 
     // Extract unique makes and features for dropdowns
@@ -34,7 +34,25 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
         const matchesMake = makeFilter ? car.make === makeFilter : true;
 
         // Status Filter
-        const matchesStatus = statusFilter ? car.status === statusFilter : true;
+        let matchesStatus = true;
+        if (statusFilter === "active_only") {
+            // Hide old sold cars if not actively searching
+            if (!searchTerm && car.status === "sold") {
+                const soldAtStr = car.sales?.[0]?.sold_at;
+                if (soldAtStr) {
+                    const soldAtDate = new Date(soldAtStr);
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    if (soldAtDate < thirtyDaysAgo) {
+                        matchesStatus = false;
+                    }
+                } else {
+                    matchesStatus = false; // If no date, hide it to be safe
+                }
+            }
+        } else if (statusFilter) {
+            matchesStatus = car.status === statusFilter;
+        }
 
         // Feature Filter
         const matchesFeature = featureFilter ? (car.features && car.features.includes(featureFilter)) : true;
@@ -83,13 +101,14 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                     </select>
                 </div>
 
-                <div className="w-full md:w-40">
+                <div className="w-full md:w-48">
                     <select
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none bg-white font-medium"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="">All Statuses</option>
+                        <option value="active_only">Filter: Active & Recent</option>
+                        <option value="">Show All</option>
                         <option value="available">Available</option>
                         <option value="reserved">Reserved</option>
                         <option value="sold">Sold</option>

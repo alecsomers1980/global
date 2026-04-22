@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitLead } from "./actions";
+import { trackEvent } from "@/lib/gtag";
 
 export default function LeadForm({ carId }) {
     const [status, setStatus] = useState("idle"); // idle, submitting, success, error
@@ -14,6 +15,10 @@ export default function LeadForm({ carId }) {
             setStatus("error");
             alert("Failed to submit inquiry. Please try again or call us directly.");
         } else {
+            trackEvent("generate_lead", {
+                form: "vehicle_inquiry",
+                car_id: carId,
+            });
             setStatus("success");
             // Optionally, reset the form here
         }

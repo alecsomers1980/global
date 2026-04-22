@@ -4,20 +4,34 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
     ArrowLeft, Brain, Wifi, WifiOff, PenLine, Calendar,
-    Inbox, BarChart2, Key, AlertTriangle, Palette, ShieldCheck
+    Inbox, BarChart2, Key, AlertTriangle, Palette, ShieldCheck, Newspaper
 } from 'lucide-react'
 import { PLATFORM_LABELS, PLATFORM_COLORS, formatDate } from '@/lib/utils'
+import { isUuid } from '@/lib/resolve-workspace'
 
 interface Props {
     params: Promise<{ id: string }>
 }
 
 export default async function WorkspacePage({ params }: Props) {
-    const { id } = await params
+    const { id: param } = await params
     const supabase = await createServerSupabaseClient()
 
-    const [{ data: workspace }, { data: intel }, { data: socialAccounts }, { data: recentPosts }] = await Promise.all([
-        supabase.from('workspaces').select('*').eq('id', id).single(),
+    // Resolve slug-or-uuid to workspace
+    const lookupColumn = isUuid(param) ? 'id' : 'slug'
+    const { data: workspace } = await supabase
+        .from('workspaces')
+        .select('*')
+        .eq(lookupColumn, param)
+        .single()
+
+    const workspaceAny = workspace as any
+    if (!workspaceAny) notFound()
+
+    const id = workspaceAny.id // real UUID for subsequent queries
+    const slug = workspaceAny.slug || id // used for outgoing links
+
+    const [{ data: intel }, { data: socialAccounts }, { data: recentPosts }] = await Promise.all([
         supabase.from('client_intelligence').select('*').eq('workspace_id', id).single(),
         supabase.from('social_accounts').select('platform, account_name').eq('workspace_id', id),
         supabase.from('posts')
@@ -27,7 +41,6 @@ export default async function WorkspacePage({ params }: Props) {
             .limit(5),
     ])
 
-    // Separate query so it doesn't break the page if posts table has no data
     const { count: pendingCount } = await supabase
         .from('posts')
         .select('*', { count: 'exact', head: true })
@@ -36,24 +49,21 @@ export default async function WorkspacePage({ params }: Props) {
 
     const intelAny = intel as any
     const recentPostsAny = recentPosts as any[]
-
-    const workspaceAny = workspace as any
     const socialAccountsAny = socialAccounts as any[]
-
-    if (!workspaceAny) notFound()
 
     const connectedPlatforms = socialAccountsAny?.map((a: any) => a.platform) ?? []
 
     const tabs = [
-        { label: 'Compose', href: `/dashboard/workspaces/${id}/compose`, icon: PenLine },
-        { label: 'Approvals', href: `/dashboard/workspaces/${id}/approvals`, icon: ShieldCheck, badge: pendingCount },
-        { label: 'Calendar', href: `/dashboard/workspaces/${id}/calendar`, icon: Calendar },
-        { label: 'Inbox', href: `/dashboard/workspaces/${id}/inbox`, icon: Inbox },
-        { label: 'Analytics', href: `/dashboard/workspaces/${id}/analytics`, icon: BarChart2 },
-        { label: 'Intelligence', href: `/dashboard/workspaces/${id}/intelligence`, icon: Brain },
-        { label: 'Brand Kit', href: `/dashboard/workspaces/${id}/brand-kit`, icon: Palette },
-        { label: 'Platforms', href: `/dashboard/workspaces/${id}/platforms`, icon: Wifi },
-        { label: 'API Keys', href: `/dashboard/workspaces/${id}/api-keys`, icon: Key },
+        { label: 'Compose', href: `/dashboard/workspaces/${slug}/compose`, icon: PenLine },
+        { label: 'Approvals', href: `/dashboard/workspaces/${slug}/approvals`, icon: ShieldCheck, badge: pendingCount },
+        { label: 'Calendar', href: `/dashboard/workspaces/${slug}/calendar`, icon: Calendar },
+        { label: 'Inbox', href: `/dashboard/workspaces/${slug}/inbox`, icon: Inbox },
+        { label: 'Analytics', href: `/dashboard/workspaces/${slug}/analytics`, icon: BarChart2 },
+        { label: 'Intelligence', href: `/dashboard/workspaces/${slug}/intelligence`, icon: Brain },
+        { label: 'Brand Kit', href: `/dashboard/workspaces/${slug}/brand-kit`, icon: Palette },
+        { label: 'News', href: `/dashboard/workspaces/${slug}/news`, icon: Newspaper },
+        { label: 'Platforms', href: `/dashboard/workspaces/${slug}/platforms`, icon: Wifi },
+        { label: 'API Keys', href: `/dashboard/workspaces/${slug}/api-keys`, icon: Key },
     ]
 
     const statusColors: Record<string, string> = {
@@ -127,7 +137,7 @@ export default async function WorkspacePage({ params }: Props) {
                                     {connected ? (
                                         <span className="text-[11px]" style={{ color: '#5a5a7a' }}>{account?.account_name}</span>
                                     ) : (
-                                        <Link href={`/dashboard/workspaces/${id}/platforms`}
+                                        <Link href={`/dashboard/workspaces/${slug}/platforms`}
                                             className="text-[11px] text-orange-400 hover:text-orange-300">Connect</Link>
                                     )}
                                 </div>
@@ -143,7 +153,7 @@ export default async function WorkspacePage({ params }: Props) {
                             <Brain className="w-4 h-4 text-orange-400" />
                             Client Intelligence
                         </h2>
-                        <Link href={`/dashboard/workspaces/${id}/intelligence`}
+                        <Link href={`/dashboard/workspaces/${slug}/intelligence`}
                             className="text-xs text-orange-400 hover:text-orange-300">Edit</Link>
                     </div>
 
@@ -154,7 +164,7 @@ export default async function WorkspacePage({ params }: Props) {
                             <p className="text-xs mt-1 mb-3" style={{ color: '#3a3a5a' }}>
                                 Complete the questionnaire so AI can write in their voice
                             </p>
-                            <Link href={`/dashboard/workspaces/${id}/intelligence`}
+                            <Link href={`/dashboard/workspaces/${slug}/intelligence`}
                                 className="text-xs px-3 py-1.5 rounded-lg font-medium text-white"
                                 style={{ background: 'rgba(249,115,22,0.2)', color: '#f97316' }}>
                                 Set Up Now
@@ -184,14 +194,14 @@ export default async function WorkspacePage({ params }: Props) {
                             <PenLine className="w-4 h-4 text-orange-400" />
                             Recent Posts
                         </h2>
-                        <Link href={`/dashboard/workspaces/${id}/compose`}
+                        <Link href={`/dashboard/workspaces/${slug}/compose`}
                             className="text-xs text-orange-400 hover:text-orange-300">+ New</Link>
                     </div>
 
                     {recentPostsAny?.length === 0 ? (
                         <div className="text-center py-6">
                             <p className="text-sm" style={{ color: '#5a5a7a' }}>No posts yet</p>
-                            <Link href={`/dashboard/workspaces/${id}/compose`}
+                            <Link href={`/dashboard/workspaces/${slug}/compose`}
                                 className="text-xs text-orange-400 hover:text-orange-300 mt-1 inline-block">
                                 Create first post →
                             </Link>

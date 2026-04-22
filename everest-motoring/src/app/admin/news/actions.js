@@ -15,14 +15,33 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co
 
 async function requireAdmin() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized");
-    const { data: profile } = await supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError) {
+        console.error("requireAdmin: authError", authError);
+    }
+
+    if (!user) {
+        console.warn("requireAdmin: No user found in session.");
+        throw new Error("Unauthorized");
+    }
+
+    const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", user.id)
-        .single();
-    if (!profile || profile.role !== "admin") throw new Error("Admins only");
+        .maybeSingle();
+
+    if (profileError) {
+        console.error("requireAdmin: profileError", profileError);
+    }
+
+    if (!profile || profile.role !== "admin") {
+        console.warn("requireAdmin: Access denied for user", user.email, "Role index:", profile?.role);
+        throw new Error("Admins only");
+    }
+
+    console.log("requireAdmin: Success for", user.email);
     return { user };
 }
 

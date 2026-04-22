@@ -84,3 +84,36 @@ export async function inviteClientAction(formData) {
         return { error: "An unexpected error occurred." };
     }
 }
+
+export async function updateLeadStatusAction(leadId, newStatus) {
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return { error: "Unauthorized" };
+
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (!profile || profile.role !== 'admin') return { error: "Only admins can update status." };
+
+        const adminAuthClient = createSupabaseClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+
+        const { error } = await adminAuthClient
+            .from('leads')
+            .update({ status: newStatus })
+            .eq('id', leadId);
+
+        if (error) {
+            console.error("Lead Status Update Error:", error);
+            return { error: "Failed to update lead status." };
+        }
+
+        revalidatePath("/admin/leads");
+        return { success: true };
+    } catch (e) {
+        console.error("Server Action Exception:", e);
+        return { error: "An unexpected error occurred." };
+    }
+}

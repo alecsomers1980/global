@@ -32,8 +32,11 @@ export default function EditEventPage() {
     description: '',
     venue: '',
     category: 'Culture',
-    is_featured: false,
     status: 'published',
+    is_featured: false,
+    event_date: '',
+    display_start_date: '',
+    display_end_date: '',
     base_cost: 0,
     schedules: [] as { date: string; time: string; cost?: number }[],
     images: [] as { url: string; is_primary: boolean }[],
@@ -67,6 +70,9 @@ export default function EditEventPage() {
         category: data.category,
         is_featured: data.is_featured,
         status: data.status,
+        event_date: data.event_date || '',
+        display_start_date: data.display_start_date || '',
+        display_end_date: data.display_end_date || '',
         base_cost: data.base_cost || 0,
         schedules: data.schedules || [],
         images: data.images || [],
@@ -541,6 +547,15 @@ export default function EditEventPage() {
             />
           </div>
           <div className="form-group">
+            <label>Actual Event Date</label>
+            <input
+              type="date"
+              required
+              value={formData.event_date}
+              onChange={e => setFormData({...formData, event_date: e.target.value})}
+            />
+          </div>
+          <div className="form-group">
             <label>Description</label>
             <button 
               type="button" 
@@ -765,7 +780,7 @@ export default function EditEventPage() {
               </select>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-6 rounded-2xl bg-brand-cream/30 border border-brand-green/5">
+          <div className="flex items-center gap-3 p-6 rounded-2xl bg-brand-cream/30 border border-brand-green/5 mb-6">
             <input
               type="checkbox"
               style={{ width: 20, height: 20, cursor: 'pointer' }}
@@ -774,6 +789,29 @@ export default function EditEventPage() {
             />
             <span className="text-sm font-bold text-brand-green">Show in Homepage Featured Slider</span>
           </div>
+
+          {formData.is_featured && (
+            <div className="grid-2 mt-4 p-6 rounded-2xl bg-brand-cream/10 border border-brand-green/5">
+              <div className="form-group mb-0 relative z-10" style={{ zIndex: 10 }}>
+                <label>Display Start Date (Slider)</label>
+                <input
+                  type="date"
+                  required={formData.is_featured}
+                  value={formData.display_start_date}
+                  onChange={e => setFormData({...formData, display_start_date: e.target.value})}
+                />
+              </div>
+              <div className="form-group mb-0 relative z-10" style={{ zIndex: 10 }}>
+                <label>Display End Date (Slider)</label>
+                <input
+                  type="date"
+                  required={formData.is_featured}
+                  value={formData.display_end_date}
+                  onChange={e => setFormData({...formData, display_end_date: e.target.value})}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Booking Options */}

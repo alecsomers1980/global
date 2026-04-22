@@ -28,11 +28,14 @@ export default function EventPosterSlider() {
   async function fetchFeaturedEvents() {
     setLoading(true);
     try {
+      const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('is_featured', true)
         .eq('status', 'published')
+        .gte('display_end_date', today)
+        .lte('display_start_date', today)
         .order('created_at', { ascending: false });
 
       if (data) {

@@ -1,0 +1,19 @@
+# Ramenhead
+> Authentic Japanese Ramen in Cape Town
+
+Ramenhead is a premium ramen restaurant specializing in freshly made noodles and 18-hour simmered broths.
+
+## Locations
+- **Speaker's Corner**: 37 Parliament St, Cape Town.
+- **Time Out Market**: V&A Waterfront, Cape Town.
+
+## Details
+- **Cuisine**: Japanese, Ramen.
+- **Hours**: Tuesday-Sunday, 5 PM - 10 PM.
+- **Contact**: +27673128061 | info@ramenhead.co.za
+- **Booking**: via Dineplan (https://www.dineplan.com/restaurants/ramenhead).
+
+## Resources
+- [Main Menu](https://www.ramenhead.co.za/downloads/menu.pdf)
+- [Drinks Menu](https://www.ramenhead.co.za/downloads/menu_drinks.pdf)
+- [Vouchers](https://www.voucherplan.co.za/event/9aa986c760c0da21e14789e83d70ce5a)

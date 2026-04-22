@@ -69,14 +69,58 @@ export function estimateReadingMinutes(text) {
     return Math.max(1, Math.round(words / 220));
 }
 
+function sanitizeForJson(text) {
+    // Remove actual newline/tab control characters that break JSON strings
+    // (The AI sometimes embeds raw newlines inside a JSON string value)
+    return text
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "") // strip other control chars
+        .trim();
+}
+
 function extractJson(text) {
-    const cleaned = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+    const cleaned = sanitizeForJson(
+        text.replace(/```json/gi, "").replace(/```/g, "")
+    );
     const firstBrace = cleaned.indexOf("{");
     const lastBrace = cleaned.lastIndexOf("}");
     if (firstBrace === -1 || lastBrace === -1) throw new Error("No JSON object found in AI response");
-    return JSON.parse(cleaned.slice(firstBrace, lastBrace + 1));
+    const jsonStr = cleaned.slice(firstBrace, lastBrace + 1);
+    try {
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        // Secondary attempt: replace literal newlines inside string values
+        const fixed = jsonStr.replace(/("(?:[^"\\]|\\.)*")/g, (match) =>
+            match.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t")
+        );
+        return JSON.parse(fixed);
+    }
 }
 
+async function runGemini(prompt) {
+    if (!process.env.GOOGLE_GEMINI_API_KEY) {
+        throw new Error("Missing GOOGLE_GEMINI_API_KEY");
+    }
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+
+    // Use JSON response mode — Gemini guarantees syntactically valid JSON output
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        generationConfig: {
+            responseMimeType: "application/json",
+        },
+    });
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    // With JSON mode the response should already be clean, but run through
+    // extractJson as a safety net in case of any edge cases.
+    try {
+        return JSON.parse(text);
+    } catch {
+        return extractJson(text);
+    }
+}
 function buildBuyingGuidePrompt(topic) {
     return `
 You are an expert automotive copywriter writing for ${DEALERSHIP.name} (${DEALERSHIP.location}).
@@ -199,16 +243,7 @@ export function pickLocalTopic(usedTitles) {
     return source[Math.floor(Math.random() * source.length)];
 }
 
-async function runGemini(prompt) {
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
-        throw new Error("Missing GOOGLE_GEMINI_API_KEY");
-    }
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    return extractJson(text);
-}
+
 
 export async function generateNewsArticle({ category, recentTitles, car }) {
     let prompt;

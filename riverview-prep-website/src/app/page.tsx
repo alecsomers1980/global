@@ -9,6 +9,7 @@ import Hero from "@/components/Hero";
 import HexagonShowcase from "@/components/HexagonShowcase";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import EventPosterSlider from "@/components/EventPosterSlider";
+import PublicCalendar from "@/components/PublicCalendar";
 import { createClient } from "@/lib/supabase-client";
 import {
   Calendar,
@@ -120,65 +121,7 @@ const testimonials = [
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
-interface CalendarEventItem {
-  id: string;
-  day: string;
-  dateStr: string;
-  month: string;
-  title: string;
-  type: string;
-  location: string;
-}
-
 export default function Home() {
-  const [upcomingEvents, setUpcomingEvents] = useState<CalendarEventItem[]>([]);
-  const [loadingEvents, setLoadingEvents] = useState(true);
-  const [currentMonthLabel, setCurrentMonthLabel] = useState('');
-  const supabase = createClient();
-
-  useEffect(() => {
-    fetchCalendarEvents();
-  }, []);
-
-  async function fetchCalendarEvents() {
-    try {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-      const startDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
-      const lastDay = new Date(year, month + 1, 0).getDate();
-      const endDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
-      setCurrentMonthLabel(now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
-
-      const { data } = await supabase
-        .from('calendar_entries')
-        .select('*')
-        .gte('date', startDate)
-        .lte('date', endDate)
-        .order('date', { ascending: true });
-
-      if (data) {
-        const mapped = data.map((entry: any) => {
-          const dateObj = new Date(entry.date + 'T00:00:00');
-          return {
-            id: entry.id,
-            day: dateObj.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
-            dateStr: dateObj.getDate().toString(),
-            month: dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-            title: entry.title,
-            type: entry.type || 'Academic',
-            location: entry.location || 'Campus',
-          };
-        });
-        setUpcomingEvents(mapped);
-      }
-    } catch (err) {
-      console.error("Failed to fetch calendar events:", err);
-    } finally {
-      setLoadingEvents(false);
-    }
-  }
-
   return (
     <main className="relative min-h-screen">
       <Header />
@@ -252,10 +195,26 @@ export default function Home() {
               <h2 className="text-3xl md:text-5xl font-bold leading-tight">
                 Shaping tomorrow&apos;s <span className="drama-text text-brand-gold">LEADERS.</span>
               </h2>
-              <div className="space-y-5 text-brand-green/70 leading-loose text-[1.05rem]">
+              <div className="space-y-6 text-brand-green/70 leading-loose text-[1.05rem]">
                 <p>
-                  Welcome to Riverview Preparatory School — a place where every child is seen, heard, and
-                  celebrated. 
+                  Welcome to Riverview Preparatory School — a place where every child is seen, heard, and celebrated. 
+                  Nestled in the breath-taking heart of the Lowveld, near Malelane, our school is as deeply rooted 
+                  in this majestic landscape as we are in our commitment to nurturing young minds. Here, the 
+                  expansive beauty of the South African bushveld provides a remarkable canvas for children 
+                  to discover their unique potential.
+                </p>
+                <p>
+                  At Riverview, we believe that true education transcends academics; it is the careful cultivation 
+                  of the whole child. Guided by our foundational values of Love, Faith, and Integrity, we provide 
+                  a sanctuary where character is forged and curiosity is kindled. Our dedicated staff ensures 
+                  that every pupil is embraced within a warm, community-focused environment that champions 
+                  emotional well-being alongside intellectual growth.
+                </p>
+                <p>
+                  From the joyful, discovery-filled early steps of Grade 000 to the confident, compassionate 
+                  leadership of our Grade 7 pupils, Riverview offers a seamless journey through the most formative 
+                  years. We watch with immense pride as our learners evolve into young leaders, equipped 
+                  not only with knowledge, but with the moral compass and resilience required to shape a brighter future.
                 </p>
               </div>
               <div className="pt-4 border-t border-brand-green/10">
@@ -277,12 +236,6 @@ export default function Home() {
                 Upcoming <span className="drama-text text-brand-gold">Events.</span>
               </h2>
             </div>
-            {currentMonthLabel && (
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-green/40">
-                <Calendar className="w-4 h-4 text-brand-gold" />
-                {currentMonthLabel}
-              </div>
-            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
@@ -290,44 +243,8 @@ export default function Home() {
               <EventPosterSlider />
             </div>
 
-            <div className="lg:col-span-3 space-y-4">
-              {loadingEvents ? (
-                <div className="flex items-center justify-center p-20 opacity-20">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-              ) : upcomingEvents.length > 0 ? (
-                upcomingEvents.map((event, i) => (
-                  <div
-                    key={i}
-                    className="group flex gap-6 p-6 rounded-[2rem] border border-brand-green/5 bg-brand-cream hover:border-brand-gold/30 hover:bg-white hover:shadow-xl transition-all duration-500"
-                  >
-                    <div className="flex-shrink-0 w-16 flex flex-col items-center justify-center bg-brand-green text-white rounded-2xl py-3 gap-1 shadow-lg group-hover:scale-105 transition-transform">
-                      <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">{event.day}</span>
-                      <span className="text-xl font-bold leading-none">{event.dateStr}</span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">{event.month}</span>
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className={`inline-block px-3 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest ${eventTypeColours[event.type] || 'bg-brand-green text-white'}`}>
-                          {event.type}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-xl leading-snug mb-1 group-hover:text-brand-green transition-colors">
-                        {event.title}
-                      </h3>
-                      <p className="flex items-center gap-1.5 text-xs opacity-50 font-bold">
-                        <MapPin className="w-3 h-3 text-brand-gold" /> {event.location}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-12 text-center bg-brand-cream/50 rounded-3xl border-2 border-dashed border-brand-green/5">
-                  <Calendar className="w-10 h-10 text-brand-green/10 mx-auto mb-3" />
-                  <p className="text-sm font-bold text-brand-green/40">No events scheduled for {currentMonthLabel}.</p>
-                  <p className="text-xs text-brand-green/25 mt-1">Add entries via the admin calendar.</p>
-                </div>
-              )}
+            <div className="lg:col-span-3">
+              <PublicCalendar />
             </div>
           </div>
         </div>
@@ -372,6 +289,69 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── 7. Latest News ──────────────────────────────────────────────── */}
+      <section className="py-28 bg-brand-cream border-y border-brand-green/5">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+            <div>
+              <div className="telemetry-monospace text-brand-green mb-4">THE CHRONICLE</div>
+              <h2 className="text-3xl md:text-5xl font-bold text-brand-green">
+                Latest <span className="drama-text text-brand-gold">News.</span>
+              </h2>
+            </div>
+            <Link href="/news" className="text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-brand-green transition-colors flex items-center gap-2">
+              All News &rarr;
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {latestNews.map((news, i) => (
+              <div key={i} className="bg-white p-8 rounded-3xl border border-brand-green/5 hover:shadow-xl transition-shadow group flex flex-col h-full">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-green bg-brand-green/5 px-3 py-1 rounded-full">
+                    {news.category}
+                  </span>
+                  <span className="text-xs text-brand-green/40 font-bold">{news.date}</span>
+                </div>
+                <h3 className="text-2xl font-bold text-brand-green mb-4 group-hover:text-brand-gold transition-colors">{news.title}</h3>
+                <p className="text-brand-green/60 text-sm leading-relaxed mb-6">{news.excerpt}</p>
+                <div className="flex flex-wrap gap-2 mt-auto">
+                  {news.highlights.map(h => <span key={h} className="text-[10px] uppercase font-bold text-brand-green/50 border border-brand-green/10 rounded-full px-3 py-1">{h}</span>)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Testimonials ─────────────────────────────────────────────── */}
+      <section className="py-28 bg-brand-green text-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="telemetry-monospace text-brand-gold mb-4">COMMUNITY VOICES</div>
+            <h2 className="text-3xl md:text-5xl font-bold">What <span className="drama-text text-brand-gold">Parents</span> Say.</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+             {testimonials.map((test, i) => (
+               <div key={i} className="relative bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-brand-gold/30 transition-colors">
+                 <div className="text-brand-gold text-6xl font-serif absolute top-4 left-4 opacity-30">&quot;</div>
+                 <p className="text-lg md:text-xl leading-relaxed font-light mb-8 relative z-10 pt-6 px-2">{test.quote}</p>
+                 <div className="flex items-center gap-4 px-2">
+                   <div className="w-12 h-12 rounded-full bg-brand-gold/20 flex items-center justify-center text-brand-gold font-bold">
+                     {test.initials}
+                   </div>
+                   <div>
+                     <p className="font-bold">{test.name}</p>
+                     <p className="text-sm opacity-60">{test.role}</p>
+                   </div>
+                 </div>
+               </div>
+             ))}
+          </div>
+        </div>
+      </section>
+
+
+
       {/* ── 12. Associations ───────────────────────────── */}
       <section className="py-24 border-y border-brand-green/5 bg-white">
         <div className="container mx-auto px-6">
@@ -398,7 +378,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       <Footer />
     </main>
   );

@@ -32,7 +32,7 @@ export function generateToken(length = 32): string {
     return result
 }
 
-export const PLATFORMS = ['facebook', 'instagram', 'linkedin', 'tiktok', 'youtube'] as const
+export const PLATFORMS = ['facebook', 'instagram', 'linkedin', 'tiktok', 'youtube', 'google_business'] as const
 export type Platform = typeof PLATFORMS[number]
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
@@ -41,6 +41,7 @@ export const PLATFORM_LABELS: Record<Platform, string> = {
     linkedin: 'LinkedIn',
     tiktok: 'TikTok',
     youtube: 'YouTube',
+    google_business: 'Google Business',
 }
 
 export const PLATFORM_COLORS: Record<Platform, string> = {
@@ -49,6 +50,7 @@ export const PLATFORM_COLORS: Record<Platform, string> = {
     linkedin: '#0A66C2',
     tiktok: '#000000',
     youtube: '#FF0000',
+    google_business: '#4285F4',
 }
 
 export const PLATFORM_CHAR_LIMITS: Record<Platform, number> = {
@@ -57,6 +59,7 @@ export const PLATFORM_CHAR_LIMITS: Record<Platform, number> = {
     linkedin: 3000,
     tiktok: 2200,
     youtube: 5000,
+    google_business: 1500,
 }
 
 export const POST_STATUSES = ['draft', 'pending_approval', 'approved', 'scheduled', 'publishing', 'published', 'failed'] as const

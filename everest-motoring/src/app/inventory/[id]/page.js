@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import LeadForm from "./LeadForm";
 import VehicleGallery from "./VehicleGallery";
+import ViewItemTracker from "@/components/ViewItemTracker";
 import { buildVehicleJsonLd } from "@/utils/seo/vehicleSchema";
 import { getVehicleUrl } from "@/utils/url/vehicleUrl";
 import {
@@ -89,6 +90,7 @@ export default async function CarDetailsPage({ params }) {
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <ViewItemTracker car={car} />
         <div className="bg-background-alt min-h-screen py-12 px-4 lg:px-12">
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">

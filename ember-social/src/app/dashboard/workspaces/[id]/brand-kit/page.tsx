@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client-browser'
-import { ArrowLeft, Palette, Save, Loader2, Eye } from 'lucide-react'
+import { ArrowLeft, Palette, Save, Loader2, Eye, Globe, Upload } from 'lucide-react'
 import Link from 'next/link'
 import type { Database } from '@/types/database'
 
@@ -19,13 +19,13 @@ const FONT_OPTIONS = [
     'DM Sans',
 ]
 
-const DEFAULT_KIT: Omit<BrandKit, 'id' | 'workspace_id' | 'created_at' | 'updated_at'> = {
-    logo_url: null,
+const DEFAULT_KIT = {
+    logo_url: null as string | null,
     primary_color: '#f97316',
     secondary_color: '#1a1a27',
     accent_color: '#fbbf24',
     font_preference: 'Inter',
-    watermark_url: null,
+    watermark_url: null as string | null,
 }
 
 export default function BrandKitPage({ params }: { params: Promise<{ id: string }> }) {
@@ -34,6 +34,11 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [saved, setSaved] = useState(false)
+    const [analyzing, setAnalyzing] = useState(false)
+    const [analyzeStatus, setAnalyzeStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+    const [websiteUrl, setWebsiteUrl] = useState('')
+    const [uploading, setUploading] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -85,6 +90,75 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
         }
     }
 
+    const handleAnalyze = async () => {
+        if (!websiteUrl.trim()) return
+        setAnalyzing(true)
+        setAnalyzeStatus(null)
+        try {
+            const res = await fetch('/api/ai/analyze-brand', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: websiteUrl }),
+            })
+            const data = await res.json()
+            if (data.error) throw new Error(data.error)
+
+            const applied: string[] = []
+            if (data.primary_color) applied.push('primary color')
+            if (data.secondary_color) applied.push('secondary color')
+            if (data.accent_color) applied.push('accent color')
+            if (data.font_preference) applied.push('font')
+            if (data.logo_url) applied.push('logo')
+
+            setKit(prev => ({
+                ...prev,
+                ...(data.primary_color && { primary_color: data.primary_color }),
+                ...(data.secondary_color && { secondary_color: data.secondary_color }),
+                ...(data.accent_color && { accent_color: data.accent_color }),
+                ...(data.font_preference && { font_preference: data.font_preference }),
+                ...(data.logo_url && { logo_url: data.logo_url }),
+            }))
+
+            if (applied.length > 0) {
+                setAnalyzeStatus({ type: 'success', message: `Detected: ${applied.join(', ')}. Review below and click Save.` })
+            } else {
+                setAnalyzeStatus({ type: 'error', message: 'Could not extract brand details from this website. Try a different URL.' })
+            }
+        } catch (error: any) {
+            console.error('Analysis failed:', error)
+            setAnalyzeStatus({ type: 'error', message: error.message || 'Analysis failed. Please try again.' })
+        } finally {
+            setAnalyzing(false)
+        }
+    }
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setUploading(true)
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('workspaceId', id)
+            formData.append('type', 'logo')
+
+            const res = await fetch('/api/brand-kit/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            const data = await res.json()
+            if (data.error) throw new Error(data.error)
+
+            setKit(prev => ({ ...prev, logo_url: data.url }))
+        } catch (error: any) {
+            console.error('Upload failed:', error)
+            alert('Upload failed: ' + error.message)
+        } finally {
+            setUploading(false)
+            if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+    }
+
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
@@ -127,6 +201,45 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
                 </button>
             </div>
 
+            {/* Extract Brand Identity from Website */}
+            <div className="glass-card p-6 border-dashed border-orange-500/30">
+                <div className="flex items-center gap-2 mb-4">
+                    <Globe className="w-4 h-4 text-orange-400" />
+                    <h2 className="font-semibold text-white">Extract Brand Identity</h2>
+                </div>
+                <div className="flex gap-2">
+                    <input
+                        type="url"
+                        placeholder="Enter client website URL (e.g. https://everestmotoring.co.za)"
+                        value={websiteUrl}
+                        onChange={e => setWebsiteUrl(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleAnalyze() }}
+                        className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                        style={{ background: '#0a0a0f', border: '1px solid #1a1a27' }}
+                    />
+                    <button
+                        onClick={handleAnalyze}
+                        disabled={analyzing || !websiteUrl.trim()}
+                        className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 flex items-center gap-2"
+                        style={{ background: 'rgba(249,115,22,0.1)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)' }}>
+                        {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                        {analyzing ? 'Analyzing...' : 'Analyze Site'}
+                    </button>
+                </div>
+                {analyzeStatus && (
+                    <div className="mt-3 px-4 py-2.5 rounded-xl text-sm" style={{
+                        background: analyzeStatus.type === 'success' ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)',
+                        border: `1px solid ${analyzeStatus.type === 'success' ? 'rgba(52,211,153,0.2)' : 'rgba(248,113,113,0.2)'}`,
+                        color: analyzeStatus.type === 'success' ? '#34d399' : '#f87171',
+                    }}>
+                        {analyzeStatus.message}
+                    </div>
+                )}
+                <p className="text-[10px] mt-2" style={{ color: '#4a4a6a' }}>
+                    AI will detect colors, fonts, and logo from the website. You can adjust anything after extraction.
+                </p>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Left: Visual Identity */}
                 <div className="glass-card p-6 space-y-5">
@@ -135,19 +248,37 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
                         Visual Identity
                     </h2>
 
+                    {/* Logo with upload */}
                     <div className="space-y-1.5">
-                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Logo URL</label>
-                        <input
-                            type="url"
-                            value={kit.logo_url || ''}
-                            onChange={e => setKit(prev => ({ ...prev, logo_url: e.target.value || null }))}
-                            placeholder="https://example.com/logo.png"
-                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
-                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }}
-                        />
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Logo</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                value={kit.logo_url || ''}
+                                onChange={e => setKit(prev => ({ ...prev, logo_url: e.target.value || null }))}
+                                placeholder="https://example.com/logo.png"
+                                className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                                style={{ background: '#13131a', border: '1px solid #2a2a3d' }}
+                            />
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoUpload}
+                                className="hidden"
+                            />
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={uploading}
+                                className="px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-1.5 transition-all disabled:opacity-50 shrink-0"
+                                style={{ background: 'rgba(249,115,22,0.1)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)' }}>
+                                {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                                {uploading ? '...' : 'Upload'}
+                            </button>
+                        </div>
                         {kit.logo_url && (
-                            <div className="mt-2 flex items-center gap-3">
-                                <img src={kit.logo_url} alt="Logo preview" className="w-10 h-10 rounded-lg object-contain" style={{ background: '#0a0a0f' }} />
+                            <div className="mt-2 flex items-center gap-3 p-2 rounded-lg" style={{ background: '#0a0a0f' }}>
+                                <img src={kit.logo_url} alt="Logo preview" className="h-10 max-w-[120px] rounded-lg object-contain" />
                                 <span className="text-[10px]" style={{ color: '#5a5a7a' }}>Preview</span>
                             </div>
                         )}
@@ -223,14 +354,17 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
                         ))}
                     </div>
 
-                    {/* Live Preview swatch */}
+                    {/* Live Preview */}
                     <div className="glass-card p-6">
-                        <h2 className="font-semibold text-white mb-4">Live Preview</h2>
+                        <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
+                            <Eye className="w-4 h-4 text-orange-400" />
+                            Live Preview
+                        </h2>
                         <div className="rounded-xl overflow-hidden" style={{ border: `3px solid ${kit.accent_color}` }}>
                             <div className="p-4" style={{ background: kit.secondary_color }}>
                                 <div className="flex items-center gap-3 mb-3">
                                     {kit.logo_url ? (
-                                        <img src={kit.logo_url} alt="" className="w-8 h-8 rounded-full object-contain" />
+                                        <img src={kit.logo_url} alt="" className="h-8 max-w-[80px] rounded-full object-contain" />
                                     ) : (
                                         <div className="w-8 h-8 rounded-full" style={{ background: kit.primary_color }} />
                                     )}
@@ -247,6 +381,20 @@ export default function BrandKitPage({ params }: { params: Promise<{ id: string 
                                     Call to Action
                                 </button>
                             </div>
+                        </div>
+
+                        {/* Color swatches */}
+                        <div className="flex gap-2 mt-4">
+                            {[
+                                { label: 'Primary', color: kit.primary_color },
+                                { label: 'Secondary', color: kit.secondary_color },
+                                { label: 'Accent', color: kit.accent_color },
+                            ].map(({ label, color }) => (
+                                <div key={label} className="flex-1 text-center">
+                                    <div className="w-full h-8 rounded-lg mb-1" style={{ background: color, border: '1px solid #2a2a3d' }} />
+                                    <span className="text-[9px]" style={{ color: '#4a4a6a' }}>{label}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

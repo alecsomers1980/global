@@ -1,30 +1,30 @@
 import { NextResponse } from 'next/server'
+import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
-    const workspaceId = searchParams.get('workspaceId')
+    const workspaceParam = searchParams.get('workspaceId')
+    const reauth = searchParams.get('reauth') // Force fresh login to switch accounts
 
-    // We pass the workspaceId as the state parameter so we know which workspace
-    // to attach the connected accounts to when Facebook redirects back.
-    if (!workspaceId) {
+    if (!workspaceParam) {
         return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
     }
 
+    const workspaceId = await resolveWorkspaceId(workspaceParam)
+
     const appId = process.env.META_APP_ID
-    // Use NEXT_PUBLIC_BASE_URL to dynamically build the redirect URL
-    // or default to localhost for development
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const redirectUri = `${baseUrl}/api/auth/facebook/callback`
 
-    // Request only the basic permissions needed to list and read pages.
-    // pages_manage_posts is an advanced permission that requires Meta App Review 
-    // and causes Facebook to silently return 0 pages in development mode.
-    // We add pages_manage_posts back once the app is approved.
-    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_metadata'
+    // Request permissions for pages and Instagram Business
+    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_manage_posts,pages_manage_engagement'
 
-    // Construct the Facebook OAuth URL
-    const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${workspaceId}&scope=${scope}`
+    let authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${workspaceId}&scope=${scope}`
 
-    // Redirect the user to Facebook
+    // Force re-authentication so user can pick a different Facebook account
+    if (reauth === '1') {
+        authUrl += '&auth_type=reauthenticate'
+    }
+
     return NextResponse.redirect(authUrl)
 }

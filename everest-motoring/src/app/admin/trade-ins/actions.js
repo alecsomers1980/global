@@ -8,12 +8,18 @@ export async function updateTradeInStatus(formData) {
         const supabase = await createClient();
         const requestId = formData.get("requestId");
         const newStatus = formData.get("status");
+        const offerValue = formData.get("offerValue");
 
         if (!requestId || !newStatus) return;
 
+        const updatePayload = { status: newStatus };
+        if (offerValue && offerValue.trim() !== '') {
+            updatePayload.offer_value = parseFloat(offerValue);
+        }
+
         const { error } = await supabase
             .from('value_my_car_requests')
-            .update({ status: newStatus })
+            .update(updatePayload)
             .eq('id', requestId);
 
         if (error) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitContactForm } from "./actions";
+import { trackEvent } from "@/lib/gtag";
 
 export default function TestDriveForm({ availableCars }) {
     const [status, setStatus] = useState("idle");
@@ -14,6 +15,10 @@ export default function TestDriveForm({ availableCars }) {
             setStatus("error");
             alert("Failed to send message. Please try again.");
         } else {
+            trackEvent("generate_lead", {
+                form: "book_test_drive",
+                car_id: formData.get("car_id") || null,
+            });
             setStatus("success");
         }
     }

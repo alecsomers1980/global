@@ -40,7 +40,7 @@ export async function POST(request) {
     // Upon successful registration, we redirect to a 'check email' page
     // Notice: The trigger in Supabase (which we will create via SQL) will automatically copy this user into the `profiles` table.
     return NextResponse.redirect(
-        `${requestUrl.origin}/login?message=${encodeURIComponent("Check your email to verify your application")}`,
+        `${requestUrl.origin}/login?message=${encodeURIComponent("Check your email to verify your application")}&registered=affiliate`,
         { status: 303 }
     );
 }

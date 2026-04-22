@@ -10,6 +10,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
     const [status, setStatus] = useState(sale?.sale_video_status || "none");
     const [videoUrl, setVideoUrl] = useState(sale?.sale_video_url || null);
     const [selectedStyle, setSelectedStyle] = useState(sale?.sale_video_style || null);
+    const [previousStyle, setPreviousStyle] = useState(null);
     const [error, setError] = useState(null);
     const [starting, setStarting] = useState(false);
     const pollRef = useRef(null);
@@ -84,14 +85,14 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                     <button
                         type="button"
                         onClick={() => {
+                            setPreviousStyle(selectedStyle);
                             setStatus("none");
                             setVideoUrl(null);
-                            setSelectedStyle(null);
                         }}
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-50"
                     >
                         <span className="material-symbols-outlined text-base">refresh</span>
-                        Regenerate
+                        Try a different scene
                     </button>
                     <span className="text-xs text-slate-500">
                         Video will be embedded in the scheduled review email automatically.
@@ -121,23 +122,36 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                     {error}
                 </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {SEEDANCE_STYLES.map((style) => (
-                    <button
-                        key={style.key}
-                        type="button"
-                        disabled={starting}
-                        onClick={() => handleStart(style.key)}
-                        className="text-left rounded-xl border-2 border-slate-200 hover:border-primary hover:bg-primary/5 p-4 transition-colors disabled:opacity-50 disabled:cursor-wait"
-                    >
-                        <div className="font-bold text-slate-900 mb-1">{style.label}</div>
-                        <div className="text-xs uppercase tracking-wide text-primary mb-2">{style.tagline}</div>
-                        <div className="text-sm text-slate-600">{style.description}</div>
-                    </button>
-                ))}
+            {previousStyle && (
+                <p className="text-sm text-slate-600">
+                    Previously generated: <strong>{SEEDANCE_STYLES.find((s) => s.key === previousStyle)?.label}</strong>. Pick any scene below to try a new one — it will replace the current video.
+                </p>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+                {SEEDANCE_STYLES.map((style) => {
+                    const wasPrevious = previousStyle === style.key;
+                    return (
+                        <button
+                            key={style.key}
+                            type="button"
+                            disabled={starting}
+                            onClick={() => handleStart(style.key)}
+                            className={`text-left rounded-xl border-2 p-4 transition-colors disabled:opacity-50 disabled:cursor-wait ${wasPrevious ? 'border-slate-400 bg-slate-50' : 'border-slate-200 hover:border-primary hover:bg-primary/5'}`}
+                        >
+                            <div className="flex items-center justify-between mb-1">
+                                <div className="font-bold text-slate-900">{style.label}</div>
+                                {wasPrevious && (
+                                    <span className="text-[10px] uppercase tracking-wide bg-slate-200 text-slate-600 px-2 py-0.5 rounded">used</span>
+                                )}
+                            </div>
+                            <div className="text-xs uppercase tracking-wide text-primary mb-2">{style.tagline}</div>
+                            <div className="text-sm text-slate-600">{style.description}</div>
+                        </button>
+                    );
+                })}
             </div>
             <p className="text-xs text-slate-500">
-                Pick one style. Generates an 8-second 9:16 clip from the delivery photo using Seedance 2 Fast.
+                Pick one scene. Generates an 8-second 16:9 landscape clip from the delivery photo using Seedance 2 Fast.
             </p>
         </div>
     );

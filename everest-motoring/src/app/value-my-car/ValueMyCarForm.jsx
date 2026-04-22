@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitValueMyCar } from "./actions";
+import { trackEvent } from "@/lib/gtag";
 
 export default function ValueMyCarForm() {
     const [step, setStep] = useState(1);
@@ -102,6 +103,11 @@ export default function ValueMyCarForm() {
             setStatus("error");
             alert("Failed to submit inquiry. Please try again or call us directly.");
         } else {
+            trackEvent("generate_lead", {
+                form: "value_my_car",
+                make: formData.make || null,
+                model: formData.model || null,
+            });
             setStatus("success");
             window.scrollTo({ top: 0, behavior: "smooth" });
         }

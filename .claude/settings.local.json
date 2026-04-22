@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vercel *)",
+      "Bash(xargs grep *)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s -H \"Authorization: token $\\(gh auth token || echo NONE\\)\" \"https://api.github.com/repos/alecsomers1980/everest-motoring/commits/main\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('sha:', d.get\\('sha',''\\)[:12]\\); print\\('msg:', d.get\\('commit',{}\\).get\\('message',''\\)[:120]\\)\")"
+    ]
+  }
+}

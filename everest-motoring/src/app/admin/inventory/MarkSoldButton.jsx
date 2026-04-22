@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getLeadsForCar, markCarAsSold, getSaleForCar } from "./sale_actions";
 import SaleVideoPicker from "./SaleVideoPicker";
+import { trackEvent } from "@/lib/gtag";
 
 export default function MarkSoldButton({ car }) {
     const [open, setOpen] = useState(false);
@@ -75,12 +76,26 @@ export default function MarkSoldButton({ car }) {
             if (result?.error) {
                 alert(result.error);
             } else {
+                trackEvent("purchase", {
+                    transaction_id: car.id,
+                    currency: "ZAR",
+                    value: Number(car.price) || 0,
+                    items: [
+                        {
+                            item_id: car.id,
+                            item_name: `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim(),
+                            item_brand: car.make || undefined,
+                            price: Number(car.price) || 0,
+                            quantity: 1,
+                        },
+                    ],
+                });
                 setOpen(false);
                 window.location.reload();
             }
         } catch (err) {
-            console.error(err);
-            alert("Failed to mark as sold.");
+            console.error("markCarAsSold threw:", err);
+            alert(`Failed to mark as sold: ${err?.message || err}`);
         } finally {
             setSubmitting(false);
         }

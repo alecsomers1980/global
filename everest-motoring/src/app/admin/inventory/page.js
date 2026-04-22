@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
     // Fetch all cars (including reserved/sold for admin view)
     const { data: cars } = await supabase
         .from('cars')
-        .select('*')
+        .select('*, sales(sold_at)')
         .order('created_at', { ascending: false });
 
     return (

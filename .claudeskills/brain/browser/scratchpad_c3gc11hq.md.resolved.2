@@ -1,0 +1,21 @@
+# Aloe Signs Cinematic UI Verification
+
+## Task Checklist
+- [X] Open `http://localhost:3001` (Attempted multiple times, browser sessions are failing immediately)
+- [ ] Verify floating header
+- [ ] Verify cinematic hero section with background image
+- [ ] Verify Services section
+- [ ] Verify Image Grid section
+- [ ] Capture full-page screenshot
+- [ ] Summarize findings
+
+## Notes
+- Port: 3001
+- Target: Cinematic look and feel
+- Key components to check: Header, Hero, Services, Image Grid.
+- **Troubleshooting**: 
+    - Encounted repeated "page not found" errors immediately after successfully calling `open_browser_url`.
+    - `list_browser_pages` returns "No active pages found" even after `open_browser_url` returns a successful `page_id`.
+    - This behavior is consistent for both `localhost:3001` and `google.com`.
+    - This indicates a platform-level browser environment issue where pages are closed or lost immediately after creation.
+    - Cannot proceed with visual verification or screenshots until browser stability is restored.

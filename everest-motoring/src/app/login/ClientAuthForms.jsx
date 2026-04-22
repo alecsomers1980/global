@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/lib/gtag";
 
 export default function ClientAuthForms({ initialIsRegisteringClient, carId, initialError, initialMessage }) {
     const [isRegisteringClient, setIsRegisteringClient] = useState(initialIsRegisteringClient);
@@ -58,6 +59,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
                 setError(data.error || "Registration failed");
                 setLoading(false);
             } else {
+                trackEvent("sign_up", { method: "client_portal" });
                 setMessage(data.message || "Account created! Please check your email.");
                 setIsRegisteringClient(false);
                 setLoading(false);

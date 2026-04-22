@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client-browser'
 import { ArrowLeft, ShieldCheck, Loader2, ClipboardList } from 'lucide-react'
 import Link from 'next/link'
 import { PostPreviewCard } from '@/components/PostPreviewCard'
@@ -28,8 +27,6 @@ export default function ApprovalsPage({ params }: { params: Promise<{ id: string
     const [brandKit, setBrandKit] = useState<BrandKit | null>(null)
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<FilterTab>('pending')
-    const supabase = createClient()
-
     useEffect(() => {
         params.then(p => {
             setWorkspaceId(p.id)
@@ -38,33 +35,90 @@ export default function ApprovalsPage({ params }: { params: Promise<{ id: string
     }, [params])
 
     const fetchData = async (id: string) => {
-        const [{ data: postsData }, { data: brandKitData }] = await Promise.all([
-            supabase
-                .from('posts')
-                .select('id, content, media_urls, platforms, scheduled_at, status, approval_token, created_at')
-                .eq('workspace_id', id)
-                .in('status', ['pending_approval', 'draft', 'approved'])
-                .order('created_at', { ascending: false }),
-            supabase
-                .from('brand_kits')
-                .select('*')
-                .eq('workspace_id', id)
-                .single(),
-        ])
-
-        if (postsData) setPosts(postsData as Post[])
-        if (brandKitData) setBrandKit(brandKitData)
+        try {
+            const res = await fetch(`/api/workspaces/posts?workspaceId=${id}`)
+            const data = await res.json()
+            if (data.error) throw new Error(data.error)
+            if (data.posts) setPosts(data.posts as Post[])
+            if (data.brandKit) setBrandKit(data.brandKit)
+        } catch (err) {
+            console.error('Failed to fetch posts:', err)
+        }
         setLoading(false)
     }
 
     const handleApprove = async (postId: string) => {
-        await supabase.from('posts').update({ status: 'approved' } as never).eq('id', postId)
+        await fetch('/api/workspaces/posts/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, status: 'approved' }),
+        })
         setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: 'approved' } : p))
     }
 
     const handleReject = async (postId: string) => {
-        await supabase.from('posts').update({ status: 'draft' } as never).eq('id', postId)
+        await fetch('/api/workspaces/posts/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, status: 'draft' }),
+        })
         setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: 'draft' } : p))
+    }
+
+    const handleDelete = async (postId: string) => {
+        try {
+            const res = await fetch('/api/workspaces/posts/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId }),
+            })
+            if (!res.ok) {
+                const data = await res.json()
+                alert(`Delete failed: ${data.error || 'Unknown error'}`)
+                return
+            }
+            setPosts(prev => prev.filter(p => p.id !== postId))
+        } catch (err: any) {
+            alert(`Delete error: ${err.message}`)
+        }
+    }
+
+    const handlePostNow = async (postId: string) => {
+        setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: 'publishing' } : p))
+
+        try {
+            const res = await fetch('/api/workspaces/posts/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId }),
+            })
+            const data = await res.json()
+
+            if (!res.ok) {
+                alert(`Publishing failed: ${data.error || 'Unknown error'}`)
+                setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: 'failed' } : p))
+                return
+            }
+
+            const summary = (data.results || [])
+                .map((r: any) => `${r.platform} (${r.account_name}): ${r.success ? 'OK' : 'FAILED — ' + r.error}`)
+                .join('\n')
+
+            alert(data.allSuccess
+                ? `Published successfully!\n\n${summary}`
+                : data.success
+                    ? `Partially published:\n\n${summary}`
+                    : `Publishing failed:\n\n${summary}`
+            )
+
+            setPosts(prev => prev.map(p => p.id === postId
+                ? { ...p, status: data.success ? 'published' : 'failed' }
+                : p
+            ))
+        } catch (err: any) {
+            alert(`Publishing error: ${err.message}`)
+            setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: 'failed' } : p))
+        }
     }
 
     const filteredPosts = posts.filter(p => {
@@ -168,6 +222,8 @@ export default function ApprovalsPage({ params }: { params: Promise<{ id: string
                             showActions={true}
                             onApprove={handleApprove}
                             onReject={handleReject}
+                            onPostNow={handlePostNow}
+                            onDelete={handleDelete}
                         />
                     ))}
                 </div>

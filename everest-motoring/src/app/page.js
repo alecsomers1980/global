@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import HomeSearchWidget from "@/components/HomeSearchWidget";
 import NewsletterForm from "@/components/NewsletterForm";
+import TrackedLink from "@/components/TrackedLink";
 import { createClient } from "@/utils/supabase/server";
 import { getVehiclePath } from "@/utils/url/vehicleUrl";
 
@@ -94,8 +95,26 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
 
-            {featuredCars && featuredCars.map((car) => (
-              <Link key={car.id} href={getVehiclePath(car)} className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]">
+            {featuredCars && featuredCars.map((car, idx) => (
+              <TrackedLink
+                key={car.id}
+                href={getVehiclePath(car)}
+                event="select_item"
+                params={{
+                  item_list_id: "featured_vehicles",
+                  item_list_name: "Featured Vehicles",
+                  items: [{
+                    item_id: car.id,
+                    item_name: `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim(),
+                    item_brand: car.make || undefined,
+                    item_category: car.fuel_type || undefined,
+                    price: Number(car.price) || 0,
+                    index: idx,
+                    quantity: 1,
+                  }],
+                }}
+                className="group relative flex flex-col overflow-hidden rounded-xl bg-white border border-slate-100 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_25px_-5px_rgba(0,102,255,0.1)]"
+              >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   <div className="absolute right-3 top-3 z-10 rounded bg-white/90 px-2 py-1 text-xs font-bold uppercase text-slate-900 backdrop-blur-sm">
                     {car.is_featured ? 'Featured' : 'Used'}
@@ -130,7 +149,7 @@ export default async function Home() {
                     <div className="text-xl font-bold text-primary">R {new Intl.NumberFormat('en-ZA').format(car.price)}</div>
                   </div>
                 </div>
-              </Link>
+              </TrackedLink>
             ))}
 
           </div>

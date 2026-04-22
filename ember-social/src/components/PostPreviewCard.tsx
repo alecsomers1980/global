@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, RotateCcw, Clock, Image as ImageIcon, Play, Facebook, Youtube, Instagram, Loader2 } from 'lucide-react'
+import { Check, RotateCcw, Clock, Image as ImageIcon, Play, Facebook, Youtube, Instagram, Loader2, Zap, Trash2 } from 'lucide-react'
 import { PLATFORM_LABELS, PLATFORM_COLORS } from '@/lib/utils'
 import type { Database } from '@/types/database'
 
@@ -21,6 +21,8 @@ interface PostPreviewCardProps {
     showActions?: boolean
     onApprove?: (postId: string) => Promise<void> | void
     onReject?: (postId: string) => Promise<void> | void
+    onPostNow?: (postId: string) => Promise<void> | void
+    onDelete?: (postId: string) => Promise<void> | void
 }
 
 const STATUS_DOT: Record<string, string> = {
@@ -209,7 +211,7 @@ function PlatformMockup({ platform, content, mediaUrl, brandKit }: {
     )
 }
 
-export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReject }: PostPreviewCardProps) {
+export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReject, onPostNow, onDelete }: PostPreviewCardProps) {
     const [actionLoading, setActionLoading] = useState<string | null>(null)
     const accent = brandKit?.accent_color || '#f97316'
     const firstMedia = post.media_urls?.[0] || null
@@ -225,6 +227,21 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
         if (!onReject) return
         setActionLoading('reject')
         await onReject(post.id)
+        setActionLoading(null)
+    }
+
+    const handlePostNow = async () => {
+        if (!onPostNow) return
+        setActionLoading('postnow')
+        await onPostNow(post.id)
+        setActionLoading(null)
+    }
+
+    const handleDelete = async () => {
+        if (!onDelete) return
+        if (!confirm('Delete this post permanently? This cannot be undone.')) return
+        setActionLoading('delete')
+        await onDelete(post.id)
         setActionLoading(null)
     }
 
@@ -311,7 +328,7 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
 
             {/* Action buttons */}
             {showActions && post.status === 'pending_approval' && (
-                <div className="flex gap-3 px-5 py-4" style={{ borderTop: '1px solid #1a1a27', background: '#0d0d14' }}>
+                <div className="flex gap-3 px-5 py-4 items-center" style={{ borderTop: '1px solid #1a1a27', background: '#0d0d14' }}>
                     <button
                         onClick={handleReject}
                         disabled={actionLoading !== null}
@@ -320,6 +337,16 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                         {actionLoading === 'reject' ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
                         Request Changes
                     </button>
+                    {onPostNow && (
+                        <button
+                            onClick={handlePostNow}
+                            disabled={actionLoading !== null}
+                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
+                            style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                            {actionLoading === 'postnow' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                            Post Now
+                        </button>
+                    )}
                     <button
                         onClick={handleApprove}
                         disabled={actionLoading !== null}
@@ -328,21 +355,74 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                         {actionLoading === 'approve' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                         Approve
                     </button>
+                    {onDelete && (
+                        <button
+                            onClick={handleDelete}
+                            disabled={actionLoading !== null}
+                            title="Delete post"
+                            className="flex items-center justify-center p-3 rounded-xl transition-colors disabled:opacity-50 hover:bg-red-500/10"
+                            style={{ color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+                            {actionLoading === 'delete' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                        </button>
+                    )}
                 </div>
             )}
 
             {/* Already actioned indicator */}
             {showActions && post.status === 'approved' && (
-                <div className="flex items-center justify-center gap-2 px-5 py-3" style={{ borderTop: '1px solid #1a1a27', background: 'rgba(52,211,153,0.05)' }}>
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-sm font-medium text-emerald-400">Approved</span>
+                <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #1a1a27', background: 'rgba(52,211,153,0.05)' }}>
+                    <div className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-400">Approved</span>
+                    </div>
+                    {onDelete && (
+                        <button
+                            onClick={handleDelete}
+                            disabled={actionLoading !== null}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                            style={{ color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+                            {actionLoading === 'delete' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            Delete
+                        </button>
+                    )}
                 </div>
             )}
 
             {showActions && post.status === 'draft' && (
-                <div className="flex items-center justify-center gap-2 px-5 py-3" style={{ borderTop: '1px solid #1a1a27', background: 'rgba(107,114,128,0.05)' }}>
-                    <RotateCcw className="w-4 h-4" style={{ color: '#6b7280' }} />
-                    <span className="text-sm font-medium" style={{ color: '#6b7280' }}>Changes Requested</span>
+                <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #1a1a27', background: 'rgba(107,114,128,0.05)' }}>
+                    <div className="flex items-center gap-2">
+                        <RotateCcw className="w-4 h-4" style={{ color: '#6b7280' }} />
+                        <span className="text-sm font-medium" style={{ color: '#6b7280' }}>Changes Requested</span>
+                    </div>
+                    {onDelete && (
+                        <button
+                            onClick={handleDelete}
+                            disabled={actionLoading !== null}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                            style={{ color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+                            {actionLoading === 'delete' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            Delete
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {showActions && (post.status === 'published' || post.status === 'failed' || post.status === 'publishing') && (
+                <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #1a1a27', background: '#0d0d14' }}>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: STATUS_DOT[post.status] }} />
+                        <span className="text-sm font-medium" style={{ color: STATUS_DOT[post.status] }}>{STATUS_LABEL[post.status]}</span>
+                    </div>
+                    {onDelete && (
+                        <button
+                            onClick={handleDelete}
+                            disabled={actionLoading !== null}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                            style={{ color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+                            {actionLoading === 'delete' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            Delete
+                        </button>
+                    )}
                 </div>
             )}
         </div>

@@ -10,6 +10,7 @@ import {
     startSeedanceClip,
     pollSeedanceClip,
     SEEDANCE_STYLE_PROMPTS,
+    buildSeedancePrompt,
 } from "@/utils/ai/seedanceService";
 
 const REVIEW_DELAY_DAYS = 4;
@@ -56,6 +57,15 @@ export async function getSaleForCar(carId) {
 }
 
 export async function markCarAsSold(formData) {
+    try {
+        return await markCarAsSoldInner(formData);
+    } catch (err) {
+        console.error("markCarAsSold unexpected error:", err);
+        return { error: `Server error: ${err?.message || String(err)}` };
+    }
+}
+
+async function markCarAsSoldInner(formData) {
     const { user } = await requireAdmin();
     const admin = await createAdminClient();
 
@@ -138,6 +148,30 @@ export async function markCarAsSold(formData) {
 
     if (leadId) {
         await admin.from("leads").update({ status: "closed_won" }).eq("id", leadId);
+
+        // Immediately delete any client-uploaded financial documents for this lead
+        const { data: leadDocs } = await admin
+            .from("lead_documents")
+            .select("id, file_path")
+            .eq("lead_id", leadId);
+
+        if (leadDocs && leadDocs.length > 0) {
+            const filePaths = leadDocs.map(d => d.file_path);
+            
+            // 1. Remove physical files from secure vault
+            const { error: storageErr } = await admin.storage.from("finance_documents").remove(filePaths);
+            if (storageErr) {
+                console.error("Privacy cleanup: Failed to delete client docs from storage:", storageErr);
+            }
+
+            // 2. Remove tracking records from DB
+            const { error: dbDocsErr } = await admin.from("lead_documents").delete().eq("lead_id", leadId);
+            if (dbDocsErr) {
+                console.error("Privacy cleanup: Failed to delete client doc records from DB:", dbDocsErr);
+            } else {
+                console.log(`Privacy cleanup: Deleted ${filePaths.length} documents for lead ${leadId}`);
+            }
+        }
     }
 
     if (willEmail) {
@@ -180,29 +214,30 @@ export async function startSaleVideo(saleId, styleKey) {
     await requireAdmin();
     const admin = await createAdminClient();
 
-    const prompt = SEEDANCE_STYLE_PROMPTS[styleKey];
-    if (!prompt) return { error: "Invalid video style." };
+    if (!SEEDANCE_STYLE_PROMPTS[styleKey]) return { error: "Invalid video style." };
 
     const { data: sale, error: saleErr } = await admin
         .from("sales")
-        .select("id, delivery_photo_url, sale_video_status")
+        .select("id, buyer_name, delivery_photo_url, sale_video_status")
         .eq("id", saleId)
         .single();
     if (saleErr || !sale) return { error: "Sale not found." };
     if (!sale.delivery_photo_url) return { error: "Delivery photo required before generating video." };
     if (sale.sale_video_status === "generating") return { error: "A video is already being generated for this sale." };
 
+    const prompt = buildSeedancePrompt(styleKey, { buyerName: sale.buyer_name });
+
     try {
         const { taskId } = await startSeedanceClip({
             imageUrl: sale.delivery_photo_url,
             prompt,
             durationSeconds: 8,
-            aspectRatio: "9:16",
+            aspectRatio: "16:9",
             resolution: "720p",
-            generateAudio: false,
+            generateAudio: true,
         });
 
-        await admin
+        const { error: updErr } = await admin
             .from("sales")
             .update({
                 sale_video_style: styleKey,
@@ -214,6 +249,11 @@ export async function startSaleVideo(saleId, styleKey) {
                 sale_video_completed_at: null,
             })
             .eq("id", saleId);
+
+        if (updErr) {
+            console.error("startSaleVideo DB update failed:", updErr);
+            return { error: `DB update failed: ${updErr.message}` };
+        }
 
         return { success: true, taskId };
     } catch (err) {

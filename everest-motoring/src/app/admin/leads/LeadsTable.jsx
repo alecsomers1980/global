@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { inviteClientAction } from "./actions";
+import LeadStatusSelector from "./LeadStatusSelector";
 
 export default function LeadsTable({ initialLeads }) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("active_only");
     const [expandedRows, setExpandedRows] = useState([]);
 
     const toggleExpand = (id) => {
@@ -16,13 +17,21 @@ export default function LeadsTable({ initialLeads }) {
 
     // Filter logic
     const filteredLeads = initialLeads.filter(lead => {
-        // Text Search (Client Name, Phone, Email, Car Make, Car Model)
+        // Text Search
         const carDetails = lead.cars ? `${lead.cars.year} ${lead.cars.make} ${lead.cars.model}` : "";
         const searchString = `${lead.client_name} ${lead.client_phone} ${lead.client_email || ""} ${carDetails}`.toLowerCase();
         const matchesSearch = searchString.includes(searchTerm.toLowerCase());
 
         // Status Filter
-        const matchesStatus = statusFilter ? lead.status === statusFilter : true;
+        let matchesStatus = true;
+        if (statusFilter === "active_only") {
+            // Hide closed if no search term, but if searched, show them
+            if (!searchTerm) {
+                matchesStatus = !["closed_won", "closed_lost"].includes(lead.status);
+            }
+        } else if (statusFilter) {
+            matchesStatus = lead.status === statusFilter;
+        }
 
         return matchesSearch && matchesStatus;
     });
@@ -44,11 +53,12 @@ export default function LeadsTable({ initialLeads }) {
 
                 <div className="w-full md:w-48">
                     <select
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none bg-white font-medium"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="">All Statuses</option>
+                        <option value="active_only">Filter: Active Inquiries</option>
+                        <option value="">Show All (Including Closed)</option>
                         <option value="new">New</option>
                         <option value="contacted">Contacted</option>
                         <option value="document_collection">Document Collection</option>
@@ -130,13 +140,7 @@ export default function LeadsTable({ initialLeads }) {
                                         {new Date(lead.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </td>
                                     <td className="p-4">
-                                        <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-md ${lead.status === 'new' ? 'bg-blue-100 text-blue-700' :
-                                            lead.status === 'contacted' ? 'bg-yellow-100 text-yellow-700' :
-                                                lead.status === 'closed_won' ? 'bg-green-100 text-green-700' :
-                                                    'bg-slate-200 text-slate-600'
-                                            }`}>
-                                            {lead.status.replace('_', ' ')}
-                                        </span>
+                                        <LeadStatusSelector leadId={lead.id} currentStatus={lead.status} />
                                     </td>
                                     <td className="p-4 flex flex-col items-end gap-2 text-right">
 

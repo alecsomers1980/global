@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
+import { resolveWorkspace } from '@/lib/resolve-workspace'
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
@@ -9,7 +10,11 @@ export async function GET(request: Request) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     const redirectUri = `${baseUrl}/api/auth/facebook/callback`
-    const dashboardUrl = `${baseUrl}/dashboard/workspaces/${workspaceId}/platforms`
+
+    // Redirect using slug if available
+    const workspace = workspaceId ? await resolveWorkspace(workspaceId) : null
+    const redirectSlug = workspace?.slug || workspaceId
+    const dashboardUrl = `${baseUrl}/dashboard/workspaces/${redirectSlug}/platforms`
 
     // If the user cancelled the login or something went wrong
     if (error || !code || !workspaceId) {

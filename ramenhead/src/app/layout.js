@@ -10,9 +10,12 @@ const poppins = Poppins({
 })
 
 export const metadata = {
-  title: 'Ramenhead | Authentic Japanese Ramen in Cape Town',
-  description: 'Experience the best authentic Japanese ramen in Cape Town at Ramenhead. Freshly made noodles, 18-hour simmered broths, and a vibrant atmosphere at Speaker\'s Corner and Time Out Market.',
+  title: 'Ramenhead | Authentic Japanese Ramen in Cape Town & V&A Waterfront',
+  description: 'Authentic Japanese ramen in Cape Town. Fresh noodles and 18-hour broths at Speaker\'s Corner and Time Out Market. Book your slurp today!',
   keywords: ['Ramen Cape Town', 'Japanese Restaurant Cape Town', 'Best Ramen South Africa', 'Ramenhead', 'Speaker\'s Corner Restaurant'],
+  alternates: {
+    canonical: 'https://www.ramenhead.co.za',
+  },
   openGraph: {
     title: 'Ramenhead | Authentic Japanese Ramen in Cape Town',
     description: 'Freshly made noodles and umami-rich broths in the heart of the city.',

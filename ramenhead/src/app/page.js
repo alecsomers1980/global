@@ -97,7 +97,8 @@ export default function Home() {
               width={600}
               height={800}
               style={{ width: '100%', height: 'auto' }}
-              loading="lazy"
+              loading={index < 2 ? "eager" : "lazy"}
+              priority={index < 2}
             />
           </div>
         ))}

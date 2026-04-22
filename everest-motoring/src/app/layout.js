@@ -1,8 +1,9 @@
 import { Space_Grotesk } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
+import GoogleAnalyticsGate from "@/components/GoogleAnalyticsGate";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -15,7 +16,10 @@ export const siteConfig = {
   logo: "/images/logo.png",
   phone: "013 750 0812",
   email: "sales@everestmotoring.co.za",
-  address: "White River, Mpumalanga"
+  address: "White River, Mpumalanga",
+  companyName: "DeCar Beleggings (Pty) Ltd",
+  registrationNumber: "2011/007142/07",
+  vatNumber: "4780257772"
 };
 
 export const metadata = {
@@ -42,7 +46,8 @@ export default function RootLayout({ children }) {
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer siteConfig={siteConfig} />
         </div>
-        {gaId && <GoogleAnalytics gaId={gaId} />}
+        <GoogleAnalyticsGate gaId={gaId} />
+        <CookieConsent />
       </body>
     </html>
   );
