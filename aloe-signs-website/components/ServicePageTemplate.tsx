@@ -62,7 +62,7 @@ export default function ServicePageTemplate({ service }: ServicePageTemplateProp
                                 </h3>
                                 <p className="text-medium-grey mb-6">
                                     Get a free quote for your {service.title.toLowerCase()} project. We&apos;ll visit your site,
-                                    take measurements, and provide a detailed proposal within 48 hours.
+                                    take measurements, and provide a detailed proposal.
                                 </p>
                                 <div className="space-y-4">
                                     <Link

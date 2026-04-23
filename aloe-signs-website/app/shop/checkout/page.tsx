@@ -265,7 +265,9 @@ export default function CheckoutPage() {
                                             </div>
                                             <div className="flex justify-between text-medium-grey">
                                                 <span>Shipping</span>
-                                                <span className="text-aloe-green font-bold">FREE</span>
+                                                <span className="text-aloe-green font-bold">
+                                                    {cart.some(item => item.category === 'billboards') ? 'INCLUDED' : 'FREE'}
+                                                </span>
                                             </div>
                                             <div className="border-t border-border-grey pt-3 flex justify-between text-xl font-bold text-charcoal">
                                                 <span>Total</span>

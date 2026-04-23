@@ -48,7 +48,7 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-[100] px-4 py-6 transition-all duration-300">
-            <div className={`max-w-7xl mx-auto glass-card rounded-[2rem] px-8 py-3 flex items-center justify-between shadow-2xl transition-all duration-300 ${isScrolled ? 'bg-black/40 py-2' : ''}`}>
+            <div className={`max-w-7xl mx-auto rounded-[2rem] px-8 py-3 flex items-center justify-between shadow-2xl transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md py-2 border border-black/5' : 'glass-card'}`}>
                 {/* Logo */}
                 <Link href="/" className="flex items-center" onClick={closeMenu}>
                     <div className="relative h-12 w-40">
@@ -64,15 +64,15 @@ export default function Header() {
 
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center gap-10">
-                    <Link href="/" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
+                    <Link href="/" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         HOME
                     </Link>
-                    <Link href="/about" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
+                    <Link href="/about" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         ABOUT
                     </Link>
 
                     <div className="relative group">
-                        <button className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green transition-all flex items-center gap-1">
+                        <button className={`text-sm font-semibold tracking-wide hover:text-aloe-green transition-all flex items-center gap-1 ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                             SERVICES
                             <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform duration-300" />
                         </button>
@@ -95,10 +95,10 @@ export default function Header() {
                         </div>
                     </div>
 
-                    <Link href="/portfolio" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
+                    <Link href="/portfolio" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         PORTFOLIO
                     </Link>
-                    <Link href="/shop" className="text-sm font-semibold tracking-wide text-white/80 hover:text-aloe-green hover:scale-105 transition-all">
+                    <Link href="/shop" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         SHOP
                     </Link>
                 </nav>
@@ -106,17 +106,17 @@ export default function Header() {
                 {/* Right Side */}
                 <div className="hidden lg:flex items-center gap-6">
                     <a href="tel:0116932600" className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-aloe-green group-hover:text-black transition-all">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isScrolled ? 'bg-charcoal/5 group-hover:bg-aloe-green group-hover:text-black text-charcoal' : 'bg-white/5 group-hover:bg-aloe-green group-hover:text-black text-white'}`}>
                             <Phone className="w-4 h-4" />
                         </div>
-                        <span className="text-sm font-bold tracking-tight text-white/90">011 693 2600</span>
+                        <span className={`text-sm font-bold tracking-tight transition-colors ${isScrolled ? 'text-charcoal' : 'text-white/90'}`}>011 693 2600</span>
                     </a>
 
                     <Link
                         href="/shop/cart"
-                        className="relative p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all group"
+                        className={`relative p-2.5 rounded-full transition-all group ${isScrolled ? 'bg-charcoal/5 hover:bg-charcoal/10' : 'bg-white/5 hover:bg-white/10'}`}
                     >
-                        <ShoppingCart className="w-5 h-5 text-white/90 group-hover:scale-110 transition-transform" />
+                        <ShoppingCart className={`w-5 h-5 transition-transform group-hover:scale-110 ${isScrolled ? 'text-charcoal' : 'text-white/90'}`} />
                         {cartCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-aloe-green text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                                 {cartCount}
@@ -147,7 +147,7 @@ export default function Header() {
                     </Link>
                     <button
                         onClick={toggleMenu}
-                        className="p-2.5 bg-white/5 rounded-full text-white"
+                        className={`p-2.5 rounded-full transition-colors ${isScrolled ? 'bg-charcoal/5 text-charcoal' : 'bg-white/5 text-white'}`}
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>

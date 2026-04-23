@@ -46,10 +46,10 @@ export const productsList: Product[] = [
         ],
         inStock: true,
         variants: [
-            { name: '8x3m Billboard', price: 25000 },
-            { name: '6x3m Billboard', price: 19000 },
+            { name: '4x2m Billboard', price: 10000 },
             { name: '4x3m Billboard', price: 13000 },
-            { name: '4x2m Billboard', price: 10000 }
+            { name: '6x3m Billboard', price: 19000 },
+            { name: '8x3m Billboard', price: 25000 }
         ]
     },
     // Estate Agent Boards

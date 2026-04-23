@@ -110,13 +110,61 @@ export default function ShopPage() {
                                 </div>
 
                                 {/* Products */}
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredProducts.map(product => (
-                                        <div key={product.id} className="h-full">
-                                            <ProductCard product={product} />
+                                {selectedCategory === 'all' ? (
+                                    <div className="space-y-12">
+                                        {/* Estate Agent Boards Row */}
+                                        <div>
+                                            <h2 className="text-2xl font-black text-charcoal mb-6 uppercase tracking-tight">Estate Agent Boards</h2>
+                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {filteredProducts
+                                                    .filter(p => p.category === 'estate-boards')
+                                                    .map(product => (
+                                                        <div key={product.id} className="h-full">
+                                                            <ProductCard product={product} />
+                                                        </div>
+                                                    ))}
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        {/* Billboards Row */}
+                                        <div>
+                                            <h2 className="text-2xl font-black text-charcoal mb-6 uppercase tracking-tight">Billboards</h2>
+                                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {filteredProducts
+                                                    .filter(p => p.category === 'billboards')
+                                                    .map(product => (
+                                                        <div key={product.id} className="h-full">
+                                                            <ProductCard product={product} />
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Other Products */}
+                                        {filteredProducts.filter(p => p.category !== 'estate-boards' && p.category !== 'billboards').length > 0 && (
+                                            <div>
+                                                <h2 className="text-2xl font-black text-charcoal mb-6 uppercase tracking-tight">Other Products</h2>
+                                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                    {filteredProducts
+                                                        .filter(p => p.category !== 'estate-boards' && p.category !== 'billboards')
+                                                        .map(product => (
+                                                            <div key={product.id} className="h-full">
+                                                                <ProductCard product={product} />
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {filteredProducts.map(product => (
+                                            <div key={product.id} className="h-full">
+                                                <ProductCard product={product} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
                                 {/* No Results */}
                                 {filteredProducts.length === 0 && (

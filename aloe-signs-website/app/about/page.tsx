@@ -101,11 +101,43 @@ export default function AboutPage() {
                                     <div className="absolute inset-0 bg-aloe-green/5 mix-blend-overlay"></div>
                                 </div>
                             </div>
+
+                            {/* ENGRAVCUT CNC */}
+                            <div className="grid md:grid-cols-2 gap-10 items-center">
+                                <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-white shadow-xl group border border-border-grey">
+                                    <Image 
+                                        src="/images/cnc2.jpg" 
+                                        alt="ENGRAVCUT CNC Router"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-aloe-green/5 mix-blend-overlay"></div>
+                                </div>
+                                <div className="space-y-6 md:pl-8">
+                                    <div className="inline-block px-4 py-1 bg-aloe-green/10 text-aloe-green text-xs font-bold uppercase tracking-widest rounded-full border border-aloe-green/20 mb-2">
+                                        Precision Fabrication
+                                    </div>
+                                    <h4 className="text-3xl md:text-4xl font-black uppercase tracking-tight leading-none text-charcoal">
+                                        ENGRAVCUT CNC
+                                    </h4>
+                                    <p className="text-xl text-aloe-green font-semibold">
+                                        The power to carve through any challenge
+                                    </p>
+                                    <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
+                                        Precision cutting and engraving are essential for creating custom 3D signage, lightboxes, and architectural elements. Our ENGRAVCUT CNC router provides the heavy-duty power and meticulous accuracy needed to carve through acrylic, wood, aluminium, and composite materials with ease.
+                                    </p>
+                                    <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
+                                        <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
+                                        <p className="text-charcoal/80">
+                                            This machine allows us to translate complex digital designs into physical three-dimensional reality. Whether it's intricately cut channel letters, custom-shaped displays, or decorative wall panels, the CNC's repeatability and precision ensure that every piece is cut to exact specifications for a flawless final assembly.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
-
-                {/* Founding Story Section */}
+                {/* Founding Story Section - HIDDEN UNTIL REQUESTED
                 <section className="py-16 md:py-24 bg-white">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -141,8 +173,9 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </section>
+                */}
 
-                {/* Owner Section */}
+                {/* Owner Section - HIDDEN UNTIL REQUESTED
                 <section className="py-16 md:py-24 bg-white text-charcoal border-y border-border-grey">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center md:flex-row-reverse">
@@ -165,7 +198,6 @@ export default function AboutPage() {
                                     </p>
                                 </div>
 
-                                {/* Quote */}
                                 <blockquote className="border-l-4 border-aloe-green pl-6 py-2">
                                     <p className="text-2xl md:text-3xl font-bold italic text-charcoal mb-4">
                                         "A brand is useless if no one can see it. We don't build quiet signs for quiet businesses. We build to dominate."
@@ -185,8 +217,9 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </section>
+                */}
 
-                {/* The Team Section */}
+                {/* The Team Section - HIDDEN UNTIL REQUESTED
                 <section className="py-16 md:py-24 bg-bg-grey">
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center mb-16">
@@ -201,7 +234,6 @@ export default function AboutPage() {
                         </div>
 
                         <div className="grid md:grid-cols-3 gap-8">
-                            {/* Designers */}
                             <div className="group">
                                 <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
@@ -215,7 +247,6 @@ export default function AboutPage() {
                                 <p className="text-medium-grey">The creative brain turning your wild ideas into print-ready blueprints.</p>
                             </div>
 
-                            {/* Construction */}
                             <div className="group">
                                 <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
@@ -229,7 +260,6 @@ export default function AboutPage() {
                                 <p className="text-medium-grey">Operating the heavy machinery that builds the physical structures.</p>
                             </div>
 
-                            {/* Setup */}
                             <div className="group">
                                 <div className="relative aspect-square bg-dark-grey mb-6 overflow-hidden rounded-[2.5rem] shadow-lg">
                                     <div
@@ -245,6 +275,7 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </section>
+                */}
 
                 {/* Stats Section */}
                 <StatsSection />

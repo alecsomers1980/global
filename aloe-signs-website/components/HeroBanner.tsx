@@ -116,7 +116,7 @@ export default function HeroBanner() {
     const activeSlide = slides[0];
 
     return (
-        <section className="relative h-[65vh] md:h-[75vh] bg-charcoal flex items-center overflow-hidden">
+        <section className="relative min-h-[85svh] md:h-[85vh] bg-charcoal flex items-center overflow-hidden">
             {/* Inline keyframes for the smooth floating animations */}
             <style dangerouslySetInnerHTML={{__html: `
               @keyframes float-y {
@@ -148,30 +148,30 @@ export default function HeroBanner() {
             <div className="absolute inset-0 bg-charcoal/80 md:bg-transparent md:bg-gradient-to-l md:from-charcoal md:via-charcoal/95 md:to-transparent md:w-[60%] md:left-auto md:right-0 z-10 pointer-events-none border-t-[1px] border-white/5" />
 
             {/* Right Side Content Container */}
-            <div className="relative h-full w-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center pt-20 items-center md:items-end z-20 pointer-events-none">
+            <div className="relative h-full w-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center pt-36 pb-12 md:pt-20 md:pb-0 items-center md:items-end z-20 pointer-events-none">
                 <div className="max-w-2xl text-center md:text-right flex flex-col items-center md:items-end pointer-events-auto">
-                    <div className="animate-fadeIn w-full flex flex-col items-center md:items-end pt-8">
+                    <div className="animate-fadeIn w-full flex flex-col items-center md:items-end">
                         
-                        <h1 className="text-aloe-green font-bold tracking-widest uppercase text-sm md:text-md mb-4 flex items-center justify-center md:justify-end gap-3 w-full">
-                            <span className="md:hidden w-8 h-1 bg-aloe-green block"></span>
+                        <h1 className="text-aloe-green font-bold tracking-widest uppercase text-[10px] md:text-sm mb-2 md:mb-4 flex items-center justify-center md:justify-end gap-3 w-full">
+                            <span className="md:hidden w-8 h-px bg-aloe-green block"></span>
                             {activeSlide.seoH1}
-                            <span className="hidden md:block w-8 h-1 bg-aloe-green"></span>
+                            <span className="hidden md:block w-8 h-px bg-aloe-green"></span>
                         </h1>
 
-                        <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 uppercase leading-[0.95] tracking-tighter">
+                        <h2 className="text-[calc(1rem+8vw)] md:text-[calc(2.5rem+4.5vw)] font-black text-white mb-3 md:mb-6 uppercase leading-[0.9] tracking-tighter">
                             {activeSlide.title.split('\n').map((line, i) => (
                                 <span key={i} className="block">{line}</span>
                             ))}
                         </h2>
 
-                        <p className="text-xl md:text-2xl font-medium text-white/70 mb-10 max-w-xl leading-relaxed">
+                        <p className="text-sm md:text-2xl font-medium text-white/70 mb-6 md:mb-10 max-w-2xl leading-relaxed">
                             {activeSlide.description}
                         </p>
 
-                        <div className="flex flex-wrap justify-center md:justify-end gap-4 mb-8 w-full">
+                        <div className="flex flex-wrap justify-center md:justify-end gap-4 mb-4 md:mb-8 w-full">
                             <Link
                                 href={activeSlide.primaryCTA.href}
-                                className="px-10 py-5 bg-aloe-green text-charcoal font-black rounded-full uppercase tracking-wider hover:bg-white transition-all duration-300 text-lg md:text-xl shadow-[0_0_20px_rgba(202,238,166,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] hover:-translate-y-1"
+                                className="px-6 py-3 md:px-10 md:py-5 bg-aloe-green text-charcoal font-black rounded-full uppercase tracking-wider hover:bg-white transition-all duration-300 text-base md:text-xl shadow-[0_0_20px_rgba(202,238,166,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] hover:-translate-y-1"
                             >
                                 {activeSlide.primaryCTA.text}
                             </Link>

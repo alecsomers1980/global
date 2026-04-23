@@ -26,11 +26,11 @@ export default function Home() {
                 <div className="text-light-grey">Years in Business</div>
               </div>
               <div>
-                <div className="text-5xl font-bold text-aloe-green mb-2">500+</div>
+                <div className="text-5xl font-bold text-aloe-green mb-2">10 000+</div>
                 <div className="text-light-grey">Projects Completed</div>
               </div>
               <div>
-                <div className="text-5xl font-bold text-aloe-green mb-2">180+</div>
+                <div className="text-5xl font-bold text-aloe-green mb-2">200+</div>
                 <div className="text-light-grey">Vehicles Wrapped</div>
               </div>
               <div>
@@ -48,7 +48,7 @@ export default function Home() {
               Ready to start your project?
             </h2>
             <p className="text-medium-grey text-lg mb-8">
-              Get a free quote within 48 hours. No obligation.
+              Get a free quote. No obligation.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a
