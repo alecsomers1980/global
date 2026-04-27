@@ -30,8 +30,8 @@ export default function Home() {
                 <div className="text-light-grey">Projects Completed</div>
               </div>
               <div>
-                <div className="text-5xl font-bold text-aloe-green mb-2">200+</div>
-                <div className="text-light-grey">Vehicles Wrapped</div>
+                <div className="text-5xl font-bold text-aloe-green mb-2">2000+</div>
+                <div className="text-light-grey">Vehicles Branded</div>
               </div>
               <div>
                 <div className="text-5xl font-bold text-aloe-green mb-2">4.9★</div>

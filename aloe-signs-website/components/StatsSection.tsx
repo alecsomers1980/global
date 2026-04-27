@@ -2,7 +2,7 @@ export default function StatsSection() {
     const stats = [
         { value: '25+', label: 'YEARS IN BUSINESS' },
         { value: '10 000+', label: 'PROJECTS COMPLETED' },
-        { value: '200+', label: 'VEHICLES WRAPPED' },
+        { value: '2000+', label: 'VEHICLES BRANDED' },
         { value: '4.9★', label: 'GOOGLE RATING' },
     ];
 
