@@ -45,10 +45,12 @@ Strict Instructions for the script:
 
 Scene Breakdown:
 Scene 1: The Hook (Exterior Hero Shot)
-- Continuous slow cinematic push-in already in motion on frame one, with a subtle angle change for a premium feel. The camera moves smoothly toward the vehicle without ever pausing. Do not distort the background geometry.
-- Dramatic lighting (e.g., Golden Hour sunset with realistic lens flares or moody showroom lighting).
+- The vehicle is parked, completely STATIONARY, motionless throughout the entire clip — no rolling, no rocking, no body movement. Wheels do not turn. The car must NOT move at all.
+- The background environment matches the reference image EXACTLY — same parking surface, same buildings, trees, sky, and lighting as in the source photo. Do not invent a new environment, do not change the background geometry, do not insert different surroundings.
+- Camera motion: continuous slow cinematic push-in already in motion on frame one. Only the camera moves — gently and steadily forward toward the stationary car. The motion is smooth and uninterrupted across the entire clip. Never produce a held or static frame.
+- Lighting: keep the natural lighting of the source image; if the original is golden-hour, preserve it; if showroom, preserve it. Subtle, realistic lens behaviour only.
 - The vehicle's front license plate clearly displays the word "EVEREST" in clean lettering.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a catchy 1-sentence hook introducing the make and model]"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a catchy 1-sentence hook introducing the make and model]"
 
 Scene 2: The Technology (Dashboard/Cockpit)
 - Continuous slow cinematic push-in on the dashboard, already in motion on frame one. The camera moves smoothly toward the dashboard for the entire clip with no pauses or held frames. Focus entirely on the area visible in the reference image.
@@ -65,9 +67,10 @@ Scene 3: The Comfort (Rear Cabin)
 Scene 4: The Closer (Human Presenter)
 - A professional, attractive female sales presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an "Everest Motoring" logo on the breast pocket.
 - She stands next to the exact same vehicle from Scene 1, in the exact same outdoor or indoor environment as Scene 1. A subtle "EVEREST MOTORING" logo is visible on a wall or structure behind her.
-- She looks directly into the camera with a warm, inviting smile, gesturing welcomingly throughout — her hand and head movement is constant and natural for the whole clip.
+- POSTURE — STRICT: she stands perfectly upright the entire clip, head held high, shoulders square, spine straight. Her body remains vertical at ALL times. She does NOT bend, lean forward, lean sideways, kneel, crouch, or shift her hip stance. Only her hands, head, and facial expression move — the torso stays still and vertical from frame one to the final frame.
+- She looks directly into the camera with a warm, inviting smile. Subtle, natural hand gestures stay near her chest or waist height — never reaching down or sweeping outward in a way that bends the body.
 - Continuous slow cinematic push-in toward the presenter, already in motion on frame one. The push-in continues smoothly across the entire clip with no held frames.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact Everest Motoring regarding this specific make/model. Do NOT use the word 'new']"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact Everest Motoring regarding this specific make/model. Do NOT use the word 'new']"
 
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
 Do not include markdown formatting outside the JSON array. The \`visual_prompt\` should be a single, long paragraph containing all the visual imagery, camera instructions, lighting, and action for the AI video generator.
@@ -120,12 +123,13 @@ Example Output:
             : `Introducing the striking ${car.year} ${car.make} ${car.model}.`;
 
         const motionRule = "Camera motion is continuous from frame one to the last frame, with smooth uninterrupted movement across the entire clip. Never produce a held or static frame at any point.";
+        const cleanAudio = "Clean, studio-quality South African English Female Voiceover with absolutely no background noise, static, hiss, interference, or ambient sound — voice only on a silent background";
 
         return [
-            { scene: 1, location: "exterior", visual_prompt: `Continuous slow cinematic push-in already in motion on frame one of the ${car.year} ${car.make} ${car.model}. ${motionRule} Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: '${hookLine}'` },
-            { scene: 2, location: "interior", visual_prompt: `Continuous slow cinematic push-in interior POV shot of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: '${techLine}'` },
-            { scene: 3, location: "interior", visual_prompt: `Continuous slow cinematic push-in into the back passenger area of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: '${comfortLine}'` },
-            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Continuous slow cinematic push-in toward her, already in motion on frame one. ${motionRule} She looks directly into the camera with a warm, inviting smile and gestures welcomingly throughout the clip. AUDIO: South African English Female Voiceover: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
+            { scene: 1, location: "exterior", visual_prompt: `The ${car.year} ${car.make} ${car.model} is parked completely stationary and motionless — wheels do not turn, body does not move. The background environment matches the reference image exactly: same parking surface, same buildings, trees, sky, and lighting as in the source photo. Continuous slow cinematic push-in already in motion on frame one — only the camera moves. ${motionRule} The front license plate features a clean 'EVEREST' logo. Preserve the lighting of the source image. AUDIO: ${cleanAudio}: '${hookLine}'` },
+            { scene: 2, location: "interior", visual_prompt: `Continuous slow cinematic push-in interior POV shot of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: ${cleanAudio}: '${techLine}'` },
+            { scene: 3, location: "interior", visual_prompt: `Continuous slow cinematic push-in into the back passenger area of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: ${cleanAudio}: '${comfortLine}'` },
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands perfectly upright the entire clip — head held high, shoulders square, spine straight, body vertical at all times. She does not bend, lean, kneel, or crouch. Only her hands, head, and facial expression move; the torso stays still and vertical. She stands next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Continuous slow cinematic push-in toward her, already in motion on frame one. ${motionRule} She looks directly into the camera with a warm inviting smile, with subtle natural hand gestures kept near her chest or waist. AUDIO: ${cleanAudio}: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
         ];
     }
 }
@@ -153,8 +157,9 @@ export async function optimizeVehicleDescription(car, manualDescription) {
         console.log(`[SEO Content] Starting description optimization for ${car.year} ${car.make} ${car.model}...`);
 
         const promptText = `
-You are an expert automotive copywriter specializing in SEO and high-conversion sales copy for Everest Motoring.
-Write a brilliant, SEO-optimized, highly attractive sales pitch description for the following vehicle.
+You are an expert South African automotive copywriter specializing in high-converting SEO and local-search (GEO) optimized sales copy for Everest Motoring — a premium pre-owned vehicle dealership based in White River, Mpumalanga, serving customers across the Lowveld, Nelspruit, Hazyview, Sabie, Witbank, and the wider Mpumalanga region.
+
+Your goal is to write a description that ranks on Google for South African buyers AND converts visitors into test-drive bookings or finance enquiries.
 
 Vehicle Details:
 Make: ${car.make}
@@ -168,14 +173,34 @@ Features: ${car.features && car.features.length > 0 ? car.features.join(', ') : 
 User's Extra/Unique Features: ${manualDescription || 'None provided'}
 
 Strict Instructions:
-1. Write 2-3 engaging, persuasive paragraphs. 
-2. It MUST be optimized for Google SEO (use relevant keywords implicitly, e.g. "Buy used ${car.make} ${car.model} in South Africa").
-3. Important: When mentioning the price, spell out the currency. You MUST write it as "${car.price} South African Rand".
-4. Highlight the best features, the pristine condition, and the overall value proposition.
-5. If an image is provided in the prompt, scan the photo to determine the exact color of the car and integrate that color naturally into the description.
-6. Use all the information provided to write a compelling narrative.
-7. CRITICAL: End with a strong, explicit Call to Action aimed at lead generation and sales (e.g., "Contact Everest Motoring today to book your exclusive test drive, or inquire about our tailored finance options!").
-8. Do NOT include markdown headers (* or #) or unnecessary formatting. Just return the clean, professional text ready to be displayed on the website.
+
+LENGTH & STRUCTURE:
+1. Write FOUR distinct paragraphs (roughly 4-6 sentences each), totalling 250-400 words. This is a premium listing — depth and detail matter.
+2. Paragraph 1 — The Hook: open with a vivid scene-setter that mentions the year, make, model, and (if visible in the image) colour. Establish desirability immediately.
+3. Paragraph 2 — Performance & Driving Experience: describe the engine, transmission, fuel type, and how the car feels to drive. Reference specs from the data above.
+4. Paragraph 3 — Features & Comfort: weave in the specific features list naturally — group them into themes (safety, technology, comfort, exterior). Don't just list; interpret why each matters to the buyer.
+5. Paragraph 4 — Value Proposition + Call to Action: address pricing, condition, the dealership's reputation, and close with a strong dual CTA (book a test drive AND/OR enquire about tailored vehicle finance).
+
+SEO & GEO REQUIREMENTS:
+6. Naturally include phrases that match real South African search queries: "used ${car.make} ${car.model} for sale", "pre-owned ${car.make} ${car.model} in South Africa", "${car.make} ${car.model} ${car.year}", "buy ${car.make} ${car.model} in Mpumalanga", "${car.make} dealer in White River", "pre-owned cars in Lowveld", "second-hand ${car.make} near Nelspruit". Use 4-6 of these phrases naturally — never as a keyword stuff list.
+7. Mention "Everest Motoring" by name at least twice — once mid-copy, once in the CTA.
+8. Mention the dealership's location (White River, Mpumalanga) at least once.
+
+PRICE & CURRENCY:
+9. CRITICAL: When mentioning the price, write it exactly as "${car.price} South African Rand" (spelled out, not "R" or "ZAR"). This improves voice-search and accessibility.
+
+IMAGE CONTEXT:
+10. If a vehicle image is provided, identify the exact colour and any visible condition cues (clean panels, alloy wheels, interior trim) and weave them into paragraph 1 or 2 naturally.
+
+CALL TO ACTION:
+11. End with TWO clear actions a buyer can take, written persuasively:
+    a) Book a test drive at Everest Motoring in White River
+    b) Enquire about pre-approved vehicle asset finance through Everest Motoring's accredited finance partners
+12. Add gentle urgency without being pushy: phrases like "vehicles of this calibre move quickly" or "stock is limited" are acceptable; avoid clichés like "act now" or "don't miss out".
+
+FORMATTING:
+13. Plain prose only. NO markdown headers (* or #), NO bullet lists, NO bold/italic markers. Return the clean text ready to drop into a website paragraph block.
+14. Write in a confident, premium, trustworthy tone — never gimmicky or aggressive. Think "luxury dealer with friendly staff" not "used-car salesman".
 `;
 
         const { text, providerUsed } = await runWithFallback({
