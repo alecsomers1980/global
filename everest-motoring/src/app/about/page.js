@@ -20,14 +20,12 @@ export default function AboutPage() {
             <PageBanner
                 title="The Everest Way"
                 subtitle="Redefining the pre-owned vehicle experience in Mpumalanga and across South Africa through uncompromising quality and integrity."
-                bgImageUrl="https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=2671&auto=format&fit=crop"
-                overlayOpacity="opacity-20"
             />
 
             {/* Content Section */}
             <section className="py-20 px-4 lg:px-12">
                 <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8 md:p-12 border border-slate-100">
-                    <h2 className="text-3xl font-bold text-slate-900 mb-6 text-primary">Uncompromising Standards</h2>
+                    <h2 className="text-3xl font-bold text-slate-900 mb-6 border-b-4 border-primary inline-block">Uncompromising Standards</h2>
                     <p className="text-slate-600 mb-8 leading-relaxed text-lg">
                         At Everest Motoring, we do not simply buy stock to fill a showroom floor. We operate on a model of <strong>Selective Sourcing</strong>. Every vehicle undergoes a rigorous, independent 100-point technical inspection before it even arrives on our floor.
                     </p>
@@ -104,7 +102,7 @@ export default function AboutPage() {
             <section className="py-20 px-4 lg:px-12 bg-white">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <span className="text-primary text-xs font-semibold tracking-[0.3em] uppercase">Our People</span>
+                        <span className="text-black bg-primary px-3 py-1 text-xs font-bold tracking-[0.3em] uppercase rounded">Our People</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-6">Meet the Team</h2>
                         <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">
                             Everest Motoring is run by experienced individuals who are well known and trusted by the local community for their product knowledge, risk management, and aftersales responsibility.
@@ -126,7 +124,7 @@ export default function AboutPage() {
                                 </div>
                                 <div className="text-center">
                                     <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>
-                                    <p className="text-primary font-medium mt-1">{member.role}</p>
+                                    <p className="text-black font-bold mt-1 bg-primary/20 inline-block px-2 rounded">{member.role}</p>
                                 </div>
                             </div>
                         ))}

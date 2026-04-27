@@ -173,7 +173,7 @@ export default async function NewsPostPage({ params }) {
             />
 
             {/* ── Hero Banner ── */}
-            <div className="relative bg-slate-900 text-white overflow-hidden">
+            <div className="relative bg-black text-white overflow-hidden">
                 {post.hero_image_url ? (
                     <>
                         <Image
@@ -220,7 +220,7 @@ export default async function NewsPostPage({ params }) {
                     </nav>
 
                     {/* Category Badge */}
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30 mb-6">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30 mb-6">
                         <span className="material-symbols-outlined text-sm">
                             {CATEGORY_ICON[post.category] || "article"}
                         </span>
@@ -351,7 +351,7 @@ export default async function NewsPostPage({ params }) {
                 )}
 
                 {/* Inventory CTA */}
-                <div className="mt-10 relative overflow-hidden rounded-2xl bg-slate-900 text-white p-10 md:p-14 text-center">
+                <div className="mt-10 relative overflow-hidden rounded-2xl bg-black text-white p-10 md:p-14 text-center">
                     {/* Background accents */}
                     <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-primary/20 blur-[60px]" />
                     <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-secondary/15 blur-[50px]" />
@@ -369,7 +369,7 @@ export default async function NewsPostPage({ params }) {
                         </p>
                         <Link
                             href="/inventory"
-                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-lg shadow-primary/30"
+                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold px-8 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-lg shadow-primary/30"
                         >
                             Browse Inventory{" "}
                             <span className="material-symbols-outlined">
@@ -409,7 +409,7 @@ export default async function NewsPostPage({ params }) {
                                 href={`/news/${p.slug}`}
                                 className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 hover:-translate-y-1"
                             >
-                                <div className="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                                <div className="relative aspect-[16/10] bg-black overflow-hidden">
                                     {p.hero_image_url ? (
                                         <Image
                                             src={p.hero_image_url}
@@ -427,7 +427,7 @@ export default async function NewsPostPage({ params }) {
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                                     <div className="absolute top-4 left-4">
-                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-black font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
                                             <span className="material-symbols-outlined text-xs">
                                                 {CATEGORY_ICON[p.category] ||
                                                     "article"}

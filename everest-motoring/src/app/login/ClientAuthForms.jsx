@@ -73,7 +73,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
     return (
         <div className={`w-full ${isRegisteringClient ? 'max-w-2xl' : 'max-w-md'} bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 transition-all duration-300`}>
 
-            <div className={`p-6 text-center border-b border-white/10 ${isRegisteringClient ? 'bg-primary text-white' : 'bg-slate-950 text-white'}`}>
+            <div className={`p-6 text-center border-b border-white/10 ${isRegisteringClient ? 'bg-primary text-black' : 'bg-slate-950 text-white'}`}>
                 <img
                     src="/images/logo.png"
                     alt="Everest Motoring Logo"
@@ -136,7 +136,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
                             </div>
 
                             <div className="pt-6">
-                                <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-md transition-all text-lg flex items-center justify-center gap-2 disabled:opacity-70">
+                                <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-md transition-all text-lg flex items-center justify-center gap-2 disabled:opacity-70">
                                     {loading ? 'Processing...' : 'Create Account'}
                                     {!loading && <span className="material-symbols-outlined">arrow_forward</span>}
                                 </button>

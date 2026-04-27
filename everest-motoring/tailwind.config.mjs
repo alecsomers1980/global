@@ -11,14 +11,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary": "#d32f2f",      // Everest Red
-        "primary-dark": "#b71c1c", // Darker Red for hover
-        "secondary": "#1a237e",    // Everest Navy Blue
-        "accent": "#F8F9FA",
-        "neutral-light": "#dadfe7",
+        "primary": "#ffff01",      // Everest Yellow
+        "primary-dark": "#e6e600", // Darker Yellow for hover
+        "secondary": "#000000",    // Black
+        "accent": "#ffffff",       // White
+        "neutral-light": "#f3f4f6",
         "background-light": "#ffffff",
-        "background-alt": "#F8F9FA",
-        "background-dark": "#0f1723",
+        "background-alt": "#fafafa",
+        "background-dark": "#000000",
       },
       fontFamily: {
         "display": ["var(--font-space-grotesk)", "sans-serif"],

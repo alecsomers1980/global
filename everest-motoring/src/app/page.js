@@ -29,9 +29,9 @@ export default async function Home() {
     <>
 
       {/* Hero Section */}
-      <section className="relative flex min-h-[600px] w-full items-center justify-center bg-slate-900 px-4 py-20 lg:min-h-[700px]">
+      <section className="relative flex min-h-[600px] w-full items-center justify-center bg-black px-4 py-20 lg:min-h-[700px]">
         <div className="absolute inset-0 z-0 h-full w-full overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-slate-950/80 to-transparent z-10"></div>
           {/* Massive Watermark Logo Behind Everything */}
           <div className="absolute inset-0 z-15 flex items-center justify-center opacity-40 pointer-events-none mix-blend-overlay">
             <img
@@ -56,17 +56,17 @@ export default async function Home() {
             </div>
             <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-white lg:text-6xl">
               We sell cars with <br />
-              <span className="text-primary">Integrity & Expertise.</span>
+              <span className="text-primary font-black">Integrity & Expertise.</span>
             </h1>
             <p className="mt-6 text-lg font-normal leading-relaxed text-slate-300 lg:text-xl">
               At Everest Motoring, we proudly do things the Everest way. We are highly selective, buying only the absolute best quality pre-loved cars to make your dream vehicle a reality.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <button className="flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 hover:bg-primary-dark">
+              <button className="flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-base font-bold text-black shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5 hover:bg-primary-dark">
                 View Latest Deals
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
-              <button className="flex items-center justify-center gap-2 rounded-lg bg-secondary px-8 py-3.5 text-base font-bold text-white shadow-md transition-transform hover:-translate-y-0.5 hover:bg-slate-800">
+              <button className="flex items-center justify-center gap-2 rounded-lg bg-white px-8 py-3.5 text-base font-bold text-black shadow-md transition-transform hover:-translate-y-0.5 hover:bg-slate-100">
                 Value my car
               </button>
             </div>
@@ -146,7 +146,7 @@ export default async function Home() {
                       <span className="block text-xs font-medium text-slate-500">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km</span>
                       <span className="block text-xs font-medium text-slate-500">{car.fuel_type || 'Fuel'}</span>
                     </div>
-                    <div className="text-xl font-bold text-primary">R {new Intl.NumberFormat('en-ZA').format(car.price)}</div>
+                    <div className="text-xl font-bold text-black border-b-2 border-primary">R {new Intl.NumberFormat('en-ZA').format(car.price)}</div>
                   </div>
                 </div>
               </TrackedLink>
@@ -170,21 +170,21 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div className="flex flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm transition-shadow hover:shadow-md border-t-4 border-primary">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-primary">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-black">
                 <span className="material-symbols-outlined text-4xl">verified</span>
               </div>
               <h3 className="mb-3 text-xl font-bold text-slate-900">Selective Sourcing</h3>
               <p className="text-slate-500 leading-relaxed text-sm">We don&apos;t just buy any vehicle. We are incredibly selective, purchasing only the highest quality, accident-free pre-loved cars for our clients.</p>
             </div>
             <div className="flex flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm transition-shadow hover:shadow-md border-t-4 border-secondary">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-secondary">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-black">
                 <span className="material-symbols-outlined text-4xl">account_balance</span>
               </div>
               <h3 className="mb-3 text-xl font-bold text-slate-900">Seamless Bank Finance</h3>
               <p className="text-slate-500 leading-relaxed text-sm">We are approved by and offer direct vehicle finance through all top South African banks. Comprehensive insurance options are also managed in-house.</p>
             </div>
             <div className="flex flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm transition-shadow hover:shadow-md border-t-4 border-primary">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-primary">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-black">
                 <span className="material-symbols-outlined text-4xl">workspace_premium</span>
               </div>
               <h3 className="mb-3 text-xl font-bold text-slate-900">Integrity First</h3>
@@ -195,12 +195,12 @@ export default async function Home() {
       </section>
 
       {/* Value My Car Lead Magnet */}
-      <section className="bg-blue-50 py-24 px-4 lg:px-12">
-        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-xl md:p-12 border border-blue-100 text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">Trade in or Sell your car today</h2>
+      <section className="bg-slate-50 py-24 px-4 lg:px-12">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-8 shadow-xl md:p-12 border border-slate-100 text-center">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl uppercase">Trade in or Sell your car today</h2>
           <p className="mb-8 text-lg text-slate-600">Get an instant, obligation-free valuation for your vehicle. We pay top market rates.</p>
           <div className="mx-auto flex justify-center mt-6">
-            <Link href="/value-my-car" className="rounded-xl bg-primary px-12 py-5 text-lg font-bold text-white transition-all hover:bg-primary-dark hover:-translate-y-1 shadow-lg shadow-primary/30 flex items-center gap-3">
+            <Link href="/value-my-car" className="rounded-xl bg-primary px-12 py-5 text-lg font-bold text-black transition-all hover:bg-primary-dark hover:-translate-y-1 shadow-lg shadow-primary/30 flex items-center gap-3">
               Get Valuation
               <span className="material-symbols-outlined text-xl">arrow_forward</span>
             </Link>
@@ -210,10 +210,10 @@ export default async function Home() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="bg-primary px-4 py-16 text-white">
+      <section className="bg-primary px-4 py-16 text-black">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-3xl font-bold">Don&apos;t miss the perfect deal.</h2>
-          <p className="mb-8 text-blue-100">Subscribe to our weekly alerts and be the first to know about new arrivals.</p>
+          <h2 className="mb-4 text-3xl font-bold uppercase tracking-tight">Don&apos;t miss the perfect deal.</h2>
+          <p className="mb-8 text-black/70">Subscribe to our weekly alerts and be the first to know about new arrivals.</p>
           <NewsletterForm variant="home" />
         </div>
       </section>

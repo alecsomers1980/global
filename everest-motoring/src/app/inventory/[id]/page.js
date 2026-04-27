@@ -110,7 +110,7 @@ export default async function CarDetailsPage({ params }) {
                             </div>
                             <div className="text-left md:text-right">
                                 <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">Retail Price</p>
-                                <div className="text-3xl font-bold text-primary">
+                                <div className="text-3xl font-bold text-black">
                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                 </div>
                             </div>
@@ -169,7 +169,7 @@ export default async function CarDetailsPage({ params }) {
                             </div>
 
                             {/* CRM Lead Generation Sidebar */}
-                            <div className="bg-slate-950 rounded-2xl p-8 text-white h-fit sticky top-24 shadow-xl">
+                            <div className="bg-black rounded-2xl p-8 text-white h-fit sticky top-24 shadow-xl">
                                 <h3 className="text-xl font-bold mb-6 border-b border-white/10 pb-4">Interested in this car?</h3>
                                 <p className="text-slate-400 text-sm mb-6 leading-relaxed">
                                     Leave your details below and a dedicated sales executive will contact you to arrange a viewing or discuss finance options.
@@ -179,7 +179,7 @@ export default async function CarDetailsPage({ params }) {
 
                                 <div className="mt-8 pt-6 border-t border-white/10">
                                     <h4 className="text-white font-bold mb-3">Ready to start financing?</h4>
-                                    <a href={`/login?register=client&car_id=${car.id}`} className="block w-full text-center bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors py-3 rounded-lg font-bold">
+                                    <a href={`/login?register=client&car_id=${car.id}`} className="block w-full text-center bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-black transition-colors py-3 rounded-lg font-bold">
                                         Create Client Account
                                     </a>
                                 </div>

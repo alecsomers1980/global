@@ -51,16 +51,16 @@ export default function NewsletterForm({ variant = "footer" }) {
                     disabled={status === "loading" || status === "success"}
                     className={
                         isHome
-                            ? "rounded-lg bg-slate-900 px-6 py-3 font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-50 flex items-center justify-center gap-2"
-                            : "bg-primary hover:bg-primary-light transition-colors rounded-r-lg px-4 flex items-center justify-center disabled:opacity-50"
+                            ? "rounded-lg bg-black px-6 py-3 font-bold text-primary transition-colors hover:bg-slate-900 disabled:opacity-50 flex items-center justify-center gap-2"
+                            : "bg-black hover:bg-slate-900 transition-colors rounded-r-lg px-4 flex items-center justify-center disabled:opacity-50 text-primary"
                     }
                 >
                     {status === "loading" ? (
-                        <span className="material-symbols-outlined text-white text-[20px] animate-spin">autorenew</span>
+                        <span className="material-symbols-outlined text-current text-[20px] animate-spin">autorenew</span>
                     ) : status === "success" ? (
-                        <span className="material-symbols-outlined text-white text-[20px]">check</span>
+                        <span className="material-symbols-outlined text-current text-[20px]">check</span>
                     ) : (
-                        isHome ? "Subscribe" : <span className="material-symbols-outlined text-white text-[20px]">arrow_forward</span>
+                        isHome ? "Subscribe" : <span className="material-symbols-outlined text-current text-[20px]">arrow_forward</span>
                     )}
                 </button>
             </div>

@@ -90,7 +90,7 @@ export default function FinancingDetailsForm({ leadId }) {
                         <button
                             type="submit"
                             disabled={status === "saving" || status === "success"}
-                            className="bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-white font-bold py-3 px-8 rounded-lg transition-colors shadow-md flex items-center gap-2"
+                            className="bg-primary hover:bg-primary-dark disabled:bg-slate-300 text-black font-bold py-3 px-8 rounded-lg transition-colors shadow-md flex items-center gap-2"
                         >
                             {status === "saving" ? (
                                 <>

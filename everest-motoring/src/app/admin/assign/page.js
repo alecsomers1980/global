@@ -40,8 +40,8 @@ export default async function AssignPage() {
         <div className="p-8 max-w-7xl mx-auto w-full">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Assign Vehicle</h1>
-                    <p className="text-slate-500 mt-1">Assign an available vehicle to a registered client to link it to their portal.</p>
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">Assign <span className="text-primary italic">Vehicle</span></h1>
+                    <p className="text-slate-500 mt-1 font-medium">Assign an available vehicle to a registered client to link it to their portal.</p>
                 </div>
             </div>
 

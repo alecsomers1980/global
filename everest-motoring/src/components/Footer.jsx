@@ -6,7 +6,10 @@ export default function Footer({ siteConfig }) {
     const desc = siteConfig?.description || "Premium Vehicles";
 
     return (
-        <footer className="bg-slate-950 border-t border-white/10 mt-auto">
+        <footer 
+            className="border-t border-white/10 mt-auto"
+            style={{ background: '#000000', backgroundColor: '#000000' }}
+        >
             <div className="mx-auto max-w-7xl px-4 py-16 lg:px-12">
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
 

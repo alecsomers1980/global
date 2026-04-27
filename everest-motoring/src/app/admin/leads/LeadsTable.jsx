@@ -37,23 +37,23 @@ export default function LeadsTable({ initialLeads }) {
     });
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Search and Filters Bar */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4">
+            <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-2xl border border-white/10 flex flex-col md:flex-row gap-4 relative z-10">
                 <div className="flex-1 relative">
-                    <span className="material-symbols-outlined absolute left-3 top-3 text-slate-400">search</span>
+                    <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-500">search</span>
                     <input
                         type="text"
                         placeholder="Search by client name, email, phone, or vehicle..."
-                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
+                        className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
-                <div className="w-full md:w-48">
+                <div className="w-full md:w-56">
                     <select
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none bg-white font-medium"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none appearance-none cursor-pointer hover:bg-slate-100 transition-all font-bold"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -74,30 +74,30 @@ export default function LeadsTable({ initialLeads }) {
                 Showing {filteredLeads.length} Inquir{filteredLeads.length !== 1 ? 'ies' : 'y'}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm uppercase tracking-wider">
-                            <th className="p-4 font-bold">Client Details</th>
-                            <th className="p-4 font-bold">Vehicle of Interest</th>
-                            <th className="p-4 font-bold">Inquiry Date</th>
-                            <th className="p-4 font-bold">Status</th>
-                            <th className="p-4 font-bold text-right">Actions</th>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-[0.2em]">
+                            <th className="p-6">Client Details</th>
+                            <th className="p-6">Vehicle of Interest</th>
+                            <th className="p-6">Inquiry Date</th>
+                            <th className="p-6">Status</th>
+                            <th className="p-6 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {filteredLeads.map((lead) => (
                             <React.Fragment key={lead.id}>
                                 <tr className="hover:bg-slate-50 transition-colors">
-                                    <td className="p-4">
-                                        <p className="font-bold text-slate-900">{lead.client_name}</p>
-                                        <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
-                                            <span className="material-symbols-outlined text-[16px]">call</span>
+                                    <td className="p-6">
+                                        <p className="font-black text-slate-900 text-lg tracking-tight">{lead.client_name}</p>
+                                        <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 font-medium">
+                                            <span className="material-symbols-outlined text-[16px] text-primary">call</span>
                                             {lead.client_phone}
                                         </p>
                                         {lead.client_email && (
-                                            <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
-                                                <span className="material-symbols-outlined text-[16px]">mail</span>
+                                            <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 font-medium">
+                                                <span className="material-symbols-outlined text-[16px] text-primary">mail</span>
                                                 {lead.client_email}
                                             </p>
                                         )}

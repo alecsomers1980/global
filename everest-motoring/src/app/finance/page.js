@@ -3,19 +3,15 @@ export const metadata = {
     description: "Learn how to easily finance your next pre-owned vehicle through major South African banks like WesBank, Absa, Standard Bank, and Nedbank.",
 };
 
+import PageBanner from "@/components/PageBanner";
+
 export default function FinancePage() {
     return (
         <div className="bg-background-light min-h-screen">
-            <section className="bg-slate-900 py-24 px-4 text-center lg:px-12 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center"></div>
-                <div className="relative z-10 max-w-4xl mx-auto">
-                    <div className="mb-4 inline-flex items-center rounded-full bg-secondary/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-300 border border-secondary">
-                        Finance & Insurance
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Seamless Vehicle Finance</h1>
-                    <p className="text-lg text-slate-300 md:text-xl">We partner with all major South African banks to secure you the most competitive interest rates possible. Approvals within 24 hours.</p>
-                </div>
-            </section>
+            <PageBanner
+                title="Seamless Vehicle Finance"
+                subtitle="We partner with all major South African banks to secure you the most competitive interest rates possible. Approvals within 24 hours."
+            />
 
             <section className="py-20 px-4 lg:px-12">
                 <div className="max-w-5xl mx-auto">

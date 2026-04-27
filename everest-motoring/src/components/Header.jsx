@@ -10,7 +10,7 @@ export default function Header({ siteConfig }) {
     const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     return (
-        <header className="sticky top-0 z-50 flex w-full items-center justify-between border-b border-white/10 bg-slate-950/95 px-6 py-4 backdrop-blur-md transition-all lg:px-12 shadow-sm">
+        <header className="sticky top-0 z-50 flex w-full items-center justify-between border-b border-white/10 bg-black px-6 py-4 backdrop-blur-md transition-all lg:px-12 shadow-sm">
             <div className="flex items-center gap-2">
                 {/* Dealership Logo */}
                 <Link href="/" className="h-16 w-auto lg:h-20 overflow-hidden flex items-center justify-center">
@@ -48,7 +48,7 @@ export default function Header({ siteConfig }) {
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="absolute left-0 top-full w-full border-b border-white/10 bg-slate-950 px-6 py-4 shadow-xl md:hidden flex flex-col gap-4">
+                <div className="absolute left-0 top-full w-full border-b border-white/10 bg-black px-6 py-4 shadow-xl md:hidden flex flex-col gap-4">
                     <nav className="flex flex-col gap-4">
                         <Link
                             className="text-base font-medium text-slate-300 transition-colors hover:text-white border-b border-white/10 pb-2"

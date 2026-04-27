@@ -50,13 +50,16 @@ export default async function AdminDashboardPage() {
         .order('created_at', { ascending: false });
 
     return (
-        <div className="p-8 max-w-7xl mx-auto w-full">
+        <div className="p-8 max-w-7xl mx-auto w-full text-white">
             <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
-                <h1 className="text-3xl font-bold text-slate-900">Manage Inventory</h1>
+                <div>
+                    <h1 className="text-3xl font-black uppercase tracking-tight">Manage <span className="text-primary italic">Inventory</span></h1>
+                    <p className="text-slate-400 mt-1 font-medium">Real-time control over showroom listings and vehicle status.</p>
+                </div>
                 <div className="flex items-center gap-3">
                     <SeoBatchButton />
-                    <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-colors px-4 py-2 rounded-md font-bold text-white shadow-sm flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">add</span>
+                    <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-all px-6 py-3 rounded-xl font-black text-black shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95">
+                        <span className="material-symbols-outlined text-[20px]">add</span>
                         Add Vehicle
                     </a>
                 </div>

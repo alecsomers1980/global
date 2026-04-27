@@ -20,7 +20,7 @@ export default function VehicleGallery({ car }) {
     return (
         <div>
             {/* Top Gallery / Main Video Hero */}
-            <div className="relative h-[400px] md:h-[600px] bg-slate-900 overflow-hidden">
+            <div className="relative h-[400px] md:h-[600px] bg-black overflow-hidden">
                 {activeMedia === 'video' ? (
                     car.video_url.startsWith('cf:') ? (
                         <iframe

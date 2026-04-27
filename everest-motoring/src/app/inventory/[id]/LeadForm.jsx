@@ -77,7 +77,7 @@ export default function LeadForm({ carId }) {
             <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="w-full bg-primary hover:bg-primary-dark disabled:bg-slate-600 text-white font-bold py-4 rounded-lg mt-4 transition-colors shadow-lg flex items-center justify-center gap-2"
+                className="w-full bg-primary hover:bg-primary-dark disabled:bg-slate-600 text-black font-bold py-4 rounded-lg mt-4 transition-colors shadow-lg flex items-center justify-center gap-2"
             >
                 {status === "submitting" ? (
                     <>

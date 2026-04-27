@@ -15,6 +15,7 @@ export async function submitValueMyCar(formData) {
         const transmission = formData.get("transmission");
         const condition = formData.get("condition");
         const additional_notes = formData.get("additional_notes");
+        const mileage = formData.get("mileage");
 
         // 2. Client Details
         const client_name = formData.get("client_name");
@@ -23,7 +24,7 @@ export async function submitValueMyCar(formData) {
         const client_province = formData.get("client_province");
         const client_suburb = formData.get("client_suburb");
 
-        if (!make || !model || !year || !fuel_type || !transmission || !condition || !client_name || !client_email || !client_phone) {
+        if (!make || !model || !year || !fuel_type || !transmission || !condition || !client_name || !client_email || !client_phone || !mileage) {
             return { error: "Missing required fields" };
         }
 
@@ -70,6 +71,7 @@ export async function submitValueMyCar(formData) {
             transmission,
             condition,
             additional_notes,
+            mileage,
             client_name,
             client_email,
             client_phone,

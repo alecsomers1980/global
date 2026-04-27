@@ -90,7 +90,7 @@ export default async function InventoryPage({ searchParams }) {
                                     className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col"
                                 >
                                     {/* Thumbnail Area */}
-                                    <div className="relative aspect-[4/3] bg-slate-900 overflow-hidden">
+                                    <div className="relative aspect-[4/3] bg-black overflow-hidden">
                                         {car.main_image_url ? (
                                             <Image
                                                 src={car.main_image_url}
@@ -108,7 +108,7 @@ export default async function InventoryPage({ searchParams }) {
                                         {/* Status Badge */}
                                         <div className="absolute top-4 left-4">
                                             {car.status === 'sold' ? (
-                                                <span className="px-3 py-1 bg-slate-900/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg border border-slate-700">
+                                                <span className="px-3 py-1 bg-black/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg border border-slate-700">
                                                     Sold
                                                 </span>
                                             ) : (
@@ -150,7 +150,7 @@ export default async function InventoryPage({ searchParams }) {
                                                 <div className="font-bold text-2xl text-slate-900 tracking-tight">
                                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                                 </div>
-                                                <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors text-slate-400">
+                                                <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-colors text-slate-400">
                                                     <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                                                 </div>
                                             </div>

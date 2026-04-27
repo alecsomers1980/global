@@ -72,7 +72,7 @@ export default function HomeSearchWidget({
                 </div>
             </div>
             <div className="flex items-end">
-                <button type="submit" className="flex h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold text-white shadow-lg shadow-primary/25 transition-colors hover:bg-primary-dark">
+                <button type="submit" className="flex h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold text-black shadow-lg shadow-primary/25 transition-colors hover:bg-primary-dark">
                     <span className="material-symbols-outlined">search</span> Search Vehicles
                 </button>
             </div>

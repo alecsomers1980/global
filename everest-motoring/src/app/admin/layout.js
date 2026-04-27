@@ -33,31 +33,34 @@ export default async function AdminLayout({ children }) {
     console.log("User authorized, rendering admin layout.");
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
+        <div className="min-h-screen bg-slate-50 flex flex-col relative">
             {/* Unified Admin Header */}
-            <div className="w-full bg-slate-900 px-6 py-4 flex justify-between items-center text-white border-b-4 border-primary">
-                <div className="flex items-center gap-8">
-                    <a href="/admin/inventory" className="font-bold text-xl tracking-wider">EVEREST<span className="text-primary">ADMIN</span></a>
-                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                        <a href="/admin" className="text-slate-300 hover:text-white transition-colors">Dashboard</a>
-                        <a href="/admin/inventory" className="text-slate-300 hover:text-white transition-colors">Inventory</a>
-                        <a href="/admin/news" className="text-slate-300 hover:text-white transition-colors">News</a>
-                        <a href="/admin/leads" className="text-slate-300 hover:text-white transition-colors">Car Inquiries</a>
-                        <a href="/admin/assign" className="text-slate-300 hover:text-white transition-colors">Assign Vehicle</a>
-                        <a href="/admin/trade-ins" className="text-slate-300 hover:text-white transition-colors">Trade-In Requests</a>
-                        <a href="/admin/affiliates" className="text-amber-500 hover:text-amber-400 font-bold transition-colors border-l border-slate-700 pl-6 ml-2">Affiliate Network</a>
+            <div 
+                className="w-full px-6 py-6 flex justify-between items-center text-white border-b border-primary/30 relative z-30 shadow-2xl"
+                style={{ background: '#000000', backgroundColor: '#000000' }}
+            >
+                <div className="flex items-center gap-10 relative z-10">
+                    <a href="/admin/inventory" className="font-black text-3xl tracking-tighter hover:scale-105 transition-transform">EVEREST<span className="text-primary">ADMIN</span></a>
+                    <nav className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.3em]">
+                        <a href="/admin" className="text-white hover:text-primary transition-all">Dashboard</a>
+                        <a href="/admin/inventory" className="text-slate-400 hover:text-white transition-all">Inventory</a>
+                        <a href="/admin/news" className="text-slate-400 hover:text-white transition-all">News</a>
+                        <a href="/admin/leads" className="text-slate-400 hover:text-white transition-all">Car Inquiries</a>
+                        <a href="/admin/assign" className="text-slate-400 hover:text-white transition-all">Assign Vehicle</a>
+                        <a href="/admin/trade-ins" className="text-slate-400 hover:text-white transition-all">Trade-In Requests</a>
+                        <a href="/admin/affiliates" className="text-amber-500 hover:text-amber-400 transition-all border-l border-slate-800 pl-8 ml-2">Affiliate Network</a>
                     </nav>
                 </div>
-                <div className="text-sm font-medium flex gap-4 items-center">
-                    <a href="/" className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">public</span>
+                <div className="text-sm font-medium flex gap-4 items-center relative z-10">
+                    <a href="/" className="text-slate-400 hover:text-white transition-all flex items-center gap-2 font-black uppercase tracking-widest text-[10px] bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                        <span className="material-symbols-outlined text-[18px]">public</span>
                         View Site
                     </a>
                 </div>
             </div>
 
             {/* Page Content */}
-            <main className="flex-1 w-full flex flex-col">
+            <main className="flex-1 w-full flex flex-col relative z-10">
                 {children}
             </main>
 
@@ -65,3 +68,4 @@ export default async function AdminLayout({ children }) {
         </div>
     );
 }
+

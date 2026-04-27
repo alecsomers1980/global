@@ -53,39 +53,31 @@ export default async function NewsIndexPage() {
     return (
         <div className="min-h-screen bg-slate-50">
             {/* ── Hero Section ── */}
-            <section className="relative overflow-hidden bg-slate-900 text-white">
-                {/* Gradient mesh background */}
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-primary/20 blur-[120px]" />
-                    <div className="absolute -bottom-1/3 -left-1/4 w-[600px] h-[600px] rounded-full bg-secondary/15 blur-[100px]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[80px]" />
-                </div>
-                {/* Diagonal accent line */}
-                <div className="absolute inset-0 z-0 opacity-[0.03]">
-                    <div className="absolute top-0 left-0 w-full h-full" style={{
-                        backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(255,255,255,0.5) 60px, rgba(255,255,255,0.5) 61px)"
-                    }} />
+            <section className="relative overflow-hidden bg-black text-white py-24 px-4 lg:px-12 flex flex-col items-center">
+                {/* Background Styling (PageBanner matching) */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black to-slate-950 z-0">
+                    <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #ffff01 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
                 </div>
 
-                <div className="relative z-10 mx-auto max-w-7xl px-4 pb-20 pt-28 lg:px-12">
-                    <div className="mb-4 inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary backdrop-blur-sm border border-white/10">
-                        <span className="material-symbols-outlined text-sm mr-2">newspaper</span>
-                        Motoring Insights
-                    </div>
-                    <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl max-w-3xl leading-[1.05]">
-                        Latest News{" "}
-                        <span className="text-primary">&</span>{" "}
-                        <span className="bg-gradient-to-r from-primary to-red-400 bg-clip-text text-transparent">
-                            Guides
-                        </span>
+                {/* Yellow Accent Elements */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+
+                <div className="relative z-10 mx-auto max-w-7xl text-center flex flex-col items-center pt-8">
+                    {/* Yellow Bar Accent */}
+                    <div className="w-12 h-1 bg-primary mb-8 rounded-full shadow-[0_0_15px_rgba(255,255,1,0.5)]" />
+
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
+                        Latest News <span className="text-primary">&</span> Guides
                     </h1>
-                    <p className="mt-6 max-w-xl text-lg text-slate-300 leading-relaxed">
+                    
+                    <p className="max-w-2xl text-lg text-slate-300 md:text-xl font-medium leading-relaxed">
                         Expert buying advice, honest model reviews, and local motoring stories
                         from the Everest Motoring team in White River.
                     </p>
 
                     {/* Category pills */}
-                    <div className="mt-10 flex flex-wrap gap-3">
+                    <div className="mt-10 flex flex-wrap justify-center gap-3">
                         {Object.entries(CATEGORY_LABEL).map(([key, label]) => {
                             const count = allPosts.filter((p) => p.category === key).length;
                             return (
@@ -106,8 +98,8 @@ export default async function NewsIndexPage() {
                     </div>
                 </div>
 
-                {/* Bottom fade */}
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 to-transparent z-10" />
+                {/* Bottom Edge Accent */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-primary/30 rounded-t-full" />
             </section>
 
             {/* ── Featured Article Spotlight ── */}
@@ -119,7 +111,7 @@ export default async function NewsIndexPage() {
                     >
                         <div className="grid grid-cols-1 lg:grid-cols-2">
                             {/* Image side */}
-                            <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-slate-900">
+                            <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-black">
                                 {featured.hero_image_url ? (
                                     <Image
                                         src={featured.hero_image_url}
@@ -140,7 +132,7 @@ export default async function NewsIndexPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-white" />
                                 {/* Category badge */}
                                 <div className="absolute top-6 left-6">
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30">
                                         <span className="material-symbols-outlined text-sm">
                                             {CATEGORY_ICON[featured.category] || "article"}
                                         </span>
@@ -182,7 +174,7 @@ export default async function NewsIndexPage() {
                                     </p>
                                 )}
                                 <div className="mt-8 flex items-center gap-3">
-                                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-bold text-sm rounded-lg group-hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
+                                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-black font-bold text-sm rounded-lg group-hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
                                         Read Article
                                         <span className="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">
                                             arrow_forward
@@ -223,7 +215,7 @@ export default async function NewsIndexPage() {
                                     style={{ animationDelay: `${i * 80}ms` }}
                                 >
                                     {/* Card image */}
-                                    <div className="relative aspect-[16/10] overflow-hidden bg-slate-900">
+                                    <div className="relative aspect-[16/10] overflow-hidden bg-black">
                                         {post.hero_image_url ? (
                                             <Image
                                                 src={post.hero_image_url}
@@ -243,7 +235,7 @@ export default async function NewsIndexPage() {
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                                         {/* Category badge */}
                                         <div className="absolute top-4 left-4">
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-black font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
                                                 <span className="material-symbols-outlined text-xs">
                                                     {CATEGORY_ICON[post.category] || "article"}
                                                 </span>
@@ -304,7 +296,7 @@ export default async function NewsIndexPage() {
             </section>
 
             {/* ── Newsletter CTA ── */}
-            <section className="relative overflow-hidden bg-slate-900 px-4 py-20 text-white">
+            <section className="relative overflow-hidden bg-black px-4 py-20 text-white">
                 <div className="absolute inset-0 z-0">
                     <div className="absolute -top-1/3 right-0 w-[500px] h-[500px] rounded-full bg-primary/15 blur-[100px]" />
                     <div className="absolute bottom-0 -left-1/4 w-[400px] h-[400px] rounded-full bg-secondary/10 blur-[80px]" />

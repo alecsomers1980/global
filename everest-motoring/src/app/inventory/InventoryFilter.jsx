@@ -147,7 +147,7 @@ export default function InventoryFilter() {
                                         onChange={() => handleCheckboxChange('transmission', t, transmission, setTransmission)}
                                         className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                     />
-                                    <span className="material-symbols-outlined absolute text-white text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                    <span className="material-symbols-outlined absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                                 </div>
                                 <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{t}</span>
                             </label>
@@ -170,7 +170,7 @@ export default function InventoryFilter() {
                                         onChange={() => handleCheckboxChange('fuel_type', f, fuelType, setFuelType)}
                                         className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                     />
-                                    <span className="material-symbols-outlined absolute text-white text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                    <span className="material-symbols-outlined absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                                 </div>
                                 <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{f}</span>
                             </label>
@@ -197,7 +197,7 @@ export default function InventoryFilter() {
                                                     onChange={() => handleCheckboxChange('features', feature, features, setFeatures)}
                                                     className="peer appearance-none w-4 h-4 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                                 />
-                                                <span className="material-symbols-outlined absolute text-white text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                                <span className="material-symbols-outlined absolute text-black text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                                             </div>
                                             <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{feature}</span>
                                         </label>

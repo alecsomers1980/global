@@ -41,32 +41,32 @@ export default async function AdminAffiliatesPage() {
     const networkClosedWon = networkLeads.filter(l => l.status === 'closed_won').length;
 
     return (
-        <div className="p-4 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto w-full">
-            <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
+            <div className="mb-12 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 font-display">Affiliate Network Management</h1>
-                    <p className="text-slate-500 mt-1">Monitor your referral network, approve applications, and track pipeline velocity.</p>
+                    <h1 className="text-4xl font-black uppercase tracking-tight text-slate-900">Affiliate <span className="text-primary italic">Network</span></h1>
+                    <p className="text-slate-500 mt-2 font-medium tracking-wide">Monitor your referral network, approve applications, and track pipeline velocity.</p>
                 </div>
                 <AffiliateTopActions affiliates={affiliateMetrics} />
             </div>
 
             {/* ── Network Overview Cards ── */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Affiliates</p>
-                    <span className="text-3xl font-bold text-slate-900">{affiliates?.length || 0}</span>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Affiliates</p>
+                    <span className="text-4xl font-black text-slate-900">{affiliates?.length || 0}</span>
                 </div>
-                <div className={`p-5 rounded-xl border shadow-sm ${pendingAffiliates.length > 0 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200'}`}>
-                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${pendingAffiliates.length > 0 ? 'text-amber-600' : 'text-slate-400'}`}>Pending Approval</p>
-                    <span className={`text-3xl font-bold ${pendingAffiliates.length > 0 ? 'text-amber-700' : 'text-slate-900'}`}>{pendingAffiliates.length}</span>
+                <div className={`p-6 rounded-2xl border shadow-sm ${pendingAffiliates.length > 0 ? 'bg-amber-50 border-amber-300' : 'bg-white border-slate-200'}`}>
+                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-2 ${pendingAffiliates.length > 0 ? 'text-amber-600' : 'text-slate-400'}`}>Pending Approval</p>
+                    <span className={`text-4xl font-black ${pendingAffiliates.length > 0 ? 'text-amber-700' : 'text-slate-900'}`}>{pendingAffiliates.length}</span>
                 </div>
-                <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Network Leads</p>
-                    <span className="text-3xl font-bold text-slate-900">{networkTotalLeads}</span>
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-primary border-t-4">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Network Leads</p>
+                    <span className="text-4xl font-black text-slate-900">{networkTotalLeads}</span>
                 </div>
-                <div className="bg-slate-900 p-5 rounded-xl shadow-md border-t-4 border-t-green-500">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Network Closed</p>
-                    <span className="text-3xl font-bold text-white">{networkClosedWon}</span>
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm border-t-green-500 border-t-4">
+                    <p className="text-[10px] font-black text-green-600 uppercase tracking-[0.2em] mb-2">Network Closed</p>
+                    <span className="text-4xl font-black text-slate-900">{networkClosedWon}</span>
                 </div>
             </div>
 
@@ -120,17 +120,17 @@ function AffiliatesTable({ affiliates, allLeads, isPending = false }) {
     return (
         <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
-                <tr className="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider bg-slate-50/70">
-                    <th className="p-4 font-bold">Salesperson</th>
-                    <th className="p-4 font-bold">Phone</th>
-                    <th className="p-4 font-bold text-center">Tracking Code</th>
-                    <th className="p-4 font-bold text-center">Leads</th>
-                    <th className="p-4 font-bold text-center">Closed Won</th>
-                    <th className="p-4 font-bold text-right">Pending Commission</th>
-                    <th className="p-4 font-bold text-right">Actions</th>
+                <tr className="border-b border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-[0.2em] bg-slate-50">
+                    <th className="p-6 font-black">Salesperson</th>
+                    <th className="p-6 font-black">Phone</th>
+                    <th className="p-6 font-black text-center">Tracking Code</th>
+                    <th className="p-6 font-black text-center">Leads</th>
+                    <th className="p-6 font-black text-center">Closed Won</th>
+                    <th className="p-6 font-black text-right">Pending Commission</th>
+                    <th className="p-6 font-black text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
                 {affiliates.map(aff => (
                     <AffiliateRow
                         key={aff.id}

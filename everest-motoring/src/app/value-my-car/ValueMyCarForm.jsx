@@ -22,7 +22,8 @@ export default function ValueMyCarForm() {
         client_phone: "",
         client_email: "",
         client_suburb: "",
-        client_province: ""
+        client_province: "",
+        mileage: ""
     });
 
     const [files, setFiles] = useState({
@@ -50,7 +51,7 @@ export default function ValueMyCarForm() {
 
         // Basic validation for Step 1
         if (step === 1) {
-            if (!formData.make || !formData.model || !formData.year || !formData.fuel_type || !formData.transmission || !formData.condition) {
+            if (!formData.make || !formData.model || !formData.year || !formData.fuel_type || !formData.transmission || !formData.condition || !formData.mileage) {
                 alert("Please fill in all required vehicle details before continuing.");
                 return;
             }
@@ -139,11 +140,11 @@ export default function ValueMyCarForm() {
             <div className="mb-10">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                     <div className="flex items-center gap-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>1</div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-primary text-black' : 'bg-slate-100 text-slate-400'}`}>1</div>
                         <div className={`h-1 w-8 rounded ${step >= 2 ? 'bg-primary' : 'bg-slate-100'}`}></div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>2</div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-primary text-black' : 'bg-slate-100 text-slate-400'}`}>2</div>
                         <div className={`h-1 w-8 rounded ${step >= 3 ? 'bg-primary' : 'bg-slate-100'}`}></div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 3 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>3</div>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 3 ? 'bg-primary text-black' : 'bg-slate-100 text-slate-400'}`}>3</div>
                     </div>
                     <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">
                         Step {step} of 3
@@ -199,6 +200,10 @@ export default function ValueMyCarForm() {
                                 <option value="Older">Older</option>
                             </select>
                         </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Mileage (km) *</label>
+                            <input type="number" name="mileage" value={formData.mileage} onChange={handleChange} placeholder="e.g. 45000" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
@@ -210,7 +215,7 @@ export default function ValueMyCarForm() {
                                     <button
                                         key={type} type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, fuel_type: type }))}
-                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.fuel_type === type ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.fuel_type === type ? 'bg-primary border-primary text-black shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                     >
                                         {type}
                                     </button>
@@ -226,7 +231,7 @@ export default function ValueMyCarForm() {
                                     <button
                                         key={type} type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, transmission: type }))}
-                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.transmission === type ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                        className={`py-3 px-4 rounded-xl border text-sm font-bold transition-all ${formData.transmission === type ? 'bg-primary border-primary text-black shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                     >
                                         {type}
                                     </button>
@@ -243,7 +248,7 @@ export default function ValueMyCarForm() {
                                 <button
                                     key={cond} type="button"
                                     onClick={() => setFormData(prev => ({ ...prev, condition: cond }))}
-                                    className={`py-3 px-2 rounded-xl border text-sm font-bold transition-all ${formData.condition === cond ? 'bg-primary border-primary text-white shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                                    className={`py-3 px-2 rounded-xl border text-sm font-bold transition-all ${formData.condition === cond ? 'bg-primary border-primary text-black shadow-md shadow-primary/20' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                                 >
                                     {cond}
                                 </button>
@@ -264,7 +269,7 @@ export default function ValueMyCarForm() {
                     </div>
 
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
-                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
+                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
                             Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
                     </div>
@@ -317,7 +322,7 @@ export default function ValueMyCarForm() {
 
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
                         <button type="button" onClick={prevStep} className="px-8 py-4 rounded-lg font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Back</button>
-                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
+                        <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
                             Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
                     </div>

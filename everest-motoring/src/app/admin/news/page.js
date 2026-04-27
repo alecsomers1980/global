@@ -37,24 +37,24 @@ export default async function AdminNewsPage() {
         <div className="p-8 max-w-[1400px] mx-auto w-full">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">Latest News</h1>
-                    <p className="text-slate-500 text-sm mt-1">
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">Editorial <span className="text-primary italic">Desk</span></h1>
+                    <p className="text-slate-500 text-sm mt-1 font-medium">
                         SEO articles — auto-generated monthly, plus manual drafts.
                     </p>
                 </div>
                 <NewsActionBar />
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                            <th className="p-4 font-bold">Title</th>
-                            <th className="p-4 font-bold">Category</th>
-                            <th className="p-4 font-bold">Status</th>
-                            <th className="p-4 font-bold">Published</th>
-                            <th className="p-4 font-bold">Source</th>
-                            <th className="p-4 font-bold text-right">Actions</th>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-[0.2em]">
+                            <th className="p-6">Title</th>
+                            <th className="p-6">Category</th>
+                            <th className="p-6">Status</th>
+                            <th className="p-6">Published</th>
+                            <th className="p-6">Source</th>
+                            <th className="p-6 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
