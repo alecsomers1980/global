@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <meta name="x-deploy-marker" content="EVEREST-DEPLOY-MARKER-2026-04-27-A" />
+        <meta name="x-deploy-marker" content="EVEREST-DEPLOY-MARKER-2026-04-27-B" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
