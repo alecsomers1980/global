@@ -37,7 +37,7 @@ export default async function AdminNewsPage() {
         <div className="p-8 max-w-[1400px] mx-auto w-full">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">Editorial <span className="text-primary italic">Desk</span></h1>
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-black">Editorial <span className="italic">Desk</span></h1>
                     <p className="text-slate-500 text-sm mt-1 font-medium">
                         SEO articles — auto-generated monthly, plus manual drafts.
                     </p>

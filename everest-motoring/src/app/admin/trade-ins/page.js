@@ -19,7 +19,7 @@ export default async function TradeInsPage() {
         <div className="p-8 max-w-7xl mx-auto w-full text-white">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight">Trade-In <span className="text-primary italic">Valuations</span></h1>
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-black">Trade-In <span className="italic">Valuations</span></h1>
                     <p className="text-slate-400 mt-1 font-medium">Review customer requests from the "Value My Car" landing page.</p>
                 </div>
             </div>

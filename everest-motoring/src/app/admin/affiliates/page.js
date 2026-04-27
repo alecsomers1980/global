@@ -44,7 +44,7 @@ export default async function AdminAffiliatesPage() {
         <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
             <div className="mb-12 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-black uppercase tracking-tight text-slate-900">Affiliate <span className="text-primary italic">Network</span></h1>
+                    <h1 className="text-4xl font-black uppercase tracking-tight text-black">Affiliate <span className="italic">Network</span></h1>
                     <p className="text-slate-500 mt-2 font-medium tracking-wide">Monitor your referral network, approve applications, and track pipeline velocity.</p>
                 </div>
                 <AffiliateTopActions affiliates={affiliateMetrics} />

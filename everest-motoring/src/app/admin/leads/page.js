@@ -64,7 +64,7 @@ export default async function LeadsPage() {
         <div className="p-8 max-w-7xl mx-auto w-full text-white">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight">Vehicle <span className="text-primary italic">Inquiries</span></h1>
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-black">Vehicle <span className="italic">Inquiries</span></h1>
                     <p className="text-slate-400 mt-1 font-medium">Manage leads generated from individual car listings.</p>
                 </div>
             </div>

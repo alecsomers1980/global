@@ -39,8 +39,8 @@ export default async function AdminDashboardRoot() {
         <div className="p-8 max-w-7xl mx-auto w-full">
             <div className="flex justify-between items-center mb-12">
                 <div>
-                    <h1 className="text-4xl font-black uppercase tracking-tight text-slate-900 flex items-center gap-3">
-                        Mission <span className="text-primary italic">Control</span>
+                    <h1 className="text-4xl font-black uppercase tracking-tight text-black flex items-center gap-3">
+                        Mission <span className="italic">Control</span>
                     </h1>
                     <p className="text-slate-500 mt-2 font-medium tracking-wide">Live Dealership Analytics & Key Performance Indicators.</p>
                 </div>

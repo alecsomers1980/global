@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
         <div className="p-8 max-w-7xl mx-auto w-full text-white">
             <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight">Manage <span className="text-primary italic">Inventory</span></h1>
+                    <h1 className="text-3xl font-black uppercase tracking-tight text-black">Manage <span className="italic">Inventory</span></h1>
                     <p className="text-slate-400 mt-1 font-medium">Real-time control over showroom listings and vehicle status.</p>
                 </div>
                 <div className="flex items-center gap-3">
