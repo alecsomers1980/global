@@ -684,6 +684,31 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         + Add Item
                                     </button>
                                 </div>
+
+                                {/* Financials relocated to bottom of items list */}
+                                <div className="mt-auto bg-gray-50 flex flex-col border-t border-gray-300">
+                                    <div className="flex border-b border-gray-200">
+                                        <div className="w-32 text-xs font-bold p-2 flex flex-col justify-center border-r border-gray-200 bg-gray-100/50">
+                                            <span className="text-gray-700">Sub Total</span>
+                                            <button 
+                                                type="button"
+                                                onClick={recalculateTotals}
+                                                className="text-[8px] text-blue-500 hover:underline mt-0.5 text-left font-medium"
+                                            >
+                                                (Recalculate from items)
+                                            </button>
+                                        </div>
+                                        <input type="number" step="0.01" name="sub_total" value={jobcard.sub_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-3 focus:outline-none focus:bg-blue-50 text-gray-800 font-medium" />
+                                    </div>
+                                    <div className="flex border-b border-gray-200">
+                                        <span className="w-32 text-xs font-bold p-2 flex items-center border-r border-gray-200 bg-gray-100/50 text-gray-700">15% VAT</span>
+                                        <input type="number" step="0.01" name="vat_total" value={jobcard.vat_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-3 focus:outline-none focus:bg-blue-50 text-gray-800 font-medium" />
+                                    </div>
+                                    <div className="flex border-b border-gray-300">
+                                        <span className="w-32 text-xs font-bold p-2 flex items-center border-r border-gray-200 bg-gray-200/50 text-gray-800">Total</span>
+                                        <input type="number" step="0.01" name="total" value={jobcard.total || ''} onChange={handleChange} className="flex-1 w-full font-bold bg-white px-3 focus:outline-none focus:bg-blue-50 text-gray-900 text-lg" />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Other Notes Section */}
@@ -897,30 +922,6 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             
 
 
-                            {/* Financials embedded bottom left logic */}
-                            <div className="mt-auto bg-gray-50 flex flex-col border-t border-black">
-                                <div className="flex border-b border-gray-300">
-                                    <div className="w-24 text-xs font-bold p-2 flex flex-col justify-center">
-                                        <span>Sub Total</span>
-                                        <button 
-                                            type="button"
-                                            onClick={recalculateTotals}
-                                            className="text-[8px] text-blue-500 hover:underline mt-0.5 text-left"
-                                        >
-                                            (Recalculate)
-                                        </button>
-                                    </div>
-                                    <input type="number" step="0.01" name="sub_total" value={jobcard.sub_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
-                                </div>
-                                <div className="flex border-b border-gray-300">
-                                    <span className="w-24 text-xs font-bold p-2">15% VAT</span>
-                                    <input type="number" step="0.01" name="vat_total" value={jobcard.vat_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
-                                </div>
-                                <div className="flex border-b border-black">
-                                    <span className="w-24 text-xs font-bold p-2 bg-gray-100">Total</span>
-                                    <input type="number" step="0.01" name="total" value={jobcard.total || ''} onChange={handleChange} className="flex-1 w-full font-bold bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
-                                </div>
-                            </div>
                         </div>
                     </div>
 
