@@ -711,19 +711,19 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                             </div>
 
-                            {/* Other Notes Section */}
-                            <div className="flex-1 flex flex-col overflow-hidden min-h-[140px]">
-                                <div className="p-2 border-b border-gray-200 bg-white flex-shrink-0">
-                                    <span className="text-xs font-bold text-gray-600 uppercase">Other Notes</span>
+                            {/* Other Notes Section - Shrinked to save space */}
+                            <div className="flex-none h-32 flex flex-col overflow-hidden border-t border-gray-100">
+                                <div className="p-1.5 border-b border-gray-100 bg-gray-50/50 flex-shrink-0 flex items-center">
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase ml-2">Other Notes</span>
                                 </div>
                                 <textarea 
                                     name="design_notes" 
                                     value={jobcard.design_notes || ''} 
                                     onChange={handleChange}
-                                    placeholder="Paste design notes, instructions, or artwork links here..."
-                                    className="flex-1 w-full bg-transparent text-gray-800 p-4 resize-none focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300 text-sm"
+                                    placeholder="Artwork links, extra instructions..."
+                                    className="flex-1 w-full bg-transparent text-gray-800 p-3 resize-none focus:outline-none focus:ring-0 text-xs"
                                     style={{
-                                        backgroundImage: 'linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)',
+                                        backgroundImage: 'linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px)',
                                         backgroundSize: '20px 20px',
                                         lineHeight: '20px'
                                     }}
