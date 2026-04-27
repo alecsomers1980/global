@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
+import { queueAiWalkaround, optimizeDescriptionAction, composeSceneOneAction } from "./ai_actions";
 import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
 
 const CAR_FEATURES = {
@@ -14,12 +14,64 @@ const CAR_FEATURES = {
     "Exterior & Performance": ["Alloy Wheels", "Tow Bar", "Roof Rails", "Daytime Running Lights", "Xenon/LED Lights", "Fog Lights", "4WD/AWD"]
 };
 
+const COLOURS = ["Beige", "Black", "Blue", "Bronze", "Brown", "Burgundy", "Gold", "Green", "Grey", "Indigo", "Magenta", "Maroon", "Navy", "Orange", "Pink", "Purple", "Red", "Silver", "Turquoise", "White", "Yellow"];
+
+const FUEL_TYPES = ["Petrol", "Diesel", "Electric", "Hybrid", "Bi Fuel", "Bio-Diesel", "Compressed Natural Gas", "Dual Fuel", "Hydrogen", "Liquefied Natural Gas", "Liquefied Petroleum Gas", "Other"];
+
+const SERVICE_HISTORY = [
+    { value: "full_franchise", label: "Full Franchise Service History" },
+    { value: "full", label: "Full Service History" },
+    { value: "full_non_franchise", label: "Full Service History by Non-Franchise" },
+    { value: "full_partial_franchise", label: "Full Service History Partially by Franchise" },
+    { value: "partial", label: "Partial Service History" },
+    { value: "none", label: "No Service History" },
+    { value: "not_applicable", label: "Not Applicable" },
+];
+
+const IMAGE_CATEGORIES = [
+    { value: "front", label: "Front" },
+    { value: "rear", label: "Rear" },
+    { value: "interior", label: "Interior" },
+    { value: "dashboard", label: "Dashboard" },
+    { value: "steering_wheel", label: "Steering Wheel" },
+    { value: "wheels", label: "Wheels / Rims" },
+    { value: "front_left", label: "Front Left" },
+    { value: "front_right", label: "Front Right" },
+    { value: "rear_left", label: "Rear Left" },
+    { value: "rear_right", label: "Rear Right" },
+    { value: "left", label: "Left" },
+    { value: "right", label: "Right" },
+];
+
 export default function VehicleForm({ initialData = null }) {
     const router = useRouter();
     const supabase = createClient();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const isEditing = !!initialData;
+
+    // Gallery management (edit mode)
+    const [keepGallery, setKeepGallery] = useState(initialData?.gallery_urls || []);
+    const [imageMeta, setImageMeta] = useState(() => {
+        const map = {};
+        (initialData?.gallery_meta || []).forEach((m) => {
+            if (m && m.url) map[m.url] = m.category;
+        });
+        return map;
+    });
+    const [inspectionReportUrl, setInspectionReportUrl] = useState(initialData?.inspection_report_url || null);
+
+    const setCategoryFor = (url, value) => {
+        setImageMeta((prev) => ({ ...prev, [url]: value }));
+    };
+    const removeGalleryImage = (url) => {
+        setKeepGallery((prev) => prev.filter((u) => u !== url));
+        setImageMeta((prev) => {
+            const next = { ...prev };
+            delete next[url];
+            return next;
+        });
+    };
 
     // Helper to check if an existing feature was selected
     const hasFeature = (feature) => {
@@ -40,7 +92,8 @@ export default function VehicleForm({ initialData = null }) {
             const galleryFiles = formData.getAll("gallery_images");
 
             let mainImageUrl = formData.get("main_image_url") || (isEditing ? initialData.main_image_url : null);
-            let galleryUrls = isEditing && initialData.gallery_urls ? [...initialData.gallery_urls] : [];
+            let galleryUrls = isEditing ? [...keepGallery] : [];
+            let nextInspectionReportUrl = inspectionReportUrl;
 
             // Helper to upload a single file
             const uploadFile = async (file) => {
@@ -124,9 +177,49 @@ export default function VehicleForm({ initialData = null }) {
                 setIsUploading(false);
                 return;
             }
+
+            // Scene 1 background composite via Nano Banana (skipped if user opted out
+            // or no fresh scene-1 file was uploaded this submit).
+            const skipBgSwap = formData.get("skip_bg_swap") === "on";
+            const scene1FileUploaded = scene1File && scene1File.size > 0;
+            if (!skipBgSwap && scene1FileUploaded && mainImageUrl) {
+                setUploadProgress(60);
+                console.log("[VehicleForm] Running Nano Banana scene-1 composite...");
+                const composeResult = await composeSceneOneAction(mainImageUrl);
+                if (composeResult.success && composeResult.url) {
+                    mainImageUrl = composeResult.url;
+                } else {
+                    console.warn("[VehicleForm] Compose failed — keeping original scene-1 image.", composeResult.error);
+                }
+            }
+
+            // Inspection report PDF upload (optional)
+            const inspectionFile = formData.get("inspection_report");
+            if (inspectionFile && inspectionFile.size > 0) {
+                try {
+                    const fileName = `inspection-reports/${Date.now()}-${Math.random().toString(36).substring(7)}.pdf`;
+                    const { error: uploadError } = await supabase.storage
+                        .from('vehicles')
+                        .upload(fileName, inspectionFile, { contentType: 'application/pdf' });
+                    if (uploadError) throw uploadError;
+                    const { data: publicUrlData } = supabase.storage.from('vehicles').getPublicUrl(fileName);
+                    nextInspectionReportUrl = publicUrlData.publicUrl;
+                } catch (err) {
+                    console.error("Inspection report upload error:", err);
+                    alert("Failed to upload inspection report PDF.");
+                    setIsUploading(false);
+                    return;
+                }
+            }
+
             setUploadProgress(70);
 
             setUploadProgress(90);
+
+            // Helpers for optional numeric/boolean fields
+            const intOrNull = (v) => (v === "" || v == null ? null : parseInt(v));
+            const floatOrNull = (v) => (v === "" || v == null ? null : parseFloat(v));
+            const triState = (v) => (v === "" || v == null ? null : v === "yes");
 
             // 2. Prepare the Car Record payload
             const carPayload = {
@@ -144,6 +237,40 @@ export default function VehicleForm({ initialData = null }) {
                 description: formData.get("description") || null,
                 features: formData.getAll("features"),
                 is_featured: formData.get("is_featured") === "on",
+
+                // Identification
+                stock_number: formData.get("stock_number") || null,
+                vin: formData.get("vin") || null,
+                registration_number: formData.get("registration_number") || null,
+
+                // Condition & History
+                registration_year: intOrNull(formData.get("registration_year")),
+                condition: formData.get("condition") || null,
+                colour: formData.get("colour") || null,
+                manufacturer_colour: formData.get("manufacturer_colour") || null,
+                previous_owners: intOrNull(formData.get("previous_owners")),
+                service_history: formData.get("service_history") || null,
+                accident_involved: triState(formData.get("accident_involved")),
+                demo_vehicle: formData.get("demo_vehicle") === "on",
+                code_3: formData.get("code_3") === "on",
+                accessible_vehicle: formData.get("accessible_vehicle") === "on",
+                armoured_vehicle: formData.get("armoured_vehicle") === "on",
+
+                // Warranty
+                has_warranty: triState(formData.get("has_warranty")),
+                warranty_end_date: formData.get("warranty_end_date") || null,
+                warranty_mileage: intOrNull(formData.get("warranty_mileage")),
+
+                // Pricing
+                trade_in_price: floatOrNull(formData.get("trade_in_price")),
+                reconditioning_cost: floatOrNull(formData.get("reconditioning_cost")),
+                price_on_application: formData.get("price_on_application") === "on",
+
+                // Image metadata + inspection report
+                gallery_meta: galleryUrls
+                    .filter((url) => imageMeta[url])
+                    .map((url) => ({ url, category: imageMeta[url] })),
+                inspection_report_url: nextInspectionReportUrl,
             };
 
             // AI Optimization
@@ -234,10 +361,7 @@ export default function VehicleForm({ initialData = null }) {
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Fuel Type</label>
                     <select name="fuel_type" defaultValue={initialData?.fuel_type || "Diesel"} required className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
-                        <option value="Diesel">Diesel</option>
-                        <option value="Petrol">Petrol</option>
-                        <option value="Electric">Electric</option>
-                        <option value="Hybrid">Hybrid</option>
+                        {FUEL_TYPES.map(f => <option key={f} value={f}>{f}</option>)}
                     </select>
                 </div>
                 <div>
@@ -246,6 +370,7 @@ export default function VehicleForm({ initialData = null }) {
                         <option value="available">Available</option>
                         <option value="reserved">Reserved</option>
                         <option value="sold">Sold</option>
+                        <option value="temporarily_withdrawn">Temporarily Withdrawn</option>
                     </select>
                 </div>
                 <div>
@@ -262,6 +387,151 @@ export default function VehicleForm({ initialData = null }) {
                         </div>
                         <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Show on Home Page</span>
                     </label>
+                </div>
+            </div>
+
+            {/* ======== Vehicle Identification ======== */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h3 className="block text-sm font-bold text-slate-700 mb-4">Vehicle Identification</h3>
+                <p className="text-xs text-slate-500 -mt-2 mb-2">Required for AutoTrader / Cars.co.za export. Inaccurate VINs may cause listing removal.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Stock Number</label>
+                        <input type="text" name="stock_number" defaultValue={initialData?.stock_number || ""} placeholder="e.g. EM-2024-001" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">VIN Number</label>
+                        <input type="text" name="vin" defaultValue={initialData?.vin || ""} maxLength={17} placeholder="17 characters" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none uppercase" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Registration Number</label>
+                        <input type="text" name="registration_number" defaultValue={initialData?.registration_number || ""} maxLength={10} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none uppercase" />
+                    </div>
+                </div>
+            </div>
+
+            {/* ======== Condition & History ======== */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h3 className="block text-sm font-bold text-slate-700 mb-4">Condition & History</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Registration Year</label>
+                        <input type="number" name="registration_year" defaultValue={initialData?.registration_year || ""} min="1990" max="2030" placeholder="2023" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">New / Used</label>
+                        <select name="condition" defaultValue={initialData?.condition || "used"} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="used">Used</option>
+                            <option value="new">New</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Previous Owners</label>
+                        <select name="previous_owners" defaultValue={initialData?.previous_owners || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Select —</option>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Colour</label>
+                        <select name="colour" defaultValue={initialData?.colour || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Select —</option>
+                            {COLOURS.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Manufacturer Colour</label>
+                        <input type="text" name="manufacturer_colour" defaultValue={initialData?.manufacturer_colour || ""} placeholder="e.g. Santorini Black" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Service History</label>
+                        <select name="service_history" defaultValue={initialData?.service_history || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Select —</option>
+                            {SERVICE_HISTORY.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Accident History</label>
+                        <select name="accident_involved" defaultValue={initialData?.accident_involved == null ? "" : initialData.accident_involved ? "yes" : "no"} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Select —</option>
+                            <option value="no">No accidents</option>
+                            <option value="yes">Has been in an accident</option>
+                        </select>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-7">
+                        {[
+                            { name: "demo_vehicle", label: "Demo Vehicle" },
+                            { name: "code_3", label: "Code 3" },
+                            { name: "accessible_vehicle", label: "Accessible Vehicle" },
+                            { name: "armoured_vehicle", label: "Armoured" },
+                        ].map(opt => (
+                            <label key={opt.name} className="flex items-center gap-2 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    name={opt.name}
+                                    defaultChecked={initialData?.[opt.name] || false}
+                                    className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors relative"
+                                />
+                                <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{opt.label}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ======== Warranty ======== */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h3 className="block text-sm font-bold text-slate-700 mb-4">Warranty</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Has Warranty</label>
+                        <select name="has_warranty" defaultValue={initialData?.has_warranty == null ? "" : initialData.has_warranty ? "yes" : "no"} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Select —</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Warranty End Date</label>
+                        <input type="date" name="warranty_end_date" defaultValue={initialData?.warranty_end_date || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Warranty Mileage (km)</label>
+                        <input type="number" name="warranty_mileage" defaultValue={initialData?.warranty_mileage || ""} min="0" placeholder="e.g. 100000" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                </div>
+            </div>
+
+            {/* ======== Pricing ======== */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h3 className="block text-sm font-bold text-slate-700 mb-4">Pricing Extras</h3>
+                <p className="text-xs text-slate-500 -mt-2 mb-2">Retail price is set above. These are optional extras for export feeds and internal tracking.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Trade-in Price (ZAR)</label>
+                        <input type="number" name="trade_in_price" defaultValue={initialData?.trade_in_price || ""} min="0" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Reconditioning Cost (ZAR)</label>
+                        <input type="number" name="reconditioning_cost" defaultValue={initialData?.reconditioning_cost || ""} min="0" placeholder="Internal use" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                    <div className="flex items-center pt-7">
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                            <input
+                                type="checkbox"
+                                name="price_on_application"
+                                defaultChecked={initialData?.price_on_application || false}
+                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors"
+                            />
+                            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Price On Application (POA)</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -305,10 +575,57 @@ export default function VehicleForm({ initialData = null }) {
                     </div>
                 )}
 
+                {isEditing && keepGallery.length > 0 && (
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Manage Existing Gallery Photos</label>
+                        <p className="text-xs text-slate-500 mb-4">Classify each image (used by AutoTrader / Cars.co.za exports) or remove images you no longer want shown.</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {keepGallery.map((url) => (
+                                <div key={url} className="border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                    <div className="relative h-32 w-full bg-slate-100">
+                                        <Image src={url} alt="Gallery" fill className="object-cover" sizes="200px" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeGalleryImage(url)}
+                                            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center shadow"
+                                            title="Remove image"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">close</span>
+                                        </button>
+                                    </div>
+                                    <div className="p-2">
+                                        <select
+                                            value={imageMeta[url] || ""}
+                                            onChange={(e) => setCategoryFor(url, e.target.value)}
+                                            className="w-full px-2 py-1.5 text-xs rounded border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                                        >
+                                            <option value="">— Unclassified —</option>
+                                            {IMAGE_CATEGORIES.map((c) => (
+                                                <option key={c.value} value={c.value}>{c.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* File Upload Section */}
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-4">Video Cinematic Scenes {"&"} Photos</label>
-                    <p className="text-sm text-slate-500 mb-6">These first three images are used by the AI engine to generate the 3 distinct video scenes. The rest form the image gallery.</p>
+                    <p className="text-sm text-slate-500 mb-3">These first three images are used by the AI engine to generate the 3 distinct video scenes. The rest form the image gallery.</p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 flex items-start gap-3">
+                        <span className="material-symbols-outlined text-amber-600">auto_awesome</span>
+                        <div className="flex-1">
+                            <p className="text-sm font-bold text-amber-900">Scene 1 background swap</p>
+                            <p className="text-xs text-amber-800">By default, your Scene 1 photo is automatically composited onto the branded Everest background using AI — this is what gets used for the cinematic walkaround. Costs ~$0.04 per listing.</p>
+                            <label className="flex items-center gap-2 mt-2 cursor-pointer text-xs text-amber-900 font-semibold">
+                                <input type="checkbox" name="skip_bg_swap" className="w-4 h-4 cursor-pointer" />
+                                Skip background swap for this listing
+                            </label>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         {/* Scene 1 */}
@@ -320,7 +637,7 @@ export default function VehicleForm({ initialData = null }) {
                                 type="file"
                                 name="scene1_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
                             />
                         </div>
 
@@ -333,7 +650,7 @@ export default function VehicleForm({ initialData = null }) {
                                 type="file"
                                 name="scene2_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
                             />
                         </div>
 
@@ -346,7 +663,7 @@ export default function VehicleForm({ initialData = null }) {
                                 type="file"
                                 name="scene3_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
                             />
                         </div>
                     </div>
@@ -361,7 +678,7 @@ export default function VehicleForm({ initialData = null }) {
                             name="gallery_images"
                             multiple
                             accept="image/png, image/jpeg, image/webp"
-                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 mx-auto block"
+                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 mx-auto block"
                         />
                     </div>
                 </div>
@@ -370,13 +687,39 @@ export default function VehicleForm({ initialData = null }) {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Extra or unique feature</label>
                     <textarea name="description" defaultValue={initialData?.description} rows="5" placeholder="List key specific features and condition..." className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none resize-none"></textarea>
                 </div>
+
+                <div className="pt-4 border-t border-slate-100">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Inspection Report (PDF)</label>
+                    <p className="text-xs text-slate-500 mb-3">Optional. Verified third-party report — improves listing quality on AutoTrader.</p>
+                    {inspectionReportUrl && (
+                        <div className="flex items-center gap-3 mb-3 text-sm">
+                            <a href={inspectionReportUrl} target="_blank" rel="noopener noreferrer" className="text-primary-dark font-bold underline flex items-center gap-1">
+                                <span className="material-symbols-outlined text-base">picture_as_pdf</span>
+                                View current report
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setInspectionReportUrl(null)}
+                                className="text-red-600 hover:text-red-700 text-xs font-bold uppercase tracking-wider"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    )}
+                    <input
+                        type="file"
+                        name="inspection_report"
+                        accept="application/pdf"
+                        className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
+                    />
+                </div>
             </div>
 
             <div className="pt-6 relative">
                 <button
                     type="submit"
                     disabled={isUploading}
-                    className="w-full bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-white font-bold py-4 rounded-lg shadow-md transition-all text-lg flex items-center justify-center gap-2 relative overflow-hidden"
+                    className="w-full bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-black font-bold py-4 rounded-lg shadow-md transition-all text-lg flex items-center justify-center gap-2 relative overflow-hidden"
                 >
                     {/* Progress Bar Background */}
                     {isUploading && (

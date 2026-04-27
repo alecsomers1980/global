@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.1",
     "@google/generative-ai": "^0.24.1",
     "@mux/mux-node": "^12.8.1",
     "@mux/mux-player-react": "^3.11.4",

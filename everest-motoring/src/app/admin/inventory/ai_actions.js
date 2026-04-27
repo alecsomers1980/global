@@ -1,11 +1,12 @@
 "use server";
 
 import { createAdminClient } from "@/utils/supabase/server";
-import { generateVehicleScript, optimizeVehicleDescription } from "@/utils/ai/scriptGenerator";
+import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
 import { startCinematicClips, pollCinematicTask } from "@/utils/ai/videoEngineProvider";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createMuxAssetFromUrl } from "@/utils/ai/muxService";
 import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
+import { composeSceneOneImage } from "@/utils/ai/nanoBananaService";
 import { revalidatePath } from "next/cache";
 
 // 1. Mark as Pending (Called by VehicleForm on Submit)
@@ -183,6 +184,38 @@ export async function checkHeyGenVideoStatus(carId) {
     }
 }
 
+// Composite the uploaded scene-1 photo onto the branded background via Nano Banana,
+// upload the result to Supabase storage, and return its public URL.
+// On any failure, returns the original URL so the listing still ships.
+export async function composeSceneOneAction(originalCarImageUrl) {
+    if (!originalCarImageUrl) {
+        return { success: false, error: "No source image URL provided", url: null };
+    }
+
+    try {
+        console.log("[Scene 1 Compose] Starting Nano Banana composite...");
+        const { base64, mimeType } = await composeSceneOneImage(originalCarImageUrl);
+        const buffer = Buffer.from(base64, "base64");
+
+        const supabase = await createAdminClient();
+        const ext = (mimeType.split("/")[1] || "png").split(";")[0];
+        const fileName = `vehicles/scene1-composed-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from("vehicles")
+            .upload(fileName, buffer, { contentType: mimeType });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from("vehicles").getPublicUrl(fileName);
+        console.log("[Scene 1 Compose] Composited image stored:", data.publicUrl);
+        return { success: true, url: data.publicUrl };
+    } catch (err) {
+        console.error("[Scene 1 Compose] Failed — falling back to original image:", err.message);
+        return { success: false, error: err.message, url: originalCarImageUrl };
+    }
+}
+
 export async function optimizeDescriptionAction(carPayload, manualDescription) {
     console.log("=========================================");
     console.log("[SERVER ACTION HIT] optimizeDescriptionAction invoked!");
@@ -191,9 +224,14 @@ export async function optimizeDescriptionAction(carPayload, manualDescription) {
     try {
         const result = await optimizeVehicleDescription(carPayload, manualDescription);
         console.log("[SERVER ACTION] optimizeVehicleDescription returned successfully.");
+        // Defensive: if both AI providers + the fallback somehow returned empty, still
+        // give the listing a non-null description so the field never saves as null.
+        if (!result || !String(result).trim()) {
+            return buildFallbackDescription(carPayload, manualDescription);
+        }
         return result;
     } catch (e) {
-        console.error("Failed to optimize description in Server Action:", e);
-        return manualDescription;
+        console.error("Failed to optimize description in Server Action — using template fallback:", e);
+        return buildFallbackDescription(carPayload, manualDescription);
     }
 }

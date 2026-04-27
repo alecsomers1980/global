@@ -1,23 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Gemini Flash occasionally returns 503 "high demand". Retry transient errors with backoff.
-async function geminiCallWithRetry(fn, label, maxAttempts = 4) {
-    let lastErr;
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-            return await fn();
-        } catch (err) {
-            lastErr = err;
-            const status = err?.status || err?.response?.status;
-            const transient = status === 503 || status === 429 || status === 500 || status === 504;
-            console.warn(`[Gemini ${label}] attempt ${attempt}/${maxAttempts} failed (status=${status}): ${err.message}`);
-            if (!transient || attempt === maxAttempts) throw err;
-            const delay = Math.min(1000 * 2 ** (attempt - 1), 8000);
-            await new Promise(r => setTimeout(r, delay));
-        }
-    }
-    throw lastErr;
-}
+import { runWithFallback } from "./aiProviderChain";
 
 function pickFeaturedPair(features, pool) {
     if (!features || features.length === 0) return [];
@@ -26,15 +7,7 @@ function pickFeaturedPair(features, pool) {
 }
 
 export async function generateVehicleScript(car) {
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
-        throw new Error("Missing GOOGLE_GEMINI_API_KEY in environment variables.");
-    }
-
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        // Using gemini-2.5-flash for broader free-tier availability and reasoning
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
         // Determine car type category for adaptive scripting
         let carType = "Standard";
         const bodyTypeClean = (car.model + " " + (car.description || "")).toLowerCase();
@@ -68,22 +41,23 @@ Strict Instructions for the script:
 1. You must write exactly FOUR scene descriptions. Each scene represents a video clip prompt.
 2. These are pre-owned vehicles. NEVER use the word "new" in the voiceover scripts. Use words like "striking", "exceptional", or just the make and model.
 3. Keep visual descriptions concise and positive. Avoid negative words like "don't", "no", or "without", as they confuse the video AI. Describe exactly what SHOULD be seen.
+4. CRITICAL MOTION RULE — apply to every scene: motion must be CONTINUOUS from frame one to the final frame. The camera should already be in motion when the clip begins. The scene must NEVER start or end with a static, frozen, or held frame. There must be smooth, unbroken movement across the entire duration of every clip. Never produce a still photograph effect at any point.
 
 Scene Breakdown:
 Scene 1: The Hook (Exterior Hero Shot)
-- Very slow, subtle cinematic camera push-in with a tiny, almost imperceptible pan. The camera angle stays mostly locked to the reference image but provides a very slight angle change for a premium feel. Do not distort the background geometry.
+- Continuous slow cinematic push-in already in motion on frame one, with a subtle angle change for a premium feel. The camera moves smoothly toward the vehicle without ever pausing. Do not distort the background geometry.
 - Dramatic lighting (e.g., Golden Hour sunset with realistic lens flares or moody showroom lighting).
 - The vehicle's front license plate clearly displays the word "EVEREST" in clean lettering.
 - CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a catchy 1-sentence hook introducing the make and model]"
 
 Scene 2: The Technology (Dashboard/Cockpit)
-- Very slow, subtle cinematic camera push-in on the dashboard. Do not pan left or right. Focus entirely on the area visible in the reference image.
+- Continuous slow cinematic push-in on the dashboard, already in motion on frame one. The camera moves smoothly toward the dashboard for the entire clip with no pauses or held frames. Focus entirely on the area visible in the reference image.
 - The steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and analog/digital display style.
 - Soft ambient lighting.
 - CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning 1 or 2 of its best technology features]"
 
 Scene 3: The Comfort (Rear Cabin)
-- Very slow, subtle cinematic camera push-in on the back seat or passenger area. Do not pan.
+- Continuous slow cinematic push-in into the rear cabin, already in motion on frame one. Smooth, uninterrupted forward movement for the full clip duration.
 - The cabin interior and the exact background environment visible through the windows perfectly match the source image.
 - Natural light streaming through the windows emphasizing space.
 - CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning its comfort or powertrain features]"
@@ -91,8 +65,8 @@ Scene 3: The Comfort (Rear Cabin)
 Scene 4: The Closer (Human Presenter)
 - A professional, attractive female sales presenter with shoulder-length blonde hair, wearing a tailored navy blue blazer over a white blouse with an "Everest Motoring" logo on the breast pocket.
 - She stands next to the exact same vehicle from Scene 1, in the exact same outdoor or indoor environment as Scene 1. A subtle "EVEREST MOTORING" logo is visible on a wall or structure behind her.
-- She looks directly into the camera with a warm, inviting smile, gesturing welcomingly.
-- Very slow, subtle cinematic camera push-in. Do not pan or reveal new environments.
+- She looks directly into the camera with a warm, inviting smile, gesturing welcomingly throughout — her hand and head movement is constant and natural for the whole clip.
+- Continuous slow cinematic push-in toward the presenter, already in motion on frame one. The push-in continues smoothly across the entire clip with no held frames.
 - CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact Everest Motoring regarding this specific make/model. Do NOT use the word 'new']"
 
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
@@ -107,8 +81,12 @@ Example Output:
 ]
 `;
 
-        const result = await geminiCallWithRetry(() => model.generateContent(prompt), "script");
-        const text = result.response.text();
+        const { text, providerUsed } = await runWithFallback({
+            prompt,
+            label: "script",
+            maxOutputTokens: 3000,
+        });
+        console.log(`[Script] Generated via ${providerUsed}`);
 
         // Extract the first JSON array from the response; tolerate stray prose/markdown.
         const match = text.match(/\[[\s\S]*\]/);
@@ -116,7 +94,7 @@ Example Output:
         return JSON.parse(jsonText);
 
     } catch (error) {
-        console.error("Error generating script with Gemini — using feature-aware fallback:", error.message);
+        console.error("Error generating script via both providers — using feature-aware fallback:", error.message);
 
         // Feature-aware fallback: weave the actual car features into the voiceovers so
         // the video still sounds specific even when Gemini is unavailable.
@@ -141,16 +119,18 @@ Example Output:
             ? `Introducing the striking ${car.year} ${car.make} ${car.model}, a ${transmissionFuel} masterpiece.`
             : `Introducing the striking ${car.year} ${car.make} ${car.model}.`;
 
+        const motionRule = "Camera motion is continuous from frame one to the last frame, with smooth uninterrupted movement across the entire clip. Never produce a held or static frame at any point.";
+
         return [
-            { scene: 1, location: "exterior", visual_prompt: `Very slow, subtle cinematic push-in shot with a tiny pan of the ${car.year} ${car.make} ${car.model}. Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: '${hookLine}'` },
-            { scene: 2, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in interior POV shot of the ${car.make} ${car.model}. Do not pan left or right. The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: '${techLine}'` },
-            { scene: 3, location: "interior", visual_prompt: `Very slow, subtle cinematic push-in shot of the back passenger area of the ${car.make} ${car.model}. Do not pan. Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: '${comfortLine}'` },
-            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Very slow, subtle cinematic push-in shot. She looks directly into the camera with a warm, inviting smile and gestures welcomingly. AUDIO: South African English Female Voiceover: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
+            { scene: 1, location: "exterior", visual_prompt: `Continuous slow cinematic push-in already in motion on frame one of the ${car.year} ${car.make} ${car.model}. ${motionRule} Do not change the background geometry. The front license plate features a clean 'EVEREST' logo. Dramatic "Golden Hour" sunset lighting with realistic lens flares. AUDIO: South African English Female Voiceover: '${hookLine}'` },
+            { scene: 2, location: "interior", visual_prompt: `Continuous slow cinematic push-in interior POV shot of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} The physical steering wheel is locked firmly on the RIGHT side. The dashboard retains its exact original layout and display style. Soft ambient lighting highlights the exact interior look. AUDIO: South African English Female Voiceover: '${techLine}'` },
+            { scene: 3, location: "interior", visual_prompt: `Continuous slow cinematic push-in into the back passenger area of the ${car.make} ${car.model}, already in motion on frame one. ${motionRule} Focus on the spacious legroom perfectly matching the reference image. The cabin interior and the background environment visible through the windows perfectly match the source image. AUDIO: South African English Female Voiceover: '${comfortLine}'` },
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands confidently next to the exact same ${car.make} ${car.model} in the identical environment as the exterior shot, with an 'EVEREST MOTORING' logo subtly on the wall behind her. Continuous slow cinematic push-in toward her, already in motion on frame one. ${motionRule} She looks directly into the camera with a warm, inviting smile and gestures welcomingly throughout the clip. AUDIO: South African English Female Voiceover: 'Contact Everest Motoring today to book your test drive in this exceptional ${car.make} ${car.model}.'` }
         ];
     }
 }
 
-function buildFallbackDescription(car, manualDescription) {
+export function buildFallbackDescription(car, manualDescription) {
     const priceFormatted = car.price ? new Intl.NumberFormat('en-ZA').format(car.price) : null;
     const features = (car.features || []).slice(0, 8);
     const specs = [];
@@ -169,39 +149,8 @@ function buildFallbackDescription(car, manualDescription) {
 }
 
 export async function optimizeVehicleDescription(car, manualDescription) {
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
-        console.warn("[SEO Content] No GEMINI API KEY found. Using fallback description.");
-        return buildFallbackDescription(car, manualDescription);
-    }
-
     try {
         console.log(`[SEO Content] Starting description optimization for ${car.year} ${car.make} ${car.model}...`);
-        const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-        // Using gemini-2.5-flash as it robustly supports multimodal (vision + text) inputs natively.
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-        let imagePart = null;
-        if (car.main_image_url) {
-            try {
-                // Fetch the image from Supabase (or external URL)
-                const response = await fetch(car.main_image_url);
-                if (response.ok) {
-                    const arrayBuffer = await response.arrayBuffer();
-                    const base64Image = Buffer.from(arrayBuffer).toString('base64');
-                    const mimeType = response.headers.get('content-type') || 'image/jpeg';
-
-                    imagePart = {
-                        inlineData: {
-                            data: base64Image,
-                            mimeType: mimeType
-                        }
-                    };
-                    console.log("[SEO Content] Successfully loaded reference image for color/condition analysis.");
-                }
-            } catch (imgErr) {
-                console.warn("[SEO Content] Could not fetch image for AI optimization:", imgErr.message);
-            }
-        }
 
         const promptText = `
 You are an expert automotive copywriter specializing in SEO and high-conversion sales copy for Everest Motoring.
@@ -229,19 +178,16 @@ Strict Instructions:
 8. Do NOT include markdown headers (* or #) or unnecessary formatting. Just return the clean, professional text ready to be displayed on the website.
 `;
 
-        const requestParts = [promptText];
-        if (imagePart) {
-            requestParts.push(imagePart);
-        }
-
-        console.log("[SEO Content] Calling Gemini 2.5 Flash for generation...");
-        const result = await geminiCallWithRetry(() => model.generateContent(requestParts), "description");
-        const finalDescription = result.response.text().trim();
-        console.log("[SEO Content] Successfully generated optimized description.");
-
-        return finalDescription;
+        const { text, providerUsed } = await runWithFallback({
+            prompt: promptText,
+            imageUrl: car.main_image_url || null,
+            label: "description",
+            maxOutputTokens: 1024,
+        });
+        console.log(`[SEO Content] Description generated via ${providerUsed}.`);
+        return text;
     } catch (error) {
-        console.error("[SEO Content] Error optimizing description — using features-based fallback:", error.message);
+        console.error("[SEO Content] Both providers failed — using features-based fallback:", error.message);
         return buildFallbackDescription(car, manualDescription);
     }
 }
