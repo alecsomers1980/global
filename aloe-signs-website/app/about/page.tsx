@@ -58,7 +58,7 @@ export default function AboutPage() {
                                         Powered by Ricoh Gen 5 Printheads
                                     </p>
                                     <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
-                                        When it comes to rigid signage, compromise isn't an option. This industrial powerhouse prints with surgical precision directly onto almost any material—from acrylic and metal to wood and thick correx. 
+                                        UV inks are specialized, photo-curable inks that dry instantly via UV light, providing vibrant, durable prints with exceptional scratch and fade resistance. These inks adhere to diverse, non-porous surfaces, including Correx, ABS, Chromadek, aluminium, stainless steel, glass, metal, plastics, and wood. Basically, anything flat and less than 100mm thick. Amazing...
                                     </p>
                                     <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
                                         <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
