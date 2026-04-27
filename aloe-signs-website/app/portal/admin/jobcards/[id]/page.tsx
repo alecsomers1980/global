@@ -242,6 +242,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }));
     };
 
+    const handleArtworkChange = (name: string, value: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            artwork_details_json: {
+                ...(prev.artwork_details_json || {}),
+                [name]: value
+            }
+        }));
+    };
+
     const handleEngImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -694,9 +704,22 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <span className="text-xs font-bold text-gray-700 uppercase">Department</span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-x-2">
-                                    <Toggle label="FlatBed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
-                                    <Toggle label="Digital" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
-                                    <Toggle label="Vinyl cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="Artwork" name="prod_artwork" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_artwork && (
+                                        <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-2">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Hours</span>
+                                                <input type="text" value={jobcard.artwork_details_json?.hours || ''} onChange={e => handleArtworkChange('hours', e.target.value)} className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800" />
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Rate</span>
+                                                <input type="text" value={jobcard.artwork_details_json?.rate || ''} onChange={e => handleArtworkChange('rate', e.target.value)} className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800" />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <Toggle label="UV Flatbed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="HP Latex" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
+                                    <Toggle label="HP Vinyl Cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
@@ -749,11 +772,8 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                             )}
                             
-                            {/* Collect/Delivery Section */}
+                            {/* Collect/Delivery Options (Header removed as requested) */}
                             <div className="border-b border-gray-300">
-                                <div className="p-2 bg-gray-100 border-b border-gray-300">
-                                    <span className="text-xs font-bold text-gray-700 uppercase">Collect / Delivery</span>
-                                </div>
                                 <Toggle label="Deliver" name="track_deliver" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_deliver && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
