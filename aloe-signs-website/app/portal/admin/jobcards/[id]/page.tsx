@@ -411,10 +411,22 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
 
     // Removes an item at a specific index
     const handleRemoveItem = (index: number) => {
-        setJobcard((prev: any) => ({
-            ...prev,
-            items_json: (prev.items_json || []).filter((_: any, i: number) => i !== index)
-        }));
+        setJobcard((prev: any) => {
+            const updatedItems = (prev.items_json || []).filter((_: any, i: number) => i !== index);
+            
+            // Recalculate totals
+            const subtotal = updatedItems.reduce((acc: number, item: any) => acc + (parseFloat(item.total) || 0), 0);
+            const vat = subtotal * 0.15;
+            const total = subtotal + vat;
+
+            return { 
+                ...prev, 
+                items_json: updatedItems,
+                sub_total: subtotal.toFixed(2),
+                vat_total: vat.toFixed(2),
+                total: total.toFixed(2)
+            };
+        });
     };
 
     // Updates a specific field in a specific item
@@ -423,14 +435,25 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
             const updatedItems = [...(prev.items_json || [])];
             updatedItems[index] = { ...updatedItems[index], [field]: value };
             
-            // Auto-calculate total
+            // Auto-calculate line total
             if (field === 'quantity' || field === 'price') {
                 const qty = parseFloat(updatedItems[index].quantity) || 0;
                 const price = parseFloat(updatedItems[index].price) || 0;
                 updatedItems[index].total = (qty * price).toFixed(2);
             }
+
+            // Calculate global totals
+            const subtotal = updatedItems.reduce((acc: number, item: any) => acc + (parseFloat(item.total) || 0), 0);
+            const vat = subtotal * 0.15;
+            const total = subtotal + vat;
             
-            return { ...prev, items_json: updatedItems };
+            return { 
+                ...prev, 
+                items_json: updatedItems,
+                sub_total: subtotal.toFixed(2),
+                vat_total: vat.toFixed(2),
+                total: total.toFixed(2)
+            };
         });
     };
 
