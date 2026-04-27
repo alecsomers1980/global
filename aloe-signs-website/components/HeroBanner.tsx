@@ -8,7 +8,7 @@ const slides = [
         seoH1: 'Branding, Printing & Signage Company in South Africa',
         title: 'UNMISSABLE\nBRANDING\nSOLUTIONS',
         description: 'Test us and become part of our returning customer circle.',
-        primaryCTA: { text: 'Get a Quote', href: '/get-quote' },
+        primaryCTA: { text: "Let&apos;s Start a project", href: '/get-quote' },
         secondaryCTA: { text: 'View Our Work', href: '#work' },
         location: 'High-impact visual branding built to be seen.'
     }

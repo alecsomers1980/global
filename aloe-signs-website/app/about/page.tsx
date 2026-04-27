@@ -376,7 +376,7 @@ export default function AboutPage() {
                                         href="/contact"
                                         className="block w-full px-6 py-4 bg-aloe-green text-charcoal font-bold rounded-full hover:bg-green-hover transition-colors text-center"
                                     >
-                                        Get a Quote
+                                        Let&apos;s Start a project
                                     </Link>
                                     <Link
                                         href="tel:0116932600"

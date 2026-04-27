@@ -84,7 +84,7 @@ export default function Footer() {
                             <li><Link href="/portfolio" className="hover:text-aloe-green transition-colors">OUR WORK</Link></li>
                             <li><Link href="/about" className="hover:text-aloe-green transition-colors">ABOUT US</Link></li>
                             <li><Link href="/contact" className="hover:text-aloe-green transition-colors">CONTACT</Link></li>
-                            <li><Link href="/get-quote" className="hover:text-aloe-green transition-colors">GET A QUOTE</Link></li>
+                            <li><Link href="/get-quote" className="hover:text-aloe-green transition-colors">LET&apos;S START A PROJECT</Link></li>
                             <li><Link href="/order/track" className="hover:text-aloe-green transition-colors">TRACK ORDER</Link></li>
                         </ul>
                     </div>

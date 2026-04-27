@@ -128,7 +128,7 @@ export default function Header() {
                         href="/get-quote"
                         className="px-8 py-3 bg-aloe-green text-charcoal text-sm font-black rounded-full hover:scale-105 hover:shadow-[0_0_20px_rgba(0,229,51,0.4)] transition-all active:scale-95"
                     >
-                        GET A QUOTE
+                        LET&apos;S START A PROJECT
                     </Link>
                 </div>
 
@@ -173,7 +173,7 @@ export default function Header() {
                         onClick={closeMenu}
                         className="mt-4 px-12 py-5 bg-aloe-green text-black font-black rounded-full text-xl shadow-2xl"
                     >
-                        GET A QUOTE
+                        LET&apos;S START A PROJECT
                     </Link>
                 </nav>
             </div>

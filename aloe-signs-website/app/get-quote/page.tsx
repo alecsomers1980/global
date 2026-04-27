@@ -100,11 +100,11 @@ ${formData.description}
                                     Home
                                 </Link>
                                 <span>/</span>
-                                <span className="text-white">Get a Quote</span>
+                                <span className="text-white">Let&apos;s Start a project</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-                                Request a Quote
+                                Let&apos;s Start a project
                             </h1>
 
                             <p className="text-lg md:text-xl text-light-grey">

@@ -206,7 +206,7 @@ export default function ProjectDetailPage() {
                                         href="/contact"
                                         className="block w-full py-3 bg-aloe-green text-charcoal font-bold rounded hover:bg-green-hover transition-colors"
                                     >
-                                        Get a Quote
+                                        Let&apos;s Start a project
                                     </Link>
                                 </div>
                             </div>

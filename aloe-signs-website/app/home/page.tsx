@@ -55,7 +55,7 @@ export default function Home() {
                 href="/get-quote"
                 className="px-8 py-4 bg-aloe-green text-charcoal font-semibold rounded hover:bg-green-hover transition-colors text-lg"
               >
-                Get a Quote
+                Let&apos;s Start a project
               </a>
               <a
                 href="tel:0688838049"

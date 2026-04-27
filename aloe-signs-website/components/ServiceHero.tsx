@@ -182,7 +182,7 @@ export default function ServiceHero({ title, tagline, description, backgroundIma
                         href="/contact"
                         className="inline-block px-10 py-5 bg-aloe-green text-charcoal font-black rounded-full hover:bg-white transition-all duration-300 uppercase tracking-wider shadow-[0_0_20px_rgba(202,238,166,0.2)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] hover:-translate-y-1"
                     >
-                        Get a Quote
+                        Let&apos;s Start a project
                     </Link>
                 </div>
             </div>
