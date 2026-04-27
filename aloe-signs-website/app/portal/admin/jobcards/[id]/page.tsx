@@ -30,6 +30,42 @@ const calculateWorkflowStatus = (workflow: any) => {
     return 'Quoted';
 };
 
+const JOBCARD_ITEM_OPTIONS = [
+    { label: 'ABS', description: 'Single Sided Print' },
+    { label: 'ACM', description: 'Single Sided Print' },
+    { label: 'APPLICATION', description: 'on site / other' },
+    { label: 'ARTWORK / LAYOUT', description: 'R 400/30min - We get a lot done in 30min' },
+    { label: 'BILLBOARD', description: 'Site description here' },
+    { label: 'BRUSHED ALUMINIUM', description: 'Printed Single or Double Sided' },
+    { label: 'CANVAS', description: 'Boxed' },
+    { label: 'CHROMADEK', description: 'Single Sided Print' },
+    { label: 'CONTRAVISION / ONE WAY VINYL', description: 'Film with small holes' },
+    { label: 'CORREX', description: 'Full Colour' },
+    { label: 'COURIER', description: 'Package & Deliver' },
+    { label: 'ENGINEERING', description: 'includes steelwork etc.' },
+    { label: 'FLEX', description: 'FLEX' },
+    { label: 'FOAMBOARD', description: 'enter thickness' },
+    { label: 'INSTALLATION', description: 'add physical address here' },
+    { label: 'LAMINATE', description: 'Lamination' },
+    { label: 'MAGNETS', description: 'Vehicle grade' },
+    { label: 'MISCELLANEOUS', description: 'Fisher plugs' },
+    { label: 'NAMEBADGES', description: 'Includes Magnetic Fastener' },
+    { label: 'NOTE', description: 'NOTE' },
+    { label: 'PERSPEX', description: 'Single Sided Print' },
+    { label: 'PROMO ITEM', description: 'includes pull ups gazebos etc' },
+    { label: 'PVC', description: 'Banner' },
+    { label: 'ROWMARK', description: 'Engraved Traffolite' },
+    { label: 'RUSH FEE', description: "Because it's worth it" },
+    { label: 'SCREENPRINT', description: 'size and material' },
+    { label: 'SETUP CHARGE', description: 'Applies to each execution' },
+    { label: 'SIGNMAKING MATERIALS', description: 'SIGNMAKING MATERIALS' },
+    { label: 'STATIONERY', description: 'All paper stationery' },
+    { label: 'STICKERS', description: 'Full Colour' },
+    { label: 'TRAVEL + VEHICLE', description: 'To get the A Team on Site' },
+    { label: 'UV PRINT', description: 'Direct UV Print' },
+    { label: 'WALLPAPER', description: 'Full Colour' },
+];
+
 const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; name: string; jobcard: any; setJobcard: any }) => {
     const workflow = jobcard.status_workflow_json || {};
     const item = workflow[name] || { ticked: false };
@@ -359,7 +395,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const handleAddItem = () => {
         setJobcard((prev: any) => ({
             ...prev,
-            items_json: [...(prev.items_json || []), { quantity: '', size: '', price: '', description: '' }]
+            items_json: [...(prev.items_json || []), { quantity: '', size: '', item: '', description: '', price: '', total: '' }]
         }));
     };
 
@@ -376,8 +412,30 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         setJobcard((prev: any) => {
             const updatedItems = [...(prev.items_json || [])];
             updatedItems[index] = { ...updatedItems[index], [field]: value };
+            
+            // Auto-calculate total
+            if (field === 'quantity' || field === 'price') {
+                const qty = parseFloat(updatedItems[index].quantity) || 0;
+                const price = parseFloat(updatedItems[index].price) || 0;
+                updatedItems[index].total = (qty * price).toFixed(2);
+            }
+            
             return { ...prev, items_json: updatedItems };
         });
+    };
+
+    const recalculateTotals = () => {
+        const items = Array.isArray(jobcard.items_json) ? jobcard.items_json : [];
+        const subtotal = items.reduce((acc: number, item: any) => acc + (parseFloat(item.total) || 0), 0);
+        const vat = subtotal * 0.15;
+        const total = subtotal + vat;
+        
+        setJobcard((prev: any) => ({
+            ...prev,
+            sub_total: subtotal.toFixed(2),
+            vat_total: vat.toFixed(2),
+            total: total.toFixed(2)
+        }));
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-transparent text-white">Loading...</div>;
@@ -497,14 +555,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                                 
                                 <div className="flex-1 overflow-y-auto">
-                                    <table className="w-full text-sm text-left text-gray-600 border-collapse">
-                                        <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b sticky top-0 z-10">
+                                    <table className="w-full text-sm text-left text-gray-600 border-collapse table-fixed">
+                                        <thead className="text-[10px] text-gray-500 uppercase bg-gray-50 border-b sticky top-0 z-10">
                                             <tr>
-                                                <th className="px-2 py-2 w-16">Qty</th>
-                                                <th className="px-2 py-2 w-24">Size</th>
-                                                <th className="px-2 py-2 w-32">Price (Excl.)</th>
-                                                <th className="px-2 py-2">Description</th>
-                                                <th className="px-2 py-2 w-10"></th>
+                                                <th className="px-2 py-2 w-[80px]">Quantity</th>
+                                                <th className="px-2 py-2 w-[100px]">Size</th>
+                                                <th className="px-2 py-2 w-[180px]">Item</th>
+                                                <th className="px-2 py-2 min-w-[200px]">Description</th>
+                                                <th className="px-2 py-2 w-[120px]">Price per unit (Excl.)</th>
+                                                <th className="px-2 py-2 w-[100px]">Total</th>
+                                                <th className="px-2 py-2 w-8"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -528,6 +588,33 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         />
                                                     </td>
                                                     <td className="px-1 py-1">
+                                                        <select 
+                                                            value={item.item || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'item', e.target.value)}
+                                                            className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
+                                                        >
+                                                            <option value="">Select Item...</option>
+                                                            {JOBCARD_ITEM_OPTIONS.map((opt, i) => (
+                                                                <option key={i} value={opt.label}>
+                                                                    {opt.label}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        {item.item && (
+                                                            <div className="text-[9px] text-gray-400 mt-0.5 px-1 truncate leading-tight">
+                                                                {JOBCARD_ITEM_OPTIONS.find(o => o.label === item.item)?.description}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-1 py-1">
+                                                        <textarea 
+                                                            value={item.description || ''} 
+                                                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                                                            rows={2}
+                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 resize-y min-h-[40px]"
+                                                        />
+                                                    </td>
+                                                    <td className="px-1 py-1">
                                                         <input 
                                                             type="number" 
                                                             step="0.01" 
@@ -538,11 +625,11 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         />
                                                     </td>
                                                     <td className="px-1 py-1">
-                                                        <textarea 
-                                                            value={item.description || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                                                            rows={2}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 resize-y min-h-[40px]"
+                                                        <input 
+                                                            type="text" 
+                                                            readOnly
+                                                            value={item.total || '0.00'} 
+                                                            className="w-full bg-gray-50 border border-gray-200 rounded p-1 text-sm text-right font-mono"
                                                         />
                                                     </td>
                                                     <td className="px-1 py-1 text-center">
@@ -552,7 +639,6 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                             className="text-gray-300 hover:text-red-500 transition-colors p-1"
                                                             title="Remove item"
                                                         >
-                                                            {/* Trashcan Icon */}
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                         </button>
                                                     </td>
@@ -820,7 +906,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             {/* Financials embedded bottom left logic */}
                             <div className="mt-auto bg-gray-50 flex flex-col border-t border-black">
                                 <div className="flex border-b border-gray-300">
-                                    <span className="w-24 text-xs font-bold p-2">Sub Total</span>
+                                    <div className="w-24 text-xs font-bold p-2 flex flex-col justify-center">
+                                        <span>Sub Total</span>
+                                        <button 
+                                            type="button"
+                                            onClick={recalculateTotals}
+                                            className="text-[8px] text-blue-500 hover:underline mt-0.5 text-left"
+                                        >
+                                            (Recalculate)
+                                        </button>
+                                    </div>
                                     <input type="number" step="0.01" name="sub_total" value={jobcard.sub_total || ''} onChange={handleChange} className="flex-1 w-full bg-white px-2 focus:outline-none focus:bg-blue-50 text-gray-800" />
                                 </div>
                                 <div className="flex border-b border-gray-300">
