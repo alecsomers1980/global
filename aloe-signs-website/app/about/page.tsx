@@ -87,7 +87,7 @@ export default function AboutPage() {
                                     <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
                                         <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
                                         <p className="text-charcoal/80">
-                                            HP's water-based latex inks are completely odorless and environmentally safe—perfect for delicate indoor environments like hospitals or restaurants and punchy outdoor applications. Enjoy smooth gradients, extreme durability that won't scratch or yellow over time, and a premium finish that looks like a million bucks from day one to year five.
+                                            HP's water-based latex inks are completely odorless and environmentally safe—perfect for delicate indoor environments like hospitals or restaurants and punchy outdoor applications. Enjoy smooth gradients, extreme durability that won't scratch or yellow over time, and a premium finish that looks like a million bucks.
                                         </p>
                                     </div>
                                 </div>
