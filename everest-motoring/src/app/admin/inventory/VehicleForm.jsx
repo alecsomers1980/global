@@ -28,6 +28,8 @@ const SERVICE_HISTORY = [
     { value: "not_applicable", label: "Not Applicable" },
 ];
 
+const CONDITION_RATINGS = ["New", "Excellent", "Good", "Average", "Poor", "Non-runner"];
+
 const IMAGE_CATEGORIES = [
     { value: "front", label: "Front" },
     { value: "rear", label: "Rear" },
@@ -246,6 +248,7 @@ export default function VehicleForm({ initialData = null }) {
                 // Condition & History
                 registration_year: intOrNull(formData.get("registration_year")),
                 condition: formData.get("condition") || null,
+                condition_rating: formData.get("condition_rating") || null,
                 colour: formData.get("colour") || null,
                 manufacturer_colour: formData.get("manufacturer_colour") || null,
                 previous_owners: intOrNull(formData.get("previous_owners")),
@@ -430,6 +433,16 @@ export default function VehicleForm({ initialData = null }) {
                         <select name="previous_owners" defaultValue={initialData?.previous_owners || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
                             <option value="">— Select —</option>
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Condition Rating <span className="text-red-500">*</span></label>
+                        <select name="condition_rating" defaultValue={initialData?.condition_rating || ""} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                            <option value="">— Please select —</option>
+                            {CONDITION_RATINGS.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     </div>
                 </div>

@@ -15,11 +15,12 @@ export default async function AdminDashboardPage() {
 
     // Authentication is handled globally by src/app/admin/layout.js
 
-    // Server Action to delete a vehicle
-    async function deleteCar(formData) {
+    // Server Action to delete a vehicle. Returns { success, error } so the
+    // client can surface the real Supabase error (e.g. foreign-key violations
+    // from sales/leads/etc. that are blocking the delete).
+    async function deleteCar(carId) {
         "use server";
-        const carId = formData.get("id");
-        if (!carId) return;
+        if (!carId) return { success: false, error: "No vehicle id supplied" };
 
         const supabaseAdmin = await createAdminClient();
 
@@ -34,13 +35,18 @@ export default async function AdminDashboardPage() {
 
         if (error) {
             console.error("Error deleting car:", error);
-        } else {
-            revalidatePath("/admin/inventory");
-            revalidatePath("/inventory"); // Wipe the public cache too
-            if (car) {
-                pingDeletedVehicle(car).catch((err) => console.warn("IndexNow ping failed:", err));
-            }
+            return {
+                success: false,
+                error: `${error.code || ""} ${error.message || "Unknown error"}${error.details ? ` — ${error.details}` : ""}`.trim(),
+            };
         }
+
+        revalidatePath("/admin/inventory");
+        revalidatePath("/inventory"); // Wipe the public cache too
+        if (car) {
+            pingDeletedVehicle(car).catch((err) => console.warn("IndexNow ping failed:", err));
+        }
+        return { success: true };
     }
 
     // Fetch all cars (including reserved/sold for admin view)

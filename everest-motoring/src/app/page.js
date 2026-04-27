@@ -89,7 +89,7 @@ export default async function Home() {
               <h3 className="text-3xl font-bold tracking-tight text-slate-900">Featured Vehicles</h3>
               <p className="mt-2 text-slate-500">Hand-picked premium cars just for you.</p>
             </div>
-            <a className="hidden items-center gap-1 font-bold text-primary hover:underline md:flex" href="#">
+            <a className="hidden items-center gap-1 font-bold text-black hover:underline md:flex" href="/inventory">
               View Inventory <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </a>
           </div>

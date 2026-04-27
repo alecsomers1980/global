@@ -5,6 +5,7 @@ import AiVideoStatus from "./AiVideoStatus";
 import SocialPostButton from "./SocialPostButton";
 import MarkSoldButton from "./MarkSoldButton";
 import SeoFixButton from "./SeoFixButton";
+import DeleteVehicleButton from "./DeleteVehicleButton";
 
 export default function InventoryTable({ initialCars, deleteCarAction }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -176,12 +177,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                     <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
                                         <span className="material-symbols-outlined">edit</span>
                                     </a>
-                                    <form action={deleteCarAction}>
-                                        <input type="hidden" name="id" value={car.id} />
-                                        <button type="submit" className="text-slate-400 hover:text-red-500 transition-colors p-2" title="Delete Vehicle">
-                                            <span className="material-symbols-outlined">delete</span>
-                                        </button>
-                                    </form>
+                                    <DeleteVehicleButton car={car} deleteCarAction={deleteCarAction} />
                                 </td>
                             </tr>
                         ))}
