@@ -124,7 +124,7 @@ export default function AboutPage() {
                                         The power to carve through any challenge
                                     </p>
                                     <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
-                                        Precision cutting and engraving are essential for creating custom 3D signage, lightboxes, and architectural elements and set building. Our CNC ROUTER 3020 provides the heavy-duty power and meticulous accuracy needed to carve through aluminium composite material, foam board, Perspex, wood sheets like melamine, plywood, resin, and composite materials with ease.
+                                        Precision cutting and engraving are essential for creating custom 3D signage, lightboxes, and architectural elements and set building. Our CNC ROUTER 3020 provides the heavy-duty power and meticulous accuracy needed to carve through aluminium composite material, foam board, perspex, wood sheets like melamine, plywood, resin, and composite materials with ease.
                                     </p>
                                     <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
                                         <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
