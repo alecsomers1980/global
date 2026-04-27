@@ -570,87 +570,97 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             <tr>
                                                 <th className="px-2 py-2 w-[80px]">Quantity</th>
                                                 <th className="px-2 py-2 w-[100px]">Size</th>
-                                                <th className="px-2 py-2 w-[180px]">Item</th>
-                                                <th className="px-2 py-2 min-w-[200px]">Description</th>
-                                                <th className="px-2 py-2 w-[120px]">Price per unit (Excl.)</th>
+                                                <th className="px-2 py-2">Item</th>
+                                                <th className="px-2 py-2 w-[120px]">Price (Excl.)</th>
                                                 <th className="px-2 py-2 w-[100px]">Total</th>
-                                                <th className="px-2 py-2 w-8"></th>
+                                                <th className="px-2 py-2 w-10"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {(jobcard.items_json || []).map((item: any, index: number) => (
                                                 <tr key={index} className="border-b border-gray-100 hover:bg-gray-50/50 group">
-                                                    <td className="px-1 py-1">
-                                                        <input 
-                                                            type="number" 
-                                                            min="0"
-                                                            value={item.quantity || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
-                                                        />
-                                                    </td>
-                                                    <td className="px-1 py-1">
-                                                        <input 
-                                                            type="text" 
-                                                            value={item.size || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'size', e.target.value)}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
-                                                        />
-                                                    </td>
-                                                    <td className="px-1 py-1">
-                                                        <select 
-                                                            value={item.item || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'item', e.target.value)}
-                                                            className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
-                                                        >
-                                                            <option value="">Select Item...</option>
-                                                            {JOBCARD_ITEM_OPTIONS.map((opt, i) => (
-                                                                <option key={i} value={opt.label}>
-                                                                    {opt.label}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        {item.item && (
-                                                            <div className="text-[9px] text-gray-400 mt-0.5 px-1 truncate leading-tight">
-                                                                {JOBCARD_ITEM_OPTIONS.find(o => o.label === item.item)?.description}
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-1 py-1">
-                                                        <textarea 
-                                                            value={item.description || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                                                            rows={2}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 resize-y min-h-[40px]"
-                                                        />
-                                                    </td>
-                                                    <td className="px-1 py-1">
-                                                        <input 
-                                                            type="number" 
-                                                            step="0.01" 
-                                                            min="0"
-                                                            value={item.price || ''} 
-                                                            onChange={(e) => handleItemChange(index, 'price', e.target.value)}
-                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
-                                                        />
-                                                    </td>
-                                                    <td className="px-1 py-1">
-                                                        <input 
-                                                            type="text" 
-                                                            readOnly
-                                                            value={item.total || '0.00'} 
-                                                            className="w-full bg-gray-50 border border-gray-200 rounded p-1 text-sm text-right font-mono"
-                                                        />
-                                                    </td>
-                                                    <td className="px-1 py-1 text-center">
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => handleRemoveItem(index)}
-                                                            className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                                                            title="Remove item"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                        </button>
+                                                    <td className="p-0 align-top" colSpan={6}>
+                                                        <table className="w-full table-fixed border-collapse">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td className="px-1 py-1 w-[80px]">
+                                                                        <input 
+                                                                            type="number" 
+                                                                            min="0"
+                                                                            value={item.quantity || ''} 
+                                                                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-1 py-1 w-[100px]">
+                                                                        <input 
+                                                                            type="text" 
+                                                                            value={item.size || ''} 
+                                                                            onChange={(e) => handleItemChange(index, 'size', e.target.value)}
+                                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-1 py-1">
+                                                                        <select 
+                                                                            value={item.item || ''} 
+                                                                            onChange={(e) => handleItemChange(index, 'item', e.target.value)}
+                                                                            className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
+                                                                        >
+                                                                            <option value="">Select Item...</option>
+                                                                            {JOBCARD_ITEM_OPTIONS.map((opt, i) => (
+                                                                                <option key={i} value={opt.label}>
+                                                                                    {opt.label}
+                                                                                </option>
+                                                                            ))}
+                                                                        </select>
+                                                                        {item.item && (
+                                                                            <div className="text-[9px] text-gray-400 mt-0.5 px-1 truncate leading-tight">
+                                                                                {JOBCARD_ITEM_OPTIONS.find(o => o.label === item.item)?.description}
+                                                                            </div>
+                                                                        )}
+                                                                    </td>
+                                                                    <td className="px-1 py-1 w-[120px]">
+                                                                        <input 
+                                                                            type="number" 
+                                                                            step="0.01" 
+                                                                            min="0"
+                                                                            value={item.price || ''} 
+                                                                            onChange={(e) => handleItemChange(index, 'price', e.target.value)}
+                                                                            className="w-full bg-transparent border border-gray-200 rounded p-1 text-sm focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-1 py-1 w-[100px]">
+                                                                        <input 
+                                                                            type="text" 
+                                                                            readOnly
+                                                                            value={item.total || '0.00'} 
+                                                                            className="w-full bg-gray-50 border border-gray-200 rounded p-1 text-sm text-right font-mono"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-1 py-1 w-10 text-center">
+                                                                        <button 
+                                                                            type="button" 
+                                                                            onClick={() => handleRemoveItem(index)}
+                                                                            className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                                                                            title="Remove item"
+                                                                        >
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colSpan={6} className="px-1 pb-2">
+                                                                        <textarea 
+                                                                            value={item.description || ''} 
+                                                                            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                                                                            placeholder="Detailed description for this item..."
+                                                                            rows={1}
+                                                                            className="w-full bg-transparent border border-gray-100 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 resize-y min-h-[30px] italic text-gray-500"
+                                                                        />
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </td>
                                                 </tr>
                                             ))}
