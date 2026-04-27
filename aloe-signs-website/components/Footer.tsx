@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Facebook, Instagram } from 'lucide-react';
 
 export default function Footer() {
     const pathname = usePathname();
@@ -38,6 +39,26 @@ export default function Footer() {
                                 <span className="w-1.5 h-1.5 rounded-full bg-white/20"></span>
                                 team@aloesigns.co.za
                             </p>
+                        </div>
+                        <div className="flex items-center gap-3 pt-2">
+                            <a
+                                href="https://www.facebook.com/profile.php?id=61577881601723"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Facebook"
+                                className="w-10 h-10 rounded-full bg-white/5 hover:bg-aloe-green hover:text-black flex items-center justify-center text-white/70 transition-all hover:scale-110"
+                            >
+                                <Facebook className="w-4 h-4" />
+                            </a>
+                            <a
+                                href="https://www.instagram.com/aloe_signs_team"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram"
+                                className="w-10 h-10 rounded-full bg-white/5 hover:bg-aloe-green hover:text-black flex items-center justify-center text-white/70 transition-all hover:scale-110"
+                            >
+                                <Instagram className="w-4 h-4" />
+                            </a>
                         </div>
                     </div>
 
