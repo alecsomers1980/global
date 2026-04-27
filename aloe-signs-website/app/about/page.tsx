@@ -102,12 +102,12 @@ export default function AboutPage() {
                                 </div>
                             </div>
 
-                            {/* ENGRAVCUT CNC */}
+                            {/* CNC ROUTER 3020 */}
                             <div className="grid md:grid-cols-2 gap-10 items-center">
                                 <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-white shadow-xl group border border-border-grey">
                                     <Image 
                                         src="/images/cnc2.jpg" 
-                                        alt="ENGRAVCUT CNC Router"
+                                        alt="CNC ROUTER 3020"
                                         fill
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
@@ -118,13 +118,13 @@ export default function AboutPage() {
                                         Precision Fabrication
                                     </div>
                                     <h4 className="text-3xl md:text-4xl font-black uppercase tracking-tight leading-none text-charcoal">
-                                        ENGRAVCUT CNC
+                                        CNC ROUTER 3020
                                     </h4>
                                     <p className="text-xl text-aloe-green font-semibold">
                                         The power to carve through any challenge
                                     </p>
                                     <p className="text-lg text-charcoal/80 leading-relaxed font-medium">
-                                        Precision cutting and engraving are essential for creating custom 3D signage, lightboxes, and architectural elements. Our ENGRAVCUT CNC router provides the heavy-duty power and meticulous accuracy needed to carve through acrylic, wood, aluminium, and composite materials with ease.
+                                        Precision cutting and engraving are essential for creating custom 3D signage, lightboxes, and architectural elements. Our CNC ROUTER 3020 provides the heavy-duty power and meticulous accuracy needed to carve through acrylic, wood, aluminium, and composite materials with ease.
                                     </p>
                                     <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
                                         <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
