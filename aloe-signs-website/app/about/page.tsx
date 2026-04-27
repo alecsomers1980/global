@@ -288,7 +288,7 @@ export default function AboutPage() {
                                 What Makes Us Different
                             </h2>
                             <p className="text-lg text-medium-grey max-w-2xl mx-auto">
-                                End-to-end service with in-house capabilities
+                                End-to-end service built on a foundation of integrity
                             </p>
                         </div>
 
@@ -307,7 +307,7 @@ export default function AboutPage() {
                                 {
                                     icon: Award,
                                     title: 'End-to-End Service',
-                                    description: 'From design to installation, your project stays with our team.',
+                                    description: 'From design to installation, your project is managed with total integrity and absolute accountability.',
                                 },
                                 {
                                     icon: MapPin,
