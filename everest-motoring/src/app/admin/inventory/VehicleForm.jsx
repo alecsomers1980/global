@@ -264,6 +264,10 @@ export default function VehicleForm({ initialData = null }) {
                 warranty_end_date: formData.get("warranty_end_date") || null,
                 warranty_mileage: intOrNull(formData.get("warranty_mileage")),
 
+                // Compliance & Disclosure
+                sold_roadworthy: triState(formData.get("sold_roadworthy")),
+                eligible_for_finance: triState(formData.get("eligible_for_finance")),
+
                 // Pricing
                 trade_in_price: floatOrNull(formData.get("trade_in_price")),
                 reconditioning_cost: floatOrNull(formData.get("reconditioning_cost")),
@@ -517,6 +521,52 @@ export default function VehicleForm({ initialData = null }) {
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Warranty Mileage (km)</label>
                         <input type="number" name="warranty_mileage" defaultValue={initialData?.warranty_mileage || ""} min="0" placeholder="e.g. 100000" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    </div>
+                </div>
+            </div>
+
+            {/* ======== Compliance & Disclosure (admin only) ======== */}
+            <div className="pt-4 border-t border-slate-100 space-y-4">
+                <h3 className="block text-sm font-bold text-slate-700 mb-1">Compliance & Disclosure</h3>
+                <p className="text-xs text-slate-500 -mt-1 mb-2">Internal / legal fields. Required for export feeds. Not shown on the public listing.</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                            Sold in roadworthy condition <span className="text-red-500">*</span>
+                        </label>
+                        <p className="text-xs text-slate-500 mb-2">
+                            Will this vehicle, at no extra cost to the customer, be sold with a valid roadworthy certificate from an accredited service provider according to regulations laid out in the National Road Traffic Act and SANS 10047/SANS 10216, certifying the condition of the vehicle?
+                        </p>
+                        <select
+                            name="sold_roadworthy"
+                            required
+                            defaultValue={initialData?.sold_roadworthy == null ? "" : initialData.sold_roadworthy ? "yes" : "no"}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                        >
+                            <option value="">— Please select —</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
+                            Eligible for finance <span className="text-red-500">*</span>
+                        </label>
+                        <p className="text-xs text-slate-500 mb-2">
+                            Does this vehicle qualify for vehicle asset finance with an accredited institution?
+                        </p>
+                        <select
+                            name="eligible_for_finance"
+                            required
+                            defaultValue={initialData?.eligible_for_finance == null ? "" : initialData.eligible_for_finance ? "yes" : "no"}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+                        >
+                            <option value="">— Please select —</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                     </div>
                 </div>
             </div>
