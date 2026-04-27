@@ -36,16 +36,6 @@ export default function AiVideoStatus({ carId, videoUrl }) {
         }
     }, [videoUrl]);
 
-    // If it's already safely hosted (Mux or Cloudflare):
-    if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
-        return (
-            <div className="mt-2 px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200 text-xs font-bold flex items-center gap-1.5 w-max">
-                <span className="material-symbols-outlined text-[14px]">play_circle</span>
-                AI Video Live
-            </div>
-        );
-    }
-
     const handleRetry = async () => {
         setIsChecking(true);
         setStatusText("Retrying...");
@@ -57,6 +47,39 @@ export default function AiVideoStatus({ carId, videoUrl }) {
             setIsChecking(false);
         }
     };
+
+    const handleRegenerate = async () => {
+        if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nThis costs roughly $1.20 and takes ~3 minutes. The current video will be replaced once the new one finishes.")) return;
+        setIsChecking(true);
+        try {
+            await queueAiWalkaround(carId);
+            window.location.reload();
+        } catch (error) {
+            alert("Failed to queue regeneration: " + error.message);
+            setIsChecking(false);
+        }
+    };
+
+    // If it's already safely hosted (Mux or Cloudflare):
+    if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
+        return (
+            <div className="mt-2 flex flex-col gap-1.5 w-max">
+                <div className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200 text-xs font-bold flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[14px]">play_circle</span>
+                    AI Video Live
+                </div>
+                <button
+                    onClick={handleRegenerate}
+                    disabled={isChecking}
+                    className="text-[11px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-slate-200 transition-colors disabled:opacity-70"
+                    title="Regenerate the walkaround video using the latest prompts"
+                >
+                    <span className="material-symbols-outlined text-[12px]">refresh</span>
+                    {isChecking ? "Queuing..." : "Regenerate"}
+                </button>
+            </div>
+        );
+    }
 
     if (isError) {
         return (
