@@ -63,7 +63,7 @@ export default function AboutPage() {
                                     <div className="bg-white rounded-xl p-6 border border-border-grey shadow-sm">
                                         <p className="font-bold text-aloe-green mb-2 uppercase tracking-wider text-sm">Why it matters for you:</p>
                                         <p className="text-charcoal/80">
-                                            The instant-curing UV ink creates a scratch-resistant, hyper-durable finish built to withstand brutal South African weather. Coupled with variable-drop technology, it delivers razor-sharp, photo-realistic details and vibrant colors that make your brand impossible to ignore—all with incredibly fast turnaround times.
+                                            The instant-curing UV ink creates a scratch-resistant, hyper-durable finish built to withstand brutal South African weather. Coupled with variable-drop technology, it delivers razor-sharp, photo-realistic details and vibrant colors that make your product impossible to ignore—all with incredibly fast turnaround times.
                                         </p>
                                     </div>
                                 </div>
