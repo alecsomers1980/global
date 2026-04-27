@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
 
 const MATERIALS = ['ContraVision', 'PVC', 'Wallpaper', 'Cast', 'Polymeric', 'Monomeric', 'Air Release', 'Lightbox', 'Other'];
+const FLATBED_MATERIALS = ['Correx', 'ABS', 'Chromadek', 'Perspex', 'Foamboard', 'Wood', 'Aluminium', 'Other'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
 interface FileEntry { id: string; file: File | null; name: string; description: string; }
@@ -799,15 +800,53 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="UV Flatbed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_flatbed && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
+                                            <div className="grid grid-cols-2 gap-x-2 py-2">
+                                                {FLATBED_MATERIALS.map(m => (
+                                                    <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
+                                                        <span className="text-[10px] font-medium text-gray-700">{m}</span>
+                                                        <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes('Other') && (
+                                                <div className="px-3 pb-3">
+                                                    <input 
+                                                        type="text" 
+                                                        name="materials_other_text"
+                                                        value={jobcard.materials_other_text || ''} 
+                                                        onChange={handleChange}
+                                                        placeholder="Specify other material..."
+                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     <Toggle label="HP Latex" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
                                     {jobcard.prod_digital && (
-                                        <div className="grid grid-cols-2 gap-x-2 py-2 border-b border-gray-300 bg-blue-50/50">
-                                            {MATERIALS.map(m => (
-                                                <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
-                                                    <span className="text-[10px] font-medium text-gray-700">{m}</span>
-                                                    <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
-                                                </label>
-                                            ))}
+                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
+                                            <div className="grid grid-cols-2 gap-x-2 py-2">
+                                                {MATERIALS.map(m => (
+                                                    <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
+                                                        <span className="text-[10px] font-medium text-gray-700">{m}</span>
+                                                        <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes('Other') && (
+                                                <div className="px-3 pb-3">
+                                                    <input 
+                                                        type="text" 
+                                                        name="materials_other_text"
+                                                        value={jobcard.materials_other_text || ''} 
+                                                        onChange={handleChange}
+                                                        placeholder="Specify other material..."
+                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     <Toggle label="HP Vinyl Cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
