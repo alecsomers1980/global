@@ -40,6 +40,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 company = ${body.company ?? null},
                 contact_name = ${body.contact_name ?? null},
                 contact_phone = ${body.contact_phone ?? null},
+                contact_phone_2 = ${body.contact_phone_2 ?? null},
                 entry_number = ${body.entry_number ?? null},
                 date = ${body.date ?? null},
                 design_notes = ${body.design_notes ?? null},

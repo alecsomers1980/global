@@ -190,13 +190,14 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const handleCompanyChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setJobcard((prev: any) => ({ ...prev, company: value }));
-        
+
         if (value.trim().length > 1) {
             const supabase = createClientSupabase();
-            const { data } = await supabase.from('jobcards')
-                .select('company, contact_name, contact_phone, email, address')
-                .ilike('company', `%${value}%`)
-                .limit(5);
+            const { data } = await supabase.from('customers')
+                .select('customer, contact, mobile_1, mobile_2, email')
+                .ilike('customer', `%${value}%`)
+                .order('customer')
+                .limit(8);
             setCompanySuggestions(data || []);
             setShowSuggestions(true);
         } else {
@@ -208,11 +209,11 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const selectCompany = (item: any) => {
         setJobcard((prev: any) => ({
             ...prev,
-            company: item.company,
-            contact_name: item.contact_name || prev.contact_name,
-            contact_phone: item.contact_phone || prev.contact_phone,
+            company: item.customer,
+            contact_name: item.contact || prev.contact_name,
+            contact_phone: item.mobile_1 || prev.contact_phone,
+            contact_phone_2: item.mobile_2 || prev.contact_phone_2,
             email: item.email || prev.email,
-            address: item.address || prev.address
         }));
         setShowSuggestions(false);
     };
@@ -525,8 +526,12 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                     onClick={() => selectCompany(item)} 
                                                     className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 text-xs text-gray-800"
                                                 >
-                                                    <div className="font-bold">{item.company}</div>
-                                                    {item.contact_name && <div className="text-gray-500 text-[10px]">{item.contact_name}</div>}
+                                                    <div className="font-bold">{item.customer}</div>
+                                                    {(item.contact || item.mobile_1) && (
+                                                        <div className="text-gray-500 text-[10px]">
+                                                            {[item.contact, item.mobile_1].filter(Boolean).join(' · ')}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -534,7 +539,25 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                             </div>
                             <InputLine label="Contact:" name="contact_name" jobcard={jobcard} handleChange={handleChange} />
-                            <InputLine label="Tel:" name="contact_phone" jobcard={jobcard} handleChange={handleChange} />
+                            <div className="flex border-b border-gray-300">
+                                <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-center bg-gray-50">Tel:</span>
+                                <input
+                                    type="text"
+                                    name="contact_phone"
+                                    value={jobcard.contact_phone || ''}
+                                    onChange={handleChange}
+                                    placeholder="Mobile 1"
+                                    className="flex-1 min-w-0 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800 border-r border-gray-300"
+                                />
+                                <input
+                                    type="text"
+                                    name="contact_phone_2"
+                                    value={jobcard.contact_phone_2 || ''}
+                                    onChange={handleChange}
+                                    placeholder="Mobile 2"
+                                    className="flex-1 min-w-0 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium text-gray-800"
+                                />
+                            </div>
                             <InputLine label="Email:" name="email" jobcard={jobcard} handleChange={handleChange} />
                         </div>
 
