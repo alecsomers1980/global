@@ -719,6 +719,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     )}
                                     <Toggle label="UV Flatbed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="HP Latex" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_digital && (
+                                        <div className="grid grid-cols-2 gap-x-2 py-2 border-b border-gray-300 bg-blue-50/50">
+                                            {MATERIALS.map(m => (
+                                                <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
+                                                    <span className="text-[10px] font-medium text-gray-700">{m}</span>
+                                                    <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
                                     <Toggle label="HP Vinyl Cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
@@ -840,88 +850,42 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                 No
                                             </label>
                                         </div>
-                                        <textarea name="install_additional" value={jobcard.install_additional || ''} onChange={handleChange} placeholder="Additional equipment..." className="w-full border border-gray-300 p-2 text-xs mt-1 resize-none h-16"></textarea>
+                                    <textarea name="install_additional" value={jobcard.install_additional || ''} onChange={handleChange} placeholder="Additional equipment..." className="w-full border border-gray-300 p-2 text-xs mt-1 resize-none h-16"></textarea>
+                                </div>
+                            )}
+                            
+                            <Toggle label="Civil" name="mat_section_civil" jobcard={jobcard} handleChange={handleChange} />
+                            {jobcard.mat_section_civil && (
+                                <div className="p-3 flex flex-col gap-3 bg-blue-50/50 border-b border-gray-300">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Concrete</label>
+                                        <textarea 
+                                            name="mat_civil_concrete" 
+                                            value={jobcard.mat_civil_concrete || ''} 
+                                            onChange={handleChange} 
+                                            placeholder="Concrete details..." 
+                                            className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                        ></textarea>
                                     </div>
-                                )}
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Toolhire</label>
+                                        <textarea 
+                                            name="mat_civil_toolhire" 
+                                            value={jobcard.mat_civil_toolhire || ''} 
+                                            onChange={handleChange} 
+                                            placeholder="Toolhire details..." 
+                                            className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                            )}
                                 
                                 <Toggle label="Collect" name="track_collect" jobcard={jobcard} handleChange={handleChange} />
                             </div>
 
 
                             
-                            {/* Materials Section */}
-                            <div className="border-b border-gray-300 h-full flex flex-col">
-                                <div className="p-2 bg-gray-100 border-b border-gray-300">
-                                    <span className="text-xs font-bold text-gray-700 uppercase">Materials</span>
-                                </div>
-                                
-                                {/* Digital */}
-                                <Toggle label="Digital" name="mat_section_digital" jobcard={jobcard} handleChange={handleChange} />
-                                {jobcard.mat_section_digital && (
-                                    <div className="grid grid-cols-2 gap-x-2 py-2 border-b border-gray-300 bg-blue-50/50">
-                                        {MATERIALS.map(m => (
-                                            <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
-                                                <span className="text-sm font-medium text-gray-700">{m}</span>
-                                                <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
-                                            </label>
-                                        ))}
-                                    </div>
-                                )}
 
-                                {/* Engineering */}
-                                <Toggle label="Engineering" name="mat_section_engineering" jobcard={jobcard} handleChange={handleChange} />
-                                {jobcard.mat_section_engineering && (
-                                    <div className="p-3 border-b border-gray-300 flex flex-col gap-3 bg-blue-50/50">
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Tubing (Sizes & Quantities)</label>
-                                            <textarea 
-                                                name="mat_eng_tubing" 
-                                                value={jobcard.mat_eng_tubing || ''} 
-                                                onChange={handleChange} 
-                                                placeholder="e.g. 50x50mm - Qty 4" 
-                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
-                                            ></textarea>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Sheets (Sizes & Quantities)</label>
-                                            <textarea 
-                                                name="mat_eng_sheets" 
-                                                value={jobcard.mat_eng_sheets || ''} 
-                                                onChange={handleChange} 
-                                                placeholder="e.g. 2450x1225mm - Qty 2" 
-                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
-                                            ></textarea>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Civil */}
-                                <Toggle label="Civil" name="mat_section_civil" jobcard={jobcard} handleChange={handleChange} />
-                                {jobcard.mat_section_civil && (
-                                    <div className="p-3 flex flex-col gap-3 bg-blue-50/50 border-b border-gray-300">
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Concrete</label>
-                                            <textarea 
-                                                name="mat_civil_concrete" 
-                                                value={jobcard.mat_civil_concrete || ''} 
-                                                onChange={handleChange} 
-                                                placeholder="Concrete details..." 
-                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
-                                            ></textarea>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Toolhire</label>
-                                            <textarea 
-                                                name="mat_civil_toolhire" 
-                                                value={jobcard.mat_civil_toolhire || ''} 
-                                                onChange={handleChange} 
-                                                placeholder="Toolhire details..." 
-                                                className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16"
-                                            ></textarea>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
 
                             {/* Financials embedded bottom left logic */}
                             <div className="mt-auto bg-gray-50 flex flex-col border-t border-black">
