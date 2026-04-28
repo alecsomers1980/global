@@ -56,6 +56,7 @@ Strict Instructions for the script:
 2. These are pre-owned vehicles. NEVER use the word "new" in the voiceover scripts. Use words like "striking", "exceptional", or just the make and model.
 2b. NEVER use the phrase "test drive" anywhere in any voiceover, in any scene. The CTA should invite the viewer to "view", "see", or "experience" the vehicle, or to "contact" / "visit" / "enquire with" Everest Motoring — never to book a test drive.
 2c. VOICEOVER VARIETY — STRICT: each voiceover must feel uniquely written for THIS specific ${car.year} ${car.make} ${car.model}, not a fill-in-the-blank template. Vary your sentence openers, structures, and word choices. Do NOT default to predictable patterns like every Scene 1 starting with "Introducing the…", every Scene 4 starting with "Contact Everest Motoring today…", or "Featuring X and Y" / "With X and Y" stock phrasing. Treat each voiceover line as bespoke copy for this vehicle: reference its specific character — sporty, family-focused, executive, rugged, economical — and write language that fits THAT vehicle's personality rather than a generic luxury template. Two different cars must never receive the same voiceover line.
+2d. VOICEOVER LENGTH — STRICT: every voiceover line must be MAX 11 WORDS. Each clip is only 8 seconds long, so the line must comfortably fit at a calm, unhurried pace. If you cannot fit your point in 11 words, say less — drop a feature, drop an adjective, drop the lead-in. A short, well-spoken line is far better than a long line that gets cut off mid-sentence. Aim for 8–10 words.
 3. Keep visual descriptions concise and positive. Avoid negative words like "don't", "no", or "without", as they confuse the video AI. Describe exactly what SHOULD be seen.
 4. CRITICAL MOTION RULE — apply to every scene: motion must be CONTINUOUS from frame one to the final frame. The camera should already be in motion when the clip begins. The scene must NEVER start or end with a static, frozen, or held frame. There must be smooth, unbroken movement across the entire duration of every clip. Never produce a still photograph effect at any point.
 
@@ -67,30 +68,30 @@ Scene 1: The Hook (Exterior Hero Shot)
 - CAMERA — STRICT 2D ZOOM ONLY (Ken Burns effect): there is NO 3D camera, NO virtual dolly, NO push-in through space. The motion is purely a digital scale of the source image — like zooming into or out of a photograph in an image viewer. The camera does NOT travel forward or backward through the scene, does NOT change angle, does NOT change perspective, does NOT orbit, does NOT pan, does NOT tilt. Parallax must NOT occur — foreground and background scale together as a flat image.
 - The angle, perspective, and framing of the source photo are LOCKED. No new sides of the vehicle become visible. No new portions of the background become visible. If something was hidden in the source image, it remains hidden. The shot is exactly the source photo with a slow zoom-in OR slow zoom-out, nothing more.
 - Lighting: keep the natural lighting of the source image exactly. Subtle, realistic lens behaviour only.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a catchy 1-sentence hook introducing the make and model]"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a catchy 1-sentence hook introducing the make and model. MAX 11 words, aim for 8–10. Must fit comfortably in an 8-second clip at a calm, unhurried pace.]"
 
 Scene 2: The Technology (Dashboard/Cockpit)
 - THE FIRST FRAME OF THE VIDEO IS IDENTICAL TO THE SOURCE IMAGE — same dashboard, same cockpit layout, same colours, same lighting. The reference image is the starting frame of the clip.
 - Camera motion is a slow gentle zoom only on the source image — either a slow zoom-in or a slow zoom-out, already in motion on frame one. No 3D push-in, no angle change, no pan, no parallax. Treat it as a Ken Burns zoom on a photograph.
 - The dashboard, steering wheel, displays, and surrounding interior are preserved exactly as in the reference image. The steering wheel is locked firmly on the RIGHT side. Do not invent additional buttons, screens, trim, or features that are not already visible in the source image.
 - Soft ambient lighting matching the source image.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning 1 or 2 of its best technology features]"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover mentioning 1 or 2 of its best technology features. MAX 11 words, aim for 8–10. Must fit comfortably in an 8-second clip at a calm, unhurried pace — say less rather than rush.]"
 
 Scene 3: The Comfort (Rear Cabin)
 - THE FIRST FRAME OF THE VIDEO IS IDENTICAL TO THE SOURCE IMAGE — same rear cabin, same seats, same trim, same view through the windows, same lighting. The reference image is the starting frame of the clip.
 - Camera motion is a slow gentle zoom only on the source image — either a slow zoom-in or a slow zoom-out, already in motion on frame one. No 3D push-in, no angle change, no pan, no parallax. Treat it as a Ken Burns zoom on a photograph.
 - The rear cabin interior and the background environment visible through the windows are preserved exactly as in the source image. Do not invent additional features, accessories, or scenery.
 - Natural light matching the source image.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover explicitly mentioning its comfort or powertrain features]"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: South African English Female Voiceover: [Write a 1-sentence voiceover mentioning its comfort or powertrain features. MAX 11 words, aim for 8–10. Must fit comfortably in an 8-second clip at a calm, unhurried pace — say less rather than rush.]"
 
 Scene 4: The Closer (Human Presenter)
 - A professional, attractive female sales presenter with shoulder-length blonde hair, wearing a plain tailored navy blue blazer over a plain white blouse. The blazer is completely plain — no logos, no embroidery, no badges, no text, no patches, no breast pocket emblems of any kind.
-- She stands next to the exact same vehicle from Scene 1.
-- BACKGROUND — STRICT: the background environment matches the reference image EXACTLY — same parking surface, same buildings, trees, sky, walls, and lighting as in the source photo from Scene 1. Do NOT invent a new environment, do NOT change the background geometry, do NOT insert different surroundings, do NOT add walls, signs, posters, or logos that are not already present in the reference image. The presenter is composited into the existing scene; nothing in the background changes.
+- PRESENTER POSITIONING — STRICT: the presenter occupies ONLY the lower-left or lower-right foreground corner of the frame, taking up no more than 25% of the visible frame width. She is a partial figure — visible from roughly chest-up — standing close to the camera at the edge of the frame. The remaining 75%+ of the frame shows the vehicle and its environment from the source image, completely undisturbed.
+- BACKGROUND — STRICT: the entire frame outside the presenter's small corner area is IDENTICAL to the source image from Scene 1 — same vehicle, same parking surface, same buildings, trees, sky, walls, and lighting. The first frame matches the source image with the presenter simply added to one corner. Do NOT regenerate, repaint, restyle, reframe, or reinterpret the rest of the scene. Do NOT invent a new environment, do NOT change the background geometry, do NOT insert different surroundings, do NOT add walls, signs, posters, or logos that are not already present in the reference image. The vehicle in the background remains pixel-identical to the source. The presenter is the only new element; everything else is preserved exactly.
 - POSTURE — STRICT: she stands perfectly upright the entire clip, head held high, shoulders square, spine straight. Her body remains vertical at ALL times. She does NOT bend, lean forward, lean sideways, kneel, crouch, or shift her hip stance. Only her hands, head, and facial expression move — the torso stays still and vertical from frame one to the final frame.
 - She looks directly into the camera with a warm, inviting smile. Subtle, natural hand gestures stay near her chest or waist height — never reaching down or sweeping outward in a way that bends the body.
 - Camera motion is a slow gentle zoom only — either a slow zoom-in toward the presenter or a slow zoom-out away from her, already in motion on frame one. No 3D push-in, no angle change, no pan, no parallax. Treat it as a Ken Burns zoom on a photograph; the source image's framing and perspective are locked.
-- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact, visit, or enquire with Everest Motoring regarding this specific make/model. Do NOT use the word 'new'. Do NOT use the phrase 'test drive']"
+- CRITICAL AUDIO INSTRUCTION: End this prompt with "AUDIO: Clean, studio-quality South African English Female Voiceover with absolutely NO background noise, static, hiss, interference, or ambient sound — voice only on a silent background: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact, visit, or enquire with Everest Motoring regarding this specific make/model. MAX 11 words, aim for 8–10. Must fit comfortably in an 8-second clip at a calm, unhurried pace — say less rather than rush. Do NOT use the word 'new'. Do NOT use the phrase 'test drive']"
 
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
 Do not include markdown formatting outside the JSON array. The \`visual_prompt\` should be a single, long paragraph containing all the visual imagery, camera instructions, lighting, and action for the AI video generator.
@@ -137,71 +138,72 @@ Example Output:
         const techList = tech.join(' and ');
         const comfortList = comfort.join(' and ');
 
-        // ===== Scene 1 hook variants =====
+        // ===== Scene 1 hook variants — kept SHORT (max 11 words) so the
+        // voiceover never gets cut off in an 8-second Veo clip. =====
         const hookPoolWithDrive = [
-            `Introducing the striking ${yMM}, a ${transmissionFuel} masterpiece.`,
-            `Meet the ${yMM} — refined ${transmissionFuel} engineering, ready for the road.`,
-            `This is the ${yMM}: ${transmissionFuel} confidence with unmistakable presence.`,
-            `Step into the ${yMM} — a ${transmissionFuel} drive built for those who notice the details.`,
-            `The ${yMM}, a ${transmissionFuel} expression of quiet capability.`,
-            `Discover the ${yMM} — ${transmissionFuel}, refined, and quietly assured.`,
+            `The striking ${yMM} — ${transmissionFuel}, refined, ready.`,
+            `Meet the ${yMM}, ${transmissionFuel}, built for the road.`,
+            `The ${yMM}: ${transmissionFuel} confidence, quiet presence.`,
+            `Discover the ${yMM} — ${transmissionFuel} and quietly assured.`,
+            `${yMM}, a ${transmissionFuel} drive worth noticing.`,
+            `The ${yMM} — ${transmissionFuel}, refined, capable.`,
         ];
         const hookPoolNoDrive = [
             `Introducing the striking ${yMM}.`,
-            `Meet the ${yMM} — refined, capable, and ready for the road.`,
-            `Step into the ${yMM}, where presence meets purpose.`,
-            `Discover the ${yMM} — exceptional engineering, unmistakable character.`,
-            `The ${yMM}: quiet confidence, made for the long road.`,
-            `Say hello to the ${yMM}, a vehicle that earns every glance.`,
+            `Meet the ${yMM}, refined and ready.`,
+            `The ${yMM}, where presence meets purpose.`,
+            `Discover the ${yMM} — quietly exceptional.`,
+            `The ${yMM}: confidence, made simple.`,
+            `The ${yMM}, a vehicle worth noticing.`,
         ];
         const hookLine = pickVariant(seed, transmissionFuel ? hookPoolWithDrive : hookPoolNoDrive);
 
-        // ===== Scene 2 tech-feature variants =====
+        // ===== Scene 2 tech variants =====
         const techPoolWith = [
-            `Featuring ${techList}, technology that puts you in complete control.`,
-            `${techList} keep you connected, informed, and effortlessly in command.`,
-            `Equipped with ${techList}, the cabin is built around the way you actually drive.`,
-            `From ${techList}, every detail is engineered to keep the driver in charge.`,
-            `Technology like ${techList} brings the cockpit to life on every journey.`,
-            `With ${techList}, the driver's world stays focused and connected.`,
+            `${techList} — technology that keeps you in control.`,
+            `${techList} keep you connected and in command.`,
+            `Inside, ${techList} simplify every drive.`,
+            `${techList}: smart, useful, beautifully integrated.`,
+            `${techList} bring the cockpit to life.`,
+            `Equipped with ${techList} — driver-focused throughout.`,
         ];
         const techPoolWithout = [
-            `Technology that puts you in complete control, right at your fingertips.`,
-            `Inside, smart technology keeps every drive considered and connected.`,
-            `A driver-focused cockpit built around clarity and control.`,
-            `Tech designed to make every drive feel quietly intuitive.`,
-            `Where smart engineering meets a genuinely driver-friendly cabin.`,
-            `A cabin where useful technology stays exactly where you need it.`,
+            `Technology that keeps you fully in control.`,
+            `Smart cabin tech that simplifies every drive.`,
+            `A driver-focused cockpit, intuitive throughout.`,
+            `Useful tech, exactly where you need it.`,
+            `Smart engineering, genuinely driver-friendly.`,
+            `A cabin built around clarity and control.`,
         ];
         const techLine = pickVariant(seed, tech.length > 0 ? techPoolWith : techPoolWithout, 7);
 
         // ===== Scene 3 comfort variants =====
         const comfortPoolWith = [
-            `With ${comfortList}, every journey becomes exceptional.`,
-            `${comfortList} turn the everyday commute into something quietly enjoyable.`,
-            `Backed by ${comfortList}, the cabin invites you to slow down and settle in.`,
-            `Inside, ${comfortList} make every kilometre genuinely comfortable.`,
-            `${comfortList} elevate the rear cabin into a space built for the long haul.`,
-            `With ${comfortList}, comfort is the quiet headline of every trip.`,
+            `${comfortList} — comfort built into every kilometre.`,
+            `With ${comfortList}, every journey feels considered.`,
+            `${comfortList} turn the commute into something easy.`,
+            `Inside, ${comfortList} make the long haul effortless.`,
+            `${comfortList} — quietly elevating the rear cabin.`,
+            `${comfortList}: comfort that earns its keep.`,
         ];
         const comfortPoolWithout = [
             `Designed for exceptional comfort on every journey.`,
-            `A rear cabin built for unhurried, all-day comfort.`,
-            `Space, light, and refinement make every backseat trip feel premium.`,
-            `Where space and refinement meet — purpose-built for life on the road.`,
-            `A cabin that turns long drives into something genuinely restful.`,
-            `Comfort and space designed around the people in the back.`,
+            `A rear cabin built for unhurried comfort.`,
+            `Space and refinement, in every seat.`,
+            `Where space meets refinement — built for the road.`,
+            `Long drives, made genuinely restful.`,
+            `Comfort and space, thoughtfully designed.`,
         ];
         const comfortLine = pickVariant(seed, comfort.length > 0 ? comfortPoolWith : comfortPoolWithout, 13);
 
-        // ===== Scene 4 CTA variants (no 'test drive' phrasing) =====
+        // ===== Scene 4 CTA variants — short, no 'test drive' =====
         const ctaPool = [
-            `Contact Everest Motoring today to view this exceptional ${mM} in person.`,
-            `Visit Everest Motoring in White River and experience this ${mM} for yourself.`,
-            `Get in touch with Everest Motoring — this ${mM} is ready to be seen.`,
-            `Reach out to Everest Motoring today and arrange a viewing of this ${mM}.`,
-            `Speak to the team at Everest Motoring about this striking ${mM}.`,
-            `Enquire with Everest Motoring — this ${mM} won't be on the floor for long.`,
+            `Contact Everest Motoring to view this ${mM} in person.`,
+            `Visit Everest Motoring in White River — see it for yourself.`,
+            `Get in touch with Everest Motoring today.`,
+            `Arrange a viewing with Everest Motoring in White River.`,
+            `Speak to Everest Motoring about this ${mM}.`,
+            `Enquire with Everest Motoring — viewings welcome.`,
         ];
         const ctaLine = pickVariant(seed, ctaPool, 23);
 
@@ -212,7 +214,7 @@ Example Output:
             { scene: 1, location: "exterior", visual_prompt: `The ${car.year} ${car.make} ${car.model} is parked completely stationary and motionless — wheels do not turn, body does not move. Use the source photo AS-IS: the entire frame — vehicle, number plate, ground, buildings, sky, lighting, every detail — is preserved exactly as in the uploaded reference image. Do not add, remove, or modify anything. Do not change the number plate text or graphics; the existing plate is correct as-is. Do not invent or insert walls, signs, posters, logos, or surroundings not already in the reference photo. Camera angle is LOCKED — same position, same perspective, same framing as the source image throughout. Do not orbit, pan, or change angle. Camera motion is a slow gentle zoom only — either a slow zoom-in toward the car or a slow zoom-out away from the car on the same optical axis, already in motion on frame one. ${motionRule} Preserve the lighting of the source image. AUDIO: ${cleanAudio}: '${hookLine}'` },
             { scene: 2, location: "interior", visual_prompt: `Interior dashboard view of the ${car.make} ${car.model}. The first frame of the video is identical to the source image — same dashboard, same cockpit layout, same colours, same lighting. ${motionRule} The physical steering wheel is locked firmly on the RIGHT side. The dashboard, displays, and surrounding interior are preserved exactly as in the reference image; do not invent additional buttons, screens, trim, or features. Soft ambient lighting matching the source image. AUDIO: ${cleanAudio}: '${techLine}'` },
             { scene: 3, location: "interior", visual_prompt: `Rear cabin view of the ${car.make} ${car.model}. The first frame of the video is identical to the source image — same seats, same trim, same view through the windows, same lighting. ${motionRule} The cabin interior and the background environment visible through the windows are preserved exactly as in the source image; do not invent additional features, accessories, or scenery. AUDIO: ${cleanAudio}: '${comfortLine}'` },
-            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands perfectly upright the entire clip — head held high, shoulders square, spine straight, body vertical at all times. She does not bend, lean, kneel, or crouch. Only her hands, head, and facial expression move; the torso stays still and vertical. She stands next to the exact same ${car.make} ${car.model} from the exterior hero shot. The background environment matches the reference image EXACTLY — same parking surface, same buildings, trees, sky, walls, and lighting as in the source photo. Do not invent a new environment, do not change the background geometry, do not insert different surroundings, do not add walls, signs, posters, or logos that are not already present in the reference image. The presenter is composited into the existing scene; nothing in the background changes. ${motionRule} She looks directly into the camera with a warm inviting smile, with subtle natural hand gestures kept near her chest or waist. AUDIO: ${cleanAudio}: '${ctaLine}'` }
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} occupies ONLY the lower-left or lower-right foreground corner of the frame, taking up no more than 25% of the visible frame width — a partial figure visible from chest-up at the edge of the frame. The remaining 75%+ of the frame is IDENTICAL to the source image of the ${car.make} ${car.model} — same vehicle, same parking surface, same buildings, trees, sky, walls, and lighting, completely undisturbed. The first frame matches the source image with the presenter simply added to one corner. Do not regenerate, repaint, restyle, reframe, or reinterpret the background. Do not invent a new environment, do not change the background geometry, do not insert different surroundings, do not add walls, signs, posters, or logos. The vehicle in the background remains pixel-identical to the source; the presenter is the only new element. She stands perfectly upright the entire clip — head held high, shoulders square, spine straight. Only her hands, head, and facial expression move; the torso stays still and vertical. ${motionRule} She looks directly into the camera with a warm inviting smile. AUDIO: ${cleanAudio}: '${ctaLine}'` }
         ];
     }
 }
