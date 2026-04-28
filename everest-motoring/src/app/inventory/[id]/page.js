@@ -169,6 +169,12 @@ export default async function CarDetailsPage({ params }) {
                                         <p className="text-sm text-slate-500 mb-1">Fuel Type</p>
                                         <p className="font-bold text-slate-900">{car.fuel_type || 'N/A'}</p>
                                     </div>
+                                    {car.drivetrain && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                            <p className="text-sm text-slate-500 mb-1">Drivetrain</p>
+                                            <p className="font-bold text-slate-900">{car.drivetrain}</p>
+                                        </div>
+                                    )}
                                     {car.condition_rating && (
                                         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                                             <p className="text-sm text-slate-500 mb-1">Condition</p>

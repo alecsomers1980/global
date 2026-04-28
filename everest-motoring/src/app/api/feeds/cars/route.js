@@ -30,6 +30,7 @@ export async function GET() {
         xml += `    <mileage>${car.mileage}</mileage>\n`;
         xml += `    <transmission>${car.transmission || ''}</transmission>\n`;
         xml += `    <fuel_type>${car.fuel_type || ''}</fuel_type>\n`;
+        xml += `    <drivetrain>${car.drivetrain || ''}</drivetrain>\n`;
         xml += `    <body_style>${car.body_type || ''}</body_style>\n`;
         xml += `    <exterior_color>${car.color || ''}</exterior_color>\n`;
         xml += `    <vin_number>${car.vin || ''}</vin_number>\n`;

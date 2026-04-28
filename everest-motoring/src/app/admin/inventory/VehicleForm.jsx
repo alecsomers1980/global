@@ -217,6 +217,7 @@ export default function VehicleForm({ initialData = null }) {
                 mileage: parseInt(formData.get("mileage")),
                 transmission: formData.get("transmission"),
                 fuel_type: formData.get("fuel_type"),
+                drivetrain: formData.get("drivetrain") || null,
                 status: formData.get("status"),
                 main_image_url: mainImageUrl,
                 gallery_urls: galleryUrls,
@@ -354,6 +355,14 @@ export default function VehicleForm({ initialData = null }) {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Fuel Type</label>
                     <select name="fuel_type" defaultValue={initialData?.fuel_type || "Diesel"} required className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
                         {FUEL_TYPES.map(f => <option key={f} value={f}>{f}</option>)}
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Drivetrain</label>
+                    <select name="drivetrain" defaultValue={initialData?.drivetrain || "2x4"} required className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                        <option value="2x4">2x4 (Two-Wheel Drive)</option>
+                        <option value="4x4">4x4 (Four-Wheel Drive)</option>
+                        <option value="AWD">AWD (All-Wheel Drive)</option>
                     </select>
                 </div>
                 <div>

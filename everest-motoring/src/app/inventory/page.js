@@ -144,6 +144,12 @@ export default async function InventoryPage({ searchParams }) {
                                                     <span className="material-symbols-outlined text-[16px]">settings</span>
                                                     {car.transmission === 'Automatic' ? 'Auto' : 'Manual'}
                                                 </span>
+                                                {car.drivetrain && (
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="material-symbols-outlined text-[16px]">settings_input_component</span>
+                                                        {car.drivetrain}
+                                                    </span>
+                                                )}
                                                 {car.colour && (
                                                     <span className="flex items-center gap-1">
                                                         <span className="material-symbols-outlined text-[16px]">palette</span>
