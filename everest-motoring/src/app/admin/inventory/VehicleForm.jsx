@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { queueAiWalkaround, optimizeDescriptionAction, composeSceneOneAction } from "./ai_actions";
+import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
 import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
 
 const CAR_FEATURES = {
@@ -178,21 +178,6 @@ export default function VehicleForm({ initialData = null }) {
                 alert(`Failed to upload images.`);
                 setIsUploading(false);
                 return;
-            }
-
-            // Scene 1 background composite via Nano Banana (skipped if user opted out
-            // or no fresh scene-1 file was uploaded this submit).
-            const skipBgSwap = formData.get("skip_bg_swap") === "on";
-            const scene1FileUploaded = scene1File && scene1File.size > 0;
-            if (!skipBgSwap && scene1FileUploaded && mainImageUrl) {
-                setUploadProgress(60);
-                console.log("[VehicleForm] Running Nano Banana scene-1 composite...");
-                const composeResult = await composeSceneOneAction(mainImageUrl);
-                if (composeResult.success && composeResult.url) {
-                    mainImageUrl = composeResult.url;
-                } else {
-                    console.warn("[VehicleForm] Compose failed — keeping original scene-1 image.", composeResult.error);
-                }
             }
 
             // Inspection report PDF upload (optional)
@@ -677,18 +662,7 @@ export default function VehicleForm({ initialData = null }) {
                 {/* File Upload Section */}
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-4">Video Cinematic Scenes {"&"} Photos</label>
-                    <p className="text-sm text-slate-500 mb-3">These first three images are used by the AI engine to generate the 3 distinct video scenes. The rest form the image gallery.</p>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 flex items-start gap-3">
-                        <span className="material-symbols-outlined text-amber-600">auto_awesome</span>
-                        <div className="flex-1">
-                            <p className="text-sm font-bold text-amber-900">Scene 1 background swap</p>
-                            <p className="text-xs text-amber-800">By default, your Scene 1 photo is automatically composited onto the branded Everest background using AI — this is what gets used for the cinematic walkaround. Costs ~$0.04 per listing.</p>
-                            <label className="flex items-center gap-2 mt-2 cursor-pointer text-xs text-amber-900 font-semibold">
-                                <input type="checkbox" name="skip_bg_swap" className="w-4 h-4 cursor-pointer" />
-                                Skip background swap for this listing
-                            </label>
-                        </div>
-                    </div>
+                    <p className="text-sm text-slate-500 mb-6">These first three images are used by the AI engine to generate the 3 distinct video scenes. The rest form the image gallery.</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         {/* Scene 1 */}
