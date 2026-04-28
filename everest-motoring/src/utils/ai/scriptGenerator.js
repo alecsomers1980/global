@@ -6,6 +6,20 @@ function pickFeaturedPair(features, pool) {
     return matches.slice(0, 2);
 }
 
+// Deterministic variant picker — same car always gets the same line,
+// different cars naturally diverge across the pool. Used so the
+// fallback voiceover doesn't read identically across listings.
+function hashSeed(s) {
+    const str = String(s || '');
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+}
+function pickVariant(seed, pool, salt = 0) {
+    if (!pool || pool.length === 0) return '';
+    return pool[(hashSeed(seed) + salt) % pool.length];
+}
+
 export async function generateVehicleScript(car) {
     try {
         // Determine car type category for adaptive scripting
@@ -41,6 +55,7 @@ Strict Instructions for the script:
 1. You must write exactly FOUR scene descriptions. Each scene represents a video clip prompt.
 2. These are pre-owned vehicles. NEVER use the word "new" in the voiceover scripts. Use words like "striking", "exceptional", or just the make and model.
 2b. NEVER use the phrase "test drive" anywhere in any voiceover, in any scene. The CTA should invite the viewer to "view", "see", or "experience" the vehicle, or to "contact" / "visit" / "enquire with" Everest Motoring — never to book a test drive.
+2c. VOICEOVER VARIETY — STRICT: each voiceover must feel uniquely written for THIS specific ${car.year} ${car.make} ${car.model}, not a fill-in-the-blank template. Vary your sentence openers, structures, and word choices. Do NOT default to predictable patterns like every Scene 1 starting with "Introducing the…", every Scene 4 starting with "Contact Everest Motoring today…", or "Featuring X and Y" / "With X and Y" stock phrasing. Treat each voiceover line as bespoke copy for this vehicle: reference its specific character — sporty, family-focused, executive, rugged, economical — and write language that fits THAT vehicle's personality rather than a generic luxury template. Two different cars must never receive the same voiceover line.
 3. Keep visual descriptions concise and positive. Avoid negative words like "don't", "no", or "without", as they confuse the video AI. Describe exactly what SHOULD be seen.
 4. CRITICAL MOTION RULE — apply to every scene: motion must be CONTINUOUS from frame one to the final frame. The camera should already be in motion when the clip begins. The scene must NEVER start or end with a static, frozen, or held frame. There must be smooth, unbroken movement across the entire duration of every clip. Never produce a still photograph effect at any point.
 
@@ -114,18 +129,81 @@ Example Output:
         const tech = pickFeaturedPair(car.features, techPool);
         const comfort = pickFeaturedPair(car.features, comfortPool);
 
-        const techLine = tech.length > 0
-            ? `Featuring ${tech.join(' and ')}, technology that puts you in complete control.`
-            : `Technology that puts you in complete control, right at your fingertips.`;
-
-        const comfortLine = comfort.length > 0
-            ? `With ${comfort.join(' and ')}, every journey becomes exceptional.`
-            : `Designed for exceptional comfort on every journey.`;
-
+        // Per-car deterministic seed — id when available, otherwise make+model+year.
+        const seed = car.id || `${car.make}-${car.model}-${car.year}`;
         const transmissionFuel = [car.transmission, car.fuel_type].filter(Boolean).join(' ');
-        const hookLine = transmissionFuel
-            ? `Introducing the striking ${car.year} ${car.make} ${car.model}, a ${transmissionFuel} masterpiece.`
-            : `Introducing the striking ${car.year} ${car.make} ${car.model}.`;
+        const yMM = `${car.year} ${car.make} ${car.model}`;
+        const mM = `${car.make} ${car.model}`;
+        const techList = tech.join(' and ');
+        const comfortList = comfort.join(' and ');
+
+        // ===== Scene 1 hook variants =====
+        const hookPoolWithDrive = [
+            `Introducing the striking ${yMM}, a ${transmissionFuel} masterpiece.`,
+            `Meet the ${yMM} — refined ${transmissionFuel} engineering, ready for the road.`,
+            `This is the ${yMM}: ${transmissionFuel} confidence with unmistakable presence.`,
+            `Step into the ${yMM} — a ${transmissionFuel} drive built for those who notice the details.`,
+            `The ${yMM}, a ${transmissionFuel} expression of quiet capability.`,
+            `Discover the ${yMM} — ${transmissionFuel}, refined, and quietly assured.`,
+        ];
+        const hookPoolNoDrive = [
+            `Introducing the striking ${yMM}.`,
+            `Meet the ${yMM} — refined, capable, and ready for the road.`,
+            `Step into the ${yMM}, where presence meets purpose.`,
+            `Discover the ${yMM} — exceptional engineering, unmistakable character.`,
+            `The ${yMM}: quiet confidence, made for the long road.`,
+            `Say hello to the ${yMM}, a vehicle that earns every glance.`,
+        ];
+        const hookLine = pickVariant(seed, transmissionFuel ? hookPoolWithDrive : hookPoolNoDrive);
+
+        // ===== Scene 2 tech-feature variants =====
+        const techPoolWith = [
+            `Featuring ${techList}, technology that puts you in complete control.`,
+            `${techList} keep you connected, informed, and effortlessly in command.`,
+            `Equipped with ${techList}, the cabin is built around the way you actually drive.`,
+            `From ${techList}, every detail is engineered to keep the driver in charge.`,
+            `Technology like ${techList} brings the cockpit to life on every journey.`,
+            `With ${techList}, the driver's world stays focused and connected.`,
+        ];
+        const techPoolWithout = [
+            `Technology that puts you in complete control, right at your fingertips.`,
+            `Inside, smart technology keeps every drive considered and connected.`,
+            `A driver-focused cockpit built around clarity and control.`,
+            `Tech designed to make every drive feel quietly intuitive.`,
+            `Where smart engineering meets a genuinely driver-friendly cabin.`,
+            `A cabin where useful technology stays exactly where you need it.`,
+        ];
+        const techLine = pickVariant(seed, tech.length > 0 ? techPoolWith : techPoolWithout, 7);
+
+        // ===== Scene 3 comfort variants =====
+        const comfortPoolWith = [
+            `With ${comfortList}, every journey becomes exceptional.`,
+            `${comfortList} turn the everyday commute into something quietly enjoyable.`,
+            `Backed by ${comfortList}, the cabin invites you to slow down and settle in.`,
+            `Inside, ${comfortList} make every kilometre genuinely comfortable.`,
+            `${comfortList} elevate the rear cabin into a space built for the long haul.`,
+            `With ${comfortList}, comfort is the quiet headline of every trip.`,
+        ];
+        const comfortPoolWithout = [
+            `Designed for exceptional comfort on every journey.`,
+            `A rear cabin built for unhurried, all-day comfort.`,
+            `Space, light, and refinement make every backseat trip feel premium.`,
+            `Where space and refinement meet — purpose-built for life on the road.`,
+            `A cabin that turns long drives into something genuinely restful.`,
+            `Comfort and space designed around the people in the back.`,
+        ];
+        const comfortLine = pickVariant(seed, comfort.length > 0 ? comfortPoolWith : comfortPoolWithout, 13);
+
+        // ===== Scene 4 CTA variants (no 'test drive' phrasing) =====
+        const ctaPool = [
+            `Contact Everest Motoring today to view this exceptional ${mM} in person.`,
+            `Visit Everest Motoring in White River and experience this ${mM} for yourself.`,
+            `Get in touch with Everest Motoring — this ${mM} is ready to be seen.`,
+            `Reach out to Everest Motoring today and arrange a viewing of this ${mM}.`,
+            `Speak to the team at Everest Motoring about this striking ${mM}.`,
+            `Enquire with Everest Motoring — this ${mM} won't be on the floor for long.`,
+        ];
+        const ctaLine = pickVariant(seed, ctaPool, 23);
 
         const motionRule = "Camera motion is a slow Ken-Burns-style 2D zoom only — either a slow zoom-in or a slow zoom-out on the source image. There is NO 3D camera, NO push-in through space, NO angle change, NO pan, NO parallax. The first frame is identical to the source image; the clip animates only via this digital zoom. The motion is already in progress on frame one and continues smoothly to the last frame.";
         const cleanAudio = "Clean, studio-quality South African English Female Voiceover with absolutely no background noise, static, hiss, interference, or ambient sound — voice only on a silent background";
@@ -134,7 +212,7 @@ Example Output:
             { scene: 1, location: "exterior", visual_prompt: `The ${car.year} ${car.make} ${car.model} is parked completely stationary and motionless — wheels do not turn, body does not move. Use the source photo AS-IS: the entire frame — vehicle, number plate, ground, buildings, sky, lighting, every detail — is preserved exactly as in the uploaded reference image. Do not add, remove, or modify anything. Do not change the number plate text or graphics; the existing plate is correct as-is. Do not invent or insert walls, signs, posters, logos, or surroundings not already in the reference photo. Camera angle is LOCKED — same position, same perspective, same framing as the source image throughout. Do not orbit, pan, or change angle. Camera motion is a slow gentle zoom only — either a slow zoom-in toward the car or a slow zoom-out away from the car on the same optical axis, already in motion on frame one. ${motionRule} Preserve the lighting of the source image. AUDIO: ${cleanAudio}: '${hookLine}'` },
             { scene: 2, location: "interior", visual_prompt: `Interior dashboard view of the ${car.make} ${car.model}. The first frame of the video is identical to the source image — same dashboard, same cockpit layout, same colours, same lighting. ${motionRule} The physical steering wheel is locked firmly on the RIGHT side. The dashboard, displays, and surrounding interior are preserved exactly as in the reference image; do not invent additional buttons, screens, trim, or features. Soft ambient lighting matching the source image. AUDIO: ${cleanAudio}: '${techLine}'` },
             { scene: 3, location: "interior", visual_prompt: `Rear cabin view of the ${car.make} ${car.model}. The first frame of the video is identical to the source image — same seats, same trim, same view through the windows, same lighting. ${motionRule} The cabin interior and the background environment visible through the windows are preserved exactly as in the source image; do not invent additional features, accessories, or scenery. AUDIO: ${cleanAudio}: '${comfortLine}'` },
-            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands perfectly upright the entire clip — head held high, shoulders square, spine straight, body vertical at all times. She does not bend, lean, kneel, or crouch. Only her hands, head, and facial expression move; the torso stays still and vertical. She stands next to the exact same ${car.make} ${car.model} from the exterior hero shot. The background environment matches the reference image EXACTLY — same parking surface, same buildings, trees, sky, walls, and lighting as in the source photo. Do not invent a new environment, do not change the background geometry, do not insert different surroundings, do not add walls, signs, posters, or logos that are not already present in the reference image. The presenter is composited into the existing scene; nothing in the background changes. ${motionRule} She looks directly into the camera with a warm inviting smile, with subtle natural hand gestures kept near her chest or waist. AUDIO: ${cleanAudio}: 'Contact Everest Motoring today to view this exceptional ${car.make} ${car.model} in person.'` }
+            { scene: 4, location: "exterior", visual_prompt: `${presenterDesc} stands perfectly upright the entire clip — head held high, shoulders square, spine straight, body vertical at all times. She does not bend, lean, kneel, or crouch. Only her hands, head, and facial expression move; the torso stays still and vertical. She stands next to the exact same ${car.make} ${car.model} from the exterior hero shot. The background environment matches the reference image EXACTLY — same parking surface, same buildings, trees, sky, walls, and lighting as in the source photo. Do not invent a new environment, do not change the background geometry, do not insert different surroundings, do not add walls, signs, posters, or logos that are not already present in the reference image. The presenter is composited into the existing scene; nothing in the background changes. ${motionRule} She looks directly into the camera with a warm inviting smile, with subtle natural hand gestures kept near her chest or waist. AUDIO: ${cleanAudio}: '${ctaLine}'` }
         ];
     }
 }
