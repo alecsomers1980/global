@@ -140,20 +140,53 @@ Example Output:
 
 export function buildFallbackDescription(car, manualDescription) {
     const priceFormatted = car.price ? new Intl.NumberFormat('en-ZA').format(car.price) : null;
-    const features = (car.features || []).slice(0, 8);
-    const specs = [];
-    if (car.mileage) specs.push(`${new Intl.NumberFormat('en-ZA').format(car.mileage)} km on the clock`);
-    if (car.transmission) specs.push(car.transmission.toLowerCase());
-    if (car.fuel_type) specs.push(car.fuel_type.toLowerCase());
+    const allFeatures = car.features || [];
+    const mileageFormatted = car.mileage ? new Intl.NumberFormat('en-ZA').format(car.mileage) : null;
 
-    const specLine = specs.length > 0 ? `Presented with ${specs.join(', ')}.` : '';
-    const featureLine = features.length > 0
-        ? `Key features include ${features.join(', ')}.`
-        : '';
-    const priceLine = priceFormatted ? ` Priced at ${priceFormatted} South African Rand.` : '';
-    const manualLine = manualDescription ? ` ${manualDescription}` : '';
+    // Bucket features into themes so the prose feels interpreted, not listed.
+    const safetyTerms = ["abs", "airbag", "esp", "stability", "traction", "lane", "blind spot", "parking sensor", "rear camera", "isofix"];
+    const techTerms = ["carplay", "android auto", "touchscreen", "navigation", "bluetooth", "premium audio", "cruise control", "keyless"];
+    const comfortTerms = ["leather", "climate", "air conditioning", "sunroof", "heated seat", "power", "electric"];
+    const exteriorTerms = ["alloy", "led", "xenon", "tow bar", "roof rail", "fog", "running light", "4wd", "awd"];
 
-    return `Discover this exceptional ${car.year} ${car.make} ${car.model} at Everest Motoring in White River. ${specLine} ${featureLine}${manualLine}${priceLine} Contact Everest Motoring today to book your test drive or inquire about our tailored finance options.`.replace(/\s+/g, ' ').trim();
+    const bucket = (pool) => allFeatures.filter(f => pool.some(p => f.toLowerCase().includes(p)));
+    const safety = bucket(safetyTerms);
+    const tech = bucket(techTerms);
+    const comfort = bucket(comfortTerms);
+    const exterior = bucket(exteriorTerms);
+
+    // === Paragraph 1: The Hook ===
+    const transmissionFuel = [car.transmission, car.fuel_type].filter(Boolean).join(' ');
+    const driveLine = transmissionFuel ? ` This ${transmissionFuel.toLowerCase()} ${car.model}` : ` This ${car.model}`;
+    const para1 = `Discover this exceptional ${car.year} ${car.make} ${car.model} — now available at Everest Motoring in White River, Mpumalanga. A standout in the pre-owned ${car.make} ${car.model} for sale market, this vehicle blends presence, refinement, and everyday capability in a way that's increasingly hard to find at this price point.${driveLine} has been carefully prepared to dealer-ready standard and is ready to be driven home today.`;
+
+    // === Paragraph 2: Performance & Driving Experience ===
+    const mileagePhrase = mileageFormatted ? `With ${mileageFormatted} km on the clock, this ${car.make} ${car.model} ${car.year} has been looked after and shows the maturity of a vehicle that has been driven well, not driven hard.` : `This ${car.make} ${car.model} ${car.year} has been carefully maintained and is ready for its next chapter.`;
+    const transmissionPhrase = car.transmission ? `The ${car.transmission.toLowerCase()} transmission delivers smooth, confident shifts whether you're navigating Nelspruit traffic or stretching its legs out to Hazyview, Sabie, or White River's quieter back roads.` : `The drivetrain delivers smooth, confident performance across Mpumalanga's varied terrain.`;
+    const fuelPhrase = car.fuel_type ? `Running on ${car.fuel_type.toLowerCase()}, it's well-suited to the long-distance realities of life in the Lowveld and the wider Mpumalanga region.` : `It's well-suited to the long-distance realities of life in the Lowveld and the wider Mpumalanga region.`;
+    const para2 = `${mileagePhrase} ${transmissionPhrase} ${fuelPhrase}`;
+
+    // === Paragraph 3: Features & Comfort ===
+    const featureSentences = [];
+    if (safety.length > 0) featureSentences.push(`On the safety side, you'll find ${safety.slice(0, 4).join(', ')} — the kind of equipment that earns its keep on long family trips.`);
+    if (tech.length > 0) featureSentences.push(`Technology is well covered with ${tech.slice(0, 4).join(', ')}, keeping you connected and in control without distraction.`);
+    if (comfort.length > 0) featureSentences.push(`Inside, ${comfort.slice(0, 4).join(', ')} make every journey feel a little more considered.`);
+    if (exterior.length > 0) featureSentences.push(`Exterior touches include ${exterior.slice(0, 4).join(', ')}, lifting the kerb appeal beyond what you'd expect at this price.`);
+    if (featureSentences.length === 0 && allFeatures.length > 0) {
+        featureSentences.push(`Notable equipment includes ${allFeatures.slice(0, 6).join(', ')} — features that make the daily drive measurably better.`);
+    }
+    if (manualDescription) featureSentences.push(manualDescription.trim());
+    const para3 = featureSentences.length > 0
+        ? featureSentences.join(' ')
+        : `This ${car.make} is well equipped with the kind of comfort, safety, and convenience features that make the daily drive measurably better.`;
+
+    // === Paragraph 4: Value + Dual CTA ===
+    const pricePhrase = priceFormatted
+        ? `Priced at ${priceFormatted} South African Rand, this ${car.year} ${car.make} ${car.model} represents genuine value in the second-hand ${car.make} near Nelspruit market — and vehicles of this calibre move quickly through our showroom.`
+        : `This ${car.year} ${car.make} ${car.model} represents genuine value in the second-hand ${car.make} near Nelspruit market — and vehicles of this calibre move quickly through our showroom.`;
+    const para4 = `${pricePhrase} Everest Motoring has built its reputation in White River, Mpumalanga as a trusted ${car.make} dealer in White River and across the Lowveld, with transparent pricing, honest condition reports, and a friendly, no-pressure approach. Ready to take the next step? Book a test drive at Everest Motoring in White River to experience this ${car.model} in person, or enquire about pre-approved vehicle asset finance through our accredited banking partners — we'll structure a tailored finance package that fits your budget. Contact Everest Motoring today on our website or by phone, and let's get you behind the wheel.`;
+
+    return [para1, para2, para3, para4].join('\n\n').replace(/\s+\n/g, '\n').trim();
 }
 
 export async function optimizeVehicleDescription(car, manualDescription) {
@@ -178,42 +211,53 @@ User's Extra/Unique Features: ${manualDescription || 'None provided'}
 
 Strict Instructions:
 
-LENGTH & STRUCTURE:
-1. Write FOUR distinct paragraphs (roughly 4-6 sentences each), totalling 250-400 words. This is a premium listing — depth and detail matter.
-2. Paragraph 1 — The Hook: open with a vivid scene-setter that mentions the year, make, model, and (if visible in the image) colour. Establish desirability immediately.
-3. Paragraph 2 — Performance & Driving Experience: describe the engine, transmission, fuel type, and how the car feels to drive. Reference specs from the data above.
-4. Paragraph 3 — Features & Comfort: weave in the specific features list naturally — group them into themes (safety, technology, comfort, exterior). Don't just list; interpret why each matters to the buyer.
-5. Paragraph 4 — Value Proposition + Call to Action: address pricing, condition, the dealership's reputation, and close with a strong dual CTA (book a test drive AND/OR enquire about tailored vehicle finance).
+LENGTH & STRUCTURE — NON-NEGOTIABLE:
+1. Write EXACTLY FOUR paragraphs separated by a blank line. Each paragraph must be 5–8 full sentences. The total word count MUST be between 380 and 500 words. Anything under 350 words will be rejected. This is a premium listing — depth, specificity, and texture matter.
+2. Paragraph 1 — The Hook (~90–110 words): open with a vivid scene-setter that names the year, make, model, and (if visible in the image) the colour and stance. Establish desirability and specificity immediately. Mention Everest Motoring and White River, Mpumalanga in this paragraph.
+3. Paragraph 2 — Performance & Driving Experience (~90–120 words): describe the powertrain (engine where inferable, transmission, fuel type), driving feel, refinement, ride quality, and how it handles the realities of Mpumalanga / Lowveld driving (long-distance N4 trips, town traffic, gravel roads, family duties — pick what fits). Reference the actual mileage figure and explain why the kilometre count is reassuring rather than concerning.
+4. Paragraph 3 — Features & Comfort (~100–130 words): GROUP the supplied features into THEMES — safety, driver-assistance technology, infotainment, comfort, exterior. For each theme, name 2–4 specific features from the list and explain WHY each matters to a Lowveld buyer. Do not just list — interpret. If the user supplied "Extra/Unique Features", weave that text in naturally somewhere in this paragraph.
+5. Paragraph 4 — Value, Trust & Dual Call to Action (~90–120 words): justify the price as fair value relative to the local pre-owned market; reinforce Everest Motoring's reputation in White River; close with TWO concrete actions the buyer can take RIGHT NOW (book a test drive AND enquire about pre-approved asset finance). Add gentle urgency but no clichés.
 
-SEO & GEO REQUIREMENTS:
-6. Naturally include phrases that match real South African search queries: "used ${car.make} ${car.model} for sale", "pre-owned ${car.make} ${car.model} in South Africa", "${car.make} ${car.model} ${car.year}", "buy ${car.make} ${car.model} in Mpumalanga", "${car.make} dealer in White River", "pre-owned cars in Lowveld", "second-hand ${car.make} near Nelspruit". Use 4-6 of these phrases naturally — never as a keyword stuff list.
-7. Mention "Everest Motoring" by name at least twice — once mid-copy, once in the CTA.
-8. Mention the dealership's location (White River, Mpumalanga) at least once.
+SEO & GEO REQUIREMENTS — MUST APPEAR:
+6. Naturally weave in 5–7 of these South African search phrases (verbatim or near-verbatim, but never as a comma-list): "used ${car.make} ${car.model} for sale", "pre-owned ${car.make} ${car.model} in South Africa", "${car.year} ${car.make} ${car.model}", "buy ${car.make} ${car.model} in Mpumalanga", "${car.make} dealer in White River", "pre-owned cars in the Lowveld", "second-hand ${car.make} near Nelspruit", "${car.make} ${car.model} for sale Mpumalanga". Spread them across paragraphs 1, 3, and 4.
+7. Mention "Everest Motoring" by name AT LEAST THREE times across the description.
+8. Mention "White River" at least twice and "Mpumalanga" at least twice. Mention at least one of: Nelspruit, Hazyview, Sabie, the Lowveld.
+9. Reference at least one buyer scenario tied to the region (school runs in White River, weekend trips into the Kruger, commuting on the N4 to Witbank or Pretoria, etc.) — this signals genuine local relevance to Google.
 
 PRICE & CURRENCY:
-9. CRITICAL: When mentioning the price, write it exactly as "${car.price} South African Rand" (spelled out, not "R" or "ZAR"). This improves voice-search and accessibility.
+10. CRITICAL: When stating the price, write it exactly as "${car.price} South African Rand" (spelled out, NOT "R", NOT "ZAR", NOT "rand"). This improves voice-search and accessibility.
 
 IMAGE CONTEXT:
-10. If a vehicle image is provided, identify the exact colour and any visible condition cues (clean panels, alloy wheels, interior trim) and weave them into paragraph 1 or 2 naturally.
+11. If a vehicle image is provided, identify the exact colour and any visible condition cues (clean panels, alloy wheels, interior trim, badging) and weave them into paragraph 1 or 2 naturally.
 
 CALL TO ACTION:
-11. End with TWO clear actions a buyer can take, written persuasively:
-    a) Book a test drive at Everest Motoring in White River
-    b) Enquire about pre-approved vehicle asset finance through Everest Motoring's accredited finance partners
-12. Add gentle urgency without being pushy: phrases like "vehicles of this calibre move quickly" or "stock is limited" are acceptable; avoid clichés like "act now" or "don't miss out".
+12. The final paragraph MUST end with two clear, persuasive actions written as full sentences:
+    a) Book a test drive at Everest Motoring in White River — frame it as the way to experience this specific ${car.model} in person.
+    b) Enquire about pre-approved vehicle asset finance through Everest Motoring's accredited banking partners — frame it as a path to a tailored, affordable monthly package.
+13. Add gentle urgency without being pushy: phrases like "vehicles of this calibre move quickly" or "stock at this spec is limited" are fine; avoid clichés like "act now", "don't miss out", "while stocks last".
 
 FORMATTING:
-13. Plain prose only. NO markdown headers (* or #), NO bullet lists, NO bold/italic markers. Return the clean text ready to drop into a website paragraph block.
-14. Write in a confident, premium, trustworthy tone — never gimmicky or aggressive. Think "luxury dealer with friendly staff" not "used-car salesman".
+14. Plain prose only. Paragraphs separated by a single blank line. NO markdown headers (#, *), NO bullet lists, NO bold/italic markers. Return clean text ready to drop into a website paragraph block.
+15. Write in a confident, premium, trustworthy tone — never gimmicky or aggressive. Think "luxury dealer with friendly staff" not "used-car salesman".
+16. Do NOT preface the output with anything like "Here is your description:" — return ONLY the four paragraphs.
 `;
 
         const { text, providerUsed } = await runWithFallback({
             prompt: promptText,
             imageUrl: car.main_image_url || null,
             label: "description",
-            maxOutputTokens: 1024,
+            maxOutputTokens: 2048,
         });
         console.log(`[SEO Content] Description generated via ${providerUsed}.`);
+
+        // Length guard — if the AI returned a thin response, fall back to the
+        // substantial template instead of shipping a 50-word listing.
+        const wordCount = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+        if (wordCount < 250) {
+            console.warn(`[SEO Content] AI returned only ${wordCount} words — using full fallback for quality.`);
+            return buildFallbackDescription(car, manualDescription);
+        }
+
         return text;
     } catch (error) {
         console.error("[SEO Content] Both providers failed — using features-based fallback:", error.message);
