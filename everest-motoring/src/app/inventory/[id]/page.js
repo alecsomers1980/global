@@ -15,6 +15,31 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+const SERVICE_HISTORY_LABELS = {
+    full_franchise: "Full Franchise Service History",
+    full: "Full Service History",
+    full_non_franchise: "Full Service History (Non-Franchise)",
+    full_partial_franchise: "Full History, Partially Franchise",
+    partial: "Partial Service History",
+    none: "No Service History",
+};
+
+function formatWarranty(car) {
+    if (car.has_warranty == null) return null;
+    if (!car.has_warranty) return "No";
+    const parts = [];
+    if (car.warranty_end_date) {
+        const d = new Date(car.warranty_end_date);
+        if (!isNaN(d)) {
+            parts.push(`until ${d.toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' })}`);
+        }
+    }
+    if (car.warranty_mileage) {
+        parts.push(`${new Intl.NumberFormat('en-ZA').format(car.warranty_mileage)} km`);
+    }
+    return parts.length > 0 ? `Yes — ${parts.join(' / ')}` : "Yes";
+}
+
 async function resolveCar(supabase, param, columns) {
     if (UUID_REGEX.test(param)) {
         return await supabase.from("cars").select(columns).eq("id", param).single();
@@ -148,6 +173,32 @@ export default async function CarDetailsPage({ params }) {
                                         <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                                             <p className="text-sm text-slate-500 mb-1">Condition</p>
                                             <p className="font-bold text-slate-900">{car.condition_rating}</p>
+                                        </div>
+                                    )}
+                                    {(car.colour || car.manufacturer_colour) && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                            <p className="text-sm text-slate-500 mb-1">Colour</p>
+                                            <p className="font-bold text-slate-900">
+                                                {car.manufacturer_colour || car.colour}
+                                                {car.manufacturer_colour && car.colour && car.manufacturer_colour !== car.colour && (
+                                                    <span className="block text-xs font-medium text-slate-500 mt-0.5">{car.colour}</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {car.service_history && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                            <p className="text-sm text-slate-500 mb-1">Service History</p>
+                                            <p className="font-bold text-slate-900">{SERVICE_HISTORY_LABELS[car.service_history] || car.service_history}</p>
+                                        </div>
+                                    )}
+                                    {formatWarranty(car) && (
+                                        <div className={`p-4 rounded-xl border ${car.has_warranty ? 'bg-green-50 border-green-100' : 'bg-slate-50 border-slate-100'}`}>
+                                            <p className="text-sm text-slate-500 mb-1 flex items-center gap-1">
+                                                {car.has_warranty && <span className="material-symbols-outlined text-green-600 text-[16px]">verified</span>}
+                                                Warranty
+                                            </p>
+                                            <p className={`font-bold ${car.has_warranty ? 'text-green-800' : 'text-slate-900'}`}>{formatWarranty(car)}</p>
                                         </div>
                                     )}
                                 </div>

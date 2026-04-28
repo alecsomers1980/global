@@ -131,7 +131,7 @@ export default async function InventoryPage({ searchParams }) {
                                         </div>
 
                                         <div className="mt-auto">
-                                            <div className="flex items-center gap-4 text-xs font-medium text-slate-400 mb-6 pb-6 border-b border-slate-100">
+                                            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-slate-400 mb-6 pb-6 border-b border-slate-100">
                                                 <span className="flex items-center gap-1">
                                                     <span className="material-symbols-outlined text-[16px]">speed</span>
                                                     {new Intl.NumberFormat('en-ZA').format(car.mileage)} km
@@ -144,6 +144,18 @@ export default async function InventoryPage({ searchParams }) {
                                                     <span className="material-symbols-outlined text-[16px]">settings</span>
                                                     {car.transmission === 'Automatic' ? 'Auto' : 'Manual'}
                                                 </span>
+                                                {car.colour && (
+                                                    <span className="flex items-center gap-1">
+                                                        <span className="material-symbols-outlined text-[16px]">palette</span>
+                                                        {car.colour}
+                                                    </span>
+                                                )}
+                                                {car.has_warranty && (
+                                                    <span className="flex items-center gap-1 text-green-600">
+                                                        <span className="material-symbols-outlined text-[16px]">verified</span>
+                                                        Warranty
+                                                    </span>
+                                                )}
                                             </div>
 
                                             <div className="flex items-center justify-between">
