@@ -309,7 +309,8 @@ export default function VehicleForm({ initialData = null }) {
 
         } catch (err) {
             console.error(err);
-            alert("An error occurred while saving the vehicle.");
+            const detail = err?.message || err?.error_description || err?.hint || JSON.stringify(err);
+            alert(`An error occurred while saving the vehicle:\n\n${detail}`);
         } finally {
             setIsUploading(false);
         }
