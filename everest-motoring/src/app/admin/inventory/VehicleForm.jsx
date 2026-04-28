@@ -692,58 +692,62 @@ export default function VehicleForm({ initialData = null }) {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         {/* Scene 1 */}
-                        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                        <label htmlFor="scene1_image" className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative block">
                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">directions_car</span>
-                            <label className="block text-sm font-bold text-slate-700 mb-1">Scene 1: Front / Side</label>
+                            <span className="block text-sm font-bold text-slate-700 mb-1">Scene 1: Front / Side</span>
                             <p className="text-xs text-slate-500 mb-4">Hero exterior shot.</p>
                             <input
+                                id="scene1_image"
                                 type="file"
                                 name="scene1_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block cursor-pointer"
                             />
-                        </div>
+                        </label>
 
                         {/* Scene 2 */}
-                        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                        <label htmlFor="scene2_image" className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative block">
                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">dashboard</span>
-                            <label className="block text-sm font-bold text-slate-700 mb-1">Scene 2: Dashboard View</label>
+                            <span className="block text-sm font-bold text-slate-700 mb-1">Scene 2: Dashboard View</span>
                             <p className="text-xs text-slate-500 mb-4">Interior cockpit layout.</p>
                             <input
+                                id="scene2_image"
                                 type="file"
                                 name="scene2_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block cursor-pointer"
                             />
-                        </div>
+                        </label>
 
                         {/* Scene 3 */}
-                        <div className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                        <label htmlFor="scene3_image" className="bg-slate-50 border border-slate-300 rounded-xl p-6 text-center hover:bg-slate-100 transition-colors cursor-pointer relative block">
                             <span className="material-symbols-outlined text-3xl text-slate-400 mb-2">airline_seat_recline_extra</span>
-                            <label className="block text-sm font-bold text-slate-700 mb-1">Scene 3: Backseat Area</label>
+                            <span className="block text-sm font-bold text-slate-700 mb-1">Scene 3: Backseat Area</span>
                             <p className="text-xs text-slate-500 mb-4">Passenger comfort / space.</p>
                             <input
+                                id="scene3_image"
                                 type="file"
                                 name="scene3_image"
                                 accept="image/png, image/jpeg, image/webp"
-                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block"
+                                className="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 block cursor-pointer"
                             />
-                        </div>
+                        </label>
                     </div>
 
                     {/* Bulk Gallery */}
-                    <div className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-100 transition-colors cursor-pointer relative">
+                    <label htmlFor="gallery_images" className="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-100 transition-colors cursor-pointer relative block">
                         <span className="material-symbols-outlined text-4xl text-slate-400 mb-2">collections</span>
-                        <label className="block text-sm font-bold text-slate-700 mb-1">Gallery Images</label>
+                        <span className="block text-sm font-bold text-slate-700 mb-1">Gallery Images</span>
                         <p className="text-xs text-slate-500 mb-4">Hold Ctrl/Cmd to select multiple extra photos (engines, boot space, specific angles).</p>
                         <input
+                            id="gallery_images"
                             type="file"
                             name="gallery_images"
                             multiple
                             accept="image/png, image/jpeg, image/webp"
-                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 mx-auto block"
+                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 mx-auto block cursor-pointer"
                         />
-                    </div>
+                    </label>
                 </div>
 
                 <div>
