@@ -2,7 +2,7 @@
 
 import { createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
-import { startCinematicClips, pollCinematicTask } from "@/utils/ai/videoEngineProvider";
+import { preflightAndGetSceneImages, startSingleClip, pollCinematicTask } from "@/utils/ai/videoEngineProvider";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createMuxAssetFromUrl } from "@/utils/ai/muxService";
 import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
@@ -59,42 +59,44 @@ export async function generateScriptAction(carId, carPayload) {
     }
 }
 
-// 3. Start Clips
-export async function startVeoClipsAction(scriptArray, carPayload) {
+// 3a. Pre-flight image URLs and return the 4 scene images. Runs the
+// HEAD/GET checks server-side so a broken image bucket never causes a
+// Kie.ai charge.
+export async function preflightSceneImagesAction(carPayload) {
     try {
-        console.log('[AI Server Action] Requesting Veo 3.1 Fast clip generation from Kie...');
-        const taskIds = await startCinematicClips(scriptArray, carPayload);
-        return { success: true, taskIds };
+        const sceneImages = await preflightAndGetSceneImages(carPayload);
+        return { success: true, sceneImages };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
-// 4. Poll Clips Iteration
-export async function pollVeoClipsAction(taskIds) {
+// 3b. Start ONE scene's Veo clip. Designed to be called sequentially
+// from the client — start scene 1, poll till done, then start scene 2.
+// Caps a failure cost at ~$0.30 instead of ~$1.20.
+export async function startSingleClipAction(scene, baseImageUrl) {
     try {
-        let allComplete = true;
-        const clipUrls = [];
+        const task = await startSingleClip(scene, baseImageUrl);
+        return { success: true, task };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
 
-        for (const task of taskIds) {
-            const result = await pollCinematicTask(task.taskId);
-            if (result.error) {
-                return { success: false, error: result.error };
-            }
-            if (!result.isComplete) {
-                allComplete = false;
-            } else {
-                clipUrls.push({ scene: task.scene, video_url: result.videoUrl });
-            }
+// 4. Poll a single Veo task by id. Returns { isComplete, videoUrl } when
+// done, { isComplete: false } while still processing, or { error } if
+// Kie.ai marked it failed.
+export async function pollSingleClipAction(taskId) {
+    try {
+        const result = await pollCinematicTask(taskId);
+        if (result.error) {
+            return { success: false, error: result.error };
         }
-
-        if (allComplete) {
-            // Sort by scene number to preserve story order
-            clipUrls.sort((a, b) => a.scene - b.scene);
-            return { success: true, isComplete: true, clipUrls: clipUrls.map(c => c.video_url) };
-        } else {
-            return { success: true, isComplete: false };
-        }
+        return {
+            success: true,
+            isComplete: !!result.isComplete,
+            videoUrl: result.videoUrl || null,
+        };
     } catch (error) {
         return { success: false, error: error.message };
     }

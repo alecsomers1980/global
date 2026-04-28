@@ -4,8 +4,9 @@ import { useEffect, useState, useRef } from 'react';
 import {
     getNextPendingAiCarAction,
     generateScriptAction,
-    startVeoClipsAction,
-    pollVeoClipsAction,
+    preflightSceneImagesAction,
+    startSingleClipAction,
+    pollSingleClipAction,
     stitchVideoAction,
     ingestMuxAction,
     markVideoErrorAction
@@ -50,36 +51,55 @@ export default function VideoRenderManager() {
             // 1. Generate Script
             const scriptRes = await generateScriptAction(car.id, car);
             if (!scriptRes.success) throw new Error(scriptRes.error || "Failed to generate script");
+            const scriptArray = scriptRes.scriptArray;
 
-            // 2. Start Veo Clips
-            setStatusText('Rendering Videos (takes 1-2 mins)...');
-            const startRes = await startVeoClipsAction(scriptRes.scriptArray, car);
-            if (!startRes.success) throw new Error(startRes.error || "Failed to start rendering clips");
+            // 2. Pre-flight image URLs (zero spend if any image is broken)
+            setStatusText('Verifying images...');
+            const preflightRes = await preflightSceneImagesAction(car);
+            if (!preflightRes.success) throw new Error(preflightRes.error || "Image pre-flight failed");
+            const sceneImages = preflightRes.sceneImages;
 
-            // 3. Poll for Clips Completion
-            let clipsComplete = false;
-            let finalClipUrls = [];
-            let attempts = 0;
+            // 3. Render scenes SEQUENTIALLY — start scene 1, poll to completion,
+            //    then start scene 2, etc. Failure at any scene aborts the rest,
+            //    capping the worst-case spend at ~$0.30 (one scene) instead of
+            //    ~$1.20 (all four).
+            const finalClipUrls = [];
+            const POLL_INTERVAL_MS = 10000; // 10s between polls
+            const MAX_POLLS_PER_SCENE = 30;  // 30 * 10s = 5min budget per scene
 
-            while (!clipsComplete && attempts < 90) {
-                // Wait 10s between checks to avoid spamming the backend
-                await new Promise(r => setTimeout(r, 10000));
-                attempts++;
+            for (let i = 0; i < scriptArray.length; i++) {
+                const scene = scriptArray[i];
+                const sceneNum = i + 1;
+                const total = scriptArray.length;
 
-                const pollRes = await pollVeoClipsAction(startRes.taskIds);
+                setStatusText(`Rendering Scene ${sceneNum}/${total} (1–2 mins)...`);
 
-                if (!pollRes.success) {
-                    throw new Error(pollRes.error || "Error during clip generation");
+                const startRes = await startSingleClipAction(scene, sceneImages[i]);
+                if (!startRes.success) {
+                    throw new Error(`Scene ${sceneNum} start failed: ${startRes.error}`);
+                }
+                const taskId = startRes.task.taskId;
+
+                let isComplete = false;
+                let videoUrl = null;
+                for (let p = 0; p < MAX_POLLS_PER_SCENE; p++) {
+                    await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+                    const pollRes = await pollSingleClipAction(taskId);
+                    if (!pollRes.success) {
+                        throw new Error(`Scene ${sceneNum} failed: ${pollRes.error}`);
+                    }
+                    if (pollRes.isComplete && pollRes.videoUrl) {
+                        isComplete = true;
+                        videoUrl = pollRes.videoUrl;
+                        break;
+                    }
                 }
 
-                if (pollRes.isComplete) {
-                    clipsComplete = true;
-                    finalClipUrls = pollRes.clipUrls;
+                if (!isComplete || !videoUrl) {
+                    throw new Error(`Scene ${sceneNum} timed out after ${(MAX_POLLS_PER_SCENE * POLL_INTERVAL_MS) / 60000} minutes`);
                 }
-            }
 
-            if (!clipsComplete || finalClipUrls.length === 0) {
-                throw new Error("Timed out waiting for Veo 3.1 completion after 15 minutes. Heavy load.");
+                finalClipUrls.push(videoUrl);
             }
 
             // 4. Stitch Videos
@@ -87,7 +107,7 @@ export default function VideoRenderManager() {
             const stitchRes = await stitchVideoAction(car.id, finalClipUrls);
             if (!stitchRes.success) throw new Error(stitchRes.error || "Failed to stitch final video");
 
-            // 5. Ingest to Mux
+            // 5. Ingest to Cloudflare Stream
             setStatusText('Optimizing & Publishing...');
             const muxRes = await ingestMuxAction(car.id, stitchRes.finalStitchedUrl);
             if (!muxRes.success) throw new Error(muxRes.error || "Failed to publish video");
