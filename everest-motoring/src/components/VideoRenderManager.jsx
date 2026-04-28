@@ -100,11 +100,11 @@ export default function VideoRenderManager() {
             console.error("[Queue Manager] Job failed:", error);
             await markVideoErrorAction(car.id, error.message);
             // Wait 5 seconds to show the error before clearing
-            setStatusText(`Failed: ${error.message.substring(0, 40)}...`);
+            setStatusText(`Failed: ${error.message.substring(0, 120)}${error.message.length > 120 ? '…' : ''}`);
             setTimeout(() => {
                 setCurrentJob(null);
                 processingRef.current = false;
-            }, 5000);
+            }, 12000);
         }
     };
 

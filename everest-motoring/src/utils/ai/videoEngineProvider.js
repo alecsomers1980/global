@@ -22,6 +22,36 @@ export async function startCinematicClips(scriptArray, carPayload) {
         // Scene 1: Hero (metadata main), Scene 2: Gallery 1, Scene 3: Gallery 2, Scene 4: Hero (Presenter)
         const sceneImages = [heroImg, galleryImg1, galleryImg2, heroImg];
 
+        // Pre-flight: verify every unique image URL is publicly fetchable BEFORE
+        // submitting any tasks to Kie.ai. If any URL is broken, all 4 Veo clips
+        // would still be billed (~$1.20) but never produce usable output. Bail
+        // early with $0 spent and a clear error.
+        if (!DEV_MOCK_MODE) {
+            const uniqueUrls = [...new Set(sceneImages.filter(Boolean))];
+            console.log(`[Video Engine] Pre-flight: checking ${uniqueUrls.length} image URL(s) are publicly accessible...`);
+            for (const url of uniqueUrls) {
+                let ok = false;
+                let status = 0;
+                try {
+                    const headRes = await fetch(url, { method: 'HEAD' });
+                    ok = headRes.ok;
+                    status = headRes.status;
+                    // Some CDNs reject HEAD — retry with a tiny ranged GET
+                    if (!ok && (status === 405 || status === 403)) {
+                        const getRes = await fetch(url, { method: 'GET', headers: { Range: 'bytes=0-0' } });
+                        ok = getRes.ok || getRes.status === 206;
+                        status = getRes.status;
+                    }
+                } catch (err) {
+                    throw new Error(`Pre-flight image check failed for ${url} — network error: ${err.message}. Aborting before Kie.ai charges. Verify the Supabase storage bucket is public.`);
+                }
+                if (!ok) {
+                    throw new Error(`Pre-flight image check failed for ${url} — HTTP ${status}. Aborting before Kie.ai charges. Make sure the image is uploaded and the bucket is public.`);
+                }
+            }
+            console.log(`[Video Engine] Pre-flight passed. All image URLs reachable.`);
+        }
+
         console.log(`[Video Engine] Starting Veo 3.1 Fast generation for ${scriptArray.length} scenes. Mock Mode: ${DEV_MOCK_MODE}`);
 
         for (let i = 0; i < scriptArray.length; i++) {
@@ -161,7 +191,39 @@ export async function pollCinematicTask(taskId) {
             }
         } else if (task.successFlag === 2 || task.successFlag === 3 || task.state === "fail") {
             console.error(`[Video Engine] Task ${taskId} failed. Full task payload:`, JSON.stringify(task));
-            return { isComplete: false, error: `Error Code: ${task.failCode || 'Failed'} - ${task.failMsg || task.failReason || 'Generation Error'}` };
+
+            // Search every plausible field — Kie.ai is inconsistent about where
+            // it puts the failure reason (sometimes top-level, sometimes nested
+            // in resultJson / info / response, sometimes under different names).
+            let failureReason = task.failMsg || task.failReason || task.errorMessage || task.errorMsg || task.error || task.msg;
+            let failureCode = task.failCode || task.errorCode || task.code;
+
+            if (!failureReason && task.resultJson) {
+                try {
+                    const parsed = typeof task.resultJson === 'string' ? JSON.parse(task.resultJson) : task.resultJson;
+                    failureReason = parsed.error || parsed.errorMessage || parsed.failMsg || parsed.failReason || parsed.msg;
+                    failureCode = failureCode || parsed.errorCode || parsed.failCode;
+                } catch (e) { /* ignore parse errors */ }
+            }
+
+            for (const nestKey of ['info', 'response', 'data']) {
+                if (!failureReason && task[nestKey] && typeof task[nestKey] === 'object') {
+                    const nested = task[nestKey];
+                    failureReason = nested.error || nested.errorMessage || nested.failMsg || nested.failReason || nested.msg;
+                    failureCode = failureCode || nested.errorCode || nested.failCode;
+                }
+            }
+
+            // Last resort: surface enough of the raw payload to diagnose without Vercel logs.
+            if (!failureReason) {
+                const populatedFields = Object.entries(task)
+                    .filter(([, v]) => v !== null && v !== '' && v !== undefined && typeof v !== 'object')
+                    .map(([k, v]) => `${k}=${String(v).substring(0, 80)}`)
+                    .join(', ');
+                failureReason = `Kie.ai returned no failure reason. successFlag=${task.successFlag}, state=${task.state || 'n/a'}. Payload fields: ${populatedFields || '(none)'}`;
+            }
+
+            return { isComplete: false, error: `Veo failure [${failureCode || 'unknown'}]: ${failureReason}` };
         }
     } else {
         console.warn(`[Video Engine] Task ${taskId} unexpected poll response:`, pollData);
