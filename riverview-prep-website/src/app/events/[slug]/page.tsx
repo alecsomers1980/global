@@ -133,102 +133,41 @@ export default function DynamicEventPage() {
   return (
     <main className="min-h-screen bg-white">
       <Header />
-      <SecondaryBanner title="Event Spotlight" subtitle={event.title} />
+      <SecondaryBanner title={event.title} subtitle="Event Spotlight" />
 
-      {/* ── Hero section matching Oliver style ── */}
-      <section className="relative pt-12 pb-0 bg-brand-green overflow-hidden">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-brand-gold/8 blur-[150px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full pointer-events-none" />
-
-        <div className="container mx-auto px-6 relative z-10">
-          <Link
-            href="/calendar"
-            className="inline-flex items-center gap-2 text-white/40 hover:text-brand-gold transition-colors text-xs uppercase tracking-widest font-bold mb-12"
-          >
-            ← Events Calendar
-          </Link>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-end pb-0">
-            <div className="space-y-6 pb-20">
-              <span className="inline-block px-4 py-1.5 bg-brand-gold/20 text-brand-gold text-[10px] font-black uppercase tracking-widest rounded-full border border-brand-gold/30">
-                {event.category || "School Event"}
-              </span>
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-                {event.title.split(' ').slice(0, -1).join(' ')}{" "}
-                <span className="drama-text text-brand-gold text-6xl md:text-8xl block">
-                  {event.title.split(' ').pop()}.
-                </span>
-              </h1>
-              
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <a
-                  href={bookingHref}
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all hover:shadow-lg"
-                >
-                  <BookingIcon className="w-4 h-4" />
-                  {booking.type === 'url' ? 'Book Tickets' : bookingLabel}
-                </a>
-                <a
-                  href="tel:+27137900000"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors"
-                >
-                  <Phone className="w-4 h-4" />
-                  Call School
-                </a>
-              </div>
-            </div>
-
-            {/* Poster */}
-            <div className="relative flex justify-center lg:justify-end">
-              <div className="relative w-72 md:w-80 group">
-                <div className="absolute -top-4 -right-4 w-full h-full border border-brand-gold/20 rounded-[3rem] -z-10 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform duration-700" />
-                <div className="relative aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10">
-                  <Image
-                    src={primaryImage}
-                    alt={event.title}
-                    fill
-                    className="object-cover object-top"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Quick Details Strip ── */}
-      <section className="bg-brand-gold py-6">
+      {/* ── Quick Details Strip (Moved & Restyled) ── */}
+      <section className="bg-brand-green py-8 border-b border-white/5">
         <div className="container mx-auto px-6">
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
             <div className="flex items-center gap-3 text-white">
-              <Calendar className="w-5 h-5 opacity-70" />
+              <Calendar className="w-5 h-5 text-brand-gold" />
               <div>
-                <div className="text-[9px] uppercase tracking-widest font-bold opacity-70">Dates</div>
+                <div className="text-[9px] uppercase tracking-widest font-black opacity-40">Dates</div>
                 <div className="font-bold text-sm">
                   {displaySchedules.length > 0 ? displaySchedules.map(s => s.date).join(', ') : 'TBA'}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 text-white">
-              <Clock className="w-5 h-5 opacity-70" />
+              <Clock className="w-5 h-5 text-brand-gold" />
               <div>
-                <div className="text-[9px] uppercase tracking-widest font-bold opacity-70">Time</div>
+                <div className="text-[9px] uppercase tracking-widest font-black opacity-40">Time</div>
                 <div className="font-bold text-sm">
                   {displaySchedules[0]?.time || 'TBA'}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-3 text-white">
-              <MapPin className="w-5 h-5 opacity-70" />
+              <MapPin className="w-5 h-5 text-brand-gold" />
               <div>
-                <div className="text-[9px] uppercase tracking-widest font-bold opacity-70">Venue</div>
+                <div className="text-[9px] uppercase tracking-widest font-black opacity-40">Venue</div>
                 <div className="font-bold text-sm">{event.venue || 'School Grounds'}</div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* ── About Content ── */}
       <section className="py-24">
@@ -242,6 +181,22 @@ export default function DynamicEventPage() {
               </h2>
               <div className="space-y-6 text-brand-green/70 leading-relaxed whitespace-pre-wrap">
                 {event.description}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                <a
+                  href={bookingHref}
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all hover:shadow-lg"
+                >
+                  <BookingIcon className="w-4 h-4" />
+                  {booking.type === 'url' ? 'Book Tickets' : bookingLabel}
+                </a>
+                <a
+                  href="tel:+27137900000"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-brand-green/10 text-brand-green font-semibold rounded-full hover:bg-brand-green/5 transition-colors"
+                >
+                  <Phone className="w-4 h-4" />
+                  Call School
+                </a>
               </div>
             </div>
 
@@ -343,28 +298,28 @@ export default function DynamicEventPage() {
         </section>
       )}
 
-      {/* ── Contact Section ── */}
-      <section className="py-24 bg-brand-green text-white">
+      {/* ── Contact Section (Light Background) ── */}
+      <section className="py-24 bg-brand-cream border-t border-brand-green/5">
         <div className="container mx-auto px-6 text-center lg:text-left">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="telemetry-monospace text-brand-gold">VENUE & CONTACT</div>
-              <h2 className="text-3xl md:text-5xl font-bold leading-tight">
+              <div className="telemetry-monospace text-brand-green">VENUE & CONTACT</div>
+              <h2 className="text-3xl md:text-5xl font-bold leading-tight text-brand-green">
                 Find <span className="drama-text text-brand-gold">Us.</span>
               </h2>
               <div className="space-y-4 max-w-lg mx-auto lg:mx-0">
-                <div className="flex items-center gap-5 p-5 bg-white/5 rounded-2xl border border-white/10">
+                <div className="flex items-center gap-5 p-5 bg-white rounded-2xl border border-brand-green/10 shadow-sm">
                    <MapPin className="text-brand-gold" />
-                   <p className="font-semibold">{event.venue || 'Riverview Prep School'}</p>
+                   <p className="font-semibold text-brand-green">{event.venue || 'Riverview Prep School'}</p>
                 </div>
-                <a href={bookingHref} className="flex items-center gap-5 p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
+                <a href={bookingHref} className="flex items-center gap-5 p-5 bg-white rounded-2xl border border-brand-green/10 shadow-sm hover:shadow-md transition-shadow">
                    <BookingIcon className="text-brand-gold" />
-                   <p className="font-semibold">{booking.value}</p>
+                   <p className="font-semibold text-brand-green">{booking.value}</p>
                 </a>
               </div>
             </div>
             
-            <div className="bg-white/5 p-10 rounded-[2.5rem] border border-white/10 text-center">
+            <div className="bg-brand-green p-10 rounded-[2.5rem] shadow-xl text-center text-white">
               <h3 className="text-2xl font-bold mb-4">View Full Calendar</h3>
               <p className="text-white/60 mb-8">See all upcoming events and important dates on our interactive calendar.</p>
               <Link href="/calendar" className="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all">

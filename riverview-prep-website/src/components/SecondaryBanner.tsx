@@ -13,7 +13,7 @@ export default function SecondaryBanner({
   image = "/images/banner.jpg",
 }: SecondaryBannerProps) {
   return (
-    <section className="relative h-[300px] w-full overflow-hidden flex items-center justify-center">
+    <section className="relative h-[450px] w-full overflow-hidden flex items-center justify-center">
       {/* Background Image with Parallax-like feel */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -29,13 +29,13 @@ export default function SecondaryBanner({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center space-y-4 px-6 pt-16">
+      <div className="relative z-10 text-center space-y-4 px-6 pt-32">
         <div className="w-12 h-1 bg-brand-gold mx-auto rounded-full" />
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-brand-gold/90 telemetry-monospace text-sm tracking-[0.2em] font-medium uppercase">
+          <p className="text-white/90 telemetry-monospace text-sm tracking-[0.2em] font-medium uppercase">
             {subtitle}
           </p>
         )}

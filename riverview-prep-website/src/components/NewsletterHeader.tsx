@@ -26,7 +26,7 @@ export default function NewsletterHeader({
   return (
     <div
       className={`relative w-full overflow-hidden bg-gray-50 border border-brand-green/10 ${
-        fullHeight ? "h-full" : compact ? "h-40" : "h-56"
+        fullHeight ? "h-full min-h-[16rem]" : compact ? "min-h-[10rem]" : "min-h-[14rem]"
       } flex items-stretch`}
     >
       {/* 1. Left Section: Content & Logo watermark */}

@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { ArrowRight, BookOpen, Trophy, Users, Calendar } from "lucide-react";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import SecondaryBanner from "@/components/SecondaryBanner";
+import FallbackImage from "@/components/FallbackImage";
 import type { Metadata } from "next";
 import { createServerSupabase } from "@/lib/supabase-server";
 
@@ -79,7 +80,7 @@ export default async function NewsPage() {
     title: nl.title || 'Newsletter',
     subtitle: nl.headline || nl.title,
     excerpt: nl.excerpt || '',
-    image: nl.hero_image || "https://images.unsplash.com/photo-1546410731-13b1f19331cf?q=80&w=1200&auto=format&fit=crop",
+    image: (!nl.hero_image || nl.hero_image.includes('placeholder')) ? "/images/banner.jpg" : nl.hero_image,
     tags: Array.isArray(nl.highlights) ? nl.highlights.slice(0, 3) : [],
     readTime: "4 min read", // Can be dynamic logically
   }));
@@ -104,15 +105,16 @@ export default async function NewsPage() {
           <Link href={`/news/${featured.slug}`} className="group block">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-[3rem] overflow-hidden border border-brand-green/8 hover:shadow-2xl transition-all duration-700 hover:-translate-y-1">
               {/* Header Banner */}
-              <div className="lg:col-span-3 h-full">
-                <NewsletterHeader
-                  issue={featured.issue}
-                  term={featured.term}
-                  date={featured.date}
-                  category={featured.category}
-                  title={featured.title}
-                  highlights={featured.highlights}
+              <div className="lg:col-span-3 h-full relative min-h-[20rem] lg:min-h-full overflow-hidden">
+                <FallbackImage
+                  src={featured.image}
+                  alt={featured.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
+                <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg z-10">
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand-gold"></span>
+                  <span className="text-xs uppercase font-bold tracking-widest text-brand-green">{featured.category}</span>
+                </div>
               </div>
 
               {/* Content */}
@@ -164,41 +166,49 @@ export default async function NewsPage() {
                 <Link
                   key={article.slug}
                   href={`/news/${article.slug}`}
-                  className="group block"
+                  className="group block h-full"
                 >
                   <article className="h-full rounded-[2rem] overflow-hidden border border-brand-green/8 hover:border-brand-gold/30 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white flex flex-col">
-                    <div className="flex-shrink-0 group-hover:scale-[1.02] transition-transform duration-700 origin-top">
-                      <NewsletterHeader
-                        issue={article.issue}
-                        date={article.date}
-                        category={article.category}
-                        title={article.title}
+                    <div className="relative h-56 w-full overflow-hidden flex-shrink-0">
+                      <FallbackImage
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm z-10">
+                        <span className="w-2 h-2 rounded-full bg-brand-gold"></span>
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-brand-green">{article.category}</span>
+                      </div>
                     </div>
 
                     <div className="p-8 flex flex-col flex-1">
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-bold mb-3">
-                        {article.date} · {article.readTime}
-                      </p>
-                      <h3 className="font-bold text-xl leading-snug mb-3 group-hover:text-brand-green transition-colors flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-bold">
+                          {article.date}
+                        </span>
+                        {article.issue && <span className="text-[10px] text-brand-green/40 font-bold uppercase tracking-widest">· {article.issue}</span>}
+                      </div>
+                      <h3 className="font-bold text-xl leading-snug mb-4 group-hover:text-brand-green transition-colors flex-none line-clamp-2">
                         {article.title}
                       </h3>
-                      <p className="text-sm text-brand-green/60 leading-relaxed mb-6">
+                      <p className="text-sm text-brand-green/60 leading-relaxed mb-6 line-clamp-3 flex-1">
                         {article.excerpt}
                       </p>
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {article.tags.map((tag: string) => (
-                          <span
-                            key={tag}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${categoryColours[tag] || 'bg-brand-green text-white'}`}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2 text-brand-green font-bold text-xs uppercase tracking-widest group-hover:text-brand-gold transition-colors mt-auto">
-                        Read Edition{" "}
-                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                      
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-brand-green/5">
+                        <div className="flex flex-wrap gap-2">
+                          {article.tags.slice(0, 2).map((tag: string) => (
+                            <span
+                              key={tag}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${categoryColours[tag] || 'bg-brand-green/5 text-brand-green'}`}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="w-8 h-8 rounded-full border border-brand-green/10 flex items-center justify-center group-hover:bg-brand-gold group-hover:border-brand-gold group-hover:text-white transition-all text-brand-green flex-shrink-0">
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
                       </div>
                     </div>
                   </article>

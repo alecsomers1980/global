@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -10,7 +8,8 @@ import HexagonShowcase from "@/components/HexagonShowcase";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import EventPosterSlider from "@/components/EventPosterSlider";
 import PublicCalendar from "@/components/PublicCalendar";
-import { createClient } from "@/lib/supabase-client";
+import FallbackImage from "@/components/FallbackImage";
+import { createServerSupabase } from "@/lib/supabase-server";
 import {
   Calendar,
   Shield,
@@ -18,6 +17,7 @@ import {
   Star,
   MapPin,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -71,28 +71,7 @@ const eventTypeColours: Record<string, string> = {
   Culture: "bg-rose-500 text-white",
 };
 
-const latestNews = [
-  {
-    category: "Newsletter",
-    term: "Term 1",
-    issue: "Issue 05",
-    date: "12 Mar 2026",
-    title: "Oliver with a Twist · Swimming Silver Medals · Term Dates",
-    highlights: ["Grade 4–7 Theatre", "Swimming Medals", "Term 2 Dates"],
-    excerpt: "Our Grade 4–7 learners prepare for an extraordinary theatrical production while Usentele Sibiya brings home two silver medals.",
-    href: "/news/12-march-2026",
-  },
-  {
-    category: "Newsletter",
-    term: "Term 1",
-    issue: "Issue 04",
-    date: "26 Feb 2026",
-    title: "Golf Day Announced · Book Week Highlights · Athletics Stars",
-    highlights: ["Golf Day July 25", "Athletics Stars", "Book Week"],
-    excerpt: "Vutomi Mthethwa qualifies for the Mpumalanga Schools Athletics Championship, and school Golf Day is confirmed.",
-    href: "/news/26-february-2026",
-  },
-];
+
 
 
 const galleryImages = [
@@ -121,7 +100,28 @@ const testimonials = [
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createServerSupabase();
+
+  const { data: latestNewsData } = await supabase
+    .from('newsletters')
+    .select('*')
+    .eq('is_published', true)
+    .order('publish_date', { ascending: false })
+    .limit(2);
+
+  const dynamicLatestNews = (latestNewsData || []).map((nl: any) => ({
+    category: "Newsletter",
+    term: nl.term || '',
+    issue: nl.issue_number || '',
+    date: new Date(nl.publish_date).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }),
+    title: nl.title || 'Newsletter',
+    highlights: Array.isArray(nl.highlights) ? nl.highlights.slice(0, 3) : [],
+    excerpt: nl.excerpt || '',
+    href: `/news/${nl.slug}`,
+    image: (!nl.hero_image || nl.hero_image.includes('placeholder')) ? "/images/banner.jpg" : nl.hero_image,
+  }));
+
   return (
     <main className="relative min-h-screen">
       <Header />
@@ -304,20 +304,53 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {latestNews.map((news, i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl border border-brand-green/5 hover:shadow-xl transition-shadow group flex flex-col h-full">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-brand-green bg-brand-green/5 px-3 py-1 rounded-full">
-                    {news.category}
-                  </span>
-                  <span className="text-xs text-brand-green/40 font-bold">{news.date}</span>
-                </div>
-                <h3 className="text-2xl font-bold text-brand-green mb-4 group-hover:text-brand-gold transition-colors">{news.title}</h3>
-                <p className="text-brand-green/60 text-sm leading-relaxed mb-6">{news.excerpt}</p>
-                <div className="flex flex-wrap gap-2 mt-auto">
-                  {news.highlights.map(h => <span key={h} className="text-[10px] uppercase font-bold text-brand-green/50 border border-brand-green/10 rounded-full px-3 py-1">{h}</span>)}
-                </div>
-              </div>
+            {dynamicLatestNews.map((news, i) => (
+              <Link href={news.href} key={i} className="group block h-full">
+                <article className="h-full rounded-[2rem] overflow-hidden border border-brand-green/8 hover:border-brand-gold/30 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white flex flex-col">
+                  <div className="relative h-64 w-full overflow-hidden flex-shrink-0">
+                    <FallbackImage
+                      src={news.image}
+                      alt={news.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-brand-gold"></span>
+                      <span className="text-[10px] uppercase font-bold tracking-widest text-brand-green">{news.category}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-8 flex flex-col flex-1">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-bold">
+                        {news.date}
+                      </span>
+                      {news.issue && <span className="text-[10px] text-brand-green/40 font-bold uppercase tracking-widest">· {news.issue}</span>}
+                    </div>
+                    <h3 className="font-bold text-2xl leading-snug mb-4 group-hover:text-brand-green transition-colors flex-none line-clamp-2">
+                      {news.title}
+                    </h3>
+                    <p className="text-sm text-brand-green/60 leading-relaxed mb-6 line-clamp-3 flex-1">
+                      {news.excerpt}
+                    </p>
+                    
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-brand-green/5">
+                      <div className="flex flex-wrap gap-2">
+                        {news.highlights.map((h: string) => (
+                          <span
+                            key={h}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest bg-brand-green/5 text-brand-green"
+                          >
+                            {h}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="w-10 h-10 rounded-full border border-brand-green/10 flex items-center justify-center group-hover:bg-brand-gold group-hover:border-brand-gold group-hover:text-white transition-all text-brand-green flex-shrink-0">
+                        <ArrowRight className="w-5 h-5" />
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </Link>
             ))}
           </div>
         </div>
