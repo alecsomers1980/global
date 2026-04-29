@@ -45,6 +45,34 @@ const categoryColours: Record<string, string> = {
 
 export const revalidate = 60; // Revalidate every minute
 
+interface Newsletter {
+  slug: string;
+  term?: string;
+  issue_number?: string;
+  publish_date: string;
+  is_published: boolean;
+  highlights: string[];
+  title: string;
+  headline?: string;
+  excerpt?: string;
+  hero_image?: string;
+}
+
+interface Article {
+  slug: string;
+  term: string;
+  issue: string;
+  date: string;
+  category: string;
+  highlights: string[];
+  title: string;
+  subtitle: string;
+  excerpt: string;
+  image: string;
+  tags: string[];
+  readTime: string;
+}
+
 export default async function NewsPage() {
   const supabase = await createServerSupabase();
 
@@ -70,7 +98,7 @@ export default async function NewsPage() {
   }
 
   // Format the DB data
-  const articles = articlesData.map((nl: any) => ({
+  const articles: Article[] = (articlesData as Newsletter[]).map((nl) => ({
     slug: nl.slug,
     term: nl.term || '',
     issue: nl.issue_number || '',
@@ -162,7 +190,7 @@ export default async function NewsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {rest.map((article: any) => (
+              {rest.map((article: Article) => (
                 <Link
                   key={article.slug}
                   href={`/news/${article.slug}`}
