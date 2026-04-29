@@ -264,6 +264,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }));
     };
 
+    const handleScreenChange = (name: string, value: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            screen_details_json: {
+                ...(prev.screen_details_json || {}),
+                [name]: value
+            }
+        }));
+    };
+
     const handleAddVinylRow = () => {
         setJobcard((prev: any) => ({
             ...prev,
@@ -993,6 +1003,71 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_screen && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-orange-50/50 p-3 text-xs gap-3">
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">QTY</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={jobcard.screen_details_json?.qty || ''} 
+                                                        onChange={e => handleScreenChange('qty', e.target.value)} 
+                                                        placeholder="Enter quantity..."
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800" 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">SIDES</label>
+                                                    <select 
+                                                        value={jobcard.screen_details_json?.sides || 'Single Sided'} 
+                                                        onChange={e => handleScreenChange('sides', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800"
+                                                    >
+                                                        <option value="Single Sided">Single Sided</option>
+                                                        <option value="Double Sided">Double Sided</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">MATERIAL</label>
+                                                    <select 
+                                                        value={jobcard.screen_details_json?.material || '0.9 ABS'} 
+                                                        onChange={e => handleScreenChange('material', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800 mb-1"
+                                                    >
+                                                        <option value="0.9 ABS">0.9 ABS</option>
+                                                        <option value="1.5 ABS">1.5 ABS</option>
+                                                        <option value="2.0 ABS">2.0 ABS</option>
+                                                        <option value="3.0 ABS">3.0 ABS</option>
+                                                        <option value="0.6 Chromadek">0.6 Chromadek</option>
+                                                        <option value="3.0 Correx">3.0 Correx</option>
+                                                        <option value="3.5 Correx">3.5 Correx</option>
+                                                        <option value="4.0 Correx">4.0 Correx</option>
+                                                        <option value="Bulk Bags">Bulk Bags</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                    {jobcard.screen_details_json?.material === 'Other' && (
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Specify material..." 
+                                                            value={jobcard.screen_details_json?.material_other || ''} 
+                                                            onChange={e => handleScreenChange('material_other', e.target.value)} 
+                                                            className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800" 
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">SPECS</label>
+                                                <textarea 
+                                                    value={jobcard.screen_details_json?.specs || ''} 
+                                                    onChange={e => handleScreenChange('specs', e.target.value)} 
+                                                    rows={3} 
+                                                    placeholder="Enter detailed screen printing specs here..." 
+                                                    className="w-full border border-gray-300 p-2 focus:outline-none bg-white text-gray-800 resize-y" 
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                     <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
                                     <Toggle label="Outsource" name="prod_outsource" jobcard={jobcard} handleChange={handleChange} />
