@@ -8,7 +8,7 @@ const slides = [
         seoH1: 'Branding, Printing & Signage Company in South Africa',
         title: 'UNMISSABLE\nBRANDING\nSOLUTIONS',
         description: 'Test us and become part of our returning customer circle.',
-        primaryCTA: { text: "Let&apos;s Start a project", href: '/get-quote' },
+        primaryCTA: { text: "Let's Start a project", href: '/get-quote' },
         secondaryCTA: { text: 'View Our Work', href: '#work' },
         location: 'High-impact visual branding built to be seen.'
     }
@@ -152,19 +152,19 @@ export default function HeroBanner() {
                 <div className="max-w-2xl text-center md:text-right flex flex-col items-center md:items-end pointer-events-auto">
                     <div className="animate-fadeIn w-full flex flex-col items-center md:items-end">
                         
-                        <h1 className="text-aloe-green font-bold tracking-widest uppercase text-[10px] md:text-sm mb-2 md:mb-4 flex items-center justify-center md:justify-end gap-3 w-full">
-                            <span className="md:hidden w-8 h-px bg-aloe-green block"></span>
-                            {activeSlide.seoH1}
-                            <span className="hidden md:block w-8 h-px bg-aloe-green"></span>
+                        <h1 className="text-aloe-green font-bold tracking-widest uppercase text-[9px] sm:text-[10px] md:text-sm mb-2 md:mb-4 flex items-center justify-center md:justify-end gap-2 sm:gap-3 w-full break-words">
+                            <span className="md:hidden w-6 sm:w-8 h-px bg-aloe-green block flex-shrink-0"></span>
+                            <span className="min-w-0">{activeSlide.seoH1}</span>
+                            <span className="hidden md:block w-8 h-px bg-aloe-green flex-shrink-0"></span>
                         </h1>
 
-                        <h2 className="text-[calc(1rem+8vw)] md:text-[calc(2.5rem+4.5vw)] font-black text-white mb-3 md:mb-6 uppercase leading-[0.9] tracking-tighter">
+                        <h2 className="text-[clamp(2.2rem,1rem+8vw,5rem)] md:text-[clamp(1.8rem,0.5rem+3.5vw,2.8rem)] lg:text-[clamp(2.5rem,1rem+4vw,4.5rem)] xl:text-[clamp(3.5rem,2rem+4vw,7rem)] font-black text-white mb-3 md:mb-6 uppercase leading-[0.9] tracking-tighter break-words">
                             {activeSlide.title.split('\n').map((line, i) => (
                                 <span key={i} className="block">{line}</span>
                             ))}
                         </h2>
 
-                        <p className="text-sm md:text-2xl font-medium text-white/70 mb-6 md:mb-10 max-w-2xl leading-relaxed">
+                        <p className="text-xs sm:text-sm md:text-base lg:text-xl xl:text-2xl font-medium text-white/70 mb-6 md:mb-10 max-w-2xl leading-relaxed">
                             {activeSlide.description}
                         </p>
 

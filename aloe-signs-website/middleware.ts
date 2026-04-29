@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
 
   const isPortalPublic = pathname === '/portal/login' || pathname === '/portal/register';
   const isPortalRoute = pathname.startsWith('/portal');
-  const isHomeRoute = pathname === '/home';
+  const isHomeRoute = pathname === '/';
 
   if (!isHomeRoute && (!isPortalRoute || isPortalPublic)) return res;
 
@@ -32,4 +32,4 @@ export async function middleware(request: NextRequest) {
   return res;
 }
 
-export const config = { matcher: ['/portal/:path*', '/home'] };
+export const config = { matcher: ['/portal/:path*'] };

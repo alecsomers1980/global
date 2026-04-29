@@ -109,6 +109,7 @@ export default function Footer() {
                         <Link href="/privacy-policy" className="hover:text-white transition-colors">PRIVACY</Link>
                         <Link href="/terms-conditions" className="hover:text-white transition-colors">TERMS</Link>
                         <Link href="/refund-policy" className="hover:text-white transition-colors">REFUND</Link>
+                        <Link href="/portal/admin" className="hover:text-white transition-colors">SITE ADMIN</Link>
                     </div>
                 </div>
             </div>
