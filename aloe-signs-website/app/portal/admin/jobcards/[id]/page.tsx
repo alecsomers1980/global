@@ -273,10 +273,15 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
 
     const handleVinylRowChange = (index: number, field: string, value: string) => {
         setJobcard((prev: any) => {
-            const current = Array.isArray(prev.vinyl_cut_details_json) ? [...prev.vinyl_cut_details_json] : [];
-            if (current[index]) {
-                current[index] = { ...current[index], [field]: value };
+            const current = Array.isArray(prev.vinyl_cut_details_json) && prev.vinyl_cut_details_json.length > 0 
+                ? [...prev.vinyl_cut_details_json] 
+                : [{ qty: '', width: '600', width_other: '', type: 'Polymeric', type_other: '', spec: '' }];
+            
+            if (!current[index]) {
+                current[index] = { qty: '', width: '600', width_other: '', type: 'Polymeric', type_other: '', spec: '' };
             }
+            current[index] = { ...current[index], [field]: value };
+            
             return { ...prev, vinyl_cut_details_json: current };
         });
     };
@@ -940,19 +945,18 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             <table className="w-full text-left">
                                                 <thead>
                                                     <tr className="border-b border-gray-300">
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-12">QTY</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-24">WIDTH</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-32">TYPE</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase">SPEC</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-16">QTY</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">WIDTH</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">TYPE</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Polymeric', spec: '' }]).map((row: any, idx: number) => (
-                                                        <tr key={idx} className="border-b border-gray-100">
-                                                            <td className="p-1 align-top">
-                                                                <input type="number" min="0" value={row.qty || ''} onChange={e => handleVinylRowChange(idx, 'qty', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                        <tr key={idx} className="border-b border-gray-100 flex flex-wrap sm:table-row">
+                                                            <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
+                                                                <input type="text" value={row.qty || ''} onChange={e => handleVinylRowChange(idx, 'qty', e.target.value)} placeholder="Qty" className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
                                                             </td>
-                                                            <td className="p-1 align-top">
+                                                            <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
                                                                 <select value={row.width || '600'} onChange={e => handleVinylRowChange(idx, 'width', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800 mb-1">
                                                                     <option value="600">600</option>
                                                                     <option value="1200">1200</option>
@@ -962,7 +966,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                                     <input type="text" placeholder="Specify..." value={row.width_other || ''} onChange={e => handleVinylRowChange(idx, 'width_other', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
                                                                 )}
                                                             </td>
-                                                            <td className="p-1 align-top">
+                                                            <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
                                                                 <select value={row.type || 'Polymeric'} onChange={e => handleVinylRowChange(idx, 'type', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800 mb-1">
                                                                     <option value="Polymeric">Polymeric</option>
                                                                     <option value="Monomeric">Monomeric</option>
@@ -976,13 +980,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                                     <input type="text" placeholder="Specify..." value={row.type_other || ''} onChange={e => handleVinylRowChange(idx, 'type_other', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
                                                                 )}
                                                             </td>
-                                                            <td className="p-1 align-top">
-                                                                <input type="text" value={row.spec || ''} onChange={e => handleVinylRowChange(idx, 'spec', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
-                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
+                                            <div className="p-1 w-full mt-2 border-t border-gray-200 pt-2">
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Specs</label>
+                                                {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Polymeric', spec: '' }]).map((row: any, idx: number) => (
+                                                    <textarea key={`spec-${idx}`} value={row.spec || ''} onChange={e => handleVinylRowChange(idx, 'spec', e.target.value)} rows={3} placeholder="Enter detailed specs here..." className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800 resize-y" />
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                     <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
