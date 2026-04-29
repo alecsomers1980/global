@@ -62,14 +62,14 @@ export default function DynamicEventPage() {
     setLoading(true);
     try {
       // Try fetching by slug first
-      let { data, error } = await supabase
+      let { data, error: firstError } = await supabase
         .from('events')
         .select('*')
         .eq('slug', params.slug)
         .single();
       
       // Fallback to ID if not found by slug (supports legacy links)
-      if (error || !data) {
+      if (firstError || !data) {
         const { data: idData, error: idError } = await supabase
           .from('events')
           .select('*')
