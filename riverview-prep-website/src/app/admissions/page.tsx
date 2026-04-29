@@ -47,7 +47,7 @@ export default function AdmissionsPage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <div className="telemetry-monospace text-brand-gold mb-2">APPLICATION PROCESS</div>
-            <h2 className="text-3xl font-bold text-brand-green">Stepping Stones to Enrollment</h2>
+            <h2 className="text-3xl font-bold text-brand-green">Stepping Stones to Enrolment</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -189,7 +189,7 @@ export default function AdmissionsPage() {
             {[
               { name: "General Application Form", type: "PDF Bundle", size: "1.2 MB" },
               { name: "Parental Consent & Agreement", type: "PDF Document", size: "420 KB" },
-              { name: "Medical Details & Questionaire", type: "Form Sheet", size: "380 KB" },
+              { name: "Medical Details & Questionnaire", type: "Form Sheet", size: "380 KB" },
               { name: "Debit Order Authorization", type: "Financial", size: "510 KB" },
             ].map((doc, i) => (
               <div key={i} className="flex items-center justify-between p-6 bg-white rounded-2xl border border-brand-green/5 hover:border-brand-gold/30 hover:shadow-md transition-all group">

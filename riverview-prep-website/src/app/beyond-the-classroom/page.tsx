@@ -87,7 +87,7 @@ export default function BeyondTheClassroomPage() {
                 <div className="absolute -top-4 -left-4 w-full h-full bg-brand-gold/5 rounded-3xl -z-10" />
                 <div className="p-10 bg-white rounded-3xl border border-brand-gold/20 shadow-xl text-center flex flex-col items-center">
                   <Quote className="w-12 h-12 text-brand-gold/30 mb-6" />
-                  <h3 className="text-2xl font-bold text-brand-green mb-4">The Philosophy of effort over Outcome</h3>
+                  <h3 className="text-2xl font-bold text-brand-green mb-4">The Philosophy of Effort over Outcome</h3>
                   <p className="text-brand-green/80 italic text-lg leading-relaxed max-w-2xl">
                     &ldquo;At Riverview Preparatory School we champion the &apos;Personal Best&apos; philosophy. 
                     Sport is not primarily about winning; it is about establishing a life-long pattern of physical activity, 
@@ -196,7 +196,7 @@ export default function BeyondTheClassroomPage() {
               <div className="text-center mb-12">
                 <div className="telemetry-monospace text-brand-green mb-2">EXTRACURRICULAR</div>
                 <h3 className="text-3xl font-bold text-brand-green">After-Hours Programs</h3>
-                <p className="text-brand-green/60 text-sm mt-3">Available for voluntary enrollment at parents&apos; own discretion:</p>
+                <p className="text-brand-green/60 text-sm mt-3">Available for voluntary enrolment at parents&apos; own discretion:</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

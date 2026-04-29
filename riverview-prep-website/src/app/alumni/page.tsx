@@ -101,7 +101,7 @@ export default function AlumniPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-brand-green/80 mb-1">Your Favorite Riverview Memory</label>
+                    <label className="block text-xs font-bold text-brand-green/80 mb-1">Your Favourite Riverview Memory</label>
                     <textarea 
                       rows={4} placeholder="Tell us about your highlights..."
                       className="w-full px-4 py-3 rounded-xl border border-brand-green/10 bg-brand-cream/30 focus:outline-none focus:ring-2 focus:ring-brand-gold/40 text-sm resize-none"
@@ -138,7 +138,7 @@ export default function AlumniPage() {
              {[
                { name: "Placeholder Name", left: "2010", achieved: "Represented South Africa in Provincial Cricket setups address accurately.", initials: "PN" },
                { name: "Placeholder Name", left: "2014", achieved: "Received absolute layouts engineering honours scholarship structures.", initials: "AN" },
-               { name: "Placeholder Name", left: "2008", achieved: "Currently teaching locally inside neighboring schooling quadrants.", initials: "SM" }
+               { name: "Placeholder Name", left: "2008", achieved: "Currently teaching locally inside neighbouring schooling quadrants.", initials: "SM" }
              ].map((a, i) => (
                 <div key={i} className="bg-white p-8 rounded-3xl border border-brand-green/5 shadow-sm text-center flex flex-col items-center">
                   <div className="w-14 h-14 bg-brand-gold/10 rounded-full flex items-center justify-center font-bold text-brand-gold text-lg mb-4">

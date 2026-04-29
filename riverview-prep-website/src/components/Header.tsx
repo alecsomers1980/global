@@ -63,34 +63,31 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
-      <div 
+      <div
         className={cn(
-          "floating-island pointer-events-auto flex items-center justify-between gap-8 px-8",
+          "floating-island pointer-events-auto flex items-center justify-between gap-10 px-10 max-w-[95vw]",
           isScrolled ? "mt-4" : "mt-0"
         )}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
           <Image
             src={isScrolled ? "/images/logo.png" : "/images/logo_t.png"}
             alt="Riverview Preparatory School"
             width={140}
             height={40}
-            className={cn(
-              "header-logo w-auto object-contain transition-all duration-500",
-              isScrolled ? "h-10" : "h-32"
-            )}
+            className="header-logo w-auto h-32 object-contain transition-opacity duration-500"
             priority
           />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-7 flex-shrink-0">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="nav-link text-xs font-semibold uppercase tracking-widest hover:text-brand-gold transition-colors"
+              className="nav-link text-xs font-semibold uppercase tracking-widest hover:text-brand-gold transition-colors whitespace-nowrap"
             >
               {link.name}
             </Link>
@@ -98,15 +95,15 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <div className="flex items-center gap-4">
-          <Link 
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <Link
             href="/admissions"
-            className="magnetic-button text-[10px] uppercase tracking-widest py-2 px-6"
+            className="magnetic-button text-[10px] uppercase tracking-widest py-2 px-6 whitespace-nowrap"
           >
             Apply Now
           </Link>
-          <button 
-            className="md:hidden p-2 text-brand-green"
+          <button
+            className="lg:hidden p-2 text-brand-green"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X /> : <Menu />}

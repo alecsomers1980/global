@@ -74,9 +74,9 @@ export default function AcademicsPage() {
                     <span className="drama-text text-brand-gold">Lifelong Journey.</span>
                   </h2>
                   <p className="text-brand-green/70 leading-relaxed text-lg">
-                    Our Pre-School provides a creative and stimulating sanctuary where individual potential is recognized and celebrated. 
-                    Set in a beautiful garden setting designed for safe, enjoyable play, we balance exploration with structured learning 
-                    to equip children with vital cognitive, physical, emotional, and social anchors for a happy starting start.
+                    Our Pre-School provides a creative and stimulating sanctuary where individual potential is recognised and celebrated.
+                    Set in a beautiful garden setting designed for safe, enjoyable play, we balance exploration with structured learning
+                    to equip children with vital cognitive, physical, emotional, and social anchors for a happy start.
                   </p>
                   
                   {/* Key Pillars Grid */}
@@ -101,7 +101,7 @@ export default function AcademicsPage() {
                     {[
                       { grade: "Cubs", age: "18 Months – 3 Years", desc: "Sensory play, social skills and gross motor basics." },
                       { grade: "Grade 000", age: "3 – 4 Years", desc: "Formulation setups addressing age appropriate milestones." },
-                      { grade: "Grade 00", age: "4 – 5 Years", desc: "Intentional play-based instrucional setups benchmarks safely." },
+                      { grade: "Grade 00", age: "4 – 5 Years", desc: "Intentional play-based instructional setups benchmarks safely." },
                       { grade: "Grade 0", age: "5 – 6 Years", desc: "Targeted school-readiness preparations and basic arithmetic setup." }
                     ].map((p, i) => (
                       <div key={i} className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-brand-green/5 hover:border-brand-gold/30 transition-all group">
@@ -215,7 +215,7 @@ export default function AcademicsPage() {
                     <div className="space-y-3 text-brand-green/70 text-sm leading-relaxed">
                       <p>Complete, clean regulation uniforms are required whenever children are dressed publicly in absolute layout bounding containers carrying absolute layouts safely.</p>
                       <ul className="list-disc pl-4 space-y-1">
-                        <li>Ear sleepers only (Girls), discret necklaces buffers allowable.</li>
+                        <li>Ear sleepers only (Girls), discreet necklaces buffers allowable.</li>
                         <li>Regulation hair accessories (green/white) neatened symmetrically buffers setup.</li>
                         <li>Standard sun-hats strictly required outdoors fully compliant during breaks.</li>
                       </ul>

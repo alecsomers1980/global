@@ -208,7 +208,7 @@ export default function AboutPage() {
               <Heart className="w-12 h-12 text-rose-500 mx-auto mb-6 group-hover:scale-110 transition-transform" />
               <h3 className="font-bold text-2xl mb-4 text-brand-green">Our Parents Association</h3>
               <p className="text-brand-green/70 text-sm leading-relaxed">
-                A vital pillar of our community, organizing fundraisers and social gatherings that tighten the bond between home and campus.
+                A vital pillar of our community, organising fundraisers and social gatherings that tighten the bond between home and campus.
               </p>
             </div>
 
@@ -217,7 +217,7 @@ export default function AboutPage() {
               <Shield className="w-12 h-12 text-blue-500 mx-auto mb-6 group-hover:scale-110 transition-transform" />
               <h3 className="font-bold text-2xl mb-4 text-brand-green">Our Governing Body</h3>
               <p className="text-brand-green/70 text-sm leading-relaxed">
-                Riverview Preparatory School is a non-profit organization run by a Board of Governors elected annually by our parent community. The Board administers assets in trust to safeguard the collective equity of our students and families.
+                Riverview Preparatory School is a non-profit organisation run by a Board of Governors elected annually by our parent community. The Board administers assets in trust to safeguard the collective equity of our students and families.
               </p>
             </div>
           </div>
