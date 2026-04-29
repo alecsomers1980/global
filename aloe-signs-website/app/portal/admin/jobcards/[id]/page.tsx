@@ -274,6 +274,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }));
     };
 
+    const handleApplicateChange = (name: string, value: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            applicate_details_json: {
+                ...(prev.applicate_details_json || {}),
+                [name]: value
+            }
+        }));
+    };
+
     const handleAddVinylRow = () => {
         setJobcard((prev: any) => ({
             ...prev,
@@ -1069,55 +1079,157 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_applicate && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-green-50/50 p-3 text-xs gap-3">
+                                            <div className="flex flex-wrap gap-6">
+                                                <label className="flex items-center gap-2 cursor-pointer group">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={jobcard.applicate_details_json?.lam || false} 
+                                                        onChange={e => handleApplicateChange('lam', e.target.checked)}
+                                                        className="w-4 h-4 rounded border-gray-300 text-aloe-green focus:ring-aloe-green"
+                                                    />
+                                                    <span className="font-bold text-gray-700 uppercase group-hover:text-aloe-green transition-colors">LAM</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer group">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={jobcard.applicate_details_json?.vehicle || false} 
+                                                        onChange={e => handleApplicateChange('vehicle', e.target.checked)}
+                                                        className="w-4 h-4 rounded border-gray-300 text-aloe-green focus:ring-aloe-green"
+                                                    />
+                                                    <span className="font-bold text-gray-700 uppercase group-hover:text-aloe-green transition-colors">VEHICLE</span>
+                                                </label>
+                                                <label className="flex items-center gap-2 cursor-pointer group">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={jobcard.applicate_details_json?.on_site || false} 
+                                                        onChange={e => handleApplicateChange('on_site', e.target.checked)}
+                                                        className="w-4 h-4 rounded border-gray-300 text-aloe-green focus:ring-aloe-green"
+                                                    />
+                                                    <span className="font-bold text-gray-700 uppercase group-hover:text-aloe-green transition-colors">ON SITE</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">ADDITIONAL NOTES</label>
+                                                <textarea 
+                                                    value={jobcard.applicate_details_json?.notes || ''} 
+                                                    onChange={e => handleApplicateChange('notes', e.target.value)} 
+                                                    rows={2} 
+                                                    placeholder="Enter any application specific notes..." 
+                                                    className="w-full border border-gray-300 p-2 focus:outline-none bg-white text-gray-800 resize-y" 
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                     <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
+                                    {jobcard.prod_engineer && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 text-xs gap-3">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">QTY</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={jobcard.engineer_details_json?.quantity || ''} 
+                                                        onChange={e => handleEngChange('quantity', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800" 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">SIZE</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={jobcard.engineer_details_json?.size || ''} 
+                                                        onChange={e => handleEngChange('size', e.target.value)} 
+                                                        placeholder="e.g. 1000x500"
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800" 
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">MATERIAL</label>
+                                                    <select 
+                                                        value={jobcard.engineer_details_json?.material || '12 SQUARE'} 
+                                                        onChange={e => handleEngChange('material', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800"
+                                                    >
+                                                        <optgroup label="SQUARE">
+                                                            <option value="12 SQUARE">12 SQUARE</option>
+                                                            <option value="15 SQUARE">15 SQUARE</option>
+                                                            <option value="20 SQUARE">20 SQUARE</option>
+                                                            <option value="25 SQUARE">25 SQUARE</option>
+                                                            <option value="32 SQUARE">32 SQUARE</option>
+                                                            <option value="50 SQUARE">50 SQUARE</option>
+                                                            <option value="75 SQUARE">75 SQUARE</option>
+                                                            <option value="100 SQUARE">100 SQUARE</option>
+                                                        </optgroup>
+                                                        <optgroup label="ROUND">
+                                                            <option value="50 ROUND">50 ROUND</option>
+                                                            <option value="76 ROUND">76 ROUND</option>
+                                                            <option value="100 ROUND">100 ROUND</option>
+                                                        </optgroup>
+                                                        <optgroup label="OTHER">
+                                                            <option value="BEAMS">BEAMS</option>
+                                                            <option value="BAR">BAR</option>
+                                                            <option value="RECTANGLE">RECTANGLE</option>
+                                                            <option value="Other">Other</option>
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">THICKNESS</label>
+                                                    <select 
+                                                        value={jobcard.engineer_details_json?.thickness || '1,6'} 
+                                                        onChange={e => handleEngChange('thickness', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800"
+                                                    >
+                                                        <option value="1,6">1,6</option>
+                                                        <option value="1,2">1,2</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">ANGLE</label>
+                                                    <select 
+                                                        value={jobcard.engineer_details_json?.angles || '90'} 
+                                                        onChange={e => handleEngChange('angles', e.target.value)} 
+                                                        className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800"
+                                                    >
+                                                        <option value="90">90</option>
+                                                        <option value="45">45</option>
+                                                        <option value="30">30</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col gap-1">
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">IMAGE ATTACHMENT</label>
+                                                <div className="flex items-center gap-3">
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*" 
+                                                        onChange={handleEngImageUpload} 
+                                                        className="text-[10px] file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-bold file:bg-aloe-green file:text-charcoal hover:file:bg-green-hover"
+                                                    />
+                                                    {jobcard.engineer_details_json?.image_path && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] text-green-600 font-bold">✓ Uploaded</span>
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => openLightbox(jobcard.engineer_details_json.image_path)}
+                                                                className="text-[10px] text-blue-600 hover:underline font-bold"
+                                                            >
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                     <Toggle label="Outsource" name="prod_outsource" jobcard={jobcard} handleChange={handleChange} />
                                 </div>
                             </div>
 
-                            {jobcard.prod_engineer && (
-                                <div className="p-4 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-3">
-                                    <h4 className="font-bold text-xs text-gray-700 uppercase mb-1 border-b border-gray-200 pb-1">Engineer Specs Required:</h4>
-                                    <div className="flex flex-col gap-2">
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Quantity</label>
-                                            <input type="text" value={jobcard.engineer_details_json?.quantity || ''} onChange={e => handleEngChange('quantity', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800" />
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Material</label>
-                                            <textarea value={jobcard.engineer_details_json?.material || ''} onChange={e => handleEngChange('material', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="Material details..."></textarea>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Size (Height, Length, Width)</label>
-                                        <textarea value={jobcard.engineer_details_json?.size || ''} onChange={e => handleEngChange('size', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="List item names and sizes..."></textarea>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-500 font-bold block mb-1">Angle</label>
-                                        <textarea value={jobcard.engineer_details_json?.angles || ''} onChange={e => handleEngChange('angles', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-16" placeholder="Angle details..."></textarea>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 font-bold">Image Attachment</label>
-                                        {jobcard.engineer_details_json?.image_path ? (
-                                            <div className="flex items-center justify-between border border-gray-300 bg-white p-2 rounded">
-                                                <span className="text-xs text-green-600 font-bold">✓ Image Uploaded</span>
-                                                <div className="flex gap-1">
-                                                    <button type="button" onClick={() => openLightbox(jobcard.engineer_details_json.image_path)} className="text-[10px] font-bold border border-blue-200 text-blue-600 hover:bg-blue-50 rounded px-2 py-1">View</button>
-                                                    <button type="button" onClick={() => handleEngChange('image_path', null)} className="text-[10px] font-bold border border-red-200 text-red-600 hover:bg-red-50 rounded px-2 py-1">Remove</button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <label className="w-full flex items-center justify-center border border-dashed border-gray-400 rounded p-2 text-center cursor-pointer hover:bg-gray-100 bg-white">
-                                                <span className="text-xs text-gray-500 font-medium">+ Add Image</span>
-                                                <input type="file" onChange={handleEngImageUpload} className="hidden" />
-                                            </label>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 font-bold">Extra Comments</label>
-                                        <textarea value={jobcard.engineer_details_json?.extra_comments || ''} onChange={e => handleEngChange('extra_comments', e.target.value)} className="w-full border border-gray-300 p-2 text-xs focus:outline-none focus:bg-blue-50 bg-white text-gray-800 resize-none h-20" placeholder="Any extra engineering comments..."></textarea>
-                                    </div>
-                                </div>
-                            )}
                             
                             {/* Collect/Delivery Options (Header removed as requested) */}
                             <div className="border-b border-gray-300">
