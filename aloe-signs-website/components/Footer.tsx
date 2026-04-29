@@ -9,7 +9,7 @@ export default function Footer() {
     const pathname = usePathname();
 
     // Hide footer on the Under Construction gateway and any portal pages
-    if (pathname === '/' || pathname.startsWith('/portal')) {
+    if (pathname === '/under-construction' || pathname.startsWith('/portal')) {
         return null;
     }
 
