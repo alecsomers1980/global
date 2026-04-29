@@ -78,18 +78,22 @@ export default function CheckoutPage() {
                 throw new Error('Failed to create order');
             }
 
-            // Redirect to PayFast
-            const payfastForm = document.getElementById('payfast-form') as HTMLFormElement;
-            if (payfastForm) {
-                // Set order ID
-                const orderIdInput = document.getElementById('payfast-order-id') as HTMLInputElement;
-                if (orderIdInput) {
-                    orderIdInput.value = orderData.order.id;
-                }
+            // Redirect to PayFast using dynamic form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = orderData.payfastUrl;
 
-                // Submit form to PayFast
-                payfastForm.submit();
-            }
+            // Add all PayFast fields from the server
+            Object.entries(orderData.payfastData).forEach(([key, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = String(value);
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
 
         } catch (error) {
             console.error('Checkout error:', error);
@@ -301,26 +305,7 @@ export default function CheckoutPage() {
                     </div>
                 </section>
 
-                {/* Hidden PayFast Form */}
-                <form
-                    id="payfast-form"
-                    action={process.env.NEXT_PUBLIC_PAYFAST_URL || 'https://sandbox.payfast.co.za/eng/process'}
-                    method="POST"
-                    style={{ display: 'none' }}
-                >
-                    <input type="hidden" name="merchant_id" value={process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID || '10000100'} />
-                    <input type="hidden" name="merchant_key" value={process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_KEY || '46f0cd694581a'} />
-                    <input type="hidden" name="return_url" value={`${process.env.NEXT_PUBLIC_SITE_URL}/api/payfast/return`} />
-                    <input type="hidden" name="cancel_url" value={`${process.env.NEXT_PUBLIC_SITE_URL}/shop/checkout?cancelled=true`} />
-                    <input type="hidden" name="notify_url" value={`${process.env.NEXT_PUBLIC_SITE_URL}/api/payfast/notify`} />
-                    <input type="hidden" id="payfast-order-id" name="m_payment_id" value="" />
-                    <input type="hidden" name="amount" value={total.toFixed(2)} />
-                    <input type="hidden" name="item_name" value={`Aloe Signs Order - ${cart.length} items`} />
-                    <input type="hidden" name="name_first" value={formData.firstName} />
-                    <input type="hidden" name="name_last" value={formData.lastName} />
-                    <input type="hidden" name="email_address" value={formData.email} />
-                    <input type="hidden" name="cell_number" value={formData.phone} />
-                </form>
+                {/* Form generated dynamically on checkout success */}
             </main>
         </div>
     );

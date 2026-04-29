@@ -1,6 +1,27 @@
 import ServicePageTemplate from '@/components/ServicePageTemplate';
 import { getServiceBySlug, getAllServiceSlugs } from '@/lib/services';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const service = getServiceBySlug(slug);
+    
+    if (!service) {
+        return {
+            title: 'Service Not Found',
+        };
+    }
+
+    return {
+        title: service.title,
+        description: service.description,
+        openGraph: {
+            title: `${service.title} | Aloe Signs`,
+            description: service.description,
+        }
+    };
+}
 
 export async function generateStaticParams() {
     const slugs = getAllServiceSlugs();

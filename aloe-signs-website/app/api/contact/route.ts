@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendOrderConfirmationEmail } from '@/lib/email';
+import { checkRateLimit } from '@/lib/rate-limit';
 import nodemailer from 'nodemailer';
 
 /**
@@ -8,8 +8,25 @@ import nodemailer from 'nodemailer';
  */
 export async function POST(request: NextRequest) {
     try {
+        const rateLimitResult = checkRateLimit(request, 5, 60000);
+        if (!rateLimitResult.success) {
+            return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { 
+                status: 429,
+                headers: rateLimitResult.headers
+            });
+        }
+
         const body = await request.json();
-        const { name, email, phone, service, message } = body;
+        const { name, email, phone, service, message, bot_field } = body;
+
+        // Honeypot check
+        if (bot_field) {
+            // Fake success response to trick bots
+            return NextResponse.json({
+                success: true,
+                message: 'Thank you! We\'ll be in touch soon.',
+            });
+        }
 
         // Validation
         if (!name || !email || !message) {

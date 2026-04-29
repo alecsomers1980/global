@@ -1,8 +1,14 @@
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import ContactForm from '@/components/ContactForm';
 import ServiceHero from '@/components/ServiceHero';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+
+export const metadata: Metadata = {
+    title: 'Contact Us | Aloe Signs',
+    description: 'Get in touch with the Aloe Signs team for expert signage, vehicle branding, and custom display solutions. We look forward to hearing from you.',
+};
 
 export default function ContactPage() {
     return (

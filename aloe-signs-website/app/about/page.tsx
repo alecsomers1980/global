@@ -4,6 +4,12 @@ import Header from '@/components/Header';
 import StatsSection from '@/components/StatsSection';
 import ServiceHero from '@/components/ServiceHero';
 import { Building2, Users, Award, MapPin, CheckCircle } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'About Us',
+    description: 'Learn about Aloe Signs, our 25+ years of experience in the branding and signage industry, and our commitment to unmissable visual solutions.',
+};
 
 export default function AboutPage() {
     return (

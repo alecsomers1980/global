@@ -1,0 +1,11 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow internal/admin pages
+Disallow: /portal/
+Disallow: /api/
+Disallow: /under-construction
+
+# Sitemap location
+Sitemap: https://aloesigns.co.za/sitemap.xml

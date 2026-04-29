@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createOrder, Order } from '@/lib/orders';
 import { sql } from '@vercel/postgres';
 import { sendAdminOrderNotification } from '@/lib/email';
+import { payfast } from '@/lib/payfast';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
     try {
+        const rateLimitResult = checkRateLimit(request, 5, 60000);
+        if (!rateLimitResult.success) {
+            return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { 
+                status: 429,
+                headers: rateLimitResult.headers
+            });
+        }
+
         const body = await request.json();
 
         // Validate required fields
@@ -74,13 +84,27 @@ export async function POST(request: NextRequest) {
 
         console.log('Order created:', order.orderNumber);
 
+        // Generate PayFast data
+        const [firstName, ...lastNameParts] = customerName.split(' ');
+        const payfastData = payfast.createPaymentData({
+            orderId: order.id,
+            amount: order.total,
+            customerFirstName: firstName,
+            customerLastName: lastNameParts.join(' ') || firstName,
+            customerEmail: customerEmail,
+            customerPhone: customerPhone,
+            itemName: `Aloe Signs Order - ${items.length} items`,
+        });
+
         const response = NextResponse.json({
             success: true,
             order: {
                 id: order.id,
                 orderNumber: order.orderNumber,
                 total: order.total
-            }
+            },
+            payfastData,
+            payfastUrl: payfast.getPaymentUrl()
         });
 
         // Set pending order cookie for payment return fallback

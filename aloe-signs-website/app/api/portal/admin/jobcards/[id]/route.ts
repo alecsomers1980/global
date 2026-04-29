@@ -111,6 +111,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 prod_artwork = ${body.prod_artwork ?? false},
                 artwork_details_json = ${body.artwork_details_json ? JSON.stringify(body.artwork_details_json) : null},
                 flatbed_details_json = ${body.flatbed_details_json ? JSON.stringify(body.flatbed_details_json) : null},
+                vinyl_cut_details_json = ${body.vinyl_cut_details_json ? JSON.stringify(body.vinyl_cut_details_json) : null},
                 materials_other_text = ${body.materials_other_text ?? null}
             WHERE id = ${id}
             RETURNING *

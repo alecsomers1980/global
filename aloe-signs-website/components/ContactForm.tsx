@@ -14,6 +14,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
         phone: '',
         service: '',
         message: '',
+        bot_field: '', // Honeypot field
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
@@ -42,6 +43,7 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
                     phone: '',
                     service: '',
                     message: '',
+                    bot_field: '',
                 });
             } else {
                 setStatus('error');
@@ -84,6 +86,20 @@ export default function ContactForm({ title = 'Send us a message', subtitle }: C
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot Field */}
+                <div aria-hidden="true" className="absolute opacity-0 -z-10 w-0 h-0 overflow-hidden pointer-events-none">
+                    <label htmlFor="bot_field">Do not fill this out if you are human:</label>
+                    <input 
+                        type="text" 
+                        name="bot_field" 
+                        id="bot_field" 
+                        tabIndex={-1} 
+                        autoComplete="off" 
+                        value={formData.bot_field} 
+                        onChange={handleChange} 
+                    />
+                </div>
+
                 {/* Name */}
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-charcoal mb-2">
