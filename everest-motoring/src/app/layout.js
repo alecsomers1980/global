@@ -25,6 +25,11 @@ export const siteConfig = {
 export const metadata = {
   title: `${siteConfig.name} | Premium Pre-Owned Used Cars`,
   description: siteConfig.description,
+  icons: {
+    icon: [{ url: "/images/favicon.png", type: "image/png" }],
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
