@@ -40,6 +40,30 @@ export async function toggleBusinessVerification(businessId: string, isVerified:
     }
 }
 
+export async function createBusiness(data: {
+  name: string
+  sector?: string
+  area?: string
+  phone?: string
+  whatsapp?: string
+  email?: string
+  website?: string
+  description?: string
+  package_tier?: string
+  status?: string
+}) {
+  await requireAdmin()
+  const pb = await createClient()
+  await pb.collection('businesses').create({
+    ...data,
+    package_tier: data.package_tier || 'standard',
+    status: data.status || 'active',
+    is_featured: false,
+    is_verified: false,
+  })
+  revalidatePath('/admin/businesses')
+}
+
 export async function deleteBusiness(businessId: string) {
     await requireAdmin()
     const pb = await createClient()

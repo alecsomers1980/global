@@ -1,11 +1,17 @@
 import { createClient } from '@/utils/pocketbase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { buildPayFastForm, getPayFastProcessUrl } from '@/lib/payfast'
 
-// Paystack pricing tiers in ZAR cents (excl. VAT)
-const TIER_PRICING: Record<string, number> = {
-  basic: 19900,            // R199.00 excl. VAT
-  'pro-lead': 79900,       // R799.00 excl. VAT
-  'pro-business': 1050000, // R10 500.00 excl. VAT
+const TIER_PRICES_CENTS: Record<string, number> = {
+  basic: 19900,
+  'pro-lead': 79900,
+  'pro-business': 1050000,
+}
+
+const TIER_LABELS: Record<string, string> = {
+  basic: 'Basic Listing (Annual)',
+  'pro-lead': 'Pro Lead Package (Annual)',
+  'pro-business': 'Pro Business Listing (Annual)',
 }
 
 export async function POST(request: NextRequest) {
@@ -20,103 +26,76 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { business_id, tier } = body
 
-    if (!business_id || !tier || !TIER_PRICING[tier]) {
+    if (!business_id || !tier || !TIER_PRICES_CENTS[tier]) {
       return NextResponse.json({ error: 'Invalid business_id or tier' }, { status: 400 })
     }
 
     // Verify user owns this business
     let business: any = null
     try {
-      business = await pb.collection('businesses').getFirstListItem(`id = "${business_id}" && owner = "${user.id}"`)
-    } catch (e) {
+      business = await pb.collection('businesses').getFirstListItem(
+        `id = "${business_id}" && owner = "${user.id}"`
+      )
+    } catch {
       return NextResponse.json({ error: 'Business not found or not authorized' }, { status: 403 })
     }
 
-    const amount = TIER_PRICING[tier]
+    const amountCents = TIER_PRICES_CENTS[tier]
+    const amountZar = (amountCents / 100).toFixed(2)
 
     // Create subscription record
-    let subscription: any = null
-    try {
-      subscription = await pb.collection('subscriptions').create({
-        business: business_id,
-        tier,
-        status: 'pending',
-        amount_cents: amount,
-      })
-    } catch (e) {
-      console.error('Subscription creation error:', e)
-      return NextResponse.json({ error: 'Failed to create subscription' }, { status: 500 })
-    }
-
-    // Create payment record
-    let payment: any = null
-    try {
-      payment = await pb.collection('payments').create({
-        business: business_id,
-        subscription: subscription.id,
-        amount_cents: amount,
-        provider: 'paystack',
-        status: 'pending',
-        description: `${tier.charAt(0).toUpperCase() + tier.slice(1)} listing for ${business.name}`,
-      })
-    } catch (e) {
-      console.error('Payment creation error:', e)
-      return NextResponse.json({ error: 'Failed to create payment record' }, { status: 500 })
-    }
-
-    // Initialize Paystack transaction
-    const paystackKey = process.env.PAYSTACK_SECRET_KEY
-    if (!paystackKey) {
-      // If no Paystack key, return mock data for development
-      return NextResponse.json({
-        payment_id: payment.id,
-        subscription_id: subscription.id,
-        authorization_url: `/portal?payment=mock&status=success`,
-        reference: `mock_${payment.id}`,
-        message: 'Development mode — Paystack key not configured',
-      })
-    }
-
-    const paystackResponse = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${paystackKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: user.email,
-        amount: amount, // Paystack expects amount in kobo/cents
-        currency: 'ZAR',
-        reference: `bbdir_${payment.id}`,
-        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/payments/verify?reference=bbdir_${payment.id}`,
-        metadata: {
-          payment_id: payment.id,
-          subscription_id: subscription.id,
-          business_id,
-          tier,
-          business_name: business.name,
-        },
-      }),
+    const subscription = await pb.collection('subscriptions').create({
+      business: business_id,
+      tier,
+      status: 'pending',
+      amount_cents: amountCents,
     })
 
-    const paystackData = await paystackResponse.json()
+    // Create payment record
+    const payment = await pb.collection('payments').create({
+      business: business_id,
+      subscription: subscription.id,
+      amount_cents: amountCents,
+      provider: 'payfast',
+      status: 'pending',
+      description: `${tier.charAt(0).toUpperCase() + tier.slice(1)} listing for ${business.name}`,
+    })
 
-    if (!paystackData.status) {
-      console.error('Paystack error:', paystackData)
-      return NextResponse.json({ error: 'Payment provider error' }, { status: 500 })
+    const merchantId = process.env.PAYFAST_MERCHANT_ID
+    const merchantKey = process.env.PAYFAST_MERCHANT_KEY
+    if (!merchantId || !merchantKey) {
+      return NextResponse.json(
+        { error: 'Payment provider not configured' },
+        { status: 500 }
+      )
     }
 
-    // Update payment with provider reference
-    await pb.collection('payments').update(payment.id, {
-      provider_reference: paystackData.data.reference,
-      provider_metadata: paystackData.data,
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+    const formFields = buildPayFastForm({
+      merchantId,
+      merchantKey,
+      returnUrl: `${siteUrl}/api/payments/return`,
+      cancelUrl: `${siteUrl}/portal?payment=cancelled`,
+      notifyUrl: `${siteUrl}/api/payments/notify`,
+      firstName: user.first_name || business.contact_person || '',
+      lastName: user.last_name || '',
+      email: user.email,
+      paymentId: payment.id,
+      amount: amountZar,
+      itemName: TIER_LABELS[tier] || `${tier} listing`,
+      itemDescription: `${business.name} — ${tier} package`,
+      customStr1: business_id,
+      customStr2: subscription.id,
+      customStr3: tier,
+      passphrase: process.env.PAYFAST_PASSPHRASE,
     })
 
     return NextResponse.json({
       payment_id: payment.id,
       subscription_id: subscription.id,
-      authorization_url: paystackData.data.authorization_url,
-      reference: paystackData.data.reference,
+      payfast_url: getPayFastProcessUrl(),
+      form_fields: formFields,
     })
   } catch (error) {
     console.error('Payment initiation error:', error)

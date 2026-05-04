@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import BusinessActionsMenu from './BusinessActionsMenu'
+import BusinessesClientWrapper from './BusinessesClientWrapper'
 
 export default async function AdminBusinessesPage({
     searchParams
@@ -42,17 +43,20 @@ export default async function AdminBusinessesPage({
                     <h1 className="text-4xl font-black tracking-tight text-primary">Business Directory</h1>
                     <p className="text-muted-foreground font-medium mt-2 text-lg">Manage all listings, change tiers, and verify businesses.</p>
                 </div>
-                <form method="get" className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <form method="get" className="flex items-center gap-2">
                     <input
-                        name="q"
-                        defaultValue={q}
-                        placeholder="Search businesses..."
-                        className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      name="q"
+                      defaultValue={q}
+                      placeholder="Search businesses..."
+                      className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                     />
                     <button type="submit" className="h-12 px-6 rounded-xl bg-primary text-white font-bold text-sm shadow-md hover:bg-primary/90 transition-colors">
-                        Search
+                      Search
                     </button>
-                </form>
+                  </form>
+                  <BusinessesClientWrapper />
+                </div>
             </div>
 
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">

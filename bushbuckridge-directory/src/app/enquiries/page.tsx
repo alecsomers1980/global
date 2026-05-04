@@ -13,18 +13,35 @@ export default function EnquiriesPage() {
         'use server'
         const pb = await createClient()
         try {
-            await pb.collection('enquiries').create({
-                type: 'general',
-                contact_person: String(formData.get('name')),
-                phone: String(formData.get('phone') || ''),
-                email: String(formData.get('email') || ''),
-                details: String(formData.get('message')),
-                status: 'new',
-            })
-            redirect('/enquiries/success')
+          const contactPerson = String(formData.get('name'))
+          const phone = String(formData.get('phone') || '')
+          const email = String(formData.get('email') || '')
+          const message = String(formData.get('message'))
+
+          await pb.collection('enquiries').create({
+            type: 'general',
+            contact_person: contactPerson,
+            phone,
+            email,
+            details: message,
+            status: 'new',
+          })
+
+          // Send admin notification email (fire-and-forget)
+          const { sendEnquiryNotification } = await import('@/lib/email')
+          sendEnquiryNotification({
+            type: 'General Enquiry',
+            businessName: '',
+            contactPerson,
+            email,
+            phone,
+            details: message,
+          }).catch((e) => console.error('Enquiry notification failed:', e))
+
+          redirect('/enquiries/success')
         } catch (e) {
-            console.error('Enquiry submission error:', e)
-            redirect('/enquiries?error=true')
+          console.error('Enquiry submission error:', e)
+          redirect('/enquiries?error=true')
         }
     }
 
