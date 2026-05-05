@@ -243,7 +243,8 @@ async function waitForIgProcessing(containerId: string, accessToken: string, max
 export async function publishPost(postId: string): Promise<PublishOutcome> {
     // Clear any previous error at the start of a new attempt so stale
     // messages don't linger after a successful retry.
-    await supabase.from('posts').update({ status: 'publishing', last_error: null } as never).eq('id', postId)
+    const { error: clearErr } = await supabase.from('posts').update({ status: 'publishing' } as never).eq('id', postId)
+    if (clearErr) console.error('publishPost: failed to set publishing status:', clearErr)
 
     const { data: post, error: postErr } = await supabase
         .from('posts')
@@ -252,7 +253,8 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         .single()
 
     if (postErr || !post) {
-        await supabase.from('posts').update({ status: 'failed', last_error: 'Post row not found' } as never).eq('id', postId)
+        const { error: failErr } = await supabase.from('posts').update({ status: 'failed' } as never).eq('id', postId)
+        if (failErr) console.error('publishPost: failed to set failed status:', failErr)
         return { success: false, allSuccess: false, results: [] }
     }
 
@@ -265,7 +267,8 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         .in('platform', postAny.platforms)
 
     if (!accounts || accounts.length === 0) {
-        await supabase.from('posts').update({ status: 'failed', last_error: 'No connected accounts for the targeted platforms' } as never).eq('id', postId)
+        const { error: noAcctErr } = await supabase.from('posts').update({ status: 'failed' } as never).eq('id', postId)
+        if (noAcctErr) console.error('publishPost: failed to set no-accounts status:', noAcctErr)
         return {
             success: false,
             allSuccess: false,
@@ -321,10 +324,15 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         ? null
         : failed.map(r => `${r.platform} (${r.account_name}): ${r.error || 'unknown'}`).join(' | ')
 
-    await supabase
+    const updatePayload: Record<string, any> = { status: anySuccess ? 'published' : 'failed' }
+    if (lastError) updatePayload.last_error = lastError
+
+    const { error: finalErr } = await supabase
         .from('posts')
-        .update({ status: anySuccess ? 'published' : 'failed', last_error: lastError } as never)
+        .update(updatePayload as never)
         .eq('id', postId)
+
+    if (finalErr) console.error('publishPost: failed to set final status:', finalErr)
 
     return {
         success: anySuccess,
