@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+export const maxDuration = 300;
+
 function admin() {
     return createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,6 +11,10 @@ function admin() {
 }
 
 function authorized(req: Request): boolean {
+    // Vercel cron jobs send this header automatically
+    const ua = req.headers.get('user-agent') || ''
+    if (ua.includes('Vercel-Cron')) return true
+
     const secret = process.env.CRON_SECRET
     if (!secret) return process.env.NODE_ENV !== 'production'
     const auth = req.headers.get('authorization') || ''
