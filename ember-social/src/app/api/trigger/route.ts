@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
 import crypto from 'crypto'
 
-const MAX_CARS_PER_DAY = 2
+const MAX_CARS_PER_DAY = 1
 
-async function getNextAvailableDate(supabase: any, workspaceId: string): Promise<string> {
-    // Find the next date that has fewer than MAX_CARS_PER_DAY distinct vehicles scheduled
-    // Start from today (SAST = UTC+2)
+async function getNextAvailableDate(supabase: any, workspaceId: string, vehicleId: string): Promise<string> {
+    // Find the next date that has fewer than MAX_CARS_PER_DAY distinct vehicles scheduled.
+    // The same vehicle can have multiple posts (feed/reel/video) on the same day.
     const now = new Date()
 
     for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
@@ -24,6 +24,8 @@ async function getNextAvailableDate(supabase: any, workspaceId: string): Promise
             .not('vehicle_id', 'is', null)
 
         const uniqueVehicles = new Set((posts || []).map((p: any) => p.vehicle_id))
+        // Exclude the current vehicle — its multiple post types share the same day
+        uniqueVehicles.delete(vehicleId)
 
         if (uniqueVehicles.size < MAX_CARS_PER_DAY) {
             return dateStr
@@ -83,7 +85,7 @@ export async function POST(req: Request) {
             finalScheduledAt = new Date(scheduled_at).toISOString()
         } else if (preferred_time && vehicle_id) {
             // Smart scheduling: find next available day, apply preferred time
-            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id)
+            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id, vehicle_id)
             finalScheduledAt = `${availableDate}T${preferred_time}:00Z`
         }
 

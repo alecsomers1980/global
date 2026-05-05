@@ -118,7 +118,7 @@ function buildReelPost(car) {
     return {
         content: lines.join("\n"),
         media_urls: video ? [video, ...images.slice(0, 2)] : images.slice(0, 3),
-        platforms: ["instagram", "tiktok", "youtube"],
+        platforms: ["facebook", "instagram", "tiktok", "youtube"],
     };
 }
 
@@ -169,12 +169,12 @@ function buildVideoPost(car) {
 }
 
 function getScheduleTimes() {
-    // All posts go out same day — feed at 10:00, reel at 13:00, video at 17:00 SAST
-    // The trigger API handles daily car limits (max 2 cars/day) and bumps to next day if needed
+    // All posts go out same day at 9:30, 13:00, 16:00 SAST (UTC+2)
+    // The trigger API allows multiple posts per vehicle on the same day (1 car/day max)
     return {
-        feedTime: "08:00",   // 10:00 SAST
+        feedTime: "07:30",   // 9:30 SAST
         reelTime: "11:00",   // 13:00 SAST
-        videoTime: "15:00",  // 17:00 SAST
+        videoTime: "14:00",  // 16:00 SAST
     };
 }
 
