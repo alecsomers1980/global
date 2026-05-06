@@ -6,8 +6,8 @@ import { getVehicleUrl as buildVehicleUrl } from "@/utils/url/vehicleUrl";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 const CONTACT = {
-    phone: "013 750 0812",
-    email: "sales@everestmotoring.co.za",
+    phone: "013 854 0600",
+    email: "info@everestmotoring.co.za",
     location: "White River, Mpumalanga",
 };
 
@@ -163,7 +163,7 @@ function buildVideoPost(car) {
 
     return {
         content: lines.join("\n"),
-        media_urls: video ? [video, ...images] : images,
+        media_urls: video ? [video] : images,
         platforms: ["youtube", "facebook"],
     };
 }

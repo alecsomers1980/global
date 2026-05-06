@@ -10,6 +10,7 @@ import {
     slugify,
     estimateReadingMinutes,
 } from "@/utils/ai/newsGenerator";
+import { postNewsToGbp } from "@/utils/google/gbpService";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 
@@ -143,6 +144,7 @@ export async function generateNewsPost({ userId, autoPublish = false } = {}) {
         } catch (err) {
             console.warn("IndexNow ping failed (post still published):", err);
         }
+        postNewsToGbp(inserted).catch((err) => console.warn("GBP news post failed:", err));
     }
 
     return inserted;
@@ -218,7 +220,7 @@ export async function publishNewsPost(id) {
 
     const { data: post } = await admin
         .from("news_posts")
-        .select("slug, status, published_at")
+        .select("slug, status, published_at, title, excerpt, hero_image_url")
         .eq("id", id)
         .maybeSingle();
     if (!post) return { success: false, error: "Post not found" };
@@ -239,6 +241,9 @@ export async function publishNewsPost(id) {
     } catch (err) {
         console.warn("IndexNow ping failed:", err);
     }
+
+    // Best-effort GBP post — fire and forget
+    postNewsToGbp(post).catch((err) => console.warn("GBP news post failed:", err));
 
     revalidatePath("/admin/news");
     revalidatePath("/news");

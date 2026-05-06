@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
 import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
+import { postCarToGbpAction } from "./gbp_actions";
 
 const CAR_FEATURES = {
     "Safety & Security": ["ABS", "Airbags", "Alarm System", "ISOFIX", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor"],
@@ -302,6 +303,11 @@ export default function VehicleForm({ initialData = null }) {
                 // Auto-generate SEO metadata + image alts in the background.
                 // Fire-and-forget; admin doesn't wait for Gemini.
                 autoFixSeoForCar(savedCarId).catch((err) => console.warn("Auto SEO failed:", err));
+                // Auto-post to Google Business Profile
+                postCarToGbpAction({ ...carPayload, id: savedCarId }).catch((err) => console.warn("GBP post failed:", err));
+            } else if (isEditing) {
+                // For edits, post the updated car data
+                postCarToGbpAction({ ...carPayload, id: initialData.id }).catch((err) => console.warn("GBP post failed:", err));
             }
 
             setUploadProgress(100);
