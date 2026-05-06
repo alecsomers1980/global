@@ -79,12 +79,13 @@ export async function generateNewsPost({ userId, autoPublish = false } = {}) {
 
     const { data: recentPosts } = await admin
         .from("news_posts")
-        .select("title, category")
+        .select("title, category, hero_image_url")
         .order("created_at", { ascending: false })
-        .limit(6);
+        .limit(12);
 
     const recentCategories = (recentPosts || []).slice(0, 3).map((p) => p.category);
     const recentTitles = (recentPosts || []).map((p) => p.title);
+    const recentHeroUrls = (recentPosts || []).map((p) => p.hero_image_url);
 
     let category = await pickNextCategory(recentCategories);
     let featuredCar = null;
@@ -103,7 +104,7 @@ export async function generateNewsPost({ userId, autoPublish = false } = {}) {
     });
 
     const slug = await uniqueSlug(admin, article.slug || slugify(article.title));
-    const hero = pickHeroImage(category, featuredCar);
+    const hero = pickHeroImage(category, featuredCar, recentHeroUrls);
     const now = new Date().toISOString();
     const publishedAt = autoPublish ? now : null;
     const status = autoPublish ? "published" : "draft";

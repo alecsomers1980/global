@@ -35,17 +35,48 @@ const LOCAL_TOPICS = [
     "Preparing your vehicle for a Mpumalanga summer and rainy season",
 ];
 
-const HERO_DEFAULTS = {
-    "buying-guide": "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80",
-    "local": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80",
-    "model-review": "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&q=80",
+const HERO_POOL = {
+    "buying-guide": [
+        "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80",
+        "https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1600&q=80",
+        "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1600&q=80",
+        "https://images.unsplash.com/photo-1485291571150-772bcfc10da5?w=1600&q=80",
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80",
+        "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1600&q=80",
+        "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=1600&q=80",
+        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80",
+    ],
+    "local": [
+        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&q=80",
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1600&q=80",
+        "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1600&q=80",
+        "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=1600&q=80",
+        "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80",
+        "https://images.unsplash.com/photo-1494783367193-149034c05e8f?w=1600&q=80",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80",
+        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80",
+    ],
+    "model-review": [
+        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&q=80",
+        "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1600&q=80",
+        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1600&q=80",
+        "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&q=80",
+        "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=1600&q=80",
+        "https://images.unsplash.com/photo-1555626906-fcf10d6851b4?w=1600&q=80",
+        "https://images.unsplash.com/photo-1494905998402-395d579af36f?w=1600&q=80",
+        "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=1600&q=80",
+    ],
 };
 
-export function pickHeroImage(category, featuredCar) {
+export function pickHeroImage(category, featuredCar, recentHeroUrls = []) {
     if (category === "model-review" && featuredCar?.main_image_url) {
         return featuredCar.main_image_url;
     }
-    return HERO_DEFAULTS[category] || HERO_DEFAULTS["buying-guide"];
+    const pool = HERO_POOL[category] || HERO_POOL["buying-guide"];
+    const used = new Set((recentHeroUrls || []).filter(Boolean));
+    const fresh = pool.filter((url) => !used.has(url));
+    const source = fresh.length > 0 ? fresh : pool;
+    return source[Math.floor(Math.random() * source.length)];
 }
 
 export function slugify(text) {
