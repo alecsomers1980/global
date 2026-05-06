@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { Briefcase, Users, FileText, Calendar, ArrowUpRight } from "lucide-react";
+import { Briefcase, Users, FileText, Calendar, ArrowUpRight, AlertTriangle, Clock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { getPrescriptionInfo, type PrescriptionInfo } from "@/lib/prescription";
 
 export default async function AdminDashboard() {
     const supabase = createClient();
@@ -35,7 +36,20 @@ export default async function AdminDashboard() {
     if (isAttorney) appointmentsQuery = appointmentsQuery.eq('attorney_id', userId);
     const { count: pendingAppointments } = await appointmentsQuery;
 
-    // 5. Recent Cases Table
+    // 5. Cases with approaching prescription deadlines
+    const { data: prescriptionCases } = await supabase
+        .from("cases")
+        .select("id, case_number, title, accident_date, status, client:profiles!client_id(full_name), attorney:profiles!attorney_id(full_name)")
+        .not("accident_date", "is", null)
+        .neq("status", "closed")
+        .order("accident_date", { ascending: true });
+
+    const atRiskCases = (prescriptionCases || [])
+        .map((c: any) => ({ ...c, prescription: getPrescriptionInfo(c.accident_date, c.status) }))
+        .filter((c: any) => c.prescription !== null)
+        .sort((a: any, b: any) => a.prescription.daysRemaining - b.prescription.daysRemaining);
+
+    // 6. Recent Cases Table
     let recentCasesQuery = supabase
         .from("cases")
         .select("*, client:profiles!client_id(full_name)")
@@ -91,6 +105,70 @@ export default async function AdminDashboard() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Prescription Deadline Alerts */}
+            {atRiskCases.length > 0 && (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                        <h2 className="text-xl font-bold text-slate-800">Prescription Alerts</h2>
+                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">{atRiskCases.length}</span>
+                    </div>
+                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {atRiskCases.map((c: any) => {
+                            const p = c.prescription as PrescriptionInfo;
+                            const isExpired = p.risk === "expired";
+                            const isCritical = p.risk === "critical";
+                            return (
+                                <Link key={c.id} href={`/admin/cases/${c.id}`}>
+                                    <div className={`p-4 rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer ${
+                                        isExpired ? "bg-red-50 border-red-300" :
+                                        isCritical ? "bg-red-50 border-red-200" :
+                                        p.risk === "warning" ? "bg-orange-50 border-orange-200" :
+                                        "bg-yellow-50 border-yellow-200"
+                                    }`}>
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-slate-800 text-sm truncate">{c.title}</p>
+                                                <p className="text-xs text-gray-500 mt-0.5">#{c.case_number} &bull; {c.client?.full_name || "Unknown"}</p>
+                                            </div>
+                                            <Clock className={`w-4 h-4 flex-shrink-0 ml-2 ${
+                                                isExpired || isCritical ? "text-red-500" :
+                                                p.risk === "warning" ? "text-orange-500" : "text-yellow-500"
+                                            }`} />
+                                        </div>
+                                        <div className={`mt-2 text-xs font-bold ${
+                                            isExpired ? "text-red-700" :
+                                            isCritical ? "text-red-600" :
+                                            p.risk === "warning" ? "text-orange-600" : "text-yellow-600"
+                                        }`}>
+                                            {p.label}
+                                        </div>
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full ${
+                                                        isExpired ? "bg-red-500 w-full" :
+                                                        isCritical ? "bg-red-500" :
+                                                        p.risk === "warning" ? "bg-orange-500" : "bg-yellow-500"
+                                                    }`}
+                                                    style={{ width: isExpired ? "100%" : `${Math.max(5, 100 - (p.daysRemaining / 90) * 100)}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-xs font-medium ${
+                                                isExpired ? "text-red-600" :
+                                                isCritical ? "text-red-500" : "text-gray-500"
+                                            }`}>
+                                                {isExpired ? `${Math.abs(p.daysRemaining)}d overdue` : `${p.daysRemaining}d left`}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             <div className="grid md:grid-cols-2 gap-8">
                 {/* Recent Cases */}

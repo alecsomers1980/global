@@ -18,6 +18,7 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
     const [attorneyId, setAttorneyId] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("open");
+    const [accidentDate, setAccidentDate] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
@@ -46,7 +47,8 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
             client_id: clientId,
             attorney_id: attorneyId || undefined,
             description,
-            status
+            status,
+            accident_date: accidentDate || undefined,
         };
 
         const result = caseSchema.safeParse(formData);
@@ -67,7 +69,8 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                     client_id: clientId,
                     attorney_id: attorneyId || null,
                     description,
-                    status
+                    status,
+                    accident_date: accidentDate || null,
                 });
 
             if (error) throw error;
@@ -157,6 +160,18 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label>Accident Date</Label>
+                    <Input
+                        type="date"
+                        value={accidentDate}
+                        onChange={(e) => setAccidentDate(e.target.value)}
+                    />
+                    <p className="text-xs text-amber-600">Required for RAF prescription tracking. The 3-year claim window starts from this date.</p>
+                </div>
             </div>
 
             <div className="space-y-2">

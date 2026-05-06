@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Briefcase, User, Calendar, Clock, FileText, History, AlertTriangle } from "lucide-react";
 import { getStatusLabel, getStatusColor, getPhaseProgress, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { getPrescriptionInfo } from "@/lib/prescription";
 import StatusUpdateForm from "@/components/admin/StatusUpdateForm";
 
 export default async function CaseDetailPage({ params }: { params: { id: string } }) {
@@ -35,6 +36,7 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
     const statusLabel = getStatusLabel(caseData.status);
     const progress = getPhaseProgress(caseData.status);
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
+    const prescription = getPrescriptionInfo(caseData.accident_date, caseData.status);
 
     return (
         <div className="space-y-8 max-w-6xl">
@@ -54,7 +56,14 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                                 {statusLabel}
                             </span>
                         </div>
-                        <p className="text-gray-500">Case #{caseData.case_number}</p>
+                        <p className="text-gray-500">
+                            Case #{caseData.case_number}
+                            {caseData.accident_date && (
+                                <span className="ml-4 text-gray-400">
+                                    Accident: {new Date(caseData.accident_date).toLocaleDateString('en-ZA')}
+                                </span>
+                            )}
+                        </p>
                     </div>
                 </div>
 
@@ -93,6 +102,29 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                 {caseData.status_notes && (
                     <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
                         <p className="text-sm text-amber-800"><strong>Status Notes:</strong> {caseData.status_notes}</p>
+                    </div>
+                )}
+
+                {/* Prescription Deadline Alert */}
+                {prescription && (
+                    <div className={`mt-4 p-5 ${prescription.bgColor} border ${prescription.borderColor} rounded-lg`}>
+                        <div className="flex items-center gap-3">
+                            <AlertTriangle className={`w-6 h-6 flex-shrink-0 ${
+                                prescription.risk === "expired" || prescription.risk === "critical"
+                                    ? "text-red-500"
+                                    : prescription.risk === "warning"
+                                    ? "text-orange-500"
+                                    : "text-yellow-500"
+                            }`} />
+                            <div>
+                                <p className={`font-bold text-sm ${prescription.textColor}`}>{prescription.label}</p>
+                                <p className={`text-sm mt-1 ${prescription.textColor} opacity-90`}>{prescription.message}</p>
+                                <p className="text-xs mt-2 opacity-70">
+                                    Accident: {new Date(prescription.accidentDate).toLocaleDateString('en-ZA')} &bull;
+                                    Deadline: {prescription.deadlineDate.toLocaleDateString('en-ZA')}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 )}
 

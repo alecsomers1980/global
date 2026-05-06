@@ -12,6 +12,7 @@ export const caseSchema = z.object({
     attorney_id: z.string().uuid("Invalid attorney ID").optional().or(z.literal("")),
     description: z.string().optional(),
     status: z.enum(["open", "discovery", "litigation", "closed"]),
+    accident_date: z.string().optional(),
 });
 
 export const appointmentSchema = z.object({

@@ -218,6 +218,84 @@ export async function sendCaseUpdateEmail({
 }
 
 /**
+ * Send prescription deadline alert to attorney and admin
+ */
+export async function sendPrescriptionAlertEmail({
+    attorneyEmail,
+    attorneyName,
+    caseNumber,
+    caseTitle,
+    daysRemaining,
+    deadlineDate,
+    risk,
+}: {
+    attorneyEmail: string | null;
+    attorneyName: string | null;
+    caseNumber: string;
+    caseTitle: string;
+    daysRemaining: number;
+    deadlineDate: Date;
+    risk: string;
+}) {
+    const transporter = createTransporter();
+    if (!transporter) return { success: false, error: "Email not configured" };
+
+    const isExpired = risk === "expired";
+    const urgencyText = isExpired
+        ? `The 3-year prescription deadline for this case passed <strong>${Math.abs(daysRemaining)} days ago</strong>.`
+        : `There are <strong>${daysRemaining} days</strong> remaining until the 3-year prescription deadline.`;
+
+    const bodyHtml = `
+        <div style="background:#fef2f2; padding:16px; border-left:4px solid #ef4444; border-radius:4px; margin-bottom:20px;">
+            <p style="margin:0; font-size:16px; font-weight:700; color:#991b1b;">
+                ${isExpired ? "⚠️ PRESCRIPTION DEADLINE EXPIRED" : "⚠️ Prescription Deadline Approaching"}
+            </p>
+        </div>
+        <p>${urgencyText}</p>
+        <table style="width:100%; border-collapse:collapse; margin: 16px 0;">
+            <tr>
+                <td style="padding:8px 12px; background:#f1f5f9; font-weight:600; width:140px;">Case</td>
+                <td style="padding:8px 12px;">${caseNumber} — ${caseTitle}</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 12px; background:#f1f5f9; font-weight:600;">Deadline Date</td>
+                <td style="padding:8px 12px;">${deadlineDate.toLocaleDateString('en-ZA')}</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 12px; background:#f1f5f9; font-weight:600;">Days ${isExpired ? "Overdue" : "Remaining"}</td>
+                <td style="padding:8px 12px; font-weight:700; color:${isExpired ? "#dc2626" : daysRemaining <= 30 ? "#dc2626" : "#ea580c"};">${Math.abs(daysRemaining)}</td>
+            </tr>
+            ${attorneyName ? `<tr>
+                <td style="padding:8px 12px; background:#f1f5f9; font-weight:600;">Assigned Attorney</td>
+                <td style="padding:8px 12px;">${attorneyName}</td>
+            </tr>` : ""}
+        </table>
+        <p>Please review this case immediately to ensure the claim is filed before the prescription deadline.</p>
+        <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://rvrinc.co.za'}/admin/cases" style="display:inline-block; padding:12px 24px; background-color:#0f172a; color:#d4a843; text-decoration:none; border-radius:6px; font-weight:600; margin-top:8px;">
+            View Case
+        </a>
+    `;
+
+    const recipients = [];
+    if (attorneyEmail) recipients.push(attorneyEmail);
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "info@rvrinc.co.za";
+    if (!recipients.includes(adminEmail)) recipients.push(adminEmail);
+
+    try {
+        await transporter.sendMail({
+            from: `"${FROM_NAME}" <${FROM_EMAIL}>`,
+            to: recipients.join(", "),
+            subject: `[PRESCRIPTION ALERT] ${caseNumber} — ${daysRemaining <= 0 ? "EXPIRED" : daysRemaining + " days remaining"}`,
+            html: wrapInTemplate("Prescription Deadline Alert", bodyHtml),
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error("Prescription alert email error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
  * Send a notification to admin/staff about internal events
  */
 export async function sendAdminNotification({
