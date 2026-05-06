@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ContactModal } from "@/components/ContactModal";
+import { CONTACT_EMAIL } from "@/lib/config";
 import { MapPin, Phone, Mail, Clock, MessageCircle, Shield, Send } from "lucide-react";
 import Image from "next/image";
 
@@ -86,7 +87,7 @@ export default function ContactPage() {
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <Mail className="w-4 h-4 text-brand-gold flex-shrink-0" />
-                                            <a href="mailto:info@rvrinc.co.za" className="text-gray-600 hover:text-brand-navy transition-colors">info@rvrinc.co.za</a>
+                                            <a href={`mailto:${CONTACT_EMAIL}`} className="text-gray-600 hover:text-brand-navy transition-colors">{CONTACT_EMAIL}</a>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <MessageCircle className="w-4 h-4 text-brand-gold flex-shrink-0" />

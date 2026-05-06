@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CONTACT_EMAIL } from "@/lib/config";
 
 export default function PAIAPage() {
     return (
@@ -38,7 +39,7 @@ export default function PAIAPage() {
                                 <li><strong>Physical Address:</strong> 40 Van Ryneveld Avenue, Pierre van Ryneveld, Centurion</li>
                                 <li><strong>Postal Address:</strong> P.O. Box [Postal Code], Pretoria</li>
                                 <li><strong>Telephone:</strong> 087 150 5683</li>
-                                <li><strong>Email:</strong> info@rvrinc.co.za</li>
+                                <li><strong>Email:</strong> {CONTACT_EMAIL}</li>
                             </ul>
 
                             <h2 className="text-2xl font-bold text-brand-navy mt-8">3. Guide of the Information Regulator</h2>

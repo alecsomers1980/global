@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 // Force Vercel Re-deploy
 const nextConfig = {
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'ctfwxbrjyxjcdsrbdxxz.supabase.co',
+                pathname: '/storage/v1/object/public/**',
+            },
+        ],
+    },
     headers: async () => {
         return [
             {

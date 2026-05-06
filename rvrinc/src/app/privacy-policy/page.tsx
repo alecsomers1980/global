@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CONTACT_EMAIL } from "@/lib/config";
 
 export default function PrivacyPolicyPage() {
     return (
@@ -78,7 +79,7 @@ export default function PrivacyPolicyPage() {
 
                             <h2 className="text-2xl font-bold text-brand-navy mt-8">7. Contact Us</h2>
                             <p>
-                                If you have any questions about this policy or wish to exercise your rights, please contact our Information Officer at: <a href="mailto:info@rvrinc.co.za" className="text-brand-gold hover:underline">info@rvrinc.co.za</a>.
+                                If you have any questions about this policy or wish to exercise your rights, please contact our Information Officer at: <a href={`mailto:${CONTACT_EMAIL}`} className="text-brand-gold hover:underline">{CONTACT_EMAIL}</a>.
                             </p>
                         </div>
                     </div>

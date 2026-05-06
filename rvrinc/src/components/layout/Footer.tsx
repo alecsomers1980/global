@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Facebook, Linkedin, Instagram } from "lucide-react";
+import { CONTACT_EMAIL } from "@/lib/config";
 
 export function Footer() {
     return (
@@ -28,7 +29,7 @@ export function Footer() {
                     <ul className="space-y-2 text-sm text-gray-300">
                         <li>40 Van Ryneveld Ave, Pierre van Ryneveld, Pretoria</li>
                         <li>087 150 5683</li>
-                        <li>info@rvrinc.co.za</li>
+                        <li>{CONTACT_EMAIL}</li>
                         <li className="pt-2">144 2nd Avenue, Marble Hall</li>
                         <li>013 261 7187/8/9</li>
                     </ul>
