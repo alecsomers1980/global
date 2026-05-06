@@ -55,7 +55,11 @@ function isImageUrl(url: string): boolean {
     return /\.(jpg|jpeg|png|gif|webp|svg|avif)(\?.*)?$/i.test(url)
 }
 
-function PlatformMockup({ platform, content, mediaUrl, brandKit }: {
+function detectPostType(content: string): { type: 'video' | 'reel' | 'feed'; label: string; color: string; icon: string } {
+    if (content.includes('Full Walkthrough')) return { type: 'video', label: 'Video Post', color: '#ef4444', icon: '🎬' }
+    if (content.includes('🔥')) return { type: 'reel', label: 'Reel / Short', color: '#a78bfa', icon: '⚡' }
+    return { type: 'feed', label: 'Normal Post', color: '#60a5fa', icon: '📝' }
+} {
     platform: string
     content: string
     mediaUrl?: string | null
@@ -215,6 +219,7 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
     const [actionLoading, setActionLoading] = useState<string | null>(null)
     const accent = brandKit?.accent_color || '#f97316'
     const firstMedia = post.media_urls?.[0] || null
+    const postType = detectPostType(post.content)
 
     const handleApprove = async () => {
         if (!onApprove) return
@@ -256,6 +261,11 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                         <div className="w-6 h-6 rounded-full" style={{ background: accent }} />
                     )}
                     <div className="flex items-center gap-2">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider flex items-center gap-1"
+                            style={{ background: `${postType.color}18`, color: postType.color, border: `1px solid ${postType.color}30` }}>
+                            <span className="text-xs">{postType.icon}</span>
+                            {postType.label}
+                        </span>
                         {post.platforms.map(p => (
                             <span key={p} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider"
                                 style={{ background: `${PLATFORM_COLORS[p as keyof typeof PLATFORM_COLORS] || '#6b7280'}20`, color: PLATFORM_COLORS[p as keyof typeof PLATFORM_COLORS] || '#8a8aaa' }}>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
+import { rewriteSocialContent } from '@/lib/ai/rewrite-content'
 import crypto from 'crypto'
 
 const MAX_CARS_PER_DAY = 1
@@ -89,12 +90,20 @@ export async function POST(req: Request) {
             finalScheduledAt = `${availableDate}T${preferred_time}:00Z`
         }
 
-        // 6. Insert Post
+        // 6. Rewrite content for social media
+        let rewrittenContent = content
+        try {
+            rewrittenContent = await rewriteSocialContent(content, platforms, keyAny.workspace_id)
+        } catch (err) {
+            console.error('Content rewrite failed, using original:', err)
+        }
+
+        // 7. Insert Post
         const approval_token = crypto.randomUUID()
 
         const insertData: Record<string, any> = {
             workspace_id: keyAny.workspace_id,
-            content,
+            content: rewrittenContent,
             platforms,
             media_urls: Array.isArray(media_urls) && media_urls.length > 0 ? media_urls : null,
             scheduled_at: finalScheduledAt,

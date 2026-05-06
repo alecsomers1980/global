@@ -28,6 +28,7 @@ export async function createStreamFromUrl(videoUrl, metadata = {}) {
         body: JSON.stringify({
             url: videoUrl,
             meta: metadata,
+            downloadable: true,
         }),
     });
     const data = await res.json();
@@ -35,7 +36,19 @@ export async function createStreamFromUrl(videoUrl, metadata = {}) {
         const msg = data.errors?.[0]?.message || "Cloudflare Stream copy failed";
         throw new Error(msg);
     }
-    return { uid: data.result.uid, status: data.result.status?.state };
+
+    // Enable MP4 downloads (required for Facebook/Instagram publishing)
+    const uid = data.result.uid;
+    try {
+        await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}/downloads`, {
+            method: "POST",
+            headers: authHeaders(apiToken),
+        });
+    } catch (err) {
+        console.warn(`[CF Stream] Failed to enable downloads for ${uid}:`, err.message);
+    }
+
+    return { uid, status: data.result.status?.state };
 }
 
 export async function getStreamStatus(uid) {
