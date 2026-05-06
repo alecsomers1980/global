@@ -169,7 +169,7 @@ export default function DatabaseSetupPage() {
                             <p className="text-sm text-gray-500">
                                 Go to{" "}
                                 <a
-                                    href="https://supabase.com/dashboard/project/xyhvdljnjyonaiedfgyh/sql/new"
+                                    href="https://supabase.com/dashboard/project/ctfwxbrjyxjcdsrbdxxz/sql/new"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-brand-gold underline font-medium"
