@@ -28,7 +28,7 @@ export default function AddAffiliateModal() {
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="bg-primary hover:bg-primary-light text-white transition-colors px-4 py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                className="bg-primary hover:bg-primary-light text-black transition-colors px-4 py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
             >
                 <span className="material-symbols-outlined text-[18px]">person_add</span>
                 Add Affiliate
@@ -115,7 +115,7 @@ export default function AddAffiliateModal() {
                                     <button
                                         type="submit"
                                         disabled={isPending}
-                                        className="px-5 py-2.5 rounded-lg font-bold text-white bg-primary hover:bg-primary-light transition-colors flex items-center justify-center min-w-[140px] text-sm shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                                        className="px-5 py-2.5 rounded-lg font-bold text-black bg-primary hover:bg-primary-light transition-colors flex items-center justify-center min-w-[140px] text-sm shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
                                         {isPending ? (
                                             <span className="flex items-center gap-2">

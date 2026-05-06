@@ -319,7 +319,7 @@ export default async function NewsPostPage({ params }) {
                                 </div>
                             )}
                             <div className="flex-1 flex flex-col justify-center">
-                                <h3 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">
+                                <h3 className="text-xl font-bold text-slate-900 transition-colors">
                                     {featuredCar.year}{" "}
                                     {featuredCar.make}{" "}
                                     {featuredCar.model}
@@ -450,7 +450,7 @@ export default async function NewsPostPage({ params }) {
                                             </>
                                         )}
                                     </div>
-                                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-primary transition-colors leading-snug mb-3">
+                                    <h3 className="text-lg font-bold text-slate-900 transition-colors leading-snug mb-3">
                                         {p.title}
                                     </h3>
                                     {p.excerpt && (

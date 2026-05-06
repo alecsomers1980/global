@@ -123,10 +123,10 @@ export default async function InventoryPage({ searchParams }) {
                                     <div className="p-6 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h2 className="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">
+                                                <h2 className="text-base font-bold text-slate-900 transition-colors">
                                                     {car.year} {car.make}
                                                 </h2>
-                                                <p className="text-sm font-medium text-slate-500">{car.model}</p>
+                                                <p className="text-xs font-medium text-slate-500">{car.model}</p>
                                             </div>
                                         </div>
 
@@ -165,7 +165,7 @@ export default async function InventoryPage({ searchParams }) {
                                             </div>
 
                                             <div className="flex items-center justify-between">
-                                                <div className="font-bold text-2xl text-slate-900 tracking-tight">
+                                                <div className="font-bold text-lg text-slate-900 tracking-tight whitespace-nowrap">
                                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                                 </div>
                                                 <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-colors text-slate-400">

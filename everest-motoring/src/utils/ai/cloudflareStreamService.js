@@ -88,3 +88,37 @@ export function getIframeUrl(uid) {
     if (!subdomain) throw new Error("Missing CLOUDFLARE_STREAM_SUBDOMAIN env var");
     return `https://${subdomain}/${uid}/iframe`;
 }
+
+/**
+ * Deletes a Cloudflare Stream entry. Returns true if removed (or already gone),
+ * false on transient failure. Never throws — callers should treat CF cleanup as
+ * best-effort: a failure here must not block deleting the parent car record.
+ */
+export async function deleteStream(uid) {
+    if (!uid) return true;
+    try {
+        const { accountId, apiToken } = requireEnv();
+        const res = await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${apiToken}` },
+        });
+        // 200/204 = deleted, 404 = already gone; both are success
+        if (res.status === 200 || res.status === 204 || res.status === 404) return true;
+        const text = await res.text().catch(() => "");
+        console.warn(`[CF Stream] delete ${uid} returned ${res.status}: ${text.slice(0, 200)}`);
+        return false;
+    } catch (err) {
+        console.warn(`[CF Stream] delete ${uid} threw: ${err.message}`);
+        return false;
+    }
+}
+
+/**
+ * Helper: if `videoUrl` is in `cf:<uid>` form, delete that CF Stream entry.
+ * Anything else (null, error states, mux:, etc.) is a no-op.
+ */
+export async function deleteStreamFromVideoUrl(videoUrl) {
+    if (typeof videoUrl !== "string" || !videoUrl.startsWith("cf:")) return true;
+    const uid = videoUrl.split(":")[1];
+    return deleteStream(uid);
+}

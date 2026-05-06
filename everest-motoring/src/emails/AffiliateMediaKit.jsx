@@ -79,7 +79,7 @@ export const AffiliateMediaKit = ({
                   className="w-full h-auto opacity-80"
                 />
                 <Section className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                   <Text className="text-white font-bold bg-primary px-4 py-2 rounded shadow-lg">AI CINEMATIC VIDEO READY</Text>
+                   <Text className="text-black font-bold bg-primary px-4 py-2 rounded shadow-lg">AI CINEMATIC VIDEO READY</Text>
                 </Section>
               </Section>
 

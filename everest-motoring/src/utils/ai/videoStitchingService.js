@@ -7,8 +7,14 @@ export async function stitchVideosWithFal(videoUrls) {
         throw new Error("No video URLs provided to stitcher.");
     }
 
+    // Wrap with brand intro/outro when configured. Missing env vars are
+    // tolerated (filtered out) so dev/test environments still work.
+    const intro = process.env.EVEREST_INTRO_VIDEO_URL;
+    const outro = process.env.EVEREST_OUTRO_VIDEO_URL;
+    const finalUrls = [intro, ...videoUrls, outro].filter(Boolean);
+
     try {
-        console.log(`[Stitching Service] Sending ${videoUrls.length} clips to Fal.ai FFMPEG for concatenation...`);
+        console.log(`[Stitching Service] Sending ${finalUrls.length} clips to Fal.ai FFMPEG (intro=${!!intro}, scenes=${videoUrls.length}, outro=${!!outro})...`);
 
         // We use the Fal.ai FFMPEG Merge Videos model
         // Documentation: fal.ai/models/fal-ai/ffmpeg-api/merge-videos
@@ -19,7 +25,7 @@ export async function stitchVideosWithFal(videoUrls) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                video_urls: videoUrls
+                video_urls: finalUrls
             })
         });
 

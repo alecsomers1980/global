@@ -118,7 +118,7 @@ export const PostSaleReviewEmail = ({
               <Section className="mb-10">
                 <Link
                   href={reviewUrl}
-                  className="bg-primary text-white font-bold px-8 py-4 rounded-lg no-underline inline-block"
+                  className="bg-primary text-black font-bold px-8 py-4 rounded-lg no-underline inline-block"
                 >
                   Leave a Google Review
                 </Link>

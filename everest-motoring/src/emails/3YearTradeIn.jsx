@@ -91,7 +91,7 @@ export const ThreeYearTradeInEmail = ({
               </Row>
 
               <Button
-                className="bg-primary text-white font-bold py-4 px-10 rounded-lg shadow-lg block text-center w-full"
+                className="bg-primary text-black font-bold py-4 px-10 rounded-lg shadow-lg block text-center w-full"
                 href="https://everestmotoring.co.za/value-my-car"
               >
                 Claim Your Guaranteed Valuation

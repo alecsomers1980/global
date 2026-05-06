@@ -5,6 +5,7 @@ import AiVideoStatus from "./AiVideoStatus";
 import InventoryTable from "./InventoryTable";
 import SeoBatchButton from "./SeoBatchButton";
 import { pingDeletedVehicle } from "./seo_actions";
+import { deleteStreamFromVideoUrl } from "@/utils/ai/cloudflareStreamService";
 
 export const metadata = {
     title: "Admin Dashboard | Everest Motoring",
@@ -25,9 +26,10 @@ export default async function AdminDashboardPage() {
         const supabaseAdmin = await createAdminClient();
 
         // Fetch the row first so we can build the canonical URL for IndexNow after delete
+        // and clean up the Cloudflare Stream entry once the row is gone.
         const { data: car } = await supabaseAdmin
             .from("cars")
-            .select("id, make, model, year")
+            .select("id, make, model, year, video_url")
             .eq("id", carId)
             .single();
 
@@ -45,6 +47,7 @@ export default async function AdminDashboardPage() {
         revalidatePath("/inventory"); // Wipe the public cache too
         if (car) {
             pingDeletedVehicle(car).catch((err) => console.warn("IndexNow ping failed:", err));
+            deleteStreamFromVideoUrl(car.video_url).catch((err) => console.warn("CF Stream cleanup failed:", err));
         }
         return { success: true };
     }

@@ -45,7 +45,7 @@ export default function NewsActionBar() {
                 type="button"
                 disabled={loading}
                 onClick={() => handleGenerate(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold text-sm disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-black rounded-lg font-bold text-sm disabled:opacity-50"
             >
                 <span className="material-symbols-outlined text-base">auto_awesome</span>
                 {loading ? "Generating..." : "Generate & Publish"}

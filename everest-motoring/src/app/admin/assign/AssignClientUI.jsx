@@ -161,7 +161,7 @@ export default function AssignClientUI({ clients, vehicles, activeAssigns }) {
                 <button
                     onClick={handleAssign}
                     disabled={isSubmitting}
-                    className="w-full py-2 bg-primary text-white font-bold rounded hover:bg-amber-600 transition-colors disabled:opacity-50"
+                    className="w-full py-2 bg-primary text-black font-bold rounded hover:bg-amber-600 transition-colors disabled:opacity-50"
                 >
                     {isSubmitting ? 'Assigning...' : 'Assign Vehicle'}
                 </button>

@@ -268,7 +268,7 @@ export default function NewsEditor({ post }) {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="px-6 py-3 bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-white font-bold rounded-lg"
+                        className="px-6 py-3 bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-black font-bold rounded-lg"
                     >
                         {saving ? "Saving..." : "Save Changes"}
                     </button>

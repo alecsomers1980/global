@@ -129,13 +129,13 @@ export default async function CarDetailsPage({ params }) {
                                 <div className="inline-block px-3 py-1 bg-green-50 text-green-700 font-bold text-xs uppercase tracking-wider rounded-md mb-4 border border-green-200">
                                     {car.status === 'available' ? 'Available Now' : 'Reserved'}
                                 </div>
-                                <h1 className="text-3xl lg:text-4xl font-bold text-slate-900">
+                                <h1 className="text-xl lg:text-2xl font-bold text-slate-900">
                                     {car.year} {car.make} {car.model}
                                 </h1>
                             </div>
                             <div className="text-left md:text-right">
                                 <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">Retail Price</p>
-                                <div className="text-3xl font-bold text-black">
+                                <div className="text-xl font-bold text-black whitespace-nowrap">
                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                 </div>
                             </div>

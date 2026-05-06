@@ -305,7 +305,7 @@ export default function MarkSoldButton({ car }) {
                                         <button
                                             type="submit"
                                             disabled={submitting}
-                                            className="px-6 py-3 bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-white font-bold rounded-lg"
+                                            className="px-6 py-3 bg-primary hover:bg-primary-dark disabled:bg-slate-400 text-black font-bold rounded-lg"
                                         >
                                             {submitting ? "Saving..." : "Confirm Sale"}
                                         </button>

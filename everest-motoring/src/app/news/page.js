@@ -165,7 +165,7 @@ export default async function NewsIndexPage() {
                                         </>
                                     )}
                                 </div>
-                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors duration-300">
+                                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 leading-tight transition-colors duration-300">
                                     {featured.title}
                                 </h2>
                                 {featured.excerpt && (
@@ -257,7 +257,7 @@ export default async function NewsIndexPage() {
                                             <span className="material-symbols-outlined text-sm">calendar_today</span>
                                             {formatDate(post.published_at)}
                                         </div>
-                                        <h3 className="text-lg font-bold text-slate-900 leading-snug group-hover:text-primary transition-colors duration-300 mb-3">
+                                        <h3 className="text-lg font-bold text-slate-900 leading-snug transition-colors duration-300 mb-3">
                                             {post.title}
                                         </h3>
                                         {post.excerpt && (

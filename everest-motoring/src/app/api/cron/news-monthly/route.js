@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { generateNewsPost } from "@/app/admin/news/actions";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 function isAuthorized(request) {
     const cronSecret = process.env.CRON_SECRET;
