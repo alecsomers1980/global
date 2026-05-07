@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendFollowUpReport } from "@/lib/email";
+import { isAdminRequest } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,11 +9,9 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
-  // Auth check: must have admin cookie or CRON_SECRET
-  const adminCookie = req.headers.get("cookie") || "";
-  const isAdmin = adminCookie.includes("admin-session=authenticated");
   const cronAuth = req.headers.get("authorization") || "";
-  const isCron = process.env.CRON_SECRET && cronAuth === `Bearer ${process.env.CRON_SECRET}`;
+  const isCron = !!process.env.CRON_SECRET && cronAuth === `Bearer ${process.env.CRON_SECRET}`;
+  const isAdmin = !isCron && (await isAdminRequest(req));
 
   if (!isAdmin && !isCron) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

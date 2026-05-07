@@ -2,22 +2,22 @@ import Image from "next/image";
 
 const workImages = [
   {
-    src: "/images/icons/hvac_floorplan.png",
+    src: "/images/icons/hvac_floorplan.webp",
     alt: "HVAC floorplan and ductwork design",
     label: "System Design",
   },
   {
-    src: "/images/icons/AIR-CONDITIONER-BEING-INSTALLED-1.png",
+    src: "/images/icons/AIR-CONDITIONER-BEING-INSTALLED-1.webp",
     alt: "HVAC installation worksite",
     label: "Expert Installation",
   },
   {
-    src: "/images/icons/residential_air_conditioner.png",
+    src: "/images/icons/residential_air_conditioner.webp",
     alt: "Residential air conditioning unit",
     label: "Residential Units",
   },
   {
-    src: "/images/icons/heavy_industrial_hvac-system.png",
+    src: "/images/icons/heavy_industrial_hvac-system.webp",
     alt: "Heavy industrial HVAC system",
     label: "Industrial Systems",
   },

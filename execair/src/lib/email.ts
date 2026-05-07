@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { escapeHtml as esc } from "./escape-html";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -46,8 +47,8 @@ function generateEmailHtml(enquiries: FollowUpEnquiry[]): string {
         (e) => `
       <tr>
         <td style="padding:12px 16px; border-bottom:1px solid #e5e7eb;">
-          <strong style="color:#0a1628;">${e.customer_name}</strong>
-          ${e.company ? `<br><span style="color:#6b7280; font-size:13px;">${e.company}</span>` : ""}
+          <strong style="color:#0a1628;">${esc(e.customer_name)}</strong>
+          ${e.company ? `<br><span style="color:#6b7280; font-size:13px;">${esc(e.company)}</span>` : ""}
         </td>
         <td style="padding:12px 16px; border-bottom:1px solid #e5e7eb; color:#374151;">
           ${new Date(e.follow_up_date).toLocaleDateString("en-ZA")}
@@ -218,18 +219,18 @@ export async function sendQuoteNotification(quote: QuoteNotification) {
               <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
                 <tr>
                   <td style="padding:12px 16px; background:#f0fdfa; border-radius:8px;">
-                    <p style="margin:0; color:#0f766e; font-weight:600; font-size:16px;">${quote.product_name}</p>
-                    <p style="margin:2px 0 0; color:#0f766e; font-size:13px;">${quote.product_btu}</p>
+                    <p style="margin:0; color:#0f766e; font-weight:600; font-size:16px;">${esc(quote.product_name)}</p>
+                    <p style="margin:2px 0 0; color:#0f766e; font-size:13px;">${esc(quote.product_btu)}</p>
                   </td>
                 </tr>
               </table>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="font-size:14px; margin-top:20px;">
-                <tr><td style="padding:8px 0; color:#6b7280; width:100px;">Name</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${quote.customer_name}</td></tr>
-                <tr><td style="padding:8px 0; color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${quote.email}" style="color:#0097b2;">${quote.email}</a></td></tr>
-                <tr><td style="padding:8px 0; color:#6b7280;">Phone</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${quote.phone}</td></tr>
-                ${quote.company ? `<tr><td style="padding:8px 0; color:#6b7280;">Company</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${quote.company}</td></tr>` : ""}
-                ${quote.message ? `<tr><td style="padding:8px 0; color:#6b7280; vertical-align:top;">Message</td><td style="padding:8px 0; color:#374151;">${quote.message.replace(/\n/g, "<br>")}</td></tr>` : ""}
+                <tr><td style="padding:8px 0; color:#6b7280; width:100px;">Name</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${esc(quote.customer_name)}</td></tr>
+                <tr><td style="padding:8px 0; color:#6b7280;">Email</td><td style="padding:8px 0;"><a href="mailto:${esc(quote.email)}" style="color:#0097b2;">${esc(quote.email)}</a></td></tr>
+                <tr><td style="padding:8px 0; color:#6b7280;">Phone</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${esc(quote.phone)}</td></tr>
+                ${quote.company ? `<tr><td style="padding:8px 0; color:#6b7280;">Company</td><td style="padding:8px 0; color:#0a1628; font-weight:500;">${esc(quote.company)}</td></tr>` : ""}
+                ${quote.message ? `<tr><td style="padding:8px 0; color:#6b7280; vertical-align:top;">Message</td><td style="padding:8px 0; color:#374151;">${esc(quote.message).replace(/\n/g, "<br>")}</td></tr>` : ""}
               </table>
             </td>
           </tr>

@@ -57,9 +57,9 @@ export default function OurWorkPage() {
       <section className="bg-white py-16">
         <div className="container mx-auto max-w-4xl px-6">
           <div className="text-center">
-            <h1 className="mb-6 text-sm font-bold uppercase tracking-[0.25em] text-brand-teal">
+            <p className="mb-6 text-sm font-bold uppercase tracking-[0.25em] text-brand-teal">
               HVAC Project Portfolio — South Africa
-            </h1>
+            </p>
             <p className="mb-8 text-lg leading-relaxed text-brand-navy/60">
               From large-scale commercial air conditioning installations at hospitals and shopping
               centres to precision climate control for printing facilities and luxury residences,
@@ -88,7 +88,7 @@ export default function OurWorkPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="overflow-hidden rounded-2xl shadow-md">
                 <Image
-                  src="https://execair.co.za/wp-content/uploads/2024/07/EXEC_AIR_HVAC2-1024x819.png"
+                  src="/images/external/ourwork-hvac2.webp"
                   alt="Exec-Air commercial HVAC installation in progress"
                   width={600}
                   height={480}
@@ -97,7 +97,7 @@ export default function OurWorkPage() {
               </div>
               <div className="overflow-hidden rounded-2xl shadow-md">
                 <Image
-                  src="https://execair.co.za/wp-content/uploads/2023/08/heavy_industrial_hvac-system-1024x1024.png"
+                  src="/images/external/ourwork-heavy-industrial.webp"
                   alt="Heavy industrial HVAC system by Exec-Air"
                   width={600}
                   height={480}

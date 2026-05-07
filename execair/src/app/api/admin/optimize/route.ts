@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 
 // POST /api/admin/optimize — AI-optimize a project description for SEO/GEO
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const { description, name, sector } = body;

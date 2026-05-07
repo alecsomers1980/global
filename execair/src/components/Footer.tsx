@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -130,15 +132,16 @@ export default function Footer() {
                 { name: "Product Range", href: "/product-range" },
                 { name: "Our Work", href: "/our-work" },
                 { name: "News", href: "/news" },
+                { name: "FAQ", href: "/faq" },
                 { name: "Contact Us", href: "/contact-us" },
               ].map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="block text-white/60 transition-colors hover:text-white"
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -148,19 +151,19 @@ export default function Footer() {
         <div className="mt-16 border-t border-white/10 pt-8 text-center text-sm text-white/40">
           <p>&copy; {currentYear} Exec-Air Air Conditioning. All Rights Reserved.</p>
           <div className="mt-1 flex items-center justify-center gap-4">
-            <a
+            <Link
               href="/privacy-policy"
               className="transition-colors hover:text-white/60"
             >
               Privacy Policy
-            </a>
+            </Link>
             <span className="text-white/20">|</span>
-            <a
+            <Link
               href="/terms-and-conditions"
               className="transition-colors hover:text-white/60"
             >
               Terms &amp; Conditions
-            </a>
+            </Link>
           </div>
         </div>
       </div>

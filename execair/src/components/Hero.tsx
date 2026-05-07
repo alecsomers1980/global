@@ -31,10 +31,11 @@ export default function Hero() {
             <div className="mb-8 inline-flex items-center gap-4 rounded-full border border-white/20 bg-white/10 px-2 py-2 pr-6 backdrop-blur-md">
               <Image
                 src="/images/icons/OVER-35-YEARS-OF-EXPERIENCE.png"
-                alt="Over 35 Years of Experience"
+                alt="Exec-Air — over 35 years of HVAC experience"
                 width={60}
                 height={60}
                 className="h-14 w-14"
+                priority
               />
               <span className="text-sm font-bold uppercase tracking-[0.25em] text-white">
                 Over 35 Years of Experience
@@ -43,14 +44,15 @@ export default function Hero() {
 
             {/* Headline */}
             <h1 className="mb-6 text-5xl font-light leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
-              comfort meets
-              <br />
-              <span className="font-bold text-brand-teal">efficiency!</span>
+              Air Conditioning &amp; HVAC{" "}
+              <span className="font-bold text-brand-teal">specialists</span>{" "}
+              in Krugersdorp
             </h1>
 
             {/* Subheadline */}
             <p className="mb-4 text-lg leading-relaxed text-white/70 md:text-xl">
-              Specialists in commercial, industrial and residential HVAC
+              Commercial, industrial and residential HVAC across Johannesburg and Gauteng — design,
+              installation, maintenance and repair since 1989.
             </p>
 
             {/* B-BBEE Badge */}

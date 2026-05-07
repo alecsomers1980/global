@@ -5,17 +5,27 @@ import PageBanner from "@/components/PageBanner";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
+  title: "Contact Exec-Air — Air Conditioning Krugersdorp & Johannesburg",
   description:
     "Get in touch with Exec-Air Air Conditioning. Call +27 11 477 3920, email info@execair.co.za, or visit us at 296 Voortrekker Road, Krugersdorp. Request a quote today.",
+  alternates: { canonical: "/contact-us" },
+  openGraph: {
+    type: "website",
+    url: "/contact-us",
+    title: "Contact Exec-Air — Air Conditioning Krugersdorp & Johannesburg",
+    description:
+      "Call +27 11 477 3920 or visit us at 296 Voortrekker Road, Krugersdorp.",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    locale: "en_ZA",
+  },
 };
 
 export default function ContactPage() {
   return (
     <>
       <PageBanner
-        title="STAY IN TOUCH"
-        subtitle="Our sales, technical, and installation departments are fully prepared to assist you with any issue or query you may have."
+        title="Contact Exec-Air — Air Conditioning Krugersdorp"
+        subtitle="Our sales, technical and installation departments are ready to assist with any HVAC enquiry — commercial, industrial or residential — across Krugersdorp, Johannesburg and Gauteng."
       />
 
       {/* Contact Info + Form */}

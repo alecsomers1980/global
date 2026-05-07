@@ -10,10 +10,12 @@ export default function CompanyDescription() {
             </span>
           </div>
           <p className="text-lg leading-relaxed text-brand-navy/70 md:text-xl">
-            Exec-Air Air Conditioning is a leading provider of heating, ventilation, and air
-            conditioning solutions. With over 35 years of industry experience, we have built a
-            reputation for quality workmanship, reliable service, and customer satisfaction
-            across residential, commercial, and industrial projects throughout South Africa.
+            Exec-Air Air Conditioning is Krugersdorp's leading HVAC specialist, serving
+            Johannesburg and the wider Gauteng region. Founded in 1989, we have over 35 years of
+            experience installing, servicing and maintaining heating, ventilation and air
+            conditioning systems for residential, commercial and industrial clients across
+            Southern Africa — built on quality workmanship, reliable service and customer
+            satisfaction.
           </p>
         </div>
       </div>

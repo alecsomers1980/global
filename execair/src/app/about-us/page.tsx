@@ -5,15 +5,25 @@ import BrandPartners from "@/components/BrandPartners";
 import BottomCTA from "@/components/BottomCTA";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About Exec-Air — HVAC Specialists in Krugersdorp Since 1989",
   description:
-    "Exec-Air is a proudly South African company specialising in HVAC since 1989. Learn about our 35+ years of heating, ventilation, and air conditioning expertise.",
+    "Exec-Air has been delivering commercial, industrial and residential HVAC across South Africa since 1989. 35+ years of air conditioning expertise from our Krugersdorp head office.",
+  alternates: { canonical: "/about-us" },
+  openGraph: {
+    type: "website",
+    url: "/about-us",
+    title: "About Exec-Air — HVAC Specialists in Krugersdorp Since 1989",
+    description:
+      "Commercial, industrial and residential HVAC across Gauteng since 1989.",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    locale: "en_ZA",
+  },
 };
 
 const marketSectors = [
   {
     title: "Commercial",
-    image: "https://execair.co.za/wp-content/uploads/2023/07/Exec-Air_AboutUs_2023_-2.png",
+    image: "/images/external/about-commercial.webp",
     items: [
       "Shopping Centres",
       "Server Rooms",
@@ -25,7 +35,7 @@ const marketSectors = [
   },
   {
     title: "Industrial",
-    image: "https://execair.co.za/wp-content/uploads/2023/07/Exec-Air_Aboutus_2023_1.png",
+    image: "/images/external/about-industrial.webp",
     items: [
       "Mining",
       "Transportation Hubs",
@@ -37,7 +47,7 @@ const marketSectors = [
   },
   {
     title: "Residential",
-    image: "https://execair.co.za/wp-content/uploads/2023/07/Exec-Air_AboutUs_2023_3.png",
+    image: "/images/external/about-residential.webp",
     items: [
       "Single Residences",
       "Estates",
@@ -70,8 +80,8 @@ export default function AboutPage() {
   return (
     <>
       <PageBanner
-        title="35+ YEARS"
-        subtitle="A proudly South African based company that specialises in HVAC (Heating, Ventilation and Air-Conditioning). Founded in 1989, we have provided HVAC solutions to some of Southern Africa's leading brands."
+        title="About Exec-Air — HVAC Specialists Since 1989"
+        subtitle="A proudly South African company specialising in HVAC (Heating, Ventilation and Air-Conditioning). Founded in 1989 in Krugersdorp, we have delivered HVAC solutions to some of Southern Africa's leading brands for over 35 years."
       />
 
       {/* The Right Stuff */}
@@ -81,7 +91,7 @@ export default function AboutPage() {
             {/* Image */}
             <div className="overflow-hidden rounded-3xl shadow-lg">
               <Image
-                src="https://execair.co.za/wp-content/uploads/2023/07/AIR-CONDITIONER-BEING-INSTALLED-1-1024x576.png"
+                src="/images/external/about-installation.webp"
                 alt="Air conditioner being installed"
                 width={800}
                 height={800}

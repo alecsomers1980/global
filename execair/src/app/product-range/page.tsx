@@ -86,9 +86,9 @@ export default function ProductRangePage() {
         <div className="container mx-auto px-6">
           {/* SEO-rich intro text */}
           <div className="mx-auto mb-16 max-w-3xl text-center">
-            <h1 className="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-brand-teal">
+            <p className="mb-4 text-sm font-bold uppercase tracking-[0.25em] text-brand-teal">
               Complete HVAC Product Catalogue
-            </h1>
+            </p>
             <p className="text-lg leading-relaxed text-brand-navy/60">
               From whisper-quiet inverter split units for your home to heavy-duty evaporative
               coolers for industrial facilities, our Jet Air product range covers every climate

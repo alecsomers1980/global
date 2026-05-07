@@ -13,7 +13,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 function authorized(req: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return process.env.NODE_ENV !== "production";
+  if (!secret) return false;
   const auth = req.headers.get("authorization") || "";
   return auth === `Bearer ${secret}`;
 }

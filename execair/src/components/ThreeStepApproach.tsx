@@ -52,7 +52,7 @@ export default function ThreeStepApproach() {
 
       {/* Technician Photo - full bleed */}
       <Image
-        src="https://execair.co.za/wp-content/uploads/2025/04/exec.png"
+        src="/images/external/threestep-exec.webp"
         alt="Exec-Air HVAC installation in progress"
         width={1800}
         height={800}

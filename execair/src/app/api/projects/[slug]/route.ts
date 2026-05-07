@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { portfolioData } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,6 +44,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   const { slug } = await params;
   try {
     const body = await request.json();
@@ -71,8 +75,8 @@ export async function PUT(
 
     return NextResponse.json(data);
   } catch (err: any) {
-    console.error("PUT /api/projects error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("PUT /api/projects failed");
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -81,13 +85,16 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   const { slug } = await params;
   try {
     const { error } = await supabase.from("projects").delete().eq("slug", slug);
     if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    console.error("DELETE /api/projects error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("DELETE /api/projects failed");
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

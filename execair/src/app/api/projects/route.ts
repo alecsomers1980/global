@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { portfolioData } from "@/lib/data";
+import { requireAdmin } from "@/lib/auth";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,6 +41,9 @@ export async function GET(request: NextRequest) {
 
 // POST /api/projects — create a new project
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { name, slug, description, image, gallery, location, year, equipment, client, sector } = body;
@@ -76,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (err: any) {
-    console.error("POST /api/projects error:", err);
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    console.error("POST /api/projects failed");
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

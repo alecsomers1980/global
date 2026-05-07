@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
 
 const CATEGORIES = [
   "HVAC Tips",
@@ -39,90 +42,114 @@ Return ONLY valid JSON in this exact format — no markdown, no backticks, no co
 The slug should be derived from the title (lowercase, dashes, max 80 chars).`;
 }
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export async function generateAndSaveArticle(category: string) {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return { ok: false as const, status: 500, error: "No AI API key configured" };
+  }
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      ...(process.env.OPENROUTER_API_KEY
+        ? {
+            "HTTP-Referer": "https://execair.co.za",
+            "X-Title": "Exec-Air Article Generator",
+          }
+        : {}),
+    },
+    body: JSON.stringify({
+      model: process.env.OPENROUTER_API_KEY ? "openai/gpt-4o" : "gpt-4o",
+      messages: [{ role: "user", content: getPrompt(category) }],
+      temperature: 0.8,
+      max_tokens: 2500,
+    }),
+  });
+
+  if (!response.ok) {
+    return { ok: false as const, status: 502, error: "AI service unavailable" };
+  }
+
+  const json = await response.json();
+  const raw = json.choices?.[0]?.message?.content?.trim();
+  if (!raw) return { ok: false as const, status: 500, error: "Empty response from AI" };
+
+  let parsed: any;
+  try {
+    const clean = raw.replace(/^```json\s*/i, "").replace(/```\s*$/, "").trim();
+    parsed = JSON.parse(clean);
+  } catch {
+    return { ok: false as const, status: 500, error: "Failed to parse AI response" };
+  }
+
+  const title = String(parsed.title || "").slice(0, 200);
+  const slug = String(parsed.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, "-"))
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "")
+    .slice(0, 80);
+  if (!title || !slug) {
+    return { ok: false as const, status: 500, error: "Generated article missing title/slug" };
+  }
+
+  const { data, error } = await supabase
+    .from("articles")
+    .insert({
+      title,
+      slug,
+      excerpt: String(parsed.excerpt || "").slice(0, 500),
+      content: sanitizeArticleHtml(String(parsed.content || "")),
+      category: String(parsed.category || category).slice(0, 80),
+      author: "Exec-Air",
+      cta_text: parsed.cta_text ? String(parsed.cta_text).slice(0, 120) : null,
+      cta_url: parsed.cta_url ? String(parsed.cta_url).slice(0, 200) : "/contact-us",
+      published: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    if (error.code === "23505") {
+      return { ok: false as const, status: 409, error: "Slug already exists", generated: parsed };
+    }
+    return { ok: false as const, status: 500, error: "Failed to save article", generated: parsed };
+  }
+
+  return { ok: true as const, article: data, generated: parsed };
+}
+
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   try {
     const body = await request.json().catch(() => ({}));
-    const category = body.category || CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+    const category =
+      typeof body.category === "string" && CATEGORIES.includes(body.category)
+        ? body.category
+        : CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
-    const apiKey = process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "No AI API key configured" }, { status: 500 });
+    const result = await generateAndSaveArticle(category);
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: result.error, generated: (result as any).generated },
+        { status: result.status }
+      );
     }
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        ...(process.env.OPENROUTER_API_KEY ? {
-          "HTTP-Referer": process.env.NEXT_PUBLIC_SITE_URL || "https://execair.co.za",
-          "X-Title": "Exec-Air Article Generator",
-        } : {}),
-      },
-      body: JSON.stringify({
-        model: process.env.OPENROUTER_API_KEY ? "openai/gpt-4o" : "gpt-4o",
-        messages: [{ role: "user", content: getPrompt(category) }],
-        temperature: 0.8,
-        max_tokens: 2500,
-      }),
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Article generation failed:", err);
-      return NextResponse.json({ error: "AI service unavailable" }, { status: 502 });
-    }
-
-    const json = await response.json();
-    const raw = json.choices?.[0]?.message?.content?.trim();
-
-    if (!raw) {
-      return NextResponse.json({ error: "Empty response from AI" }, { status: 500 });
-    }
-
-    // Parse the JSON from the response (handle potential markdown wrapping)
-    let parsed;
-    try {
-      // Strip possible markdown code block
-      const clean = raw.replace(/^```json\s*/i, "").replace(/```\s*$/, "").trim();
-      parsed = JSON.parse(clean);
-    } catch {
-      return NextResponse.json({ error: "Failed to parse AI response", raw }, { status: 500 });
-    }
-
-    // Save to database
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001";
-    const saveUrl = `${baseUrl}/api/articles`;
-
-    const res = await fetch(saveUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: parsed.title,
-        slug: parsed.slug || parsed.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 80),
-        excerpt: parsed.excerpt,
-        content: parsed.content,
-        category: parsed.category || category,
-        cta_text: parsed.cta_text || "Ready to improve your climate control?",
-        cta_url: parsed.cta_url || "/contact-us",
-        published: true,
-      }),
-    });
-
-    if (!res.ok) {
-      const errData = await res.json();
-      return NextResponse.json({ error: errData.error || "Failed to save article", generated: parsed }, { status: 500 });
-    }
-
-    const saved = await res.json();
-
-    return NextResponse.json({
-      success: true,
-      article: saved,
-      generated: parsed,
-    }, { status: 201 });
+    return NextResponse.json(
+      { success: true, article: result.article, generated: result.generated },
+      { status: 201 }
+    );
   } catch (err: any) {
-    console.error("Generate article error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Generate article error");
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifySessionToken, SESSION_COOKIE_NAME } from "@/lib/auth";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes (except login)
   if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
-    const session = request.cookies.get("admin-session");
-    if (!session || session.value !== "authenticated") {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+    const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+    const ok = await verifySessionToken(token);
+    if (!ok) {
+      const url = new URL("/admin/login", request.url);
+      return NextResponse.redirect(url);
     }
   }
 

@@ -17,8 +17,10 @@ export interface ProductCategory {
   products: Product[];
 }
 
-// Helper — returns first matching product image or a fallback
-const P = (name: string) => `/images/products/${name}`;
+// Helper — returns the product image URL. Original sources were .png but all have
+// been converted to .webp; this swaps the extension automatically so call sites can
+// keep their original .png filenames as a stable identifier.
+const P = (name: string) => `/images/products/${name.replace(/\.png$/i, ".webp")}`;
 
 export const productCategories: ProductCategory[] = [
   {
@@ -424,7 +426,7 @@ export const portfolioData: PortfolioSection[] = [
       {
         name: "Lebone Litho Printers",
         slug: "lebone-litho-printers",
-        image: PJ("lebone_printers.png"),
+        image: PJ("lebone_printers.webp"),
         description: "LG Multi V System with ducted split units installed for one of South Africa's largest printing companies, providing precise climate control for print production.",
         location: "Gauteng",
         year: "2022",
@@ -524,7 +526,7 @@ export const portfolioData: PortfolioSection[] = [
       {
         name: "Former CEO of First Rand Limited",
         slug: "former-ceo-first-rand",
-        image: PJ("HOUSE-SIZWE.png"),
+        image: PJ("HOUSE-SIZWE.webp"),
         description: "LG Electronics Multi-V Sync II system installed for the former CEO of First Rand Limited at their private residence — a premium, whisper-quiet whole-home climate solution.",
         location: "Johannesburg, Gauteng",
         year: "2022",

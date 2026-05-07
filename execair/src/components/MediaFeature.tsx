@@ -34,7 +34,7 @@ export default function MediaFeature() {
           <div className="text-center">
             <div className="mb-4 inline-block rounded-2xl bg-brand-sky/10 p-8">
               <Image
-                src="/images/icons/residential-air-conditioner.png"
+                src="/images/icons/residential-air-conditioner.webp"
                 alt="Residential Air Conditioning"
                 width={180}
                 height={180}
@@ -48,7 +48,7 @@ export default function MediaFeature() {
           <div className="text-center">
             <div className="mb-4 inline-block rounded-2xl bg-brand-sky/10 p-8">
               <Image
-                src="/images/icons/Heavy-industrial-hvac-system.png"
+                src="/images/icons/Heavy-industrial-hvac-system.webp"
                 alt="Heavy Industrial HVAC"
                 width={180}
                 height={180}

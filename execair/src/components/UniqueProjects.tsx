@@ -74,7 +74,7 @@ export default function UniqueProjects() {
             >
               <div className="bg-brand-sky/20 p-3">
                 <Image
-                  src="/images/icons/residential-air-conditioner.png"
+                  src="/images/icons/residential-air-conditioner.webp"
                   alt="Residential air conditioning unit"
                   width={320}
                   height={320}
@@ -95,7 +95,7 @@ export default function UniqueProjects() {
             >
               <div className="bg-brand-sky/20 p-3">
                 <Image
-                  src="/images/icons/Heavy-industrial-hvac-system.png"
+                  src="/images/icons/Heavy-industrial-hvac-system.webp"
                   alt="Industrial HVAC system"
                   width={320}
                   height={320}

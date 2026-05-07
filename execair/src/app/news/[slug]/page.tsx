@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageBanner from "@/components/PageBanner";
+import { sanitizeArticleHtml } from "@/lib/sanitize";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -41,12 +42,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description: article.excerpt,
-    keywords: [article.category, "HVAC", "air conditioning", "Exec-Air"],
+    keywords: [article.category, "HVAC", "air conditioning", "Exec-Air", "Krugersdorp"],
+    alternates: { canonical: `/news/${article.slug}` },
     openGraph: {
       title: article.title,
       description: article.excerpt,
-      images: article.image ? [{ url: article.image }] : [],
+      images: article.image
+        ? [{ url: article.image }]
+        : [{ url: "/og-image.jpg", width: 1200, height: 630 }],
       type: "article",
+      url: `/news/${article.slug}`,
+      locale: "en_ZA",
     },
   };
 }
@@ -116,7 +122,7 @@ export default async function ArticlePage({ params }: Props) {
           {/* Content */}
           <div
             className="prose prose-lg max-w-none [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-brand-navy [&>h3]:text-xl [&>h3]:font-semibold [&>h3]:text-brand-navy [&>p]:leading-relaxed [&>p]:text-brand-navy/70 [&>ul]:space-y-2 [&>li]:text-brand-navy/70 [&>strong]:text-brand-navy"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(article.content) }}
           />
 
           {/* CTA Banner */}

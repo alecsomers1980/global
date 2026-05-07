@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { requireAdmin } from "@/lib/auth";
+
+const EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -11,16 +23,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
-    if (!allowedTypes.includes(file.type)) {
+    const ext = EXT_BY_MIME[file.type];
+    if (!ext) {
       return NextResponse.json(
         { error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF, AVIF" },
         { status: 400 }
       );
     }
 
-    // Max 10MB
     if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json({ error: "File too large. Max 10MB." }, { status: 400 });
     }
@@ -28,9 +38,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate unique filename
-    const ext = file.name.split(".").pop() || "jpg";
-    const uniqueName = `project-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext.toLowerCase()}`;
+    const uniqueName = `project-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
     const uploadDir = path.join(process.cwd(), "public", "images", "projects");
     const filePath = path.join(uploadDir, uniqueName);
