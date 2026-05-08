@@ -1,15 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client-browser'
 import { ArrowLeft, Key, Plus, Trash2, Copy, Check, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { formatDateTime } from '@/lib/utils'
 
 interface ApiKey {
     id: string
-    name: string
-    key_prefix: string
+    label: string
     created_at: string
     last_used_at: string | null
 }
@@ -23,8 +20,6 @@ export default function ApiKeysPage({ params }: { params: Promise<{ id: string }
     const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null)
     const [copied, setCopied] = useState(false)
 
-    const supabase = createClient()
-
     useEffect(() => {
         params.then(p => {
             setWorkspaceId(p.id)
@@ -33,13 +28,15 @@ export default function ApiKeysPage({ params }: { params: Promise<{ id: string }
     }, [params])
 
     const fetchKeys = async (id: string) => {
-        const { data } = await supabase
-            .from('workspace_api_keys')
-            .select('id, name, key_prefix, created_at, last_used_at')
-            .eq('workspace_id', id)
-            .order('created_at', { ascending: false })
-
-        if (data) setKeys(data as ApiKey[])
+        // Go through the API so slug-based URLs resolve to the workspace UUID,
+        // and so we hit the correct schema columns (label, not name; no key_prefix).
+        try {
+            const res = await fetch(`/api/workspaces/keys?workspaceId=${encodeURIComponent(id)}`)
+            const data = await res.json()
+            if (data.keys) setKeys(data.keys as ApiKey[])
+        } catch (err) {
+            console.error('API Keys: failed to fetch', err)
+        }
         setLoading(false)
     }
 
@@ -48,8 +45,6 @@ export default function ApiKeysPage({ params }: { params: Promise<{ id: string }
         if (!newKeyName.trim()) return
         setCreating(true)
 
-        // In a real app, the server creates the hashed key and returns the raw key ONCE.
-        // For this UI mockup, we simulate creation.
         const res = await fetch('/api/keys/create', {
             method: 'POST',
             body: JSON.stringify({ workspaceId, name: newKeyName })
@@ -57,7 +52,7 @@ export default function ApiKeysPage({ params }: { params: Promise<{ id: string }
 
         if (res.ok) {
             const data = await res.json()
-            setNewlyCreatedKey(data.rawKey) // Only showed once!
+            setNewlyCreatedKey(data.rawKey) // Only shown once!
             setNewKeyName('')
             fetchKeys(workspaceId)
         }
@@ -68,7 +63,11 @@ export default function ApiKeysPage({ params }: { params: Promise<{ id: string }
     const handleDelete = async (id: string) => {
         if (!confirm('Revoke this API Key? Any apps using it will lose access immediately.')) return
 
-        await supabase.from('workspace_api_keys').delete().eq('id', id)
+        await fetch('/api/workspaces/keys', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keyId: id }),
+        })
         fetchKeys(workspaceId)
     }
 
@@ -185,10 +184,13 @@ Authorization: Bearer es_...
                                 {keys.map(key => (
                                     <div key={key.id} className="p-5 flex items-center justify-between hover:bg-white/5 transition-colors">
                                         <div>
-                                            <h3 className="text-sm font-medium text-white mb-1">{key.name}</h3>
+                                            <h3 className="text-sm font-medium text-white mb-1">{key.label}</h3>
                                             <div className="flex items-center gap-3 text-xs" style={{ color: '#5a5a7a' }}>
-                                                <code className="px-1.5 py-0.5 rounded bg-black/30 text-[#8a8aaa] font-mono">{key.key_prefix}...</code>
+                                                <code className="px-1.5 py-0.5 rounded bg-black/30 text-[#8a8aaa] font-mono">es_•••</code>
                                                 <span>Created {new Date(key.created_at).toLocaleDateString()}</span>
+                                                {key.last_used_at && (
+                                                    <span>· Last used {new Date(key.last_used_at).toLocaleDateString()}</span>
+                                                )}
                                             </div>
                                         </div>
                                         <button onClick={() => handleDelete(key.id)}

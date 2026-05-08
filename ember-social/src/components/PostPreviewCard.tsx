@@ -59,7 +59,14 @@ function detectPostType(content: string): { type: 'video' | 'reel' | 'feed'; lab
     if (content.includes('Full Walkthrough')) return { type: 'video', label: 'Video Post', color: '#ef4444', icon: '🎬' }
     if (content.includes('🔥')) return { type: 'reel', label: 'Reel / Short', color: '#a78bfa', icon: '⚡' }
     return { type: 'feed', label: 'Normal Post', color: '#60a5fa', icon: '📝' }
-} {
+}
+
+function PlatformMockup({
+    platform,
+    content,
+    mediaUrl,
+    brandKit,
+}: {
     platform: string
     content: string
     mediaUrl?: string | null

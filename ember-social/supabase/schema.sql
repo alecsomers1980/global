@@ -95,6 +95,7 @@ create table public.posts (
   status text check (status in ('draft','pending_approval','approved','scheduled','publishing','published','failed')) default 'draft',
   approval_token text unique,
   qstash_message_id text,
+  last_error text,
   created_by uuid references auth.users(id),
   created_at timestamptz default now()
 );

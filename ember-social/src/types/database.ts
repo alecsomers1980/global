@@ -131,6 +131,7 @@ export interface Database {
                     status: 'draft' | 'pending_approval' | 'approved' | 'scheduled' | 'publishing' | 'published' | 'failed'
                     approval_token: string | null
                     qstash_message_id: string | null
+                    last_error: string | null
                     created_by: string | null
                     created_at: string
                 }
@@ -144,6 +145,7 @@ export interface Database {
                     status?: 'draft' | 'pending_approval' | 'approved' | 'scheduled' | 'publishing' | 'published' | 'failed'
                     approval_token?: string | null
                     qstash_message_id?: string | null
+                    last_error?: string | null
                     created_by?: string | null
                     created_at?: string
                 }
@@ -155,6 +157,7 @@ export interface Database {
                     status?: 'draft' | 'pending_approval' | 'approved' | 'scheduled' | 'publishing' | 'published' | 'failed'
                     approval_token?: string | null
                     qstash_message_id?: string | null
+                    last_error?: string | null
                 }
             }
             post_results: {

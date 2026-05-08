@@ -69,7 +69,10 @@ function buildFeedPost(car) {
 
     lines.push("");
     if (car.description) {
-        lines.push(car.description.length > 300 ? car.description.slice(0, 300) + "..." : car.description);
+        // Send the full description — ember-social's AI rewrite step shortens
+        // and rephrases per platform. Truncating here hides text from the
+        // rewriter and leaves a literal "..." in the published copy.
+        lines.push(car.description);
         lines.push("");
     }
 
@@ -102,11 +105,8 @@ function buildReelPost(car) {
     const lines = [
         `🔥 ${car.year} ${car.make} ${car.model} — R ${price}`,
         "",
-        car.description
-            ? car.description.length > 150
-                ? car.description.slice(0, 150) + "..."
-                : car.description
-            : `Premium pre-owned ${car.make} ${car.model} available now at Everest Motoring.`,
+        car.description ||
+            `Premium pre-owned ${car.make} ${car.model} available now at Everest Motoring.`,
         "",
         `👉 Link in bio or DM us!`,
         `📞 ${CONTACT.phone}`,

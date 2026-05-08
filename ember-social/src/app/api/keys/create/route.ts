@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
+import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 import crypto from 'crypto'
 
 export async function POST(req: Request) {
     try {
-        const { workspaceId, name: label } = await req.json()
-        if (!workspaceId || !label) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
+        const { workspaceId: workspaceParam, name: label } = await req.json()
+        if (!workspaceParam || !label) return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
+
+        // Accept slug or UUID — workspace_id is a UUID FK, slug-based callers
+        // would otherwise hit a UUID format error here.
+        const workspaceId = await resolveWorkspaceId(workspaceParam)
 
         const supabase = await createServerSupabaseClient()
 

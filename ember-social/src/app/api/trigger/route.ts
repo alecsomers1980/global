@@ -5,15 +5,55 @@ import crypto from 'crypto'
 
 const MAX_CARS_PER_DAY = 1
 
-async function getNextAvailableDate(supabase: any, workspaceId: string, vehicleId: string): Promise<string> {
+function isSundayUtc(dateStr: string): boolean {
+    // dateStr is YYYY-MM-DD; UTC day-of-week 0 = Sunday. The post times for
+    // SAST clients (07:30/11:00/14:00 UTC = 09:30/13:00/16:00 SAST) sit inside
+    // the same UTC calendar day, so checking UTC Sunday is correct here.
+    return new Date(`${dateStr}T00:00:00Z`).getUTCDay() === 0
+}
+
+async function getNextAvailableDate(
+    supabase: any,
+    workspaceId: string,
+    vehicleId: string,
+    preferredTime?: string,
+): Promise<string> {
     // Find the next date that has fewer than MAX_CARS_PER_DAY distinct vehicles scheduled.
     // The same vehicle can have multiple posts (feed/reel/video) on the same day.
+    // Sundays are skipped per business rule.
     const now = new Date()
+
+    // If this vehicle already has at least one future post scheduled, keep
+    // every post in the same batch on that same day. Without this, each
+    // call (feed/reel/video) is independent and the multi-post batch can
+    // split across days when one preferred_time has already passed today.
+    const { data: existing } = await supabase
+        .from('posts')
+        .select('scheduled_at')
+        .eq('workspace_id', workspaceId)
+        .eq('vehicle_id', vehicleId)
+        .gte('scheduled_at', now.toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(1)
+    const existingDate = (existing as any[] | null)?.[0]?.scheduled_at
+    if (existingDate) {
+        return existingDate.split('T')[0]
+    }
 
     for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
         const checkDate = new Date(now)
         checkDate.setDate(checkDate.getDate() + dayOffset)
         const dateStr = checkDate.toISOString().split('T')[0] // YYYY-MM-DD
+
+        if (isSundayUtc(dateStr)) continue
+
+        // Skip today if the preferred time has already passed today —
+        // otherwise the trigger writes a scheduled_at in the past and the
+        // cron fires it immediately, not at the intended slot tomorrow.
+        if (dayOffset === 0 && preferredTime) {
+            const slot = new Date(`${dateStr}T${preferredTime}:00Z`)
+            if (slot.getTime() <= now.getTime()) continue
+        }
 
         // Count distinct vehicle_ids scheduled on this date
         const { data: posts } = await supabase
@@ -33,10 +73,16 @@ async function getNextAvailableDate(supabase: any, workspaceId: string, vehicleI
         }
     }
 
-    // Fallback: 30 days out
+    // Fallback: 30 days out, also rolling forward off Sunday if needed
     const fallback = new Date(now)
     fallback.setDate(fallback.getDate() + 30)
-    return fallback.toISOString().split('T')[0]
+    let fallbackStr = fallback.toISOString().split('T')[0]
+    while (isSundayUtc(fallbackStr)) {
+        const next = new Date(`${fallbackStr}T00:00:00Z`)
+        next.setUTCDate(next.getUTCDate() + 1)
+        fallbackStr = next.toISOString().split('T')[0]
+    }
+    return fallbackStr
 }
 
 export async function POST(req: Request) {
@@ -86,7 +132,7 @@ export async function POST(req: Request) {
             finalScheduledAt = new Date(scheduled_at).toISOString()
         } else if (preferred_time && vehicle_id) {
             // Smart scheduling: find next available day, apply preferred time
-            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id, vehicle_id)
+            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id, vehicle_id, preferred_time)
             finalScheduledAt = `${availableDate}T${preferred_time}:00Z`
         }
 

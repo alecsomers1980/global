@@ -243,7 +243,10 @@ async function waitForIgProcessing(containerId: string, accessToken: string, max
 export async function publishPost(postId: string): Promise<PublishOutcome> {
     // Clear any previous error at the start of a new attempt so stale
     // messages don't linger after a successful retry.
-    const { error: clearErr } = await supabase.from('posts').update({ status: 'publishing' } as never).eq('id', postId)
+    const { error: clearErr } = await supabase
+        .from('posts')
+        .update({ status: 'publishing', last_error: null } as never)
+        .eq('id', postId)
     if (clearErr) console.error('publishPost: failed to set publishing status:', clearErr)
 
     const { data: post, error: postErr } = await supabase
@@ -253,7 +256,11 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         .single()
 
     if (postErr || !post) {
-        const { error: failErr } = await supabase.from('posts').update({ status: 'failed' } as never).eq('id', postId)
+        const message = postErr?.message || 'Post not found'
+        const { error: failErr } = await supabase
+            .from('posts')
+            .update({ status: 'failed', last_error: message } as never)
+            .eq('id', postId)
         if (failErr) console.error('publishPost: failed to set failed status:', failErr)
         return { success: false, allSuccess: false, results: [] }
     }
@@ -267,7 +274,11 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         .in('platform', postAny.platforms)
 
     if (!accounts || accounts.length === 0) {
-        const { error: noAcctErr } = await supabase.from('posts').update({ status: 'failed' } as never).eq('id', postId)
+        const message = `No connected social accounts for platforms: ${(postAny.platforms || []).join(', ')}. Connect them on the Platforms page.`
+        const { error: noAcctErr } = await supabase
+            .from('posts')
+            .update({ status: 'failed', last_error: message } as never)
+            .eq('id', postId)
         if (noAcctErr) console.error('publishPost: failed to set no-accounts status:', noAcctErr)
         return {
             success: false,

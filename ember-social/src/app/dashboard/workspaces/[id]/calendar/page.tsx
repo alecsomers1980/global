@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client-browser'
 import { ArrowLeft, Calendar as CalendarIcon, Loader2, Plus, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { formatDateTime, STATUS_COLORS } from '@/lib/utils'
+import { STATUS_COLORS } from '@/lib/utils'
 
 interface Post {
     id: string
@@ -14,12 +13,24 @@ interface Post {
     status: string
 }
 
+// Fetch every status the calendar should surface. The /api/workspaces/posts
+// endpoint defaults to pending/draft/approved only — the calendar wants the
+// full lifecycle so users can see scheduled/publishing/published/failed too.
+const ALL_STATUSES = [
+    'draft',
+    'pending_approval',
+    'approved',
+    'scheduled',
+    'publishing',
+    'published',
+    'failed',
+].join(',')
+
 export default function CalendarPage({ params }: { params: Promise<{ id: string }> }) {
     const [workspaceId, setWorkspaceId] = useState('')
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
     const [generating, setGenerating] = useState(false)
-    const supabase = createClient()
 
     useEffect(() => {
         params.then(p => {
@@ -29,13 +40,24 @@ export default function CalendarPage({ params }: { params: Promise<{ id: string 
     }, [params])
 
     const fetchPosts = async (id: string) => {
-        const { data } = await supabase
-            .from('posts')
-            .select('id, content, platforms, scheduled_at, status')
-            .eq('workspace_id', id)
-            .order('scheduled_at', { ascending: true })
-
-        if (data) setPosts(data)
+        // Go through the API so slug-based URLs resolve to the workspace UUID.
+        // A direct supabase query from the browser using `params.id` would
+        // filter by slug (e.g. 'everest-motoring') and miss every post.
+        try {
+            const res = await fetch(`/api/workspaces/posts?workspaceId=${encodeURIComponent(id)}&statuses=${ALL_STATUSES}`)
+            const data = await res.json()
+            if (data.posts) {
+                const sorted = [...data.posts].sort((a: Post, b: Post) => {
+                    if (!a.scheduled_at && !b.scheduled_at) return 0
+                    if (!a.scheduled_at) return 1
+                    if (!b.scheduled_at) return -1
+                    return a.scheduled_at.localeCompare(b.scheduled_at)
+                })
+                setPosts(sorted as Post[])
+            }
+        } catch (err) {
+            console.error('Calendar: failed to fetch posts', err)
+        }
         setLoading(false)
     }
 
