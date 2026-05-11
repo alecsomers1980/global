@@ -36,7 +36,8 @@
   }
 
   .section-heading {
-    @apply text-3xl font-bold leading-tight text-brand-navy md:text-4xl lg:text-5xl;
+    @apply font-bold leading-tight text-brand-navy;
+    font-size: clamp(1.875rem, 1.25rem + 2vw, 3rem);
   }
 
   /* Glass morphism card */

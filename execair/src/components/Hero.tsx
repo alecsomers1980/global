@@ -23,7 +23,7 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="container relative z-10 mx-auto px-6 pt-20">
+      <div className="container relative z-10 mx-auto px-6 pt-32">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           {/* Left: Text */}
           <div>
@@ -43,14 +43,14 @@ export default function Hero() {
             </div>
 
             {/* Headline */}
-            <h1 className="mb-6 text-5xl font-light leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
+            <h1 className="mb-6 font-light leading-tight tracking-tight text-white text-[clamp(3rem,3.5vw+1.25rem,4.5rem)]">
               Air Conditioning &amp; HVAC{" "}
               <span className="font-bold text-brand-teal">specialists</span>{" "}
               in Krugersdorp
             </h1>
 
             {/* Subheadline */}
-            <p className="mb-4 text-lg leading-relaxed text-white/70 md:text-xl">
+            <p className="mb-4 leading-relaxed text-white/70 text-[clamp(1.125rem,1vw+0.5rem,1.25rem)]">
               Commercial, industrial and residential HVAC across Johannesburg and Gauteng — design,
               installation, maintenance and repair since 1989.
             </p>

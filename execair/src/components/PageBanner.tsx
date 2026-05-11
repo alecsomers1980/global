@@ -31,12 +31,16 @@ export default function PageBanner({ title, subtitle, className }: PageBannerPro
       {/* Animated gradient orb */}
       <div className="absolute -right-32 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-brand-teal/5 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center pt-24">
-        <h1 className="text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
+      {/* 
+        Increased pt-36 to clear ~112px fixed header. 
+        Added pb-12 to keep content visually balanced in the flex container. 
+      */}
+      <div className="relative z-10 mx-auto max-w-4xl px-6 pt-36 pb-12 text-center">
+        <h1 className="font-bold tracking-tight text-white text-[clamp(2.25rem,1rem+4vw,3.75rem)]">
           {title}
         </h1>
         {subtitle && (
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60 md:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-white/60 text-[clamp(1.125rem,0.875rem+1vw,1.25rem)]">
             {subtitle}
           </p>
         )}
