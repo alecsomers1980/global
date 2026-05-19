@@ -20,6 +20,26 @@ function pickVariant(seed, pool, salt = 0) {
     return pool[(hashSeed(seed) + salt) % pool.length];
 }
 
+// Pulls the spoken line out of the AUDIO block in a visual_prompt. The block
+// looks like: AUDIO: "...Background sound is very low: 'Hello world.'"
+// or AUDIO: "...Background sound is very low: Hello world."
+// We grab whatever follows the last colon, trim, and strip wrapping quotes.
+function extractVoiceoverFromVisualPrompt(visualPrompt) {
+    if (!visualPrompt || typeof visualPrompt !== 'string') return '';
+    const audioIdx = visualPrompt.lastIndexOf('AUDIO:');
+    if (audioIdx === -1) return '';
+    const audioBlock = visualPrompt.slice(audioIdx);
+    // Last colon inside the AUDIO block marks the start of the spoken line.
+    const lastColon = audioBlock.lastIndexOf(':');
+    if (lastColon === -1) return '';
+    let line = audioBlock.slice(lastColon + 1).trim();
+    // Strip a trailing closing quote of the outer AUDIO bracket if present.
+    if (line.endsWith('"')) line = line.slice(0, -1).trim();
+    // Strip surrounding single/double quotes around the spoken line itself.
+    line = line.replace(/^['"]+|['"]+$/g, '').trim();
+    return line;
+}
+
 export async function generateVehicleScript(car) {
     try {
         // Determine car type category for adaptive scripting
@@ -79,19 +99,23 @@ Scene 3: Rear Cabin
 Scene 4: Closer (Presenter standing with the car)
 - A still photograph of the ${car.make} ${car.model} with a female presenter standing naturally beside the car as if she has always been there — a full-figure person integrated into the photograph at a believable distance, mid-shot (roughly head-to-knee visible), positioned to one side so the vehicle remains the visual focus. The image is held on screen and slowly zooms in over 8 seconds (final scale ~110%).
 - The presenter has shoulder-length blonde hair and wears a plain tailored navy blue blazer over a plain white blouse. The blazer is completely plain — no logos, no embroidery, no badges, no text. She stands upright with relaxed natural posture and looks directly into the camera with a warm, gentle smile.
-- HANDS — STRICT STILLNESS: her hands are clasped together lightly in front of her at waist level and remain COMPLETELY STILL throughout the clip. No gestures, no waving, no pointing, no opening of palms, no hand movement of any kind. Her arms do not move. Only a subtle change in facial expression (the smile) animates over the clip — nothing else.
+- HANDS — STRICT STILLNESS: her hands are clasped together lightly in front of her at waist level and remain COMPLETELY STILL throughout the clip. No gestures, no waving, no pointing, no opening of palms, no hand movement of any kind. Her arms do not move.
+- MOUTH — STRICT STILLNESS: her mouth stays closed in a fixed gentle warm smile throughout the ENTIRE clip. She does NOT speak. Her lips do NOT move. There is NO lip movement, NO mouth opening, NO talking, NO mouthing of words, NO speech animation of any kind. The voiceover is off-camera narration — she is silent on camera. The smile shape itself remains stable from frame one to the last frame.
 - The vehicle, back wall and any logos already on it, ground, surroundings, and lighting all stay exactly as in the source image. The presenter is the only added element. The photograph itself does not pan, rotate, or change angle — it only magnifies gradually.
 - AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact, visit, or enquire with Everest Motoring regarding this specific make/model. MAX 11 words, aim for 8–10. Must fit comfortably in an 8-second clip — say less rather than rush. Avoid the word 'new'. Avoid the phrase 'test drive'.]"
 
-Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`.
-Do not include markdown formatting outside the JSON array. The \`visual_prompt\` should be a single short paragraph (2–3 sentences) describing the photograph being slowly zoomed in, plus the AUDIO line.
+Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`, \`voiceover_text\`.
+Do not include markdown formatting outside the JSON array.
+
+- \`visual_prompt\` is a single short paragraph (2–3 sentences) describing the photograph being slowly zoomed in, plus the AUDIO line as instructed above (this keeps the Veo backup engine working).
+- \`voiceover_text\` is the CLEAN spoken line ONLY — just the words the South African woman says, NO surrounding "AUDIO:" wrapper, NO voice description, NO quotation marks, NO brackets. Plain prose, the exact words to be spoken. MAX 11 words. This is the same line that appears inside the AUDIO block of \`visual_prompt\`, but extracted as a standalone string so it can be sent to a separate TTS service.
 
 Example Output:
 [
-  { "scene": 1, "location": "exterior", "visual_prompt": "A still photograph of the [year make model] held on screen for 8 seconds, slowly zooming in to ~110% of starting scale. The image content is identical to the source throughout — nothing moves, only the magnification grows. AUDIO: ..." },
-  { "scene": 2, "location": "interior", "visual_prompt": "A still photograph of the [year make model] dashboard held on screen for 8 seconds, slowly zooming in to ~110%. Steering wheel on the RIGHT. Nothing moves, only the scale grows. AUDIO: ..." },
-  { "scene": 3, "location": "interior", "visual_prompt": "A still photograph of the [year make model] rear cabin held on screen for 8 seconds, slowly zooming in to ~110%. Nothing moves, only the scale grows. AUDIO: ..." },
-  { "scene": 4, "location": "exterior", "visual_prompt": "A still photograph of the [year make model] with a female presenter (shoulder-length blonde hair, plain navy blazer over plain white blouse) standing naturally beside the car. Held on screen for 8 seconds, slowly zooming in to ~110%. Hands clasped at waist, completely still. AUDIO: ..." }
+  { "scene": 1, "location": "exterior", "visual_prompt": "A still photograph of the [year make model] held on screen for 8 seconds, slowly zooming in to ~110% of starting scale. The image content is identical to the source throughout — nothing moves, only the magnification grows. AUDIO: ...", "voiceover_text": "The striking 2022 BMW X5 — refined, capable, ready." },
+  { "scene": 2, "location": "interior", "visual_prompt": "A still photograph of the [year make model] dashboard held on screen for 8 seconds, slowly zooming in to ~110%. Steering wheel on the RIGHT. Nothing moves, only the scale grows. AUDIO: ...", "voiceover_text": "Premium audio and navigation, exactly where you need them." },
+  { "scene": 3, "location": "interior", "visual_prompt": "A still photograph of the [year make model] rear cabin held on screen for 8 seconds, slowly zooming in to ~110%. Nothing moves, only the scale grows. AUDIO: ...", "voiceover_text": "Leather comfort built for unhurried long drives." },
+  { "scene": 4, "location": "exterior", "visual_prompt": "A still photograph of the [year make model] with a female presenter (shoulder-length blonde hair, plain navy blazer over plain white blouse) standing naturally beside the car. Held on screen for 8 seconds, slowly zooming in to ~110%. Hands clasped at waist, mouth closed, completely still. AUDIO: ...", "voiceover_text": "Visit Everest Motoring in White River to experience it." }
 ]
 `;
 
@@ -105,7 +129,15 @@ Example Output:
         // Extract the first JSON array from the response; tolerate stray prose/markdown.
         const match = text.match(/\[[\s\S]*\]/);
         const jsonText = match ? match[0] : text.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(jsonText);
+        const parsed = JSON.parse(jsonText);
+
+        // Backfill voiceover_text from the AUDIO block in visual_prompt when the
+        // model forgets to emit the dedicated field. The Seedance pipeline needs
+        // a clean spoken line for ElevenLabs; the Veo pipeline ignores this field.
+        return parsed.map(s => ({
+            ...s,
+            voiceover_text: s.voiceover_text || extractVoiceoverFromVisualPrompt(s.visual_prompt) || '',
+        }));
 
     } catch (error) {
         console.error("Error generating script via both providers — using feature-aware fallback:", error.message);
@@ -201,10 +233,10 @@ Example Output:
         const cleanAudio = "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low";
 
         return [
-            { scene: 1, location: "exterior", visual_prompt: `A still photograph of the ${car.year} ${car.make} ${car.model} parked outside, held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${hookLine}'` },
-            { scene: 2, location: "interior", visual_prompt: `A still photograph of the ${car.make} ${car.model} dashboard, held on screen for 8 seconds. The steering wheel is on the RIGHT side (right-hand-drive). ${zoomRule} AUDIO: ${cleanAudio}: '${techLine}'` },
-            { scene: 3, location: "interior", visual_prompt: `A still photograph of the ${car.make} ${car.model} rear cabin, held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${comfortLine}'` },
-            { scene: 4, location: "exterior", visual_prompt: `A still photograph of the ${car.make} ${car.model} with ${presenterDesc.toLowerCase()} standing naturally beside the car (mid-shot, head-to-knee visible, positioned to one side so the vehicle remains the visual focus). She stands upright with relaxed posture, looking forward with a warm gentle smile. Her hands are clasped lightly at waist level and stay COMPLETELY STILL throughout — no gestures, no waving, no pointing, no hand movement of any kind. Only the subtle smile animates. The image is held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${ctaLine}'` }
+            { scene: 1, location: "exterior", voiceover_text: hookLine, visual_prompt: `A still photograph of the ${car.year} ${car.make} ${car.model} parked outside, held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${hookLine}'` },
+            { scene: 2, location: "interior", voiceover_text: techLine, visual_prompt: `A still photograph of the ${car.make} ${car.model} dashboard, held on screen for 8 seconds. The steering wheel is on the RIGHT side (right-hand-drive). ${zoomRule} AUDIO: ${cleanAudio}: '${techLine}'` },
+            { scene: 3, location: "interior", voiceover_text: comfortLine, visual_prompt: `A still photograph of the ${car.make} ${car.model} rear cabin, held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${comfortLine}'` },
+            { scene: 4, location: "exterior", voiceover_text: ctaLine, visual_prompt: `A still photograph of the ${car.make} ${car.model} with ${presenterDesc.toLowerCase()} standing naturally beside the car (mid-shot, head-to-knee visible, positioned to one side so the vehicle remains the visual focus). She stands upright with relaxed posture, looking forward with a warm gentle smile. Her hands are clasped lightly at waist level and stay COMPLETELY STILL throughout — no gestures, no waving, no pointing, no hand movement of any kind. Her mouth stays closed in a fixed gentle smile — she does not speak, her lips do not move (the voiceover is off-camera narration). The image is held on screen for 8 seconds. ${zoomRule} AUDIO: ${cleanAudio}: '${ctaLine}'` }
         ];
     }
 }

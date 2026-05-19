@@ -27,7 +27,8 @@ export async function startSeedanceClip({
     durationSeconds = 8,
     aspectRatio = '9:16',
     resolution = '720p',
-    generateAudio = false
+    generateAudio = false,
+    model = 'bytedance/seedance-2-fast'
 }) {
     if (DEV_MOCK_MODE) {
         console.log(`[seedanceService] DEV_MOCK_MODE active — returning mock taskId`);
@@ -37,7 +38,7 @@ export async function startSeedanceClip({
     const apiKey = getApiKey();
 
     const requestBody = {
-        model: 'bytedance/seedance-2-fast',
+        model,
         input: {
             prompt,
             reference_image_urls: [imageUrl],

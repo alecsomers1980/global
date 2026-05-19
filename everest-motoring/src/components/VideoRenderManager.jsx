@@ -84,7 +84,16 @@ export default function VideoRenderManager() {
                 let videoUrl = null;
                 for (let p = 0; p < MAX_POLLS_PER_SCENE; p++) {
                     await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
-                    const pollRes = await pollSingleClipAction(taskId);
+                    // Pass voiceover_text + carId + sceneNum so the Seedance
+                    // path can run ElevenLabs TTS + Fal audio-mux server-side
+                    // once the silent clip is ready. The Veo backup path
+                    // ignores these extra args.
+                    const pollRes = await pollSingleClipAction(
+                        taskId,
+                        scene.voiceover_text || null,
+                        car.id,
+                        sceneNum,
+                    );
                     if (!pollRes.success) {
                         throw new Error(`Scene ${sceneNum} failed: ${pollRes.error}`);
                     }

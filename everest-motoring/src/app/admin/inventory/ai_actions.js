@@ -2,12 +2,23 @@
 
 import { createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
-import { preflightAndGetSceneImages, startSingleClip, pollCinematicTask } from "@/utils/ai/videoEngineProvider";
+import * as veoEngine from "@/utils/ai/videoEngineProvider";
+import * as seedanceEngine from "@/utils/ai/seedanceVideoEngine";
+import { synthesizeVoiceover } from "@/utils/ai/elevenLabsService";
+import { muxAudioOntoVideo } from "@/utils/ai/videoAudioMuxer";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createMuxAssetFromUrl } from "@/utils/ai/muxService";
 import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
 import { composeSceneOneImage } from "@/utils/ai/nanoBananaService";
 import { revalidatePath } from "next/cache";
+
+// Pipeline selector. "seedance" = new Seedance 2 Pro (silent) + ElevenLabs SA
+// voice + Fal mux. "veo" = legacy Veo 3.1 Fast with native audio. Default to
+// seedance; set VIDEO_ENGINE=veo in env to revert to backup without a deploy.
+function getEngine() {
+    const choice = (process.env.VIDEO_ENGINE || 'seedance').toLowerCase();
+    return choice === 'veo' ? veoEngine : seedanceEngine;
+}
 
 // 1. Mark as Pending (Called by VehicleForm on Submit)
 export async function queueAiWalkaround(carId) {
@@ -64,39 +75,80 @@ export async function generateScriptAction(carId, carPayload) {
 // Kie.ai charge.
 export async function preflightSceneImagesAction(carPayload) {
     try {
-        const sceneImages = await preflightAndGetSceneImages(carPayload);
+        const engine = getEngine();
+        const sceneImages = await engine.preflightAndGetSceneImages(carPayload);
         return { success: true, sceneImages };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
-// 3b. Start ONE scene's Veo clip. Designed to be called sequentially
-// from the client — start scene 1, poll till done, then start scene 2.
-// Caps a failure cost at ~$0.30 instead of ~$1.20.
+// 3b. Start ONE scene's video clip on whichever engine is active.
+// Designed to be called sequentially from the client — start scene 1,
+// poll till done, then start scene 2. Caps a failure cost at one scene's
+// worth of spend instead of all four.
 export async function startSingleClipAction(scene, baseImageUrl) {
     try {
-        const task = await startSingleClip(scene, baseImageUrl);
+        const engine = getEngine();
+        const task = await engine.startSingleClip(scene, baseImageUrl);
         return { success: true, task };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
-// 4. Poll a single Veo task by id. Returns { isComplete, videoUrl } when
-// done, { isComplete: false } while still processing, or { error } if
-// Kie.ai marked it failed.
-export async function pollSingleClipAction(taskId) {
+// 4. Poll a single video task by id. Returns { isComplete, videoUrl } when
+// done, { isComplete: false } while still processing, or { error } if the
+// engine marked it failed.
+//
+// For the Seedance pipeline, once the silent clip is ready we ALSO
+// generate the ElevenLabs voiceover and mux it onto the video inside this
+// action — so the URL returned is already a sounded mp4 ready for
+// stitching. Callers pass `voiceoverText`, `carId`, and `sceneNum` so the
+// per-scene audio is generated against the right line and stored under a
+// debuggable filename. These extra args are ignored by the Veo backup path.
+export async function pollSingleClipAction(taskId, voiceoverText = null, carId = null, sceneNum = null) {
     try {
-        const result = await pollCinematicTask(taskId);
+        const engine = getEngine();
+        const result = await engine.pollCinematicTask(taskId);
         if (result.error) {
             return { success: false, error: result.error };
         }
-        return {
-            success: true,
-            isComplete: !!result.isComplete,
-            videoUrl: result.videoUrl || null,
-        };
+        if (!result.isComplete || !result.videoUrl) {
+            return { success: true, isComplete: false, videoUrl: null };
+        }
+
+        const usingSeedance = (process.env.VIDEO_ENGINE || 'seedance').toLowerCase() !== 'veo';
+
+        // Veo path: native audio is baked in — return the URL as-is.
+        if (!usingSeedance) {
+            return { success: true, isComplete: true, videoUrl: result.videoUrl };
+        }
+
+        // Seedance path: clip is silent. Generate ElevenLabs voiceover and
+        // mux it onto the video before handing the URL to the stitcher.
+        // If voiceoverText is missing, skip muxing and return the silent
+        // clip (Veo backup behaviour) so the pipeline still completes
+        // rather than throwing — UI will show a sounded car video with
+        // one silent scene if this happens, which is recoverable.
+        if (!voiceoverText || !String(voiceoverText).trim()) {
+            console.warn(`[poll] Scene ${sceneNum ?? '?'} completed but no voiceover_text supplied — returning silent clip.`);
+            return { success: true, isComplete: true, videoUrl: result.videoUrl };
+        }
+
+        const { audioUrl } = await synthesizeVoiceover({
+            text: voiceoverText,
+            carId,
+            sceneNum,
+        });
+
+        const muxedUrl = await muxAudioOntoVideo({
+            videoUrl: result.videoUrl,
+            audioUrl,
+            durationMs: 8000,
+        });
+
+        return { success: true, isComplete: true, videoUrl: muxedUrl };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -123,12 +175,7 @@ export async function ingestMuxAction(carId, finalStitchedUrl) {
     try {
         console.log('[AI Server Action] Ingesting final stitched video into Cloudflare Stream...');
         const cfData = await createStreamFromUrl(finalStitchedUrl, { car_id: carId });
-        // Enable MP4 downloads for Facebook/Instagram publishing
-        try {
-            await enableDownloads(cfData.uid);
-        } catch (e) {
-            console.warn(`[AI Server Action] enableDownloads failed for ${cfData.uid}:`, e.message);
-        }
+        await enableDownloads(cfData.uid);
 
         const supabase = await createAdminClient();
         await supabase.from('cars').update({
