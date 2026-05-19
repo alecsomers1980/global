@@ -32,9 +32,15 @@ export async function createStreamFromUrl(videoUrl, metadata = {}) {
         }),
     });
     const data = await res.json();
-    if (!data.success) {
-        const msg = data.errors?.[0]?.message || "Cloudflare Stream copy failed";
-        throw new Error(msg);
+    if (!res.ok || !data.success) {
+        // Cloudflare's v4 API hides specifics in `errors[].code` and the
+        // separate `messages[]` array. Surface both plus HTTP status so
+        // failures are diagnosable from the UI without trawling Vercel logs.
+        console.error(`[CF Stream] /stream/copy failed (HTTP ${res.status}). Source URL: ${videoUrl}. Full response:`, JSON.stringify(data));
+        const errStr = (data.errors || []).map(e => `[${e.code ?? '?'}] ${e.message ?? ''}`).join(' | ');
+        const msgStr = (data.messages || []).map(m => typeof m === 'string' ? m : (m.message ?? JSON.stringify(m))).join(' | ');
+        const composed = [errStr, msgStr].filter(Boolean).join(' :: ') || 'Cloudflare Stream copy failed';
+        throw new Error(`CF /stream/copy: ${composed} (HTTP ${res.status})`);
     }
 
     // NOTE: Do NOT trigger /downloads here — stream/copy returns before the
@@ -105,8 +111,11 @@ export async function enableDownloads(uid, opts = {}) {
     });
     const postData = await postRes.json();
     if (!postRes.ok || !postData.success) {
-        const msg = postData.errors?.[0]?.message || "Failed to enable Cloudflare downloads";
-        throw new Error(`${msg} (HTTP ${postRes.status})`);
+        console.error(`[CF Stream] POST /downloads failed for ${uid} (HTTP ${postRes.status}). Full response:`, JSON.stringify(postData));
+        const errStr = (postData.errors || []).map(e => `[${e.code ?? '?'}] ${e.message ?? ''}`).join(' | ');
+        const msgStr = (postData.messages || []).map(m => typeof m === 'string' ? m : (m.message ?? JSON.stringify(m))).join(' | ');
+        const composed = [errStr, msgStr].filter(Boolean).join(' :: ') || 'Failed to enable Cloudflare downloads';
+        throw new Error(`CF /downloads: ${composed} (HTTP ${postRes.status})`);
     }
 
     // Phase 3: wait for the MP4 render — until default.status === "ready" the
