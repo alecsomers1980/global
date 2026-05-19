@@ -1,5 +1,13 @@
 "use server";
 
+// Server Action timeout budget. pollSingleClipAction in the Seedance pipeline
+// now chains: Kie poll (~0.5s) -> ElevenLabs TTS + Supabase upload (~3–10s)
+// -> Fal ffmpeg-api/compose mux (~5–20s). Worst case ~30s, well within 120s.
+// stitchVideoAction and ingestMuxAction (Cloudflare MP4 render) also benefit
+// from the extra headroom. Pro plan supports up to 300s; 120 is a safe
+// compromise that won't exceed the platform limit.
+export const maxDuration = 120;
+
 import { createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
 import * as veoEngine from "@/utils/ai/videoEngineProvider";
