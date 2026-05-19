@@ -37,17 +37,12 @@ export async function createStreamFromUrl(videoUrl, metadata = {}) {
         throw new Error(msg);
     }
 
-    // Enable MP4 downloads (required for Facebook/Instagram publishing)
+    // NOTE: Do NOT trigger /downloads here — stream/copy returns before the
+    // video has been ingested, and CF rejects POST /downloads with
+    // "Video is not ready" (code 10005) until readyToStream=true. Callers must
+    // invoke enableDownloads(uid) explicitly once they need the MP4 URL; that
+    // function polls for readiness before triggering MP4 generation.
     const uid = data.result.uid;
-    try {
-        await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}/downloads`, {
-            method: "POST",
-            headers: authHeaders(apiToken),
-        });
-    } catch (err) {
-        console.warn(`[CF Stream] Failed to enable downloads for ${uid}:`, err.message);
-    }
-
     return { uid, status: data.result.status?.state };
 }
 
@@ -69,19 +64,72 @@ export async function getStreamStatus(uid) {
 }
 
 /**
- * Enable MP4 download for a stream (required for Facebook/Instagram publishing).
+ * Enable the MP4 download for a Cloudflare Stream video (required for
+ * Facebook/Instagram publishing — those platforms only accept static MP4s).
+ *
+ * Returns only once the `default.mp4` URL is actually fetchable. Throws with
+ * a clear message on timeout or error state. A single maxWaitMs budget covers
+ * all three phases (ingest readiness, POST, MP4 render) so callers can reason
+ * about an upper bound on wall-clock time.
  */
-export async function enableDownloads(uid) {
+export async function enableDownloads(uid, opts = {}) {
+    const { maxWaitMs = 180000, pollIntervalMs = 4000 } = opts;
     const { accountId, apiToken } = requireEnv();
-    const res = await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}/downloads`, {
+    const startTime = Date.now();
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    // Phase 1: wait for the video to finish ingesting.
+    while (true) {
+        const res = await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}`, {
+            headers: authHeaders(apiToken),
+        });
+        const data = await res.json();
+        if (!data.success) {
+            throw new Error(data.errors?.[0]?.message || "Failed to fetch Cloudflare stream status");
+        }
+        if (data.result?.status?.state === "error") {
+            throw new Error(data.result.status?.errorReasonText || `Cloudflare video ${uid} is in error state`);
+        }
+        if (data.result?.readyToStream === true) break;
+        if (Date.now() - startTime >= maxWaitMs) {
+            throw new Error(`Cloudflare video ${uid} not ready after ${maxWaitMs}ms`);
+        }
+        await sleep(pollIntervalMs);
+    }
+
+    // Phase 2: trigger MP4 generation. Check res.ok AND body.success — CF
+    // returns 4xx with success:false for rejections that fetch() doesn't throw.
+    const postRes = await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}/downloads`, {
         method: "POST",
         headers: authHeaders(apiToken),
     });
-    const data = await res.json();
-    if (!data.success) {
-        throw new Error(data.errors?.[0]?.message || "Failed to enable Cloudflare downloads");
+    const postData = await postRes.json();
+    if (!postRes.ok || !postData.success) {
+        const msg = postData.errors?.[0]?.message || "Failed to enable Cloudflare downloads";
+        throw new Error(`${msg} (HTTP ${postRes.status})`);
     }
-    return data.result;
+
+    // Phase 3: wait for the MP4 render — until default.status === "ready" the
+    // URL still 404s. Same maxWaitMs budget as phases 1+2.
+    while (true) {
+        const res = await fetch(`${CF_API}/accounts/${accountId}/stream/${uid}/downloads`, {
+            headers: authHeaders(apiToken),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            const msg = data.errors?.[0]?.message || "Failed to poll Cloudflare download status";
+            throw new Error(`${msg} (HTTP ${res.status})`);
+        }
+        const def = data.result?.default;
+        if (def?.status === "ready") return data.result;
+        if (def?.status === "error") {
+            throw new Error(`Cloudflare MP4 generation failed for video ${uid}`);
+        }
+        if (Date.now() - startTime >= maxWaitMs) {
+            throw new Error(`Cloudflare MP4 for ${uid} not ready after ${maxWaitMs}ms (state=${def?.status ?? "missing"})`);
+        }
+        await sleep(pollIntervalMs);
+    }
 }
 
 export function getHlsUrl(uid) {
