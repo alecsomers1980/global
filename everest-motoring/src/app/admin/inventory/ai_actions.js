@@ -1,12 +1,13 @@
 "use server";
 
-// Server Action timeout budget. pollSingleClipAction in the Seedance pipeline
-// now chains: Kie poll (~0.5s) -> ElevenLabs TTS + Supabase upload (~3–10s)
-// -> Fal ffmpeg-api/compose mux (~5–20s). Worst case ~30s, well within 120s.
-// stitchVideoAction and ingestMuxAction (Cloudflare MP4 render) also benefit
-// from the extra headroom. Pro plan supports up to 300s; 120 is a safe
-// compromise that won't exceed the platform limit.
-export const maxDuration = 120;
+// Server Action timeout budget. Set to the Pro plan ceiling (300s) because
+// ingestMuxAction calls enableDownloads which polls Cloudflare Stream for
+// up to 180s waiting for MP4 generation. With a tighter cap, the function
+// gets killed mid-wait before the catch block can record an error to the DB,
+// leaving cars stranded in `cf_ingesting` state. pollSingleClipAction's
+// shorter ~30s worst case (Kie poll + ElevenLabs TTS + Fal mux) also runs
+// here and benefits from the headroom on slow days.
+export const maxDuration = 300;
 
 import { createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
