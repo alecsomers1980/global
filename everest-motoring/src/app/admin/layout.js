@@ -2,6 +2,15 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import VideoRenderManager from "@/components/VideoRenderManager";
 
+// Server Actions inherit the route segment config of the page that
+// dispatches them. The AI walkaround pipeline (ai_actions.js) runs the
+// longest chain — ingestMuxAction calls Cloudflare's enableDownloads which
+// polls for up to 180s waiting for MP4 generation. 300s (the Pro plan
+// ceiling) gives that headroom without risking platform-level rejection.
+// pollSingleClipAction's ~30s worst case (Kie poll + ElevenLabs TTS +
+// Fal mux) also benefits from the larger budget on slow days.
+export const maxDuration = 300;
+
 export default async function AdminLayout({ children }) {
     console.log("=== ADMIN LAYOUT HIT ===");
     const supabase = await createClient();

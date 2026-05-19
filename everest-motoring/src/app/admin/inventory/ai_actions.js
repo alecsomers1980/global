@@ -1,13 +1,9 @@
 "use server";
 
-// Server Action timeout budget. Set to the Pro plan ceiling (300s) because
-// ingestMuxAction calls enableDownloads which polls Cloudflare Stream for
-// up to 180s waiting for MP4 generation. With a tighter cap, the function
-// gets killed mid-wait before the catch block can record an error to the DB,
-// leaving cars stranded in `cf_ingesting` state. pollSingleClipAction's
-// shorter ~30s worst case (Kie poll + ElevenLabs TTS + Fal mux) also runs
-// here and benefits from the headroom on slow days.
-export const maxDuration = 300;
+// NOTE: maxDuration cannot be exported from a "use server" module (Next.js
+// requires every export to be an async function). The timeout for these
+// Server Actions is configured on the admin layout instead:
+// src/app/admin/layout.js → export const maxDuration = 300.
 
 import { createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
