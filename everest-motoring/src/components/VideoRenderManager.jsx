@@ -65,7 +65,11 @@ export default function VideoRenderManager() {
             //    ~$1.20 (all four).
             const finalClipUrls = [];
             const POLL_INTERVAL_MS = 10000; // 10s between polls
-            const MAX_POLLS_PER_SCENE = 30;  // 30 * 10s = 5min budget per scene
+            const MAX_POLLS_PER_SCENE = 60;  // 60 * 10s = 10min budget per scene
+            // Kie.ai's Seedance worker typically completes in 2–3 min but can
+            // queue for 5–7 min under load. 5 min was too tight and killed
+            // otherwise-healthy renders; 10 min gives realistic headroom while
+            // still capping the worst-case wait on a genuinely stuck task.
 
             for (let i = 0; i < scriptArray.length; i++) {
                 const scene = scriptArray[i];
