@@ -164,7 +164,37 @@ export async function pollSeedanceClip(taskId) {
         }
 
         if (state === 'fail') {
-            const errorMsg = taskData.failMsg || taskData.failCode || 'Generation failed';
+            // Surface every plausible failure field — Kie.ai is inconsistent
+            // about where it puts the reason, and the generic "Bad Request"
+            // message often hides specific details in failCode / resultJson /
+            // info / response. Dump the whole task payload to logs so we can
+            // diagnose without round-tripping through this code.
+            console.error(`[seedanceService] Task ${taskId} failed. Full task payload:`, JSON.stringify(taskData));
+
+            let failureReason = taskData.failMsg || taskData.failReason || taskData.errorMessage || taskData.errorMsg || taskData.error || taskData.msg;
+            let failureCode = taskData.failCode || taskData.errorCode || taskData.code;
+
+            if (!failureReason && taskData.resultJson) {
+                try {
+                    const parsed = typeof taskData.resultJson === 'string' ? JSON.parse(taskData.resultJson) : taskData.resultJson;
+                    failureReason = parsed.error || parsed.errorMessage || parsed.failMsg || parsed.failReason || parsed.msg;
+                    failureCode = failureCode || parsed.errorCode || parsed.failCode;
+                } catch (e) { /* ignore parse errors */ }
+            }
+
+            for (const nestKey of ['info', 'response', 'data']) {
+                if (!failureReason && taskData[nestKey] && typeof taskData[nestKey] === 'object') {
+                    const nested = taskData[nestKey];
+                    failureReason = nested.error || nested.errorMessage || nested.failMsg || nested.failReason || nested.msg;
+                    failureCode = failureCode || nested.errorCode || nested.failCode;
+                }
+            }
+
+            if (!failureReason) {
+                failureReason = 'Generation failed (no reason surfaced — see [seedanceService] payload log above)';
+            }
+
+            const errorMsg = `Seedance failure [${failureCode || 'unknown'}]: ${failureReason}`;
             console.warn(`[seedanceService] Task ${taskId} failed: ${errorMsg}`);
             return { isComplete: false, error: errorMsg };
         }
