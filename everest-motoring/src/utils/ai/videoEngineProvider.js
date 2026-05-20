@@ -16,8 +16,15 @@ export async function preflightAndGetSceneImages(carPayload) {
     const heroImg = carPayload.main_image_url;
     const galleryImg1 = carPayload.gallery_urls && carPayload.gallery_urls.length > 0 ? carPayload.gallery_urls[0] : heroImg;
     const galleryImg2 = carPayload.gallery_urls && carPayload.gallery_urls.length > 1 ? carPayload.gallery_urls[1] : heroImg;
-    // Scene 1: Hero (exterior), Scene 2: Gallery 1 (dashboard), Scene 3: Gallery 2 (rear cabin), Scene 4: Hero (presenter)
-    const sceneImages = [heroImg, galleryImg1, galleryImg2, heroImg];
+    // Scene 4 used to overlay a presenter on the hero shot — that's been
+    // dropped in favour of a clean different-angle exterior. Use a third
+    // gallery image when available (typically rear 3/4 or side profile);
+    // fall back to gallery 1, then hero, so cars with thin galleries still ship.
+    const galleryImg3 = carPayload.gallery_urls && carPayload.gallery_urls.length > 2
+        ? carPayload.gallery_urls[2]
+        : (galleryImg1 !== heroImg ? galleryImg1 : heroImg);
+    // Scene 1: Hero (exterior), Scene 2: Gallery 1 (dashboard), Scene 3: Gallery 2 (rear cabin), Scene 4: Gallery 3 (different exterior angle)
+    const sceneImages = [heroImg, galleryImg1, galleryImg2, galleryImg3];
 
     if (DEV_MOCK_MODE) return sceneImages;
 

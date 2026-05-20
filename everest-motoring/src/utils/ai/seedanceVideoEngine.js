@@ -1,9 +1,9 @@
 /**
  * Seedance 2 Fast image-to-video wrapper for the 4-scene car walkaround.
  * Generates SILENT 720p 16:9 clips — audio is added downstream via
- * ElevenLabs TTS + Fal FFmpeg mux. Tier chosen for cost/quality balance:
- * Fast 720p is ~$1.85/car (close to the previous Veo Fast pipeline) while
- * delivering locked voice consistency, which was the actual quality win.
+ * ElevenLabs TTS + Fal FFmpeg mux. Tier + 10s duration chosen for
+ * cost/pacing balance: ~$6.90/car total while delivering locked voice
+ * consistency and enough headroom in each clip for unhurried VO delivery.
  *
  * The older Veo-based engine in videoEngineProvider.js is kept as a backup
  * (toggle via VIDEO_ENGINE env var in ai_actions.js).
@@ -14,6 +14,7 @@ import { preflightAndGetSceneImages as preflightVeo } from './videoEngineProvide
 
 const SEEDANCE_MODEL = 'bytedance/seedance-2-fast';
 const SEEDANCE_RESOLUTION = '720p';
+const SEEDANCE_DURATION_SECONDS = 10;
 
 // Reuse the Veo engine's preflight — the image-URL validation logic is
 // identical regardless of which video engine consumes them.
@@ -45,7 +46,7 @@ export async function startSingleClip(scene, baseImageUrl) {
     const { taskId } = await startSeedanceClip({
         imageUrl: baseImageUrl,
         prompt: silentPrompt,
-        durationSeconds: 8,
+        durationSeconds: SEEDANCE_DURATION_SECONDS,
         aspectRatio: '16:9',
         resolution: SEEDANCE_RESOLUTION,
         generateAudio: false,

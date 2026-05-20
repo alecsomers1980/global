@@ -150,7 +150,7 @@ export async function pollSingleClipAction(taskId, voiceoverText = null, carId =
         const muxedUrl = await muxAudioOntoVideo({
             videoUrl: result.videoUrl,
             audioUrl,
-            durationMs: 8000,
+            durationMs: 10000,
         });
 
         return { success: true, isComplete: true, videoUrl: muxedUrl };

@@ -15,10 +15,10 @@ const FAL_COMPOSE_URL = 'https://fal.run/fal-ai/ffmpeg-api/compose';
  * @param {Object} args
  * @param {string} args.videoUrl   Silent mp4/webm produced by Seedance.
  * @param {string} args.audioUrl   mp3 produced by ElevenLabs (in Supabase storage).
- * @param {number} [args.durationMs=8000]  Clip duration in milliseconds (Seedance scenes are 8s).
+ * @param {number} [args.durationMs=10000]  Clip duration in milliseconds (Seedance scenes are 10s).
  * @returns {Promise<string>} Public URL of the muxed mp4 (Fal-hosted; valid for stitching).
  */
-export async function muxAudioOntoVideo({ videoUrl, audioUrl, durationMs = 8000 }) {
+export async function muxAudioOntoVideo({ videoUrl, audioUrl, durationMs = 10000 }) {
     if (!process.env.FAL_KEY) {
         throw new Error('Missing FAL_KEY env var (required for ffmpeg-api/compose).');
     }
