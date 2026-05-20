@@ -30,13 +30,13 @@ export async function muxAudioOntoVideo({ videoUrl, audioUrl, videoDurationMs = 
     if (!videoUrl) throw new Error('muxAudioOntoVideo: videoUrl is required.');
     if (!audioUrl) throw new Error('muxAudioOntoVideo: audioUrl is required.');
 
-    // Clamp audio to never exceed video length, but allow it to be shorter
-    // so the tail of the clip plays as natural silence rather than stretched.
-    const audioMs = Math.min(
-        audioDurationMs && audioDurationMs > 0 ? audioDurationMs : videoDurationMs,
-        videoDurationMs,
-    );
-
+    // Audio keyframe deliberately has NO `duration` field. Past experiments
+    // showed that declaring an explicit audio duration — even when it matches
+    // the mp3's actual length within ~100ms — caused Fal compose to pad or
+    // hold the final sample to fill the declared window exactly, producing a
+    // "voice sounds stuck at the end" artefact. Omitting the field lets the
+    // audio play to its natural end; the video track's `duration` defines the
+    // total clip length so the tail beyond the voiceover is natural silence.
     const requestBody = {
         tracks: [
             {
@@ -50,13 +50,14 @@ export async function muxAudioOntoVideo({ videoUrl, audioUrl, videoDurationMs = 
                 id: '2',
                 type: 'audio',
                 keyframes: [
-                    { url: audioUrl, timestamp: 0, duration: audioMs },
+                    { url: audioUrl, timestamp: 0 },
                 ],
             },
         ],
     };
 
-    console.log(`[Audio Mux] Composing scene: video=${videoUrl.slice(-60)} (${videoDurationMs}ms) + audio=${audioUrl.slice(-60)} (${audioMs}ms)`);
+    const audioMsLog = audioDurationMs && audioDurationMs > 0 ? `${audioDurationMs}ms` : 'natural';
+    console.log(`[Audio Mux] Composing scene: video=${videoUrl.slice(-60)} (${videoDurationMs}ms) + audio=${audioUrl.slice(-60)} (${audioMsLog})`);
 
     const response = await fetch(FAL_COMPOSE_URL, {
         method: 'POST',
