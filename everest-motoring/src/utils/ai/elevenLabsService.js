@@ -54,18 +54,18 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    // Append SSML break tags so the mp3 itself ends with several seconds of
-    // real silence. Without this, the mp3 is only ~5-7s but the muxed clip
-    // is 10s — and Fal compose fills the gap by HOLDING the last audio
-    // sample, producing a "voice sounds stuck at the end" artefact (Fal
-    // does NOT pad gaps with silence). Two 3-second breaks = 6s of trailing
-    // silence (eleven_multilingual_v2 caps individual breaks at ~3s, but
-    // chaining works). Combined with ~4-6s of speech, the mp3 is reliably
-    // 10-12s, so when we declare audio.duration=10000ms in the mux Fal just
-    // truncates trailing silence rather than padding with held audio.
-    const paddedText = `${text} <break time="3.0s"/><break time="3.0s"/>`;
+    // Append a 3-second SSML break so the mp3 itself ends with real silence.
+    // Without this, the mp3 is shorter than the muxed clip and Fal compose
+    // fills the gap by HOLDING the last audio sample, producing a "voice
+    // sounds stuck at the end" artefact (Fal does NOT pad gaps with silence).
+    // Voice (~4-5s) + 3s break = ~7-8s mp3, comfortably covering the 8s clip
+    // so Fal just truncates trailing silence at clip length rather than
+    // padding with held audio. Previously chained two 3s breaks at 10s clips;
+    // a single 3s break is the right size for 8s clips and gives roughly
+    // half the trailing-silence experience the user wanted to cut down.
+    const paddedText = `${text} <break time="3.0s"/>`;
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +6s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +3s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',

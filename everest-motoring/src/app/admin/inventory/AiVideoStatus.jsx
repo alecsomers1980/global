@@ -49,7 +49,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     };
 
     const handleRegenerate = async () => {
-        if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nScenes are rendered sequentially using the latest prompts (4 × 10-second clips). A full successful render is roughly $6.90 (Seedance 2 Fast 720p + ElevenLabs voiceover) and takes ~10–14 minutes; if a scene fails the pipeline aborts immediately, capping the cost at the per-scene spend.\n\nThe current video will be replaced once the new one finishes.")) return;
+        if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nScenes are rendered sequentially using the latest prompts (4 × 8-second clips). A full successful render is roughly $5.60 (Seedance 2 Fast 720p + ElevenLabs voiceover) and takes ~8–12 minutes; if a scene fails the pipeline aborts immediately, capping the cost at the per-scene spend.\n\nThe current video will be replaced once the new one finishes.")) return;
         setIsChecking(true);
         try {
             await queueAiWalkaround(carId);
