@@ -102,6 +102,14 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
     const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
     const audioUrl = data.publicUrl;
 
-    console.log(`[ElevenLabs] Scene ${sceneNum} audio stored: ${audioUrl}`);
-    return { audioUrl, bytes: audioBuffer.length };
+    // Estimate mp3 duration from byte length. ElevenLabs returns CBR 128kbps
+    // mp3 when we request `mp3_44100_128`, so bytes / 16000 ≈ seconds. This
+    // is precise enough for muxing (the Fal compose keyframe `duration`
+    // controls how long the audio track plays before silence — if we pass
+    // the clip duration instead, Fal pads/loops the audio tail, which is
+    // what causes the "voice sounds stuck at the end" glitch).
+    const durationMs = Math.round((audioBuffer.length / 16000) * 1000);
+
+    console.log(`[ElevenLabs] Scene ${sceneNum} audio stored: ${audioUrl} (${audioBuffer.length} bytes, ~${durationMs}ms)`);
+    return { audioUrl, bytes: audioBuffer.length, durationMs };
 }

@@ -141,7 +141,7 @@ export async function pollSingleClipAction(taskId, voiceoverText = null, carId =
             return { success: true, isComplete: true, videoUrl: result.videoUrl };
         }
 
-        const { audioUrl } = await synthesizeVoiceover({
+        const { audioUrl, durationMs: audioDurationMs } = await synthesizeVoiceover({
             text: voiceoverText,
             carId,
             sceneNum,
@@ -150,7 +150,8 @@ export async function pollSingleClipAction(taskId, voiceoverText = null, carId =
         const muxedUrl = await muxAudioOntoVideo({
             videoUrl: result.videoUrl,
             audioUrl,
-            durationMs: 10000,
+            videoDurationMs: 10000,
+            audioDurationMs,
         });
 
         return { success: true, isComplete: true, videoUrl: muxedUrl };
