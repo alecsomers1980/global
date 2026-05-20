@@ -20,6 +20,64 @@ function pickVariant(seed, pool, salt = 0) {
     return pool[(hashSeed(seed) + salt) % pool.length];
 }
 
+// Some models (especially Claude Haiku, which we fall back to when Gemini
+// is 503) echo the prompt's example output BEFORE giving their real answer.
+// A greedy regex pulls both arrays into one giant 8-entry payload and the
+// pipeline tries to render all 8 scenes. This walks the text with a proper
+// bracket counter, finds every balanced top-level JSON array, then prefers
+// the LAST one with exactly 4 scene objects — the model's real answer
+// typically follows the echoed example. Falls back to the first parseable
+// array if nothing matches the 4-scene shape.
+function extractSceneArray(text) {
+    if (typeof text !== 'string') throw new Error('Script response was not a string.');
+    const candidates = [];
+    let depth = 0;
+    let start = -1;
+    let inString = false;
+    let escape = false;
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        // String-aware so brackets inside string literals (e.g. "[year make model]"
+        // placeholders the AI might quote in its prose) don't throw off depth.
+        if (escape) { escape = false; continue; }
+        if (ch === '\\') { escape = true; continue; }
+        if (ch === '"') { inString = !inString; continue; }
+        if (inString) continue;
+        if (ch === '[') {
+            if (depth === 0) start = i;
+            depth++;
+        } else if (ch === ']') {
+            depth--;
+            if (depth === 0 && start !== -1) {
+                candidates.push(text.slice(start, i + 1));
+                start = -1;
+            } else if (depth < 0) {
+                depth = 0;
+                start = -1;
+            }
+        }
+    }
+
+    const isSceneArray = (arr) =>
+        Array.isArray(arr) &&
+        arr.length === 4 &&
+        arr.every(s => s && typeof s === 'object' && Number.isFinite(s.scene));
+
+    // Prefer the LAST balanced array that looks like a 4-scene answer.
+    for (let i = candidates.length - 1; i >= 0; i--) {
+        try {
+            const arr = JSON.parse(candidates[i]);
+            if (isSceneArray(arr)) return arr;
+        } catch (e) { /* try previous */ }
+    }
+    // Fallback: first parseable array (even if shape is off, we'll catch
+    // length issues downstream).
+    for (const c of candidates) {
+        try { return JSON.parse(c); } catch (e) { /* try next */ }
+    }
+    throw new Error('Could not extract a valid scene array from the script response.');
+}
+
 // Pulls the spoken line out of the AUDIO block in a visual_prompt. The block
 // looks like: AUDIO: "...Background sound is very low: 'Hello world.'"
 // or AUDIO: "...Background sound is very low: Hello world."
@@ -103,6 +161,11 @@ Scene 4: Closer (Same hero image as Scene 1, CTA voiceover)
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`, \`voiceover_text\`.
 Do not include markdown formatting outside the JSON array.
 
+CRITICAL OUTPUT RULES:
+- Your response must START with the character \`[\` and END with the character \`]\`. Nothing before, nothing after — no prose preamble, no "Here is the script:", no closing remarks, no markdown code fences.
+- The response must contain EXACTLY ONE JSON array. Do NOT include the example output below in your response. Do NOT repeat or quote the example. The example is for your reference only and must NOT appear anywhere in what you return.
+- The array must contain EXACTLY 4 objects (one per scene), numbered scene: 1, 2, 3, 4.
+
 - \`visual_prompt\` is a single short paragraph (2–3 sentences) describing the photograph being slowly zoomed in, plus the AUDIO line as instructed above (this keeps the Veo backup engine working).
 - \`voiceover_text\` is the CLEAN spoken line ONLY — just the words the South African woman says, NO surrounding "AUDIO:" wrapper, NO voice description, NO quotation marks, NO brackets. Plain prose, the exact words to be spoken. MAX 11 words. This is the same line that appears inside the AUDIO block of \`visual_prompt\`, but extracted as a standalone string so it can be sent to a separate TTS service.
 
@@ -122,10 +185,15 @@ Example Output:
         });
         console.log(`[Script] Generated via ${providerUsed}`);
 
-        // Extract the first JSON array from the response; tolerate stray prose/markdown.
-        const match = text.match(/\[[\s\S]*\]/);
-        const jsonText = match ? match[0] : text.replace(/```json/g, '').replace(/```/g, '').trim();
-        const parsed = JSON.parse(jsonText);
+        const parsed = extractSceneArray(text);
+
+        // Guard against the AI returning the wrong number of scenes — every
+        // downstream stage assumes exactly 4 (the four scene images, the
+        // queue manager's per-scene poll, the stitch ordering). Anything
+        // else means the response was malformed and we should fall back.
+        if (!Array.isArray(parsed) || parsed.length !== 4) {
+            throw new Error(`Script response had ${Array.isArray(parsed) ? parsed.length : 'non-array'} scenes; expected exactly 4.`);
+        }
 
         // Backfill voiceover_text from the AUDIO block in visual_prompt when the
         // model forgets to emit the dedicated field. The Seedance pipeline needs
