@@ -54,7 +54,18 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    // Append SSML break tags so the mp3 itself ends with several seconds of
+    // real silence. Without this, the mp3 is only ~5-7s but the muxed clip
+    // is 10s — and Fal compose fills the gap by HOLDING the last audio
+    // sample, producing a "voice sounds stuck at the end" artefact (Fal
+    // does NOT pad gaps with silence). Two 3-second breaks = 6s of trailing
+    // silence (eleven_multilingual_v2 caps individual breaks at ~3s, but
+    // chaining works). Combined with ~4-6s of speech, the mp3 is reliably
+    // 10-12s, so when we declare audio.duration=10000ms in the mux Fal just
+    // truncates trailing silence rather than padding with held audio.
+    const paddedText = `${text} <break time="3.0s"/><break time="3.0s"/>`;
+
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +6s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',
@@ -64,7 +75,7 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
             'Accept': 'audio/mpeg',
         },
         body: JSON.stringify({
-            text,
+            text: paddedText,
             model_id: process.env.ELEVENLABS_MODEL_ID || DEFAULT_MODEL,
             voice_settings: DEFAULT_VOICE_SETTINGS,
         }),

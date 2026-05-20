@@ -141,18 +141,26 @@ export async function pollSingleClipAction(taskId, voiceoverText = null, carId =
             return { success: true, isComplete: true, videoUrl: result.videoUrl };
         }
 
-        const { audioUrl, durationMs: audioDurationMs } = await synthesizeVoiceover({
+        const { audioUrl, durationMs: actualAudioMs } = await synthesizeVoiceover({
             text: voiceoverText,
             carId,
             sceneNum,
         });
 
+        // The synthesized mp3 includes ~6s of trailing silence (SSML break),
+        // so it's reliably 10-12s long. Declaring audio.duration = clip length
+        // makes Fal compose truncate the trailing silence at exactly 10s
+        // rather than pad a gap with the held last voice sample.
+        const VIDEO_MS = 10000;
         const muxedUrl = await muxAudioOntoVideo({
             videoUrl: result.videoUrl,
             audioUrl,
-            videoDurationMs: 10000,
-            audioDurationMs,
+            videoDurationMs: VIDEO_MS,
+            audioDurationMs: VIDEO_MS,
         });
+        if (actualAudioMs && actualAudioMs < VIDEO_MS) {
+            console.warn(`[poll] Scene ${sceneNum ?? '?'} mp3 was only ${actualAudioMs}ms (< ${VIDEO_MS}ms clip). SSML break may not have applied — voice may sound stuck at the end.`);
+        }
 
         return { success: true, isComplete: true, videoUrl: muxedUrl };
     } catch (error) {
