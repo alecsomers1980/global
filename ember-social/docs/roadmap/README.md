@@ -19,8 +19,9 @@ This sprint compresses the highest-value items into a focused 4-day implementati
 - [ ] **Day 2** — Smart campaign generator + per-platform variants. "Generate Marketing Plan" button uses the Day 1 scan to produce a 30-day plan with FB/IG/TikTok variants and a `strategy_rationale` explaining cadence. See [day-2-smart-campaign-variants.md](./day-2-smart-campaign-variants.md).
 - [ ] **Day 3** — Client review portal. Shareable `/plan/<token>` link, per-post comments, change-requests, bulk approval, PDF export with brand colours. See [day-3-review-portal-pdf.md](./day-3-review-portal-pdf.md).
 - [ ] **Day 4** — Per-platform composer previews + IG first-comment + Everest operational pass. Also stretch: GBP publishing wiring. See [day-4-platform-previews-everest-polish.md](./day-4-platform-previews-everest-polish.md).
+- [ ] **Day 5** — Inventory-aware campaign variants. Generator pulls from the client's `cars` (or other inventory) table via `client_supabase_url`, features real vehicles in posts, attaches existing product photos. For Everest: 70% of generated posts feature a real car with its photo. See [day-5-inventory-aware-variants.md](./day-5-inventory-aware-variants.md).
 
-Below is the original phased backlog. The 4-day sprint subsumes A2 and parts of B1, B3; the rest remains valid for post-sprint work.
+Below is the original phased backlog. The Everest sprint subsumes A2 and parts of B1, B3; the rest remains valid for post-sprint work.
 
 ## Original phased backlog
 

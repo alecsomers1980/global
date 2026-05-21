@@ -62,17 +62,25 @@ export default function CalendarPage({ params }: { params: Promise<{ id: string 
     }
 
     const handleGenerateMonth = async () => {
-        // In a full implementation, this calls /api/ai/strategy
-        // and saves the results to the 'posts' table.
-        // For Phase 1 MVP, we trigger the endpoint.
         setGenerating(true)
-        alert("AI generation started. This takes ~30 seconds for a full month.")
-
-        // Mock simulation for now
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/workspaces/campaign/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ workspaceId, durationDays: 30 })
+            })
+            const data = await res.json()
+            if (data.ok) {
+                alert(`Generated ${data.count} posts`)
+                fetchPosts(workspaceId)
+            } else {
+                alert(`Generation failed: ${data.error || 'unknown'}`)
+            }
+        } catch (err: any) {
+            alert(`Generation failed: ${err.message}`)
+        } finally {
             setGenerating(false)
-            fetchPosts(workspaceId)
-        }, 2000)
+        }
     }
 
     if (loading) return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-orange-500" /></div>

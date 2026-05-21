@@ -1,18 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/client'
 import { rewriteSocialContent } from '@/lib/ai/rewrite-content'
+import { isSunday } from '@/lib/scheduling'
 import crypto from 'crypto'
 
 const MAX_CARS_PER_DAY = 1
 
-function isSundayUtc(dateStr: string): boolean {
-    // dateStr is YYYY-MM-DD; UTC day-of-week 0 = Sunday. The post times for
-    // SAST clients (07:30/11:00/14:00 UTC = 09:30/13:00/16:00 SAST) sit inside
-    // the same UTC calendar day, so checking UTC Sunday is correct here.
-    return new Date(`${dateStr}T00:00:00Z`).getUTCDay() === 0
-}
-
-async function getNextAvailableDate(
+async function getNextAvailableDateForVehicle(
     supabase: any,
     workspaceId: string,
     vehicleId: string,
@@ -24,9 +18,7 @@ async function getNextAvailableDate(
     const now = new Date()
 
     // If this vehicle already has at least one future post scheduled, keep
-    // every post in the same batch on that same day. Without this, each
-    // call (feed/reel/video) is independent and the multi-post batch can
-    // split across days when one preferred_time has already passed today.
+    // every post in the same batch on that same day.
     const { data: existing } = await supabase
         .from('posts')
         .select('scheduled_at')
@@ -45,11 +37,9 @@ async function getNextAvailableDate(
         checkDate.setDate(checkDate.getDate() + dayOffset)
         const dateStr = checkDate.toISOString().split('T')[0] // YYYY-MM-DD
 
-        if (isSundayUtc(dateStr)) continue
+        if (isSunday(checkDate)) continue
 
-        // Skip today if the preferred time has already passed today —
-        // otherwise the trigger writes a scheduled_at in the past and the
-        // cron fires it immediately, not at the intended slot tomorrow.
+        // Skip today if the preferred time has already passed today
         if (dayOffset === 0 && preferredTime) {
             const slot = new Date(`${dateStr}T${preferredTime}:00Z`)
             if (slot.getTime() <= now.getTime()) continue
@@ -77,7 +67,7 @@ async function getNextAvailableDate(
     const fallback = new Date(now)
     fallback.setDate(fallback.getDate() + 30)
     let fallbackStr = fallback.toISOString().split('T')[0]
-    while (isSundayUtc(fallbackStr)) {
+    while (isSunday(new Date(`${fallbackStr}T00:00:00Z`))) {
         const next = new Date(`${fallbackStr}T00:00:00Z`)
         next.setUTCDate(next.getUTCDate() + 1)
         fallbackStr = next.toISOString().split('T')[0]
@@ -132,7 +122,7 @@ export async function POST(req: Request) {
             finalScheduledAt = new Date(scheduled_at).toISOString()
         } else if (preferred_time && vehicle_id) {
             // Smart scheduling: find next available day, apply preferred time
-            const availableDate = await getNextAvailableDate(supabase, keyAny.workspace_id, vehicle_id, preferred_time)
+            const availableDate = await getNextAvailableDateForVehicle(supabase, keyAny.workspace_id, vehicle_id, preferred_time)
             finalScheduledAt = `${availableDate}T${preferred_time}:00Z`
         }
 
