@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 
 export async function POST(req: Request) {
     try {
@@ -7,6 +8,8 @@ export async function POST(req: Request) {
         const { workspaceId, intel } = body
 
         if (!workspaceId) return NextResponse.json({ error: 'Missing Workspace ID' }, { status: 400 })
+
+        const resolvedId = await resolveWorkspaceId(workspaceId)
 
         // Initialize Supabase with Service Role Key to bypass RLS
         const supabase = createClient(
@@ -17,7 +20,7 @@ export async function POST(req: Request) {
         const { data, error } = await supabase
             .from('client_intelligence')
             .upsert({
-                workspace_id: workspaceId,
+                workspace_id: resolvedId,
                 industry: intel.industry,
                 target_audience: intel.target_audience,
                 brand_voice: intel.brand_voice,

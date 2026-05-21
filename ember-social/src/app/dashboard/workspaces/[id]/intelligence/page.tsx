@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client-browser'
-import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare, Globe, Wand2, Plus, Check } from 'lucide-react'
+import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare, Globe, Wand2, Plus, Check, X, Minus } from 'lucide-react'
 import Link from 'next/link'
 import type { Database } from '@/types/database'
 
@@ -17,6 +17,9 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
     const [generating, setGenerating] = useState(false)
     const [websiteUrl, setWebsiteUrl] = useState('')
     const [campaign, setCampaign] = useState<any>(null)
+    const [scanning, setScanning] = useState(false)
+    const [scanResults, setScanResults] = useState<any>(null)
+    const [scanBanner, setScanBanner] = useState<string | null>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -27,13 +30,13 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
     }, [params])
 
     const fetchIntel = async (workspaceId: string) => {
-        const { data } = await supabase
-            .from('client_intelligence')
-            .select('*')
-            .eq('workspace_id', workspaceId)
-            .single()
-
-        if (data) setIntel(data)
+        try {
+            const res = await fetch(`/api/workspaces/intelligence?workspaceId=${encodeURIComponent(workspaceId)}`)
+            const data = await res.json()
+            if (data.intel) setIntel(data.intel)
+        } catch (err) {
+            console.error('fetchIntel failed:', err)
+        }
         setLoading(false)
     }
 
@@ -91,6 +94,38 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
             console.error('Campaign generation failed:', error)
         } finally {
             setGenerating(false)
+        }
+    }
+
+    const handleScanAll = async () => {
+        if (!websiteUrl) return
+        setScanning(true)
+        setScanResults(null)
+        setScanBanner(null)
+        try {
+            const res = await fetch('/api/workspaces/intake/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ workspaceId: id, websiteUrl })
+            })
+            const data = await res.json()
+            setScanResults(data)
+
+            const ready: string[] = []
+            if (data.brand === 'ok') ready.push('brand')
+            if (data.website === 'ok') ready.push('website')
+            if (data.social === 'ok') ready.push('social')
+            if (ready.length > 0) {
+                setScanBanner(`Scan complete — ${ready.join('|')} ready.`)
+            }
+
+            // Re-fetch intel after scan
+            fetchIntel(id)
+        } catch (error: any) {
+            console.error('Scan failed:', error)
+            setScanResults({ brand: 'failed', website: 'failed', social: 'failed', results: {} })
+        } finally {
+            setScanning(false)
         }
     }
 
@@ -168,6 +203,89 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
                     </button>
                 </div>
             </div>
+
+            {/* Scan brand + social */}
+            <div className="glass-card p-6" style={{ border: '1px solid rgba(249,115,22,0.25)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                    <Wand2 className="w-4 h-4 text-orange-400" />
+                    <h2 className="font-semibold text-white">Scan brand + social</h2>
+                </div>
+                <div className="flex gap-2 mb-3">
+                    <input
+                        type="url"
+                        placeholder="Enter client website URL (e.g. https://everestmotoring.co.za)"
+                        value={websiteUrl}
+                        onChange={e => setWebsiteUrl(e.target.value)}
+                        className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                        style={{ background: '#0a0a0f', border: '1px solid #1a1a27' }}
+                    />
+                    <button
+                        onClick={handleScanAll}
+                        disabled={scanning || !websiteUrl}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
+                        style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                        {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                        {scanning ? 'Scanning...' : 'Scan brand + social'}
+                    </button>
+                </div>
+                <p className="text-[10px]" style={{ color: '#4a4a6a' }}>
+                    Analyses the website for brand identity, business DNA, and scans connected Facebook &amp; Instagram accounts for posting history.
+                </p>
+
+                {/* Progress card */}
+                {scanning && (
+                    <div className="mt-4 p-4 rounded-xl space-y-2" style={{ background: '#0a0a0f', border: '1px solid #1a1a27' }}>
+                        {['brand', 'website', 'social'].map(scan => (
+                            <div key={scan} className="flex items-center justify-between text-sm">
+                                <span className="capitalize" style={{ color: '#9090b0' }}>{scan} scan</span>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-orange-400" />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Results card */}
+                {scanResults && !scanning && (
+                    <div className="mt-4 p-4 rounded-xl space-y-2" style={{ background: '#0a0a0f', border: '1px solid #1a1a27' }}>
+                        {[
+                            { key: 'brand', label: 'Brand' },
+                            { key: 'website', label: 'Website' },
+                            { key: 'social', label: 'Social' }
+                        ].map(({ key, label }) => {
+                            const status: string = scanResults[key] || 'failed'
+                            return (
+                                <div key={key} className="flex items-center justify-between text-sm">
+                                    <span style={{ color: '#9090b0' }}>{label} scan</span>
+                                    {status === 'ok' ? (
+                                        <span className="flex items-center gap-1 text-green-400">
+                                            <Check className="w-3.5 h-3.5" />
+                                        </span>
+                                    ) : status === 'skipped' ? (
+                                        <span className="flex items-center gap-1" style={{ color: '#5a5a7a' }}>
+                                            <Minus className="w-3.5 h-3.5" />
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 text-red-400">
+                                            <X className="w-3.5 h-3.5" />
+                                        </span>
+                                    )}
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* Dismissible success banner */}
+            {scanBanner && (
+                <div className="flex items-center justify-between px-4 py-3 rounded-xl text-sm"
+                    style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#bbf7d0' }}>
+                    <span>{scanBanner}</span>
+                    <button onClick={() => setScanBanner(null)} className="text-green-300 hover:text-white transition-colors">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
 
             {/* Pomelli Style Analysis */}
             <div className="glass-card p-6 border-dashed border-orange-500/30">

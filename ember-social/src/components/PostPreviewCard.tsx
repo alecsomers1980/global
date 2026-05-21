@@ -52,7 +52,11 @@ const PLATFORM_ICONS: Record<string, typeof Facebook> = {
 }
 
 function isImageUrl(url: string): boolean {
-    return /\.(jpg|jpeg|png|gif|webp|svg|avif)(\?.*)?$/i.test(url)
+    return /\.(jpg|jpeg|png|gif|webp|svg|avif|heic|heif|bmp|tiff?)\b/i.test(url)
+}
+
+function hideOnError(e: React.SyntheticEvent<HTMLImageElement>) {
+    e.currentTarget.style.display = 'none'
 }
 
 function detectPostType(content: string): { type: 'video' | 'reel' | 'feed'; label: string; color: string; icon: string } {
@@ -100,7 +104,7 @@ function PlatformMockup({
                 {mediaUrl && (
                     <div className="relative aspect-video" style={{ background: '#13131a' }}>
                         {isImageUrl(mediaUrl) ? (
-                            <img src={mediaUrl} alt="" className="w-full h-full object-cover" />
+                            <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
                                 <Play className="w-10 h-10 text-white/40" />
@@ -138,7 +142,7 @@ function PlatformMockup({
                 {/* Media area (square) */}
                 <div className="relative aspect-square" style={{ background: '#13131a' }}>
                     {mediaUrl && isImageUrl(mediaUrl) ? (
-                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" />
+                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                     ) : mediaUrl ? (
                         <div className="w-full h-full flex items-center justify-center">
                             <Play className="w-10 h-10 text-white/40" />
@@ -168,7 +172,7 @@ function PlatformMockup({
                 {/* Thumbnail (16:9) */}
                 <div className="relative aspect-video" style={{ background: '#13131a' }}>
                     {mediaUrl && isImageUrl(mediaUrl) ? (
-                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" />
+                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
                             <div className="w-14 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,0,0,0.9)' }}>
@@ -205,7 +209,7 @@ function PlatformMockup({
             {mediaUrl && (
                 <div className="relative aspect-video rounded-lg overflow-hidden" style={{ background: '#13131a' }}>
                     {isImageUrl(mediaUrl) ? (
-                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" />
+                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
                             <Play className="w-8 h-8 text-white/40" />
@@ -316,7 +320,7 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                             {post.media_urls.map((url, i) => (
                                 <div key={i} className="w-24 h-24 rounded-lg overflow-hidden shrink-0" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
                                     {isImageUrl(url) ? (
-                                        <img src={url} alt="" className="w-full h-full object-cover" />
+                                        <img src={url} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
                                             <Play className="w-6 h-6 text-white/30" />
