@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, RotateCcw, Clock, Image as ImageIcon, Play, Facebook, Youtube, Instagram, Loader2, Zap, Trash2 } from 'lucide-react'
+import { Check, RotateCcw, Clock, Image as ImageIcon, Play, Facebook, Youtube, Instagram, Loader2, Zap, Trash2, Wand2 } from 'lucide-react'
 import { PLATFORM_LABELS, PLATFORM_COLORS } from '@/lib/utils'
 import type { Database } from '@/types/database'
 
@@ -23,6 +23,7 @@ interface PostPreviewCardProps {
     onReject?: (postId: string) => Promise<void> | void
     onPostNow?: (postId: string) => Promise<void> | void
     onDelete?: (postId: string) => Promise<void> | void
+    onRegenerateImage?: (postId: string) => Promise<void> | void
 }
 
 const STATUS_DOT: Record<string, string> = {
@@ -100,9 +101,9 @@ function PlatformMockup({
                 <div className="px-3 py-2.5">
                     <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: '#c0c0d0' }}>{truncated}</p>
                 </div>
-                {/* Media */}
+                {/* Media — campaign-media images are 2:3 portrait; match aspect to avoid cropping the branded logo */}
                 {mediaUrl && (
-                    <div className="relative aspect-video" style={{ background: '#13131a' }}>
+                    <div className="relative aspect-[2/3]" style={{ background: '#13131a' }}>
                         {isImageUrl(mediaUrl) ? (
                             <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                         ) : (
@@ -139,8 +140,8 @@ function PlatformMockup({
                     )}
                     <p className="text-xs font-semibold text-white">account</p>
                 </div>
-                {/* Media area (square) */}
-                <div className="relative aspect-square" style={{ background: '#13131a' }}>
+                {/* Media area — 2:3 to match generated portrait images */}
+                <div className="relative aspect-[2/3]" style={{ background: '#13131a' }}>
                     {mediaUrl && isImageUrl(mediaUrl) ? (
                         <img src={mediaUrl} alt="" className="w-full h-full object-cover" onError={hideOnError} />
                     ) : mediaUrl ? (
@@ -226,7 +227,7 @@ function PlatformMockup({
     )
 }
 
-export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReject, onPostNow, onDelete }: PostPreviewCardProps) {
+export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReject, onPostNow, onDelete, onRegenerateImage }: PostPreviewCardProps) {
     const [actionLoading, setActionLoading] = useState<string | null>(null)
     const accent = brandKit?.accent_color || '#f97316'
     const firstMedia = post.media_urls?.[0] || null
@@ -258,6 +259,13 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
         if (!confirm('Delete this post permanently? This cannot be undone.')) return
         setActionLoading('delete')
         await onDelete(post.id)
+        setActionLoading(null)
+    }
+
+    const handleRegenerateImage = async () => {
+        if (!onRegenerateImage) return
+        setActionLoading('regenerate')
+        await onRegenerateImage(post.id)
         setActionLoading(null)
     }
 
@@ -312,23 +320,43 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                     <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
                 </div>
 
-                {/* Media gallery */}
-                {post.media_urls && post.media_urls.length > 0 && (
+                {/* Media gallery — always shown when onRegenerateImage is provided so the regenerate button has a home even when no image landed yet */}
+                {(onRegenerateImage || (post.media_urls && post.media_urls.length > 0)) && (
                     <div className="mb-5">
-                        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: '#3a3a5a' }}>Media ({post.media_urls.length})</p>
-                        <div className="flex gap-2 overflow-x-auto pb-1">
-                            {post.media_urls.map((url, i) => (
-                                <div key={i} className="w-24 h-24 rounded-lg overflow-hidden shrink-0" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
-                                    {isImageUrl(url) ? (
-                                        <img src={url} alt="" className="w-full h-full object-cover" onError={hideOnError} />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <Play className="w-6 h-6 text-white/30" />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#3a3a5a' }}>
+                                Media {post.media_urls && post.media_urls.length > 0 ? `(${post.media_urls.length})` : '(none)'}
+                            </p>
+                            {onRegenerateImage && (
+                                <button
+                                    onClick={handleRegenerateImage}
+                                    disabled={actionLoading !== null}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 hover:bg-white/5"
+                                    style={{ border: '1px solid rgba(249,115,22,0.3)', color: '#f97316' }}
+                                    title="Generate a new AI image with the same prompt"
+                                >
+                                    {actionLoading === 'regenerate' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+                                    {post.media_urls && post.media_urls.length > 0 ? 'Regenerate image' : 'Generate image'}
+                                </button>
+                            )}
                         </div>
+                        {post.media_urls && post.media_urls.length > 0 ? (
+                            <div className="flex gap-2 overflow-x-auto pb-1">
+                                {post.media_urls.map((url, i) => (
+                                    <div key={i} className="w-24 h-24 rounded-lg overflow-hidden shrink-0" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
+                                        {isImageUrl(url) ? (
+                                            <img src={url} alt="" className="w-full h-full object-cover" onError={hideOnError} />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <Play className="w-6 h-6 text-white/30" />
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-xs italic" style={{ color: '#5a5a7a' }}>No image yet — click Generate image to create one.</div>
+                        )}
                     </div>
                 )}
 

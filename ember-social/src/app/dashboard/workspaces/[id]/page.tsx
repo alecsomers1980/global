@@ -3,12 +3,13 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import {
-    ArrowLeft, Brain, Wifi, WifiOff, PenLine, Calendar,
-    Inbox, BarChart2, Key, AlertTriangle, Palette, ShieldCheck, Newspaper
+    ArrowLeft, Brain, Wifi, PenLine, Calendar,
+    Inbox, BarChart2, Key, AlertTriangle, Palette, ShieldCheck, Newspaper, Link2
 } from 'lucide-react'
 import { PLATFORM_LABELS, PLATFORM_COLORS, formatDate } from '@/lib/utils'
 import { isUuid } from '@/lib/resolve-workspace'
 import GenerateMarketingPlanButton from '@/components/GenerateMarketingPlanButton'
+import RecentPlans from '@/components/RecentPlans'
 
 interface Props {
     params: Promise<{ id: string }>
@@ -32,7 +33,7 @@ export default async function WorkspacePage({ params }: Props) {
     const id = workspaceAny.id // real UUID for subsequent queries
     const slug = workspaceAny.slug || id // used for outgoing links
 
-    const [{ data: intel }, { data: socialAccounts }, { data: recentPosts }] = await Promise.all([
+    const [{ data: intel }, { data: socialAccounts }, { data: recentPosts }, { data: recentBatches }] = await Promise.all([
         supabase.from('client_intelligence').select('*').eq('workspace_id', id).single(),
         supabase.from('social_accounts').select('platform, account_name').eq('workspace_id', id),
         supabase.from('posts')
@@ -40,6 +41,11 @@ export default async function WorkspacePage({ params }: Props) {
             .eq('workspace_id', id)
             .order('created_at', { ascending: false })
             .limit(5),
+        supabase.from('campaign_batches')
+            .select('id, public_token, schedule_pattern, created_at, duration_days')
+            .eq('workspace_id', id)
+            .order('created_at', { ascending: false })
+            .limit(3),
     ])
 
     const { count: pendingCount } = await supabase
@@ -121,6 +127,9 @@ export default async function WorkspacePage({ params }: Props) {
 
             {/* Generate Marketing Plan CTA */}
             <GenerateMarketingPlanButton workspaceSlug={slug} suggestedCount={suggestedCount} />
+
+            {/* Recent client review links */}
+            <RecentPlans batches={(recentBatches as any[]) || []} />
 
             <div className="grid lg:grid-cols-3 gap-5">
                 {/* Platform status */}

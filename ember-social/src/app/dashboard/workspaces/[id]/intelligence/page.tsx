@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client-browser'
-import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare, Globe, Wand2, Plus, Check, X, Minus } from 'lucide-react'
+import { ArrowLeft, Brain, Save, Loader2, Sparkles, MessageSquare, Globe, Wand2, Plus, Check, X, Minus, Box } from 'lucide-react'
 import Link from 'next/link'
 import type { Database } from '@/types/database'
 
@@ -20,6 +20,7 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
     const [scanning, setScanning] = useState(false)
     const [scanResults, setScanResults] = useState<any>(null)
     const [scanBanner, setScanBanner] = useState<string | null>(null)
+    const [contentSource, setContentSource] = useState<any>(null)
     const supabase = createClient()
 
     useEffect(() => {
@@ -34,6 +35,7 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
             const res = await fetch(`/api/workspaces/intelligence?workspaceId=${encodeURIComponent(workspaceId)}`)
             const data = await res.json()
             if (data.intel) setIntel(data.intel)
+            if (data.contentSource) setContentSource(data.contentSource)
         } catch (err) {
             console.error('fetchIntel failed:', err)
         }
@@ -286,6 +288,31 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
                     </button>
                 </div>
             )}
+
+            {/* Content source (read-only) */}
+            <div className="glass-card p-6" style={{ border: '1px solid #1a1a27' }}>
+                <div className="flex items-center gap-2 mb-3">
+                    <Box className="w-4 h-4 text-orange-400" />
+                    <h2 className="font-semibold text-white">Content source</h2>
+                </div>
+                {contentSource?.type ? (
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-white capitalize">{contentSource.type}</span>
+                            {contentSource.type === 'vehicles' && contentSource.table && (
+                                <span className="text-xs" style={{ color: '#5a5a7a' }}>
+                                    &middot; {contentSource.table} table &middot; up to 40 active vehicles
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-sm" style={{ color: '#5a5a7a' }}>Text-only</p>
+                )}
+                <p className="text-[10px] mt-3" style={{ color: '#3a3a5a' }}>
+                    Set via SQL — <code className="text-[10px]" style={{ color: '#4a4a6a' }}>update workspaces set content_source = '...'</code> — see docs/roadmap/day-5-inventory-aware-variants.md.
+                </p>
+            </div>
 
             {/* Pomelli Style Analysis */}
             <div className="glass-card p-6 border-dashed border-orange-500/30">
