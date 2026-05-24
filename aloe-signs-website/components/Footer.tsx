@@ -81,7 +81,6 @@ export default function Footer() {
                         <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] mb-8">QUICK LINKS</h4>
                         <ul className="space-y-4 text-white/50 font-semibold text-sm">
                             <li><Link href="/shop" className="hover:text-aloe-green transition-colors">SHOP ALL</Link></li>
-                            <li><Link href="/portfolio" className="hover:text-aloe-green transition-colors">OUR WORK</Link></li>
                             <li><Link href="/about" className="hover:text-aloe-green transition-colors">ABOUT US</Link></li>
                             <li><Link href="/contact" className="hover:text-aloe-green transition-colors">CONTACT</Link></li>
                             <li><Link href="/get-quote" className="hover:text-aloe-green transition-colors">LET&apos;S START A PROJECT</Link></li>
