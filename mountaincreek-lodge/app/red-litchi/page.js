@@ -55,8 +55,8 @@ export default function RedLitchiPage() {
               alt="Red Litchi Farm Cafe Logo"
               fill
               quality={100}
-              unoptimized={true}
               className="object-contain"
+              sizes="(max-width: 768px) 160px, 192px"
             />
           </div>
           <a
@@ -172,9 +172,9 @@ export default function RedLitchiPage() {
                   alt={`Red Litchi Gallery Image ${index + 1}`}
                   width={800}
                   height={600}
-                  quality={100}
-                  unoptimized={true}
+                  quality={90}
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                 />
               </div>
             ))}
@@ -232,9 +232,9 @@ export default function RedLitchiPage() {
               src={galleryImages[lightboxIndex]}
               alt={`Fullscreen image ${lightboxIndex + 1}`}
               fill
-              quality={100}
-              unoptimized={true}
+              quality={95}
               className="object-contain"
+              sizes="100vw"
             />
           </div>
 

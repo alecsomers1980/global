@@ -1,13 +1,22 @@
 "use client";
 
+import Image from "next/image";
+
 export default function Home() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-[url('/images/accommodation/IMG_8185.jpg')] bg-cover bg-center">
+      <section className="relative min-h-screen flex items-center justify-center">
+        <Image
+          src="/images/accommodation/IMG_8185.jpg"
+          alt="Hero Background"
+          fill
+          priority
+          className="object-cover -z-10"
+        />
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-          <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-4">
+          <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-4 tracking-tight">
             Experience the Lowveld Differently
           </h1>
           <p className="font-serif italic text-2xl md:text-3xl text-white/90 mb-6">
@@ -19,13 +28,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#packages"
-              className="bg-[var(--color-terracotta)] text-white px-8 py-3.5 font-semibold tracking-widest text-sm hover:opacity-90 transition-opacity"
+              className="bg-[var(--color-terracotta)] text-white px-8 py-3.5 font-semibold tracking-widest text-sm hover:scale-[1.02] transition-transform shadow-lg hover:shadow-xl"
             >
               EXPLORE PACKAGES
             </a>
             <a
               href="#book"
-              className="border border-white text-white px-8 py-3.5 font-semibold tracking-widest text-sm hover:bg-white hover:text-primary transition-colors"
+              className="border border-white text-white px-8 py-3.5 font-semibold tracking-widest text-sm hover:bg-white hover:text-primary transition-colors hover:scale-[1.02] transition-transform shadow-lg hover:shadow-xl"
             >
               BOOK YOUR ESCAPE
             </a>
@@ -39,7 +48,7 @@ export default function Home() {
           <p className="font-sans text-[var(--color-terracotta)] text-xs uppercase tracking-[0.3em] text-center mb-3">
             CURATED ESCAPES
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl text-center text-primary mb-4">
+          <h2 className="font-serif text-4xl md:text-5xl text-center text-primary mb-4 tracking-tight">
             Choose Your Experience
           </h2>
           <p className="font-sans text-primary/60 text-center text-lg max-w-2xl mx-auto mb-14">
@@ -94,14 +103,16 @@ export default function Home() {
                 style={{ minHeight: "420px" }}
               >
                 {/* Background Image */}
-                <img
+                <Image
                   src={card.img}
                   alt={card.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent backdrop-blur-[2px]" />
 
                 {/* Tag */}
                 {card.tag && (
@@ -112,7 +123,7 @@ export default function Home() {
 
                 {/* Content Overlay */}
                 <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-8">
-                  <h3 className="font-serif text-white text-2xl md:text-3xl mb-2 leading-tight">
+                  <h3 className="font-serif text-white text-2xl md:text-3xl mb-2 leading-tight tracking-tight">
                     {card.title}
                   </h3>
                   <p className="text-white/80 text-sm leading-relaxed mb-4 max-w-sm">
@@ -175,7 +186,7 @@ export default function Home() {
 
       {/* Moments at Mountain Creek Gallery */}
       <section className="bg-primary pt-20 pb-0">
-        <h2 className="font-serif text-4xl md:text-5xl text-center text-white mb-14 px-6">
+        <h2 className="font-serif text-4xl md:text-5xl text-center text-white mb-14 px-6 tracking-tight">
           Moments at Mountain Creek
         </h2>
         <div className="w-full">
@@ -189,12 +200,14 @@ export default function Home() {
             ].map((src, i) => (
               <div
                 key={i}
-                className={`overflow-hidden ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
+                className={`relative w-full h-64 md:h-80 overflow-hidden ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
               >
-                <img
+                <Image
                   src={src}
                   alt={`Gallery image ${i + 1}`}
-                  className="w-full h-64 md:h-80 object-cover hover:scale-105 transition-transform duration-500"
+                  fill
+                  sizes="(max-width: 768px) 50vw, 20vw"
+                  className="object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
             ))}
@@ -205,15 +218,17 @@ export default function Home() {
       {/* Bottom Call to Action Banner */}
       <section id="book" className="relative text-white py-24 px-6 overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src="/images/accommodation/IMG_8197.jpg" 
-            alt="Mountain Creek Lodge" 
-            className="w-full h-full object-cover opacity-30"
+          <Image
+            src="/images/accommodation/IMG_8197.jpg"
+            alt="Mountain Creek Lodge"
+            fill
+            className="object-cover opacity-30"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-primary/95 mix-blend-multiply" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-4xl md:text-6xl mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl mb-4 tracking-tight">
             Unwind. Explore. Experience.
           </h2>
           <p className="text-white/80 text-lg md:text-xl mb-10 leading-relaxed">
@@ -221,7 +236,7 @@ export default function Home() {
           </p>
           <a
             href="#book"
-            className="inline-block bg-[var(--color-terracotta)] text-white px-8 py-3 font-semibold tracking-widest text-sm hover:opacity-90 transition-opacity"
+            className="inline-block bg-[var(--color-terracotta)] text-white px-8 py-3 font-semibold tracking-widest text-sm hover:scale-[1.02] transition-transform shadow-lg hover:shadow-xl"
           >
             BOOK YOUR ESCAPE
           </a>
@@ -270,7 +285,7 @@ export default function Home() {
                 label: "Secure Property",
               },
             ].map((amenity, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 text-white/80">
+               <div key={i} className="flex flex-col items-center gap-2 text-white/80">
                 {amenity.icon}
                 <span className="text-xs tracking-wider font-medium">{amenity.label}</span>
               </div>

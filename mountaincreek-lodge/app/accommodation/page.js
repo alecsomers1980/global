@@ -300,9 +300,9 @@ function UnitCard({ unit, index }) {
             src={unit.images[currentImageIndex]}
             alt={`${unit.name} - Image ${currentImageIndex + 1}`}
             fill
-            quality={100}
-            unoptimized={true}
+            quality={90}
             className="object-cover transition-transform duration-700 group-hover/img:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
           {unit.images.length > 1 && (
@@ -503,9 +503,9 @@ function UnitCard({ unit, index }) {
               src={unit.images[currentImageIndex]}
               alt={`${unit.name} - Image ${currentImageIndex + 1} (Fullscreen)`}
               fill
-              quality={100}
-              unoptimized={true}
+              quality={95}
               className="object-contain"
+              sizes="100vw"
             />
           </div>
 

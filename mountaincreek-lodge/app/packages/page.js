@@ -73,10 +73,13 @@ export default function PackagesPage() {
                 {/* Image Side */}
                 <div className="relative w-full md:w-[45%] flex-shrink-0">
                   <div className="relative aspect-[4/3] md:aspect-auto md:h-full w-full overflow-hidden">
-                    <img
+                    <Image
                       src={pkg.image}
                       alt={pkg.title}
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                      fill
+                      quality={90}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-700 hover:scale-105"
                     />
                   </div>
                   {pkg.tag && (

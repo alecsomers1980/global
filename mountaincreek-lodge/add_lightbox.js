@@ -34,8 +34,8 @@ const newImageContainer = `{/* Image Slider */}
             src={unit.images[currentImageIndex]}
             alt={\`\${unit.name} - Image \${currentImageIndex + 1}\`}
             fill
-            quality={100}
-            unoptimized={true}
+            quality={90}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover/img:scale-105"
           />`;
 
@@ -95,8 +95,8 @@ const newArticleEnd = `      {/* Decorative corner accent */}
               src={unit.images[currentImageIndex]}
               alt={\`\${unit.name} - Image \${currentImageIndex + 1} (Fullscreen)\`}
               fill
-              quality={100}
-              unoptimized={true}
+              quality={95}
+              sizes="100vw"
               className="object-contain"
             />
           </div>
