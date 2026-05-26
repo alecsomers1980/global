@@ -8,7 +8,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
         <Image
-          src="/images/accommodation/IMG_8185.jpg"
+          src="/images/moments/dam.jpg"
           alt="Hero Background"
           fill
           priority
@@ -194,7 +194,7 @@ export default function Home() {
             {[
               "/images/moments/1.jpg",
               "/images/moments/4.jpg",
-              "/images/moments/Dam .JPG",
+              "/images/moments/dam.jpg",
               "/images/moments/IMG_4003.JPG",
               "/images/moments/IMG_4101.JPG",
             ].map((src, i) => (
