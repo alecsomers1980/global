@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { publishPost } from '@/lib/publish'
+import { fetchEngagementSnapshot } from '@/lib/engagement/fetchEngagement'
 
 export const maxDuration = 300;
 
@@ -89,7 +90,20 @@ export async function GET(req: Request) {
             }
         }
 
-        return NextResponse.json({ success: true, published: allPosts.length, results })
+        // Fetch engagement for previously published posts — best-effort
+        let engagementSummary = { updated: 0, errors: 0 }
+        try {
+            engagementSummary = await fetchEngagementSnapshot(supabase)
+        } catch (err: any) {
+            console.error('publish-scheduled: engagement fetch error:', err)
+        }
+
+        return NextResponse.json({
+            success: true,
+            published: allPosts.length,
+            results,
+            engagement: engagementSummary
+        })
     } catch (error: any) {
         console.error('publish-scheduled cron error:', error)
         return NextResponse.json({ error: error.message }, { status: 500 })

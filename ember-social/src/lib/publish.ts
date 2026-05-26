@@ -19,13 +19,26 @@ export interface PublishOutcome {
     results: PublishResult[]
 }
 
+// Facebook returns a vague "Please reduce the amount of data..." error when
+// the combined message + attached_media payload is too large. Caps below keep
+// long-form vehicle descriptions + 10-photo carousels under that threshold
+// while still looking good on the feed.
+const FB_MAX_MESSAGE_CHARS = 5000
+const FB_MAX_CAROUSEL_PHOTOS = 5
+
+function trimForFacebook(content: string): string {
+    if (!content || content.length <= FB_MAX_MESSAGE_CHARS) return content
+    return content.slice(0, FB_MAX_MESSAGE_CHARS - 1).trimEnd() + '…'
+}
+
 async function publishToFacebook(
     pageId: string,
     accessToken: string,
-    content: string,
+    rawContent: string,
     mediaUrls: string[] | null
 ): Promise<{ id: string }> {
     const apiBase = `https://graph.facebook.com/v19.0/${pageId}`
+    const content = trimForFacebook(rawContent)
 
     if (!mediaUrls || mediaUrls.length === 0) {
         const res = await fetch(`${apiBase}/feed`, {
@@ -77,7 +90,7 @@ async function publishToFacebook(
     }
 
     const photoIds: string[] = []
-    for (const mediaUrl of mediaUrls.slice(0, 10)) {
+    for (const mediaUrl of mediaUrls.slice(0, FB_MAX_CAROUSEL_PHOTOS)) {
         const res = await fetch(`${apiBase}/photos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -106,16 +119,25 @@ async function publishToFacebook(
     return { id: feedData.id }
 }
 
+// Instagram captions cap at 2,200 chars per Meta docs.
+const IG_MAX_CAPTION_CHARS = 2200
+
+function trimForInstagram(content: string): string {
+    if (!content || content.length <= IG_MAX_CAPTION_CHARS) return content
+    return content.slice(0, IG_MAX_CAPTION_CHARS - 1).trimEnd() + '…'
+}
+
 async function publishToInstagram(
     igUserId: string,
     accessToken: string,
-    content: string,
+    rawContent: string,
     mediaUrls: string[] | null
 ): Promise<{ id: string }> {
     if (!mediaUrls || mediaUrls.length === 0) {
         throw new Error('Instagram requires at least one image or video')
     }
 
+    const content = trimForInstagram(rawContent)
     const apiBase = `https://graph.facebook.com/v19.0/${igUserId}`
 
     let firstMedia = mediaUrls[0]
@@ -251,7 +273,7 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
 
     const { data: post, error: postErr } = await supabase
         .from('posts')
-        .select('id, workspace_id, content, platforms, media_urls')
+        .select('id, workspace_id, content, platforms, media_urls, first_comment')
         .eq('id', postId)
         .single()
 
@@ -307,16 +329,55 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
                     postAny.content,
                     postAny.media_urls
                 )
+
+                // Post first-comment on IG after successful publish — best-effort
+                let firstCommentWarning: string | null = null
+                if (postAny.first_comment && publishedRef?.id) {
+                    try {
+                        const commentRes = await fetch(
+                            `https://graph.facebook.com/v19.0/${publishedRef.id}/comments`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    message: postAny.first_comment,
+                                    access_token: account.access_token,
+                                }),
+                            }
+                        )
+                        const commentData = await commentRes.json()
+                        if (commentData.error) {
+                            firstCommentWarning = `first_comment failed: ${commentData.error.message}`
+                            console.error('publishPost: IG first comment error:', commentData.error)
+                        }
+                    } catch (err: any) {
+                        firstCommentWarning = `first_comment failed: ${err.message}`
+                        console.error('publishPost: IG first comment exception:', err)
+                    }
+                }
+
+                if (firstCommentWarning) {
+                    // Append warning to last_error later — track it on the result
+                    ;(publishedRef as any)._firstCommentWarning = firstCommentWarning
+                }
             } else {
                 throw new Error(`Publishing to ${account.platform} not yet supported`)
             }
 
-            results.push({
+            const resultEntry: PublishResult = {
                 platform: account.platform,
                 account_name: account.account_name,
                 success: true,
                 post_id: publishedRef?.id,
-            })
+            }
+
+            // Attach first-comment warning if present
+            const fcWarn = (publishedRef as any)?._firstCommentWarning
+            if (fcWarn) {
+                ;(resultEntry as any).first_comment_warning = fcWarn
+            }
+
+            results.push(resultEntry)
         } catch (err: any) {
             console.error(`Publish error for ${account.platform}:`, err)
             results.push({
@@ -331,9 +392,17 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
     const anySuccess = results.some(r => r.success)
     const allSuccess = results.every(r => r.success)
     const failed = results.filter(r => !r.success)
-    const lastError = failed.length === 0
-        ? null
-        : failed.map(r => `${r.platform} (${r.account_name}): ${r.error || 'unknown'}`).join(' | ')
+    const fcWarnings = results
+        .filter(r => r.success && (r as any).first_comment_warning)
+        .map(r => `${r.platform}: ${(r as any).first_comment_warning}`)
+    const lastErrorParts: string[] = []
+    if (failed.length > 0) {
+        lastErrorParts.push(failed.map(r => `${r.platform} (${r.account_name}): ${r.error || 'unknown'}`).join(' | '))
+    }
+    if (fcWarnings.length > 0) {
+        lastErrorParts.push(fcWarnings.join(' | '))
+    }
+    const lastError = lastErrorParts.length > 0 ? lastErrorParts.join(' | ') : null
 
     const updatePayload: Record<string, any> = { status: anySuccess ? 'published' : 'failed' }
     if (lastError) updatePayload.last_error = lastError
@@ -344,6 +413,33 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
         .eq('id', postId)
 
     if (finalErr) console.error('publishPost: failed to set final status:', finalErr)
+
+    // Persist platform post IDs for later engagement fetching — best-effort
+    for (const result of results) {
+        if (!result.success || !result.post_id) continue
+        try {
+            const { error: prErr } = await supabase
+                .from('post_results')
+                .upsert({
+                    post_id: postId,
+                    platform: result.platform,
+                    platform_post_id: result.post_id,
+                    impressions: null,
+                    reach: null,
+                    likes: null,
+                    comments: null,
+                    shares: null,
+                    saved: null,
+                    fetched_at: null,
+                } as any, { onConflict: 'post_id,platform' })
+
+            if (prErr) {
+                console.error(`publishPost: failed to upsert post_results for ${result.platform}:`, prErr)
+            }
+        } catch (err: any) {
+            console.error(`publishPost: error upserting post_results for ${result.platform}:`, err)
+        }
+    }
 
     return {
         success: anySuccess,

@@ -17,6 +17,7 @@ interface PostData {
     rationale?: string | null
     regeneration_count?: number
     referred_to_agency?: boolean
+    first_comment?: string | null
 }
 
 const MAX_AUTO_REGENERATIONS = 3
@@ -298,6 +299,17 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
                                         {igVariant.hashtags.map((h: string) => (
                                             <span key={h} className="text-[11px]" style={{ color: primaryColor }}>{h}</span>
                                         ))}
+                                    </div>
+                                )}
+                                {post.first_comment && (
+                                    <div className="mt-2 pt-2" style={{ borderTop: '1px solid #1a1a27' }}>
+                                        <p className="text-xs italic" style={{ color: '#8a8aaa' }}>
+                                            <span className="font-semibold not-italic" style={{ color: '#b0b0c0' }}>First comment: </span>
+                                            {post.first_comment.length > 200 ? post.first_comment.slice(0, 200) + '...' : post.first_comment}
+                                        </p>
+                                        <span className="text-[9px] italic mt-0.5 block" style={{ color: '#5a5a7a' }}>
+                                            Posted automatically after publish
+                                        </span>
                                     </div>
                                 )}
                             </div>

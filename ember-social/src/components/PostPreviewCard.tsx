@@ -16,6 +16,7 @@ interface PostPreviewCardProps {
         scheduled_at: string | null
         status: string
         created_at?: string
+        first_comment?: string | null
     }
     brandKit?: BrandKit | null
     showActions?: boolean
@@ -71,11 +72,13 @@ function PlatformMockup({
     content,
     mediaUrl,
     brandKit,
+    firstComment,
 }: {
     platform: string
     content: string
     mediaUrl?: string | null
     brandKit?: BrandKit | null
+    firstComment?: string | null
 }) {
     const accent = brandKit?.primary_color || '#f97316'
     const truncated = content.length > 180 ? content.slice(0, 180) + '...' : content
@@ -159,6 +162,17 @@ function PlatformMockup({
                     <p className="text-[11px] leading-relaxed whitespace-pre-wrap" style={{ color: '#c0c0d0' }}>
                         <span className="font-semibold text-white">account </span>{truncated}
                     </p>
+                    {firstComment && (
+                        <div className="mt-2 pt-2" style={{ borderTop: '1px solid #2a2a3d' }}>
+                            <p className="text-[10px] leading-relaxed italic" style={{ color: '#8a8aaa' }}>
+                                <span className="font-semibold not-italic" style={{ color: '#b0b0c0' }}>account </span>
+                                {firstComment.length > 120 ? firstComment.slice(0, 120) + '...' : firstComment}
+                            </p>
+                            <span className="text-[8px] italic mt-0.5 block" style={{ color: '#4a4a6a' }}>
+                                First comment — posted automatically after publish
+                            </span>
+                        </div>
+                    )}
                 </div>
                 <div className="px-3 pb-1.5">
                     <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: PLATFORM_COLORS.instagram }}>Instagram</span>
@@ -370,6 +384,7 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                             content={post.content}
                             mediaUrl={firstMedia}
                             brandKit={brandKit}
+                            firstComment={post.first_comment}
                         />
                     ))}
                 </div>

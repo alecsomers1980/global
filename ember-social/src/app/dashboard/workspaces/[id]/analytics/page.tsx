@@ -1,40 +1,101 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client-browser'
-import { ArrowLeft, BarChart2, TrendingUp, Users, Heart, MessageCircle, Share2, Calendar, Download } from 'lucide-react'
+import { ArrowLeft, BarChart2, TrendingUp, Users, Heart, MessageCircle, Share2, Eye, Loader2, Info } from 'lucide-react'
 import Link from 'next/link'
+
+interface AnalyticsData {
+    totals: { impressions: number; reach: number; likes: number; comments: number; shares: number }
+    perPlatform: Record<string, { impressions: number; reach: number; likes: number; comments: number; shares: number }>
+    perPattern: { tue_thu_sat: { total: number; count: number; avgEngagement: number }; mon_wed_fri: { total: number; count: number; avgEngagement: number } }
+    timeseries: { date: string; impressions: number; reach: number; likes: number; comments: number; shares: number }[]
+}
+
+function fmt(n: number | undefined): string {
+    if (!n || n === 0) return '0'
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M'
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K'
+    return n.toLocaleString()
+}
+
+function fmtDecimal(n: number): string {
+    return n % 1 === 0 ? n.toFixed(0) : n.toFixed(1)
+}
 
 export default function AnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
     const [workspaceId, setWorkspaceId] = useState('')
     const [loading, setLoading] = useState(true)
+    const [data, setData] = useState<AnalyticsData | null>(null)
+    const [error, setError] = useState('')
     const [timeRange, setTimeRange] = useState('30d')
-
-    const supabase = createClient()
 
     useEffect(() => {
         params.then(p => {
             setWorkspaceId(p.id)
-            // In a real implementation we would fetch actual stats from the `post_results` table here
-            setTimeout(() => setLoading(false), 800)
+            fetchData(p.id)
         })
     }, [params])
 
-    // Mock data for Phase 1 UI
+    const fetchData = async (id: string) => {
+        try {
+            const res = await fetch(`/api/workspaces/${id}/analytics`)
+            const d = await res.json()
+            if (d.error) throw new Error(d.error)
+            setData(d)
+        } catch (err: any) {
+            setError(err.message)
+        }
+        setLoading(false)
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[50vh]">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+                <Info className="w-12 h-12 text-red-500/50" />
+                <p className="text-sm text-white">Failed to load analytics: {error}</p>
+            </div>
+        )
+    }
+
+    if (!data) return null
+
+    const { totals, perPlatform, perPattern, timeseries } = data
+    const hasData = totals.likes + totals.comments + totals.shares + totals.impressions > 0
+
+    const totalEngagement = totals.likes + totals.comments + totals.shares
+    const allRowsCount = perPattern.tue_thu_sat.count + perPattern.mon_wed_fri.count
+    const engagementRate = totals.reach > 0 ? (totalEngagement / totals.reach) * 100 : (allRowsCount > 0 ? (totalEngagement / allRowsCount) : 0)
+
+    const showPatternComparison = perPattern.tue_thu_sat.count >= 5 && perPattern.mon_wed_fri.count >= 5
+    const tueWinner = perPattern.tue_thu_sat.avgEngagement > perPattern.mon_wed_fri.avgEngagement
+    const monWinner = perPattern.mon_wed_fri.avgEngagement > perPattern.tue_thu_sat.avgEngagement
+
     const stats = [
-        { label: 'Total Reach', value: '45.2K', trend: '+12.5%', icon: Users, color: '#818cf8', trendUp: true },
-        { label: 'Engagement Rate', value: '4.8%', trend: '+0.4%', icon: TrendingUp, color: '#34d399', trendUp: true },
-        { label: 'Total Likes', value: '2,405', trend: '+18.2%', icon: Heart, color: '#f472b6', trendUp: true },
-        { label: 'Comments', value: '342', trend: '-2.1%', icon: MessageCircle, color: '#fbbf24', trendUp: false },
+        { label: 'Total Reach', value: fmt(totals.reach), icon: Users, color: '#818cf8' },
+        { label: 'Engagement Rate', value: engagementRate.toFixed(1) + '%', icon: TrendingUp, color: '#34d399' },
+        { label: 'Total Likes', value: fmt(totals.likes), icon: Heart, color: '#f472b6' },
+        { label: 'Comments', value: fmt(totals.comments), icon: MessageCircle, color: '#fbbf24' },
+        { label: 'Impressions', value: fmt(totals.impressions), icon: Eye, color: '#c084fc' },
+        { label: 'Shares', value: fmt(totals.shares), icon: Share2, color: '#60a5fa' },
     ]
 
-    const topPosts = [
-        { id: 1, content: "We're thrilled to announce our new partnership with...", platform: 'linkedin', likes: 342, comments: 45, type: 'Update' },
-        { id: 2, content: "Behind the scenes at today's photo shoot! 📸", platform: 'instagram', likes: 890, comments: 112, type: 'Reel' },
-        { id: 3, content: "5 Tips for organizing your workspace 📝", platform: 'facebook', likes: 156, comments: 23, type: 'Carousel' },
-    ]
-
-    if (loading) return <div className="flex justify-center p-12"><div className="w-8 h-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" /></div>
+    const platformLabels: Record<string, string> = {
+        facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', linkedin: 'LinkedIn', youtube: 'YouTube',
+    }
+    const platformColors: Record<string, string> = {
+        facebook: '#1877F2', instagram: '#E4405F', tiktok: '#000000', linkedin: '#0A66C2', youtube: '#FF0000',
+    }
+    const platformEntries = Object.entries(perPlatform).sort(([, a], [, b]) =>
+        (b.likes + b.comments + b.shares) - (a.likes + a.comments + a.shares)
+    )
 
     return (
         <div className="max-w-6xl mx-auto space-y-6">
@@ -57,117 +118,139 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center p-1 rounded-xl" style={{ background: '#13131a', border: '1px solid #2a2a3d' }}>
-                        {['7d', '30d', '90d'].map(range => (
-                            <button
-                                key={range}
-                                onClick={() => setTimeRange(range)}
-                                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                                style={{
-                                    background: timeRange === range ? '#2a2a3d' : 'transparent',
-                                    color: timeRange === range ? '#fff' : '#5a5a7a'
-                                }}>
-                                {range}
-                            </button>
-                        ))}
-                    </div>
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors hover:bg-white/5"
-                        style={{ color: '#8a8aaa', border: '1px solid #2a2a3d' }}>
-                        <Download className="w-4 h-4" />
-                        Export
-                    </button>
+            {!hasData ? (
+                <div className="glass-card p-12 text-center">
+                    <BarChart2 className="w-12 h-12 mx-auto mb-4 text-[#2a2a3d]" />
+                    <h2 className="text-lg font-semibold text-white mb-2">No engagement data yet</h2>
+                    <p className="text-sm max-w-md mx-auto" style={{ color: '#5a5a7a' }}>
+                        Publish posts and engagement metrics will appear within 6 hours.
+                        Once your content is live, Facebook and Instagram data will be collected automatically.
+                    </p>
                 </div>
-            </div>
-
-            {/* Top Stats Overview */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {stats.map(({ label, value, trend, icon: Icon, color, trendUp }) => (
-                    <div key={label} className="glass-card p-5 transition-transform hover:scale-[1.02]">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-sm font-medium" style={{ color: '#8a8aaa' }}>{label}</span>
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg"
-                                style={{ background: `${color}15`, color }}>
-                                <Icon className="w-4 h-4" />
-                            </div>
-                        </div>
-                        <div className="flex items-end gap-3">
-                            <p className="text-3xl font-bold text-white leading-none">{value}</p>
-                            <div className="flex items-center gap-1 text-xs font-semibold mb-0.5"
-                                style={{ color: trendUp ? '#34d399' : '#f87171' }}>
-                                <TrendingUp className="w-3 h-3" style={{ transform: trendUp ? 'none' : 'scaleY(-1)' }} />
-                                {trend}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-6">
-                {/* Top Performing Posts */}
-                <div className="lg:col-span-2 glass-card p-0 overflow-hidden">
-                    <div className="p-5 flex items-center justify-between" style={{ borderBottom: '1px solid #1a1a27' }}>
-                        <h2 className="font-semibold text-white">Top Performing Posts</h2>
-                    </div>
-                    <div className="divide-y divide-[#1a1a27]">
-                        {topPosts.map((post, i) => (
-                            <div key={post.id} className="p-5 flex items-center gap-4 hover:bg-white/5 transition-colors">
-                                <div className="w-8 text-center text-sm font-bold" style={{ color: '#5a5a7a' }}>#{i + 1}</div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-white truncate mb-1">{post.content}</p>
-                                    <div className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-wider" style={{ color: '#8a8aaa' }}>
-                                        <span className="px-1.5 py-0.5 rounded bg-[#2a2a3d]">{post.platform}</span>
-                                        <span>·</span>
-                                        <span>{post.type}</span>
+            ) : (
+                <>
+                    {/* Stats cards */}
+                    <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+                        {stats.map(({ label, value, icon: Icon, color }) => (
+                            <div key={label} className="glass-card p-4">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-xs font-medium" style={{ color: '#8a8aaa' }}>{label}</span>
+                                    <div className="flex items-center justify-center w-7 h-7 rounded-lg"
+                                        style={{ background: `${color}15`, color }}>
+                                        <Icon className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 shrink-0">
-                                    <div className="text-center">
-                                        <p className="text-sm font-bold text-white">{post.likes}</p>
-                                        <p className="text-[10px]" style={{ color: '#5a5a7a' }}>Likes</p>
+                                <p className="text-xl font-bold text-white leading-none">{value}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Schedule pattern comparison */}
+                    {showPatternComparison && (
+                        <div className="glass-card p-5">
+                            <h2 className="font-semibold text-white mb-4">Schedule Pattern Comparison</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl"
+                                    style={{
+                                        background: tueWinner ? 'rgba(52,211,153,0.05)' : '#13131a',
+                                        border: tueWinner ? '1px solid rgba(52,211,153,0.2)' : '1px solid #1a1a27'
+                                    }}>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-white">Tue/Thu/Sat</span>
+                                        {tueWinner && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 font-semibold">Winner</span>}
                                     </div>
-                                    <div className="text-center">
-                                        <p className="text-sm font-bold text-white">{post.comments}</p>
-                                        <p className="text-[10px]" style={{ color: '#5a5a7a' }}>Comments</p>
+                                    <p className="text-2xl font-bold text-white">{fmtDecimal(perPattern.tue_thu_sat.avgEngagement)}</p>
+                                    <p className="text-[11px] mt-1" style={{ color: '#5a5a7a' }}>
+                                        avg engagement per post ({perPattern.tue_thu_sat.count} posts)
+                                    </p>
+                                </div>
+                                <div className="p-4 rounded-xl"
+                                    style={{
+                                        background: monWinner ? 'rgba(52,211,153,0.05)' : '#13131a',
+                                        border: monWinner ? '1px solid rgba(52,211,153,0.2)' : '1px solid #1a1a27'
+                                    }}>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-white">Mon/Wed/Fri</span>
+                                        {monWinner && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 font-semibold">Winner</span>}
                                     </div>
+                                    <p className="text-2xl font-bold text-white">{fmtDecimal(perPattern.mon_wed_fri.avgEngagement)}</p>
+                                    <p className="text-[11px] mt-1" style={{ color: '#5a5a7a' }}>
+                                        avg engagement per post ({perPattern.mon_wed_fri.count} posts)
+                                    </p>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
+                    )}
 
-                {/* Audience / Demographics placeholder */}
-                <div className="glass-card p-5 flex flex-col">
-                    <h2 className="font-semibold text-white mb-6">AI Growth Insights</h2>
-
-                    <div className="flex-1 space-y-4">
-                        {[
-                            { text: "Video content is driving 3x more engagement than static images this month.", type: 'positive' },
-                            { text: "Best time to post for this audience is shifting to Tuesday mornings (8am - 10am).", type: 'neutral' },
-                            { text: "Posts containing question prompts in the first line saw a 40% increase in comments.", type: 'positive' }
-                        ].map((insight, i) => (
-                            <div key={i} className="flex gap-3 p-3 rounded-lg" style={{ background: '#13131a', border: '1px solid #2a2a3d' }}>
-                                <SparkleIcon color={insight.type === 'positive' ? '#34d399' : '#f97316'} />
-                                <p className="text-xs text-[#e2e2f0] leading-relaxed">{insight.text}</p>
+                    {/* Platform breakdown */}
+                    {platformEntries.length > 0 && (
+                        <div className="glass-card p-5">
+                            <h2 className="font-semibold text-white mb-4">Platform Breakdown</h2>
+                            <div className="space-y-3">
+                                {platformEntries.map(([platform, vals]) => {
+                                    const eng = vals.likes + vals.comments + vals.shares
+                                    const max = Math.max(...platformEntries.map(([, v]) => v.likes + v.comments + v.shares), 1)
+                                    const pct = max > 0 ? (eng / max) * 100 : 0
+                                    return (
+                                        <div key={platform} className="flex items-center gap-3">
+                                            <span className="text-xs font-semibold uppercase w-20 shrink-0" style={{ color: platformColors[platform] || '#8a8aaa' }}>
+                                                {platformLabels[platform] || platform}
+                                            </span>
+                                            <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: '#13131a' }}>
+                                                <div className="h-full rounded-full transition-all" style={{
+                                                    width: `${pct}%`,
+                                                    background: platformColors[platform] || '#8a8aaa',
+                                                }} />
+                                            </div>
+                                            <span className="text-xs font-semibold text-white shrink-0 w-12 text-right">{fmt(eng)}</span>
+                                        </div>
+                                    )
+                                })}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
 
-                    <button className="w-full mt-6 py-2.5 rounded-xl text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors"
-                        style={{ border: '1px solid rgba(249,115,22,0.3)' }}>
-                        Generate Optimization Strategy
-                    </button>
-                </div>
-            </div>
+                    {/* Timeseries — simple bar chart of daily engagement */}
+                    {timeseries.length > 0 && (
+                        <div className="glass-card p-5">
+                            <h2 className="font-semibold text-white mb-4">Daily Engagement (last 30 days)</h2>
+                            <div className="flex items-end gap-1 h-32">
+                                {timeseries.slice(-30).map((d, i) => {
+                                    const eng = d.likes + d.comments + d.shares
+                                    const maxEng = Math.max(...timeseries.slice(-30).map(t => t.likes + t.comments + t.shares), 1)
+                                    const barH = maxEng > 0 ? (eng / maxEng) * 100 : 0
+                                    return (
+                                        <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                                            <span className="text-[9px]" style={{ color: barH > 0 ? '#f97316' : '#3a3a5a' }}>
+                                                {eng > 0 ? fmt(eng) : ''}
+                                            </span>
+                                            <div className="w-full rounded-t transition-all" style={{
+                                                height: `${Math.max(barH, eng > 0 ? 4 : 2)}%`,
+                                                background: barH > 0 ? '#f97316' : '#1a1a27',
+                                                minHeight: 2,
+                                            }} />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex items-end gap-1 mt-1">
+                                {timeseries.slice(-30).map((d, i) => {
+                                    const label = i === 0 || i === timeseries.slice(-30).length - 1 || i % 7 === 0
+                                        ? new Date(d.date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })
+                                        : ''
+                                    return (
+                                        <span key={i} className="flex-1 text-center text-[9px] truncate" style={{ color: '#3a3a5a' }}>
+                                            {label}
+                                        </span>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
-    )
-}
-
-function SparkleIcon({ color }: { color: string }) {
-    return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 mt-0.5">
-            <path d="M12 22C12 22 12 16 18 12C12 8 12 2 12 2C12 2 12 8 6 12C12 16 12 22 12 22Z" fill={color} />
-        </svg>
     )
 }
