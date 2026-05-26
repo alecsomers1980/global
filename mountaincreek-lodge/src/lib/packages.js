@@ -93,7 +93,7 @@ const DEFAULT_PACKAGES = [
   },
 ];
 
-const STORAGE_KEY = "mcl_packages";
+const STORAGE_KEY = "mcl_packages_v2";
 
 export function getPackages() {
   if (typeof window === "undefined") return DEFAULT_PACKAGES;
