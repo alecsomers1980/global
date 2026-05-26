@@ -96,6 +96,26 @@ export default function ContactPage() {
                     <p className="font-sans text-sm text-primary/70">GPS: 25 01 57.05 S | 31 02 13.01 E</p>
                   </div>
                 </div>
+
+                {/* Social Media */}
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary/5 rounded-full flex items-center justify-center text-accent">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs uppercase tracking-widest text-primary/60 mb-2">Follow Us</p>
+                    <div className="flex gap-4">
+                      <a href="https://www.facebook.com/profile.php?id=61564501787845" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors bg-primary/5 p-2 rounded-full" aria-label="Facebook">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                      </a>
+                      <a href="https://www.instagram.com/_mountaincreeklodge" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent transition-colors bg-primary/5 p-2 rounded-full" aria-label="Instagram">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
