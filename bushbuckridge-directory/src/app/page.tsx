@@ -108,11 +108,11 @@ export default async function Home() {
         {/* Optimized Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/banner.png"
+            src="/banner.webp"
             alt="Bushbuckridge Landscape"
             fill
             priority
-            quality={90}
+            quality={100}
             className="object-cover object-center scale-105"
           />
         </div>
