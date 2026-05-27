@@ -61,8 +61,8 @@ export default function BillingClient({ business, subscription, payments }: Bill
       })
       const data = await res.json()
 
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url
+      if (data.redirect_url) {
+        window.location.href = data.redirect_url
       } else {
         alert(data.error || 'Payment initialization failed')
       }

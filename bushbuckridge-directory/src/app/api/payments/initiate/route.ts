@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/pocketbase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { buildPayFastForm, getPayFastProcessUrl } from '@/lib/payfast'
+import { createYocoCheckout } from '@/lib/yoco'
+import { getYocoConfig } from '@/lib/settings'
 
 const TIER_PRICES_CENTS: Record<string, number> = {
   basic: 19900,
@@ -30,7 +31,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid business_id or tier' }, { status: 400 })
     }
 
-    // Verify user owns this business
     let business: any = null
     try {
       business = await pb.collection('businesses').getFirstListItem(
@@ -41,9 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     const amountCents = TIER_PRICES_CENTS[tier]
-    const amountZar = (amountCents / 100).toFixed(2)
 
-    // Create subscription record
     const subscription = await pb.collection('subscriptions').create({
       business: business_id,
       tier,
@@ -51,19 +49,17 @@ export async function POST(request: NextRequest) {
       amount_cents: amountCents,
     })
 
-    // Create payment record
     const payment = await pb.collection('payments').create({
       business: business_id,
       subscription: subscription.id,
       amount_cents: amountCents,
-      provider: 'payfast',
+      provider: 'yoco',
       status: 'pending',
       description: `${tier.charAt(0).toUpperCase() + tier.slice(1)} listing for ${business.name}`,
     })
 
-    const merchantId = process.env.PAYFAST_MERCHANT_ID
-    const merchantKey = process.env.PAYFAST_MERCHANT_KEY
-    if (!merchantId || !merchantKey) {
+    const config = await getYocoConfig()
+    if (!config.secretKey) {
       return NextResponse.json(
         { error: 'Payment provider not configured' },
         { status: 500 }
@@ -72,30 +68,33 @@ export async function POST(request: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-    const formFields = buildPayFastForm({
-      merchantId,
-      merchantKey,
-      returnUrl: `${siteUrl}/api/payments/return`,
+    const checkout = await createYocoCheckout(config.secretKey, {
+      amountCents,
+      currency: 'ZAR',
+      successUrl: `${siteUrl}/api/payments/return?payment_id=${payment.id}&status=success`,
       cancelUrl: `${siteUrl}/portal?payment=cancelled`,
-      notifyUrl: `${siteUrl}/api/payments/notify`,
-      firstName: user.first_name || business.contact_person || '',
-      lastName: user.last_name || '',
-      email: user.email,
-      paymentId: payment.id,
-      amount: amountZar,
-      itemName: TIER_LABELS[tier] || `${tier} listing`,
-      itemDescription: `${business.name} — ${tier} package`,
-      customStr1: business_id,
-      customStr2: subscription.id,
-      customStr3: tier,
-      passphrase: process.env.PAYFAST_PASSPHRASE,
+      failureUrl: `${siteUrl}/api/payments/return?payment_id=${payment.id}&status=failed`,
+      externalId: payment.id,
+      metadata: {
+        payment_id: payment.id,
+        business_id,
+        subscription_id: subscription.id,
+        tier,
+      },
     })
+
+    // Save the Yoco checkout id so the webhook can still locate this payment
+    // even if Yoco's webhook payload omits metadata.
+    try {
+      await pb.collection('payments').update(payment.id, {
+        provider_reference: checkout.id,
+      })
+    } catch {}
 
     return NextResponse.json({
       payment_id: payment.id,
       subscription_id: subscription.id,
-      payfast_url: getPayFastProcessUrl(),
-      form_fields: formFields,
+      redirect_url: checkout.redirectUrl,
     })
   } catch (error) {
     console.error('Payment initiation error:', error)

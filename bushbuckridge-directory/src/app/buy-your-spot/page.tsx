@@ -89,22 +89,12 @@ export default function BuyYourSpotPage() {
         return
       }
 
-      // Auto-submit to PayFast
-      const payfastForm = document.createElement('form')
-      payfastForm.method = 'POST'
-      payfastForm.action = data.payfast_url
-      payfastForm.style.display = 'none'
-
-      for (const [key, value] of Object.entries(data.form_fields)) {
-        const input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = key
-        input.value = String(value)
-        payfastForm.appendChild(input)
+      if (!data.redirect_url) {
+        toast.error('Payment provider did not return a redirect URL.')
+        setLoading(false)
+        return
       }
-
-      document.body.appendChild(payfastForm)
-      payfastForm.submit()
+      window.location.href = data.redirect_url
     } catch (err) {
       console.error('Setup payment error:', err)
       toast.error('Connection error. Please check your internet and try again.')
@@ -130,7 +120,7 @@ export default function BuyYourSpotPage() {
                   Create Your Listing
                 </CardTitle>
                 <CardDescription className="text-lg font-medium">
-                  Fill in your details below. You&apos;ll be redirected to PayFast to complete payment.
+                  Fill in your details below. You&apos;ll be redirected to Yoco to complete payment.
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-10 pt-6">
@@ -335,11 +325,11 @@ export default function BuyYourSpotPage() {
                     {loading ? (
                       <>
                         <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                        Redirecting to PayFast...
+                        Redirecting to Yoco...
                       </>
                     ) : (
                       <>
-                        Pay with PayFast <Send className="ml-3 h-6 w-6" />
+                        Pay with Yoco <Send className="ml-3 h-6 w-6" />
                       </>
                     )}
                   </Button>
@@ -375,7 +365,7 @@ export default function BuyYourSpotPage() {
                 <ShieldCheck className="mr-2 h-6 w-6 text-primary" /> Secure Payment
               </h3>
               <p className="text-muted-foreground font-medium leading-relaxed">
-                Payments are processed securely through PayFast. Your card details are never stored on our servers.
+                Payments are processed securely through Yoco. Your card details are never stored on our servers.
               </p>
             </div>
           </div>

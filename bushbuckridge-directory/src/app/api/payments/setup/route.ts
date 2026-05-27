@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import PocketBase from 'pocketbase'
-import { buildPayFastForm, getPayFastProcessUrl } from '@/lib/payfast'
-import crypto from 'crypto'
+import { createYocoCheckout } from '@/lib/yoco'
+import { getYocoConfig } from '@/lib/settings'
 
 const TIER_PRICES_CENTS: Record<string, number> = {
   basic: 19900,
@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
       tier,
     } = body
 
-    // Validate required fields
     if (!email || !password || !business_name || !tier || !TIER_PRICES_CENTS[tier]) {
       return NextResponse.json(
         { error: 'Missing required fields: email, password, business_name, tier' },
@@ -44,7 +43,6 @@ export async function POST(request: NextRequest) {
     const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
     const pb = new PocketBase(pbUrl)
 
-    // Create user account
     let user: any = null
     try {
       user = await pb.collection('users').create({
@@ -62,7 +60,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Authenticate as the new user
     try {
       await pb.collection('users').authWithPassword(email, password)
     } catch (e) {
@@ -70,7 +67,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Account created but could not sign in.' }, { status: 500 })
     }
 
-    // Create business record (pending until payment confirmed)
     let business: any = null
     try {
       business = await pb.collection('businesses').create({
@@ -94,9 +90,7 @@ export async function POST(request: NextRequest) {
     }
 
     const amountCents = TIER_PRICES_CENTS[tier]
-    const amountZar = (amountCents / 100).toFixed(2)
 
-    // Create subscription record
     let subscription: any = null
     try {
       subscription = await pb.collection('subscriptions').create({
@@ -109,14 +103,13 @@ export async function POST(request: NextRequest) {
       console.error('Subscription creation error:', e)
     }
 
-    // Create payment record
     let payment: any = null
     try {
       payment = await pb.collection('payments').create({
         business: business.id,
         subscription: subscription?.id || null,
         amount_cents: amountCents,
-        provider: 'payfast',
+        provider: 'yoco',
         status: 'pending',
         description: `${tier} listing — ${business_name}`,
       })
@@ -125,9 +118,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Could not create payment record.' }, { status: 500 })
     }
 
-    const merchantId = process.env.PAYFAST_MERCHANT_ID
-    const merchantKey = process.env.PAYFAST_MERCHANT_KEY
-    if (!merchantId || !merchantKey) {
+    const config = await getYocoConfig()
+    if (!config.secretKey) {
       return NextResponse.json(
         { error: 'Payment provider not configured' },
         { status: 500 }
@@ -136,26 +128,27 @@ export async function POST(request: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-    const formFields = buildPayFastForm({
-      merchantId,
-      merchantKey,
-      returnUrl: `${siteUrl}/api/payments/return`,
+    const checkout = await createYocoCheckout(config.secretKey, {
+      amountCents,
+      currency: 'ZAR',
+      successUrl: `${siteUrl}/api/payments/return?payment_id=${payment.id}&status=success`,
       cancelUrl: `${siteUrl}/buy-your-spot?payment=cancelled`,
-      notifyUrl: `${siteUrl}/api/payments/notify`,
-      firstName: first_name || '',
-      lastName: last_name || '',
-      email,
-      paymentId: payment.id,
-      amount: amountZar,
-      itemName: TIER_LABELS[tier] || `${tier} listing`,
-      itemDescription: `${business_name} — ${tier} package`,
-      customStr1: business.id,
-      customStr2: subscription?.id || '',
-      customStr3: tier,
-      passphrase: process.env.PAYFAST_PASSPHRASE,
+      failureUrl: `${siteUrl}/api/payments/return?payment_id=${payment.id}&status=failed`,
+      externalId: payment.id,
+      metadata: {
+        payment_id: payment.id,
+        business_id: business.id,
+        subscription_id: subscription?.id || '',
+        tier,
+      },
     })
 
-    // Set auth cookie so the user is logged in after returning from PayFast
+    try {
+      await pb.collection('payments').update(payment.id, {
+        provider_reference: checkout.id,
+      })
+    } catch {}
+
     const authCookie = pb.authStore.exportToCookie({
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -166,8 +159,7 @@ export async function POST(request: NextRequest) {
       payment_id: payment.id,
       business_id: business.id,
       subscription_id: subscription?.id,
-      payfast_url: getPayFastProcessUrl(),
-      form_fields: formFields,
+      redirect_url: checkout.redirectUrl,
     })
 
     response.headers.set('Set-Cookie', authCookie)

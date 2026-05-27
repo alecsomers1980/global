@@ -225,3 +225,95 @@ export async function sendEnquiryNotification(data: EnquiryNotificationData): Pr
     return false
   }
 }
+
+export interface RenewalReminderData {
+  to: string
+  businessName: string
+  tier: string
+  amount: string
+  expiresAt: Date
+  daysUntilExpiry: 30 | 14 | 7 | 1
+  renewUrl: string
+}
+
+const TIER_LABELS_RENEW: Record<string, string> = {
+  basic: 'Basic Listing',
+  'pro-lead': 'Pro Lead Package',
+  'pro-business': 'Pro Business Listing',
+}
+
+function renewalCopy(days: 30 | 14 | 7 | 1) {
+  switch (days) {
+    case 30:
+      return {
+        subject: (b: string) => `Heads-up: ${b} listing renews in 30 days`,
+        heading: 'Your listing renews in 30 days',
+        urgency: 'You have plenty of time, but we wanted to give you advance notice so there are no surprises.',
+        cta: 'Renew Early',
+      }
+    case 14:
+      return {
+        subject: (b: string) => `${b} listing renews in 2 weeks`,
+        heading: 'Your listing renews in 2 weeks',
+        urgency: 'A good time to renew so your listing keeps appearing in search results without interruption.',
+        cta: 'Renew Now',
+      }
+    case 7:
+      return {
+        subject: (b: string) => `${b} listing expires in 7 days — renew now`,
+        heading: 'Your listing expires in 7 days',
+        urgency: 'Renew this week to avoid your listing being hidden from customers searching the directory.',
+        cta: 'Renew My Listing',
+      }
+    case 1:
+      return {
+        subject: (b: string) => `Final reminder: ${b} listing expires tomorrow`,
+        heading: 'Your listing expires tomorrow',
+        urgency: 'Your business listing will be hidden from search results unless renewed today.',
+        cta: 'Renew Before Expiry',
+      }
+  }
+}
+
+export async function sendRenewalReminder(data: RenewalReminderData): Promise<boolean> {
+  const resend = getResend()
+  if (!resend) {
+    console.log('[email] Renewal reminder skipped (not configured):', data.to)
+    return false
+  }
+
+  const copy = renewalCopy(data.daysUntilExpiry)
+  const tierLabel = TIER_LABELS_RENEW[data.tier] || data.tier
+  const expiryStr = data.expiresAt.toLocaleDateString('en-ZA', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: [data.to],
+      subject: copy.subject(data.businessName),
+      html: wrap(`
+        <h2 style="color:#1B4332;margin-top:0">${copy.heading}</h2>
+        <p>${copy.urgency}</p>
+        <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;width:40%">Business</td><td style="padding:12px 16px">${data.businessName}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Package</td><td style="padding:12px 16px">${tierLabel}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Renewal Amount</td><td style="padding:12px 16px">${data.amount}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Expires</td><td style="padding:12px 16px">${expiryStr}</td></tr>
+        </table>
+        <div style="text-align:center;margin:32px 0">
+          <a href="${data.renewUrl}" style="display:inline-block;background:#1B4332;color:#FFD700;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">${copy.cta}</a>
+        </div>
+        <p style="font-size:13px;color:#6B7280">Clicking the button above will take you to Yoco's secure checkout to complete payment for another year.</p>
+      `),
+    })
+    console.log(`[email] Renewal reminder (${data.daysUntilExpiry}d) sent to:`, data.to)
+    return true
+  } catch (e) {
+    console.error('[email] Failed to send renewal reminder:', e)
+    return false
+  }
+}

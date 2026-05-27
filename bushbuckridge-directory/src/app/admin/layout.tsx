@@ -45,6 +45,7 @@ export default async function AdminLayout({
                         <NavLink href="/admin/events" icon={Calendar}>Events</NavLink>
                         <NavLink href="/admin/jobs" icon={Users}>Jobs Hub</NavLink>
                         <NavLink href="/admin/opportunities" icon={Briefcase}>Opportunities</NavLink>
+                        <NavLink href="/admin/editor-spotlight" icon={Users}>Editor Spotlight</NavLink>
                     </div>
 
                     <div>

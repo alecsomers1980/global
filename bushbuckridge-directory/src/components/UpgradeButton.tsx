@@ -61,22 +61,12 @@ export default function UpgradeButton({ businessId, currentTier }: Props) {
         return
       }
 
-      // Auto-submit to PayFast
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = data.payfast_url
-      form.style.display = 'none'
-
-      for (const [key, value] of Object.entries(data.form_fields)) {
-        const input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = key
-        input.value = String(value)
-        form.appendChild(input)
+      if (!data.redirect_url) {
+        toast.error('Payment provider did not return a redirect URL.')
+        setLoading(null)
+        return
       }
-
-      document.body.appendChild(form)
-      form.submit()
+      window.location.href = data.redirect_url
     } catch (err) {
       console.error('Upgrade error:', err)
       toast.error('Connection error. Please try again.')

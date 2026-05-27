@@ -1,0 +1,48 @@
+import PocketBase from 'pocketbase'
+
+const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL || ''
+
+export interface YocoConfig {
+    secretKey: string
+    publicKey: string
+    webhookSecret: string
+    testMode: boolean
+}
+
+function pbValue(records: any[], key: string): string {
+    const r = records.find((s: any) => s.key === key)
+    return r?.value || ''
+}
+
+export async function getYocoConfig(): Promise<YocoConfig> {
+    const secretKey = process.env.YOCO_SECRET_KEY || ''
+    const publicKey = process.env.YOCO_PUBLIC_KEY || ''
+    const webhookSecret = process.env.YOCO_WEBHOOK_SECRET || ''
+
+    if (secretKey) {
+        return {
+            secretKey,
+            publicKey,
+            webhookSecret,
+            testMode: secretKey.startsWith('sk_test_'),
+        }
+    }
+
+    if (!pbUrl) {
+        return { secretKey: '', publicKey: '', webhookSecret: '', testMode: true }
+    }
+
+    const pb = new PocketBase(pbUrl)
+    try {
+        const records = await pb.collection('settings').getList(1, 100)
+        const sk = secretKey || pbValue(records.items, 'yoco_secret_key')
+        return {
+            secretKey: sk,
+            publicKey: publicKey || pbValue(records.items, 'yoco_public_key'),
+            webhookSecret: webhookSecret || pbValue(records.items, 'yoco_webhook_secret'),
+            testMode: sk.startsWith('sk_test_'),
+        }
+    } catch {
+        return { secretKey: '', publicKey: '', webhookSecret: '', testMode: true }
+    }
+}

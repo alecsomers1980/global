@@ -90,6 +90,17 @@ export default async function Home() {
     console.error('Failed to fetch spotlight articles', e)
   }
 
+  // Fetch Editor Spotlight
+  let editorSpotlight: any = null
+  try {
+    const spotlightRes = await pb.collection('editor_spotlight').getList(1, 1, {
+      filter: 'is_active = true',
+    })
+    editorSpotlight = spotlightRes.items[0] || null
+  } catch (e) {
+    console.error('Failed to fetch editor spotlight', e)
+  }
+
   return (
     <div className="flex flex-col gap-24 pb-24">
       {/* Cinematic Hero Section */}
@@ -166,7 +177,8 @@ export default async function Home() {
 
 
 
-      {/* Editor Spotlight — Ophelia Mnisi */}
+      {/* Editor Spotlight */}
+      {editorSpotlight && (
       <section className="container mx-auto px-4">
         <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-[#1B4332] via-[#2d5a47] to-[#1B4332] text-white shadow-2xl">
           <div className="absolute top-0 right-0 -mt-24 -mr-24 w-[28rem] h-[28rem] bg-secondary/10 rounded-full blur-[120px]" />
@@ -179,8 +191,8 @@ export default async function Home() {
                 <div className="relative h-72 w-72 md:h-80 md:w-80 rounded-full overflow-hidden border-4 border-secondary/40 shadow-2xl bg-white/5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/ophelia-mnisi.jpg"
-                    alt="Ophelia Mnisi, Editor of Bushbuckridge and Director of Mbuyelo Media"
+                    src={editorSpotlight.image ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${editorSpotlight.collectionId}/${editorSpotlight.id}/${editorSpotlight.image}` : '/ophelia-mnisi.jpg'}
+                    alt={editorSpotlight.name}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -197,39 +209,32 @@ export default async function Home() {
                 In Focus
               </Badge>
               <h2 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-                Ophelia Mnisi
+                {editorSpotlight.name}
               </h2>
               <p className="text-xl text-secondary font-bold italic">
-                Editor of Bushbuckridge &amp; Director of Mbuyelo Media
+                {editorSpotlight.title}
               </p>
               <div className="h-1 w-24 bg-secondary rounded-full" />
 
               <div className="relative pl-8">
                 <Quote className="absolute left-0 top-0 h-6 w-6 text-secondary/70" />
                 <p className="text-white/80 text-lg font-medium leading-relaxed italic">
-                  At the heart of Bushbuckridge's storytelling stands Ophelia Mnisi — a voice
-                  championing local enterprise, community resilience and the region's
-                  unmatched creative spirit. Through Mbuyelo Media, she shines a light on
-                  the people and businesses shaping the Lowveld's future.
+                  {editorSpotlight.short_description}
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button size="lg" className="h-14 px-8 text-base font-black bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 rounded-2xl shadow-xl" asChild>
-                  <Link href="/articles">
-                    Read Her Editorials <ArrowRight className="ml-2 h-5 w-5" />
+                  <Link href="/editor-spotlight">
+                    Find Out More <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
-                </Button>
-                <Button size="lg" className="h-14 px-8 text-base font-bold bg-white text-[#1B4332] hover:bg-white/90 rounded-2xl shadow-xl" asChild>
-                  <a href="mailto:editor@dbib.co.za">
-                    Contact the Editor
-                  </a>
                 </Button>
               </div>
             </div>
           </div>
         </div>
       </section>
+      )}
 
       {/* Popular Categories — 14 industries (alphabetical) */}
       <section className="py-20 bg-background">

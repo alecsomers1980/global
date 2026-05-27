@@ -3,8 +3,7 @@ import PocketBase from 'pocketbase'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-  const paymentId = searchParams.get('m_payment_id')
-  const status = searchParams.get('status') // not always present from PayFast
+  const paymentId = searchParams.get('payment_id')
 
   if (!paymentId) {
     return NextResponse.redirect(
@@ -26,8 +25,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (payment.status === 'successful') {
-      // Check if this was a setup payment (new signup) or upgrade
-      // Setup payments have custom_str1 set to business_id via the notify route
       return NextResponse.redirect(
         new URL('/portal?payment=success', request.url)
       )
@@ -36,7 +33,6 @@ export async function GET(request: NextRequest) {
         new URL('/buy-your-spot?payment=failed', request.url)
       )
     } else {
-      // Still pending — ITN may not have arrived yet, show pending page
       return NextResponse.redirect(
         new URL('/portal?payment=pending', request.url)
       )
