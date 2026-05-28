@@ -20,6 +20,15 @@ const SEEDANCE_RESOLUTION = '720p';
 // want a shorter clip, test 5s explicitly rather than an arbitrary value.
 const SEEDANCE_DURATION_SECONDS = 8;
 
+// Canonical motion directive appended to EVERY scene prompt. Earlier prompts
+// told Seedance "this is a flat 2D photo, no camera movement at all" — but
+// starving a video model of motion makes it invent some, which showed up as
+// morphing and angle drift. Instead we give it one specific, bounded camera
+// move (a slow forward push-in) plus hard fidelity guards. Appended here
+// server-side so the exact wording is used verbatim on every clip rather
+// than relying on the script model to paraphrase it consistently.
+const MOTION_DIRECTIVE = 'MOVEMENT: Slow cinematic camera dolly forward, subtle push-in. Smooth and steady movement, completely static environment, absolute image fidelity, no morphing. Motion Value: Low (3/10).';
+
 // Reuse the Veo engine's preflight — the image-URL validation logic is
 // identical regardless of which video engine consumes them.
 export const preflightAndGetSceneImages = preflightVeo;
@@ -43,7 +52,7 @@ function stripAudioBlock(visualPrompt) {
  */
 export async function startSingleClip(scene, baseImageUrl) {
     const sceneNum = scene.scene;
-    const silentPrompt = stripAudioBlock(scene.visual_prompt);
+    const silentPrompt = `${stripAudioBlock(scene.visual_prompt)} ${MOTION_DIRECTIVE}`;
 
     console.log(`[Seedance Engine] Submitting Scene ${sceneNum} (silent, ${SEEDANCE_MODEL}). Image: ${baseImageUrl}`);
 
