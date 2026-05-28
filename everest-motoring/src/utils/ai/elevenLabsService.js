@@ -54,15 +54,15 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    // Append a 2.5-second SSML break so the mp3 itself ends with real silence.
+    // Append a 3-second SSML break so the mp3 itself ends with real silence.
     // The mp3 needs to be at least as long as the muxed clip duration —
     // otherwise Fal compose fills the audio gap by HOLDING the last voice
     // sample, producing a "stuck" voiceover artefact (Fal does NOT pad gaps
-    // with silence). Voice (~4-5s) + 2.5s break = ~6.5-7.5s mp3, which
-    // covers the 7s clip in all but the very shortest voice lines.
-    const paddedText = `${text} <break time="2.5s"/>`;
+    // with silence). Voice (~4-5s) + 3s break = ~7-8s mp3, which covers the
+    // 8s clip.
+    const paddedText = `${text} <break time="3.0s"/>`;
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +2.5s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +3s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',

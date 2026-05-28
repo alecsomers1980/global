@@ -147,11 +147,11 @@ export async function pollSingleClipAction(taskId, voiceoverText = null, carId =
             sceneNum,
         });
 
-        // The synthesized mp3 includes ~2.5s of trailing silence (SSML break),
-        // so it's reliably 6.5-7.5s long. Declaring audio.duration = clip
-        // length makes Fal compose truncate the trailing silence at exactly
-        // 7s rather than pad a gap with the held last voice sample.
-        const VIDEO_MS = 7000;
+        // The synthesized mp3 includes ~3s of trailing silence (SSML break),
+        // so it's reliably 7-8s long. Declaring audio.duration = clip length
+        // makes Fal compose truncate the trailing silence at exactly 8s
+        // rather than pad a gap with the held last voice sample.
+        const VIDEO_MS = 8000;
         const muxedUrl = await muxAudioOntoVideo({
             videoUrl: result.videoUrl,
             audioUrl,
