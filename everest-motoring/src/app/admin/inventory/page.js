@@ -11,6 +11,15 @@ export const metadata = {
     title: "Admin Dashboard | Everest Motoring",
 };
 
+// Server Actions invoked from this page (the AI walkaround pipeline in
+// ai_actions.js) can run long — ingestMuxAction polls Cloudflare Stream for
+// up to 180s. Next.js derives a Server Action's timeout from the page it is
+// invoked from, so the limit must be set HERE, not only on the admin layout.
+// Without it the action runs under the 60s Pro default and a slow Cloudflare
+// MP4 render returns a 504, surfacing to the client as the opaque
+// "An unexpected response was received from the server." error.
+export const maxDuration = 300;
+
 export default async function AdminDashboardPage() {
     const supabase = await createClient();
 
