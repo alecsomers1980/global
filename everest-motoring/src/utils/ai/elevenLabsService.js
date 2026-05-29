@@ -54,15 +54,18 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    // Append a 3-second SSML break so the mp3 itself ends with real silence.
-    // The mp3 needs to be at least as long as the muxed clip duration —
-    // otherwise Fal compose fills the audio gap by HOLDING the last voice
-    // sample, producing a "stuck" voiceover artefact (Fal does NOT pad gaps
-    // with silence). Voice (~4-5s) + 3s break = ~7-8s mp3, which covers the
-    // 8s clip.
-    const paddedText = `${text} <break time="3.0s"/>`;
+    // Trailing silence strategy: an ellipsis followed by a 3-second SSML break.
+    // The ellipsis gives the FINAL WORD a natural falling decay so the model
+    // doesn't clip its last phoneme — a hard <break> placed directly after the
+    // last word truncates it (the "half word cut off at the end" artefact).
+    // The break then supplies the bulk silence. The mp3 must be at least as
+    // long as the muxed clip — otherwise Fal compose fills the gap by HOLDING
+    // the last sample (the older "stuck voice" artefact). Voice (~4-5s) +
+    // ellipsis (~0.7s) + 3s break comfortably covers the 8s clip; the mux
+    // truncates any excess trailing silence at clip length.
+    const paddedText = `${text} ... <break time="3.0s"/>`;
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, +3s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, ellipsis +3s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',
