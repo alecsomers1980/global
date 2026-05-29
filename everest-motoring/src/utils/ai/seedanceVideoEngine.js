@@ -20,14 +20,25 @@ const SEEDANCE_RESOLUTION = '720p';
 // want a shorter clip, test 5s explicitly rather than an arbitrary value.
 const SEEDANCE_DURATION_SECONDS = 8;
 
-// Canonical motion directive appended to EVERY scene prompt. Earlier prompts
-// told Seedance "this is a flat 2D photo, no camera movement at all" — but
+// Motion directive appended to EVERY scene prompt. Earlier prompts told
+// Seedance "this is a flat 2D photo, no camera movement at all" — but
 // starving a video model of motion makes it invent some, which showed up as
 // morphing and angle drift. Instead we give it one specific, bounded camera
 // move (a slow forward push-in) plus hard fidelity guards. Appended here
 // server-side so the exact wording is used verbatim on every clip rather
 // than relying on the script model to paraphrase it consistently.
-const MOTION_DIRECTIVE = 'MOVEMENT: Slow cinematic camera dolly forward, subtle push-in. Smooth and steady movement, completely static environment, absolute image fidelity, no morphing. Motion Value: Low (3/10).';
+//
+// Scene-aware: the rear cabin (scene 3) is a confined space with receding
+// seat/belt geometry. A forward push-in there makes the model extrapolate
+// depth it can't see and hallucinate (seats warp, angle drifts) — which is
+// exactly what kept happening on scene 3 while the exterior (1) and dashboard
+// (2) push-ins looked good. So scene 3 gets a near-locked camera instead.
+const PUSH_IN_DIRECTIVE = 'MOVEMENT: Slow cinematic camera dolly forward, subtle push-in. Smooth and steady movement, completely static environment, absolute image fidelity, no morphing. Motion Value: Low (3/10).';
+const LOCKED_DIRECTIVE = 'MOVEMENT: Locked, near-static camera — only a barely-perceptible drift. Absolutely NO push-in, NO dolly into the cabin, NO perspective change, NO angle swing. Completely static environment, absolute image fidelity, no morphing, no re-rendering of seats or belts. Motion Value: Very Low (1/10).';
+
+function motionDirectiveForScene(sceneNum) {
+    return sceneNum === 3 ? LOCKED_DIRECTIVE : PUSH_IN_DIRECTIVE;
+}
 
 // Reuse the Veo engine's preflight — the image-URL validation logic is
 // identical regardless of which video engine consumes them.
@@ -52,7 +63,7 @@ function stripAudioBlock(visualPrompt) {
  */
 export async function startSingleClip(scene, baseImageUrl) {
     const sceneNum = scene.scene;
-    const silentPrompt = `${stripAudioBlock(scene.visual_prompt)} ${MOTION_DIRECTIVE}`;
+    const silentPrompt = `${stripAudioBlock(scene.visual_prompt)} ${motionDirectiveForScene(sceneNum)}`;
 
     console.log(`[Seedance Engine] Submitting Scene ${sceneNum} (silent, ${SEEDANCE_MODEL}). Image: ${baseImageUrl}`);
 
