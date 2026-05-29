@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/pocketbase/server'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -32,6 +33,9 @@ export default async function AdminLoginPage({
             return redirect(`/admin/login?message=${encodeURIComponent('Invalid credentials')}`)
         }
 
+        // Persist the auth cookie so subsequent requests are authenticated
+        const cookieStore = await cookies()
+        cookieStore.set('pb_auth', pb.authStore.exportToCookie({ httpOnly: false }).replace('pb_auth=', ''))
         return redirect('/admin')
     }
 

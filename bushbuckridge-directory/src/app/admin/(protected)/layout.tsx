@@ -1,6 +1,5 @@
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import Link from 'next/link'
-import { headers } from 'next/headers'
 import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, FileText, Settings, LogOut } from 'lucide-react'
 
 export default async function AdminLayout({
@@ -8,11 +7,7 @@ export default async function AdminLayout({
 }: {
     children: React.ReactNode
 }) {
-    // Secure the /admin route segment, but allow the login page through
-    const pathname = (await headers()).get('x-pathname') || ''
-    if (!pathname.endsWith('/admin/login')) {
-        await requireAdmin()
-    }
+    await requireAdmin()
 
     return (
         <div className="min-h-screen pt-24 bg-muted/20 flex flex-col md:flex-row">
