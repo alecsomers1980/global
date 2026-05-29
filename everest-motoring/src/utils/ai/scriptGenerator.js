@@ -112,7 +112,7 @@ export async function generateVehicleScript(car) {
         }
 
         const prompt = `
-You are an expert cinematic Creative Director specializing in luxury automotive car commercials.
+You are an expert automotive copywriter and Creative Director for Everest Motoring, a premium pre-owned car dealership in White River, Mpumalanga. You write polished, professional voiceover scripts that SELL — confident, aspirational, and tasteful, always written with a sale or an enquiry in mind.
 Write an intelligent, 4-scene visual prompt script for an AI Image-to-Video generator (like Sora 2) based on the following vehicle.
 
 Vehicle Details:
@@ -134,7 +134,8 @@ Strict Instructions for the script:
 2. These are pre-owned vehicles. NEVER use the word "new" in the voiceover scripts. Use words like "striking", "exceptional", or just the make and model.
 2b. NEVER use the phrase "test drive" anywhere in any voiceover, in any scene. The CTA should invite the viewer to "view", "see", or "experience" the vehicle, or to "contact" / "visit" / "enquire with" Everest Motoring — never to book a test drive.
 2c. VOICEOVER VARIETY — STRICT: each voiceover must feel uniquely written for THIS specific ${car.year} ${car.make} ${car.model}, not a fill-in-the-blank template. Vary your sentence openers, structures, and word choices. Do NOT default to predictable patterns like every Scene 1 starting with "Introducing the…", every Scene 4 starting with "Contact Everest Motoring today…", or "Featuring X and Y" / "With X and Y" stock phrasing. Treat each voiceover line as bespoke copy for this vehicle: reference its specific character — sporty, family-focused, executive, rugged, economical — and write language that fits THAT vehicle's personality rather than a generic luxury template. Two different cars must never receive the same voiceover line.
-2d. VOICEOVER LENGTH — STRICT: every voiceover line must be MAX 12 WORDS. Each clip is 8 seconds long, so the line must comfortably fit at a calm, unhurried pace. If you cannot fit your point in 12 words, say less — drop a feature, drop an adjective, drop the lead-in. A short, well-spoken line is far better than a long line that gets cut off mid-sentence. Aim for 9–11 words.
+2d. VOICEOVER LENGTH — STRICT: scenes 1–3 are MAX 12 WORDS each (aim 9–11); the scene-4 CTA is MAX 9 WORDS (aim 7–8) so it stays punchy and never rushes or gets cut off. Each clip is only 8 seconds, so the line must comfortably fit at a calm, unhurried, premium pace. If you cannot fit your point, say less — drop a feature, drop an adjective, drop the lead-in. A short, well-spoken line is far better than a long one that gets cut off mid-sentence.
+2e. SALES INTENT & SPECS — STRICT: write like a premium, professional salesperson with a sale or enquiry in mind — confident, warm, aspirational, never cheesy, pushy, or used-car-salesy. Weave the vehicle's ACTUAL specifications (year, make, model, transmission, fuel type, mileage, and 1–2 real features from the list above) into the lines as desirable selling points — make the car feel sought-after, NOT a dry spec read-out. Build genuine interest across scenes 1–3 and convert it with the scene-4 call to action. Use confident, premium vocabulary (e.g. "refined", "commanding", "impeccably kept", "effortless", "exceptional value") suited to THIS vehicle's character.
 3. Keep visual descriptions concise — 2–3 short sentences before AUDIO. Describe WHAT is in the frame (the vehicle and its surroundings) and the fidelity rules. Do NOT describe the camera motion yourself — a single fixed motion directive is appended downstream to every clip, so your job is only to describe the static subject faithfully.
 4. MOTION — every scene uses ONE gentle camera move: a slow cinematic dolly forward, a subtle push-in (Motion Value: Low, ~3/10). The environment and the subject are completely static and faithful to the source photograph — nothing morphs, warps, stretches, or changes; the camera simply eases forward smoothly and steadily. There is no panning, no rotation, no orbit, no angle swing, no perspective re-projection. Absolute image fidelity to the source: no hallucinated detail, no restyling.
 5. BACKGROUND PRESERVATION — STRICT (applies to EVERY scene, especially scene 1): the background of the source photograph must be preserved EXACTLY as supplied. Do NOT change, restyle, replace, or "enhance" the background. Do NOT swap the location, sky, weather, ground, walls, parking surface, surroundings, lighting, or any environmental element. Do NOT add new objects, people, signage, logos, atmospheric effects (haze, mist, rain, lens flares), or motion of any kind in the background. Do NOT relocate the car or change what is visible behind, beside, above, or below it. The background of every frame must stay visually IDENTICAL to the background in the source photograph as the camera gently pushes in — only the framing tightens, the background content never changes.
@@ -146,19 +147,19 @@ Scene Breakdown:
 
 Scene 1: Exterior Hero
 - The ${car.make} ${car.model} exactly as in the source photograph, with the camera slowly pushing in over the clip. The image content is identical to the source throughout — same car position, same number plate, same background, same ground, same surroundings, same lighting. The background must be preserved EXACTLY as supplied — do NOT change the location, sky, walls, ground, parking surface, or any environmental detail behind or around the car. Nothing morphs or restyles; only the camera eases forward.
-- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a catchy 1-sentence hook introducing the make and model. MAX 12 words, aim for 9–11. Must fit comfortably in an 8-second clip.]"
+- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a polished, professional opening hook that introduces this specific year, make, and model and makes it feel desirable and sought-after — confident and aspirational, written to draw a buyer in. Reference its character or a standout attribute. MAX 12 words, aim 9–11. Must fit a calm, premium pace in an 8-second clip.]"
 
 Scene 2: Dashboard / Cockpit
 - The ${car.make} ${car.model} dashboard exactly as in the source photograph, with the camera slowly pushing in over the clip. The dashboard, displays, instrument cluster, steering wheel, vents, infotainment screen, and trim are IDENTICAL to the source throughout — same shapes, same proportions, same positions. The steering wheel is on the RIGHT side (right-hand-drive vehicle) and must stay on the right. Do NOT morph, distort, or warp any element of the dashboard, do NOT re-imagine the cockpit, do NOT add or remove buttons, displays, or trim pieces. Nothing changes shape; only the camera eases forward.
-- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a 1-sentence voiceover mentioning 1 or 2 of its best technology features. MAX 12 words, aim for 9–11. Must fit comfortably in an 8-second clip — say less rather than rush.]"
+- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a premium, professional line that presents 1 or 2 of THIS car's real technology features as desirable selling points — show how the tech elevates the drive, in confident sales language, never a dry spec list. MAX 12 words, aim 9–11. Must fit a calm, premium pace in an 8-second clip — say less rather than rush.]"
 
 Scene 3: Rear Cabin
 - The ${car.make} ${car.model} rear cabin exactly as in the source photograph, with the camera slowly pushing in over the clip. The rear seats, headrests, seat belts, belt buckles, armrest, trim, door cards, floor, and view through the windows are IDENTICAL to the source throughout — same shapes, same proportions, same positions. Do NOT re-imagine the cabin, do NOT orbit or swing the camera, do NOT warp, stretch, bend, or "rationalize" any seat or belt geometry, do NOT add or remove cabin elements, do NOT invent textures or details that aren't in the source. The cabin must look like the exact same real photograph throughout the push-in; nothing morphs.
-- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a 1-sentence voiceover mentioning its comfort or powertrain features. MAX 12 words, aim for 9–11. Must fit comfortably in an 8-second clip — say less rather than rush.]"
+- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a premium, professional line that presents a powertrain detail (engine, transmission, or fuel type) and/or a comfort feature as desirable selling points, evoking the driving experience — refined, capable, effortless. Confident sales language, never a dry spec list. MAX 12 words, aim 9–11. Must fit a calm, premium pace in an 8-second clip — say less rather than rush.]"
 
 Scene 4: Closer (Same hero image as Scene 1, CTA voiceover)
 - The ${car.make} ${car.model} — the IDENTICAL hero exterior photograph used in Scene 1, with the camera slowly pushing in over the clip. The image content is identical to the Scene 1 source throughout: same car position, same number plate, same background, same lighting, same framing. Do NOT add any person, presenter, logos, text, or graphical overlay. Do NOT change the background or morph the car. Nothing changes shape; only the camera eases forward.
-- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a unique, premium 1-sentence Call to Action urging the viewer to contact, visit, or enquire with Everest Motoring regarding this specific make/model. MAX 12 words, aim for 9–11. Must fit comfortably in an 8-second clip — say less rather than rush. Avoid the word 'new'. Avoid the phrase 'test drive'.]"
+- AUDIO: "A South African woman speaks the voiceover in her natural South African English accent (the typical accent heard in Johannesburg, Cape Town, or Pretoria — clear, warm, neutral South African, NOT British, NOT American, NOT Australian). Her voice is the only voice in the clip, calm and unhurried, fully audible and front-and-centre in the mix. Background sound is very low: [Write a confident, professional Call to Action that converts — invite the viewer to contact, visit, or enquire with Everest Motoring about this specific vehicle. Premium and warm, never pushy. MUST include the words 'Everest Motoring'. Keep it SHORT and punchy — MAX 9 WORDS, aim 7–8 — so it never rushes or gets cut off. Avoid the word 'new'. Avoid the phrase 'test drive'.]"
 
 Format Requirement: Return ONLY a valid JSON array of objects with keys: \`scene\`, \`location\`, \`visual_prompt\`, \`voiceover_text\`.
 Do not include markdown formatting outside the JSON array.
@@ -173,10 +174,10 @@ CRITICAL OUTPUT RULES:
 
 Example Output:
 [
-  { "scene": 1, "location": "exterior", "visual_prompt": "The [year make model] exactly as in the source photograph. The car, background, and lighting are identical to the source throughout — nothing morphs, the background is preserved exactly. AUDIO: ...", "voiceover_text": "The striking 2022 BMW X5 — refined, capable, ready." },
-  { "scene": 2, "location": "interior", "visual_prompt": "The [year make model] dashboard exactly as in the source photograph. Steering wheel on the RIGHT. Dashboard, displays, and trim keep their exact shapes and positions — nothing morphs or warps. AUDIO: ...", "voiceover_text": "Apple CarPlay and premium audio, exactly where you need them." },
-  { "scene": 3, "location": "interior", "visual_prompt": "The [year make model] rear cabin exactly as in the source photograph. Seats, belts, and trim keep their exact shapes and positions — no warping, no re-imagining. AUDIO: ...", "voiceover_text": "Leather comfort built for unhurried long drives." },
-  { "scene": 4, "location": "exterior", "visual_prompt": "The [year make model] — the IDENTICAL hero exterior photograph used in scene 1. Same car, same background, same framing. No people, no overlays, nothing added, nothing morphed. AUDIO: ...", "voiceover_text": "Visit Everest Motoring in White River to see it in person." }
+  { "scene": 1, "location": "exterior", "visual_prompt": "The [year make model] exactly as in the source photograph. The car, background, and lighting are identical to the source throughout — nothing morphs, the background is preserved exactly. AUDIO: ...", "voiceover_text": "The commanding 2022 BMW X5 — refined, automatic, impeccably kept." },
+  { "scene": 2, "location": "interior", "visual_prompt": "The [year make model] dashboard exactly as in the source photograph. Steering wheel on the RIGHT. Dashboard, displays, and trim keep their exact shapes and positions — nothing morphs or warps. AUDIO: ...", "voiceover_text": "Apple CarPlay and premium audio elevate every journey." },
+  { "scene": 3, "location": "interior", "visual_prompt": "The [year make model] rear cabin exactly as in the source photograph. Seats, belts, and trim keep their exact shapes and positions — no warping, no re-imagining. AUDIO: ...", "voiceover_text": "Effortless turbo-petrol power meets supple leather comfort." },
+  { "scene": 4, "location": "exterior", "visual_prompt": "The [year make model] — the IDENTICAL hero exterior photograph used in scene 1. Same car, same background, same framing. No people, no overlays, nothing added, nothing morphed. AUDIO: ...", "voiceover_text": "Make it yours — enquire with Everest Motoring." }
 ]
 `;
 
@@ -221,7 +222,6 @@ Example Output:
         const seed = car.id || `${car.make}-${car.model}-${car.year}`;
         const transmissionFuel = [car.transmission, car.fuel_type].filter(Boolean).join(' ');
         const yMM = `${car.year} ${car.make} ${car.model}`;
-        const mM = `${car.make} ${car.model}`;
         const techList = tech.join(' and ');
         const comfortList = comfort.join(' and ');
 
@@ -283,14 +283,15 @@ Example Output:
         ];
         const comfortLine = pickVariant(seed, comfort.length > 0 ? comfortPoolWith : comfortPoolWithout, 13);
 
-        // ===== Scene 4 CTA variants — short, no 'test drive' =====
+        // ===== Scene 4 CTA variants — MAX 9 words, premium, no 'test drive'.
+        // Kept short so the line never rushes or gets cut off in 8 seconds. =====
         const ctaPool = [
-            `Contact Everest Motoring to view this ${mM} in person.`,
-            `Visit Everest Motoring in White River — see it for yourself.`,
-            `Get in touch with Everest Motoring today.`,
-            `Arrange a viewing with Everest Motoring in White River.`,
-            `Speak to Everest Motoring about this ${mM}.`,
-            `Enquire with Everest Motoring — viewings welcome.`,
+            `Make it yours — enquire with Everest Motoring.`,
+            `Discover it today at Everest Motoring.`,
+            `Visit Everest Motoring in White River.`,
+            `Enquire now with Everest Motoring.`,
+            `Experience it for yourself at Everest Motoring.`,
+            `Speak to Everest Motoring today.`,
         ];
         const ctaLine = pickVariant(seed, ctaPool, 23);
 
