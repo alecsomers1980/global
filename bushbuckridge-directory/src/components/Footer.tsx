@@ -72,16 +72,6 @@ export default function Footer() {
                         <div className="flex flex-col space-y-4 text-base text-white/60">
                             <span className="block">Email: <span className="text-white font-medium">info@dbib.co.za</span></span>
                             <span className="block">Phone: <span className="text-white font-medium">+27 13 777 0000</span></span>
-                            <div className="flex gap-4 pt-2">
-                                <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 cursor-pointer transition-colors shadow-lg">
-                                    <span className="sr-only">Social</span>
-                                    <div className="h-2 w-2 bg-secondary rounded-full" />
-                                </div>
-                                <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 cursor-pointer transition-colors shadow-lg">
-                                    <span className="sr-only">Social</span>
-                                    <div className="h-2 w-2 bg-secondary rounded-full" />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
