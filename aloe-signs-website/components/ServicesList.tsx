@@ -102,23 +102,6 @@ export default function ServicesList() {
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-aloe-green/5 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 w-full">
-                {/* Intro Section */}
-                <div className="mb-32 max-w-4xl">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
-                        <span className="w-1.5 h-1.5 rounded-full bg-aloe-green"></span>
-                        <span className="text-[10px] font-black tracking-[0.3em] text-white/60 uppercase">
-                            CORE CAPABILITIES
-                        </span>
-                    </div>
-                    <h2 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-10">
-                        WE BUILD BRANDS THAT<br />
-                        <span className="text-aloe-green">COMMAND ATTENTION.</span>
-                    </h2>
-                    <p className="text-xl md:text-2xl font-medium text-white/50 max-w-2xl leading-relaxed">
-                        Precision engineering meets artistic vision. We deliver high-impact branding solutions that transform your business visibility.
-                    </p>
-                </div>
-
                 {/* Service Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {servicesData.map((service, index) => (

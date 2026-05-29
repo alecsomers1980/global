@@ -2,12 +2,6 @@
 
 import Link from 'next/link';
 
-const actionImages = [
-    { src: '/images/portfolio/interior-1.jpg', alt: 'Aloe Signs team installing a large billboard on site' },
-    { src: '/images/portfolio/interior-2.jpg', alt: 'Graphic designer formatting a wide banner for print' },
-    { src: '/images/portfolio/vehicle-1.jpg', alt: 'Team members applying a vinyl wrap to a commercial vehicle' },
-];
-
 export default function AboutSection() {
     return (
         <section className="py-32 bg-bg-grey text-charcoal">
@@ -76,18 +70,6 @@ export default function AboutSection() {
                         </h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {actionImages.map((img, idx) => (
-                            <div key={idx} className="relative aspect-square overflow-hidden group rounded-[2.5rem] shadow-lg">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                    style={{ backgroundImage: `url(${img.src})` }}
-                                    title={img.alt}
-                                />
-                                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-300" />
-                            </div>
-                        ))}
-                    </div>
                 </div>
 
             </div>

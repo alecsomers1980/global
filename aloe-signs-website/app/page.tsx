@@ -1,7 +1,6 @@
 import Header from '@/components/Header';
 import HeroBanner from '@/components/HeroBanner';
 import ImageGrid from '@/components/ImageGrid';
-import ServicesList from '@/components/ServicesList';
 import AboutSection from '@/components/AboutSection';
 import ShopSpecials from '@/components/ShopSpecials';
 import { Metadata } from 'next';
@@ -123,7 +122,6 @@ export default function Home() {
         <HeroBanner />
 
         <ImageGrid />
-        <ServicesList />
         <AboutSection />
         <ShopSpecials />
 
