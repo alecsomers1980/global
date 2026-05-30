@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Lock, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
+import { setAuthCookie } from '@/app/actions/auth'
 
 export default function AdminLoginForm() {
     const [email, setEmail] = useState('')
@@ -32,13 +33,10 @@ export default function AdminLoginForm() {
                 return
             }
 
-            // Sync the auth store to a cookie so the middleware/RSC can see it
-            const exportOptions = { 
-                httpOnly: false, 
-                secure: process.env.NODE_ENV === 'production', 
-                maxAge: rememberMe ? 60 * 60 * 24 * 30 : undefined 
-            };
-            document.cookie = pb.authStore.exportToCookie(exportOptions)
+            // Sync the auth store to a cookie via Server Action
+            // This prevents issues where an existing HttpOnly cookie blocks client-side updates
+            const maxAge = rememberMe ? 60 * 60 * 24 * 30 : undefined;
+            await setAuthCookie(pb.authStore.token, pb.authStore.model, maxAge);
             
             toast.success('Logged in successfully')
             window.location.href = '/admin'
