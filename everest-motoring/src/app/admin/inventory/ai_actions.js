@@ -279,6 +279,95 @@ export async function composeSceneOneAction(originalCarImageUrl) {
     }
 }
 
+/**
+ * Queue a partial regeneration of the AI walkaround video for the given car —
+ * only the scenes in `sceneNumbers` (e.g. [1, 3]) are re-rendered, then the
+ * pipeline re-stitches with the updated clips. Saves credits vs a full redo
+ * (~$1.55/scene vs ~$5.60 for all four). The cron route's new
+ * "ai_redoing_scenes" phase picks this up on the next tick and runs the
+ * redo loop, then hands off to the existing stitch + ingest phases. After
+ * a successful new ingest, the previously-live Cloudflare Stream entry is
+ * deleted automatically so we don't orphan storage.
+ */
+export async function requestSceneRegenerationAction(carId, sceneNumbers) {
+    // Defensive input validation.
+    if (!Array.isArray(sceneNumbers) || sceneNumbers.length === 0) {
+        return { success: false, error: "Invalid scene numbers" };
+    }
+    const seen = new Set();
+    for (const n of sceneNumbers) {
+        if (!Number.isInteger(n) || n < 1 || n > 4 || seen.has(n)) {
+            return { success: false, error: "Invalid scene numbers" };
+        }
+        seen.add(n);
+    }
+
+    try {
+        const supabase = await createAdminClient();
+        const { data: car, error: fetchErr } = await supabase
+            .from("cars")
+            .select("id, video_url, ai_pipeline_state")
+            .eq("id", carId)
+            .limit(1)
+            .single();
+        if (fetchErr || !car) {
+            return { success: false, error: "Car not found" };
+        }
+
+        const state = car.ai_pipeline_state;
+        const isValid =
+            typeof car.video_url === "string" &&
+            car.video_url.startsWith("cf:") &&
+            state &&
+            Array.isArray(state.script) && state.script.length === 4 &&
+            Array.isArray(state.images) && state.images.length === 4 &&
+            Array.isArray(state.scenes) && state.scenes.length === 4 &&
+            state.scenes.every(s => s && typeof s.muxed_url === "string" && s.muxed_url.length > 0);
+        if (!isValid) {
+            return { success: false, error: "Car must be in cf:<uid> state with a complete pipeline state to redo scenes" };
+        }
+
+        // Deep-clone the state so we don't mutate the original by accident.
+        let nextState;
+        try {
+            nextState = typeof structuredClone === "function"
+                ? structuredClone(state)
+                : JSON.parse(JSON.stringify(state));
+        } catch (e) {
+            return { success: false, error: "Pipeline state is malformed" };
+        }
+
+        // Clear task_id + muxed_url for each scene the caller wants redone, so
+        // the cron's redo phase starts fresh on those scenes.
+        for (const n of sceneNumbers) {
+            const entry = nextState.scenes.find(s => s.scene === n);
+            if (!entry) {
+                return { success: false, error: `Scene ${n} not present in pipeline state` };
+            }
+            delete entry.task_id;
+            delete entry.muxed_url;
+        }
+        nextState.redo_scenes = [...sceneNumbers].sort((a, b) => a - b);
+        nextState.previous_cf_uid = car.video_url.slice(3);
+
+        const { error: updateErr } = await supabase
+            .from("cars")
+            .update({
+                video_url: "ai_redoing_scenes",
+                ai_pipeline_state: nextState,
+            })
+            .eq("id", carId);
+        if (updateErr) {
+            return { success: false, error: updateErr.message };
+        }
+
+        revalidatePath("/admin/inventory");
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message || "Unknown error" };
+    }
+}
+
 export async function optimizeDescriptionAction(carPayload, manualDescription) {
     console.log("=========================================");
     console.log("[SERVER ACTION HIT] optimizeDescriptionAction invoked!");

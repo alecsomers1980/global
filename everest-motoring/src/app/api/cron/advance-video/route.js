@@ -27,7 +27,7 @@ import * as seedanceEngine from "@/utils/ai/seedanceVideoEngine";
 import { synthesizeVoiceover } from "@/utils/ai/elevenLabsService";
 import { muxAudioOntoVideo } from "@/utils/ai/videoAudioMuxer";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
-import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
+import { createStreamFromUrl, enableDownloads, deleteStream } from "@/utils/ai/cloudflareStreamService";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -38,6 +38,7 @@ const IN_PROGRESS_STATES = [
     "ai_pending",
     "ai_processing",
     "ai_rendering_clips",
+    "ai_redoing_scenes",
     "ai_stitching_video",
     "cf_ingesting",
 ];
@@ -251,6 +252,118 @@ export async function GET(request) {
             return NextResponse.json({ advanced: car.id, phase: "ai_stitching_video" });
         }
 
+        if (car.video_url === "ai_redoing_scenes") {
+            // Per-scene partial regeneration. The server action
+            // requestSceneRegenerationAction set this phase, listed which
+            // scenes to redo in state.redo_scenes, and cleared task_id +
+            // muxed_url for those scene entries inside state.scenes. We pop
+            // them one-at-a-time, mirroring Phase 2's start/poll/TTS+mux
+            // loop. When the redo queue empties we hand off to Phase 3
+            // (existing stitching) which works unchanged because
+            // state.scenes still holds all four muxed_url entries in scene
+            // order — just with the redone ones replaced.
+            const state = car.ai_pipeline_state;
+            if (!state || !Array.isArray(state.script) || !Array.isArray(state.images) || !Array.isArray(state.scenes) || !Array.isArray(state.redo_scenes)) {
+                throw new Error("Missing or malformed ai_pipeline_state on ai_redoing_scenes car.");
+            }
+            if (state.redo_scenes.length === 0) {
+                // Nothing left to redo — advance straight to stitch.
+                await updateCar(admin, car.id, {
+                    video_url: "ai_stitching_video",
+                    ai_pipeline_state: state,
+                });
+                console.log(`${logPrefix} redo queue empty -> ai_stitching_video`);
+                return NextResponse.json({ advanced: car.id, phase: "ai_stitching_video" });
+            }
+
+            const sceneNum = state.redo_scenes[0];
+            const entry = state.scenes.find((s) => s.scene === sceneNum);
+            if (!entry) {
+                throw new Error(`Redo queue references scene ${sceneNum} but it is not in state.scenes.`);
+            }
+            const scriptForScene = state.script[sceneNum - 1];
+            const imageForScene = state.images[sceneNum - 1];
+            if (!scriptForScene || !imageForScene) {
+                throw new Error(`Pipeline state inconsistent: missing script or image for redo scene ${sceneNum}.`);
+            }
+
+            const engine = getEngine();
+
+            if (!entry.task_id) {
+                console.log(`${logPrefix} starting redo scene ${sceneNum}`);
+                const { taskId } = await engine.startSingleClip(scriptForScene, imageForScene);
+                entry.task_id = taskId;
+                await updateCar(admin, car.id, { ai_pipeline_state: state });
+                console.log(`${logPrefix} redo scene ${sceneNum} taskId=${taskId}`);
+                return NextResponse.json({
+                    advanced: car.id,
+                    started_redo_scene: sceneNum,
+                    task_id: taskId,
+                });
+            }
+
+            if (!entry.muxed_url) {
+                const poll = await engine.pollCinematicTask(entry.task_id);
+                if (poll && poll.error) {
+                    throw new Error(`Redo scene ${sceneNum}: ${poll.error}`);
+                }
+                if (!poll || !poll.isComplete || !poll.videoUrl) {
+                    console.log(`${logPrefix} polling redo scene ${sceneNum} (task ${entry.task_id}) — still pending`);
+                    return NextResponse.json({
+                        advanced: car.id,
+                        polling_redo_scene: sceneNum,
+                        pending: true,
+                    });
+                }
+
+                console.log(`${logPrefix} redo scene ${sceneNum} ready, running TTS + mux`);
+                const voiceoverText = scriptForScene.voiceover_text;
+                const { audioUrl, durationMs: audioDurationMs } = await synthesizeVoiceover({
+                    text: voiceoverText,
+                    carId: car.id,
+                    sceneNum,
+                });
+                const muxedUrl = await muxAudioOntoVideo({
+                    videoUrl: poll.videoUrl,
+                    audioUrl,
+                    videoDurationMs: CLIP_DURATION_MS,
+                    audioDurationMs,
+                });
+                entry.muxed_url = muxedUrl;
+
+                // Pop the head of the redo queue. If more to go, save state
+                // and wait for the next tick. If empty, advance to stitch.
+                state.redo_scenes.shift();
+                if (state.redo_scenes.length > 0) {
+                    await updateCar(admin, car.id, { ai_pipeline_state: state });
+                    console.log(`${logPrefix} redo scene ${sceneNum} muxed; next redo scene ${state.redo_scenes[0]}`);
+                    return NextResponse.json({
+                        advanced: car.id,
+                        muxed_redo_scene: sceneNum,
+                        next_redo_scene: state.redo_scenes[0],
+                    });
+                }
+
+                await updateCar(admin, car.id, {
+                    video_url: "ai_stitching_video",
+                    ai_pipeline_state: state,
+                });
+                console.log(`${logPrefix} all redos done -> ai_stitching_video`);
+                return NextResponse.json({
+                    advanced: car.id,
+                    muxed_redo_scene: sceneNum,
+                    phase: "ai_stitching_video",
+                });
+            }
+
+            // Defensive: head entry already muxed but still in the queue —
+            // pop and re-enter on next tick.
+            state.redo_scenes.shift();
+            await updateCar(admin, car.id, { ai_pipeline_state: state });
+            console.log(`${logPrefix} defensive: popped already-muxed redo scene ${sceneNum}`);
+            return NextResponse.json({ advanced: car.id, defensive_pop: sceneNum });
+        }
+
         if (car.video_url === "ai_stitching_video") {
             const state = car.ai_pipeline_state;
             if (!state || !Array.isArray(state.scenes) || state.scenes.length !== TOTAL_SCENES) {
@@ -283,17 +396,43 @@ export async function GET(request) {
             console.log(`${logPrefix} ingesting ${state.stitched_url} to Cloudflare Stream`);
             const cfData = await createStreamFromUrl(state.stitched_url, { car_id: car.id });
             await enableDownloads(cfData.uid);
+
+            // Persist scene state past completion so the user can later
+            // partial-redo individual scenes (handled by phase
+            // "ai_redoing_scenes" + requestSceneRegenerationAction). We keep
+            // state.script / state.images / state.scenes[].muxed_url /
+            // state.stitched_url, and clear the transient redo metadata.
+            const persistedState = { ...state };
+            delete persistedState.redo_scenes;
+            const previousCfUid = persistedState.previous_cf_uid;
+            delete persistedState.previous_cf_uid;
+
             await updateCar(admin, car.id, {
                 video_url: `cf:${cfData.uid}`,
-                ai_pipeline_state: null,
+                ai_pipeline_state: persistedState,
             });
             revalidatePath("/admin/inventory");
             revalidatePath("/inventory");
             console.log(`${logPrefix} complete -> cf:${cfData.uid}`);
+
+            // If this was a redo over an existing live video, delete the old
+            // CF Stream entry so we don't orphan storage. Best-effort: a
+            // cleanup failure must NOT mark this render as failed — the new
+            // video is already live and the user should see success.
+            if (previousCfUid && previousCfUid !== cfData.uid) {
+                try {
+                    const ok = await deleteStream(previousCfUid);
+                    console.log(`${logPrefix} previous CF stream ${previousCfUid} deleted=${ok}`);
+                } catch (cleanupErr) {
+                    console.warn(`${logPrefix} previous CF stream ${previousCfUid} cleanup failed: ${cleanupErr.message}`);
+                }
+            }
+
             return NextResponse.json({
                 advanced: car.id,
                 completed: true,
                 cf_uid: cfData.uid,
+                replaced_cf_uid: previousCfUid || null,
             });
         }
 

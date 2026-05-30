@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { checkHeyGenVideoStatus, queueAiWalkaround } from "./ai_actions";
+import { checkHeyGenVideoStatus, queueAiWalkaround, requestSceneRegenerationAction } from "./ai_actions";
 
 export default function AiVideoStatus({ carId, videoUrl }) {
     const [isChecking, setIsChecking] = useState(false);
     const [statusText, setStatusText] = useState("Checking...");
     const [isActive, setIsActive] = useState(false);
     const [isError, setIsError] = useState(false);
+    const [selectedScenes, setSelectedScenes] = useState([]);
 
     // Initial load logic to determine what phase we are in
     useEffect(() => {
@@ -60,6 +61,30 @@ export default function AiVideoStatus({ carId, videoUrl }) {
         }
     };
 
+    const toggleScene = (n) => {
+        setSelectedScenes((prev) => prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n].sort((a, b) => a - b));
+    };
+
+    const handleRedoSelectedScenes = async () => {
+        if (selectedScenes.length === 0) return;
+        const list = selectedScenes.join(", ");
+        const approxCost = (selectedScenes.length * 1.55).toFixed(2);
+        if (!window.confirm(`Regenerate scenes ${list}?\n\nApprox cost: $${approxCost} ( ~$1.55 per scene — Seedance 8s + ElevenLabs + mux, plus one re-stitch and re-ingest ). The current video stays live until the redo finishes, then is replaced automatically.\n\nProceed?`)) return;
+        setIsChecking(true);
+        try {
+            const res = await requestSceneRegenerationAction(carId, selectedScenes);
+            if (!res || !res.success) {
+                alert("Failed to queue scene redo: " + ((res && res.error) || "Unknown error"));
+                setIsChecking(false);
+                return;
+            }
+            window.location.reload();
+        } catch (error) {
+            alert("Failed to queue scene redo: " + error.message);
+            setIsChecking(false);
+        }
+    };
+
     // If it's already safely hosted (Mux or Cloudflare):
     if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
         return (
@@ -75,7 +100,34 @@ export default function AiVideoStatus({ carId, videoUrl }) {
                     title="Regenerate the walkaround video using the latest prompts"
                 >
                     <span className="material-symbols-outlined text-[12px]">refresh</span>
-                    {isChecking ? "Queuing..." : "Regenerate"}
+                    {isChecking ? "Queuing..." : "Regenerate all"}
+                </button>
+                <div className="text-[10px] text-slate-500 font-medium mt-1 leading-tight">Or redo specific scenes:</div>
+                <div className="flex gap-1">
+                    {[1, 2, 3, 4].map((n) => {
+                        const on = selectedScenes.includes(n);
+                        return (
+                            <button
+                                key={n}
+                                type="button"
+                                onClick={() => toggleScene(n)}
+                                disabled={isChecking}
+                                className={`text-[11px] font-bold w-6 h-6 rounded-md border transition-colors disabled:opacity-70 ${on ? "bg-primary text-white border-primary" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`}
+                                title={`Toggle scene ${n}`}
+                            >
+                                {n}
+                            </button>
+                        );
+                    })}
+                </div>
+                <button
+                    onClick={handleRedoSelectedScenes}
+                    disabled={isChecking || selectedScenes.length === 0}
+                    className="text-[11px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Regenerate scenes ${selectedScenes.join(", ")}`}
+                >
+                    <span className="material-symbols-outlined text-[12px]">refresh</span>
+                    {isChecking ? "Queuing..." : "Regenerate selected"}
                 </button>
             </div>
         );
