@@ -37,11 +37,10 @@ export default function LoginPage() {
             toast.success('Logged in successfully')
             
             if (authData.record.is_admin) {
-                router.push('/admin')
+                window.location.href = '/admin'
             } else {
-                router.push('/portal')
+                window.location.href = '/portal'
             }
-            router.refresh()
         } catch (error: any) {
             toast.error(error.message || 'Failed to authenticate')
             setLoading(false)

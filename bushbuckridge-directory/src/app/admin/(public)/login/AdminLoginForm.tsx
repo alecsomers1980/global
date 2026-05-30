@@ -41,8 +41,7 @@ export default function AdminLoginForm() {
             document.cookie = pb.authStore.exportToCookie(exportOptions)
             
             toast.success('Logged in successfully')
-            router.push('/admin')
-            router.refresh()
+            window.location.href = '/admin'
         } catch (error: any) {
             toast.error(error.message || 'Failed to authenticate')
             setLoading(false)
