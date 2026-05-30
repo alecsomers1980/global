@@ -49,7 +49,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     };
 
     const handleRegenerate = async () => {
-        if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nScenes are rendered sequentially using the latest prompts (4 × 8-second clips). A full successful render is roughly $5.60 (Seedance 2 Fast 720p + ElevenLabs voiceover) and takes ~8–12 minutes; if a scene fails the pipeline aborts immediately, capping the cost at the per-scene spend.\n\nThe current video will be replaced once the new one finishes.")) return;
+        if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nThe render runs in the background — you can close this tab and come back later. A Vercel cron job advances the pipeline one step per minute (4 × 8-second clips, then stitch + Cloudflare ingest); full successful renders take ~10–15 minutes and cost roughly $5.60 (Seedance 2 Fast 720p + ElevenLabs voiceover). If a step fails the pipeline aborts immediately, capping the cost at the per-scene spend.\n\nThe current video will be replaced once the new one finishes.")) return;
         setIsChecking(true);
         try {
             await queueAiWalkaround(carId);

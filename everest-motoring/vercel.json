@@ -7,6 +7,10 @@
         {
             "path": "/api/cron/cleanup-sold-cf-streams",
             "schedule": "0 3 * * *"
+        },
+        {
+            "path": "/api/cron/advance-video",
+            "schedule": "* * * * *"
         }
     ]
 }
