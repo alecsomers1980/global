@@ -15,8 +15,8 @@ export default async function AdminLoginPage({
     const resolvedParams = await searchParams;
     const user = pb.authStore.model
 
-    // If already logged in, redirect to dashboard
-    if (user) {
+    // If already logged in as admin, redirect to dashboard
+    if (user?.is_admin) {
         redirect('/admin')
     }
 
@@ -28,7 +28,12 @@ export default async function AdminLoginPage({
         const pb = await createClient()
 
         try {
-            await pb.collection('users').authWithPassword(email, password)
+            const authData = await pb.collection('users').authWithPassword(email, password)
+            if (!authData.record.is_admin) {
+                // Clear the store so they aren't left half-logged in
+                pb.authStore.clear()
+                return redirect(`/admin/login?message=${encodeURIComponent('Access denied. Admin privileges required.')}`)
+            }
         } catch (error: any) {
             return redirect(`/admin/login?message=${encodeURIComponent('Invalid credentials')}`)
         }

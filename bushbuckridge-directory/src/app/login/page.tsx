@@ -23,7 +23,7 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            await pb.collection('users').authWithPassword(email, password)
+            const authData = await pb.collection('users').authWithPassword(email, password)
             
             // Sync the auth store to a cookie so the middleware/RSC can see it
             // If rememberMe is checked, set a 30 day maxAge. Otherwise, let it expire on session end.
@@ -35,7 +35,12 @@ export default function LoginPage() {
             document.cookie = pb.authStore.exportToCookie(exportOptions)
             
             toast.success('Logged in successfully')
-            router.push('/admin')
+            
+            if (authData.record.is_admin) {
+                router.push('/admin')
+            } else {
+                router.push('/portal')
+            }
             router.refresh()
         } catch (error: any) {
             toast.error(error.message || 'Failed to authenticate')
@@ -65,7 +70,7 @@ export default function LoginPage() {
                         <Lock className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                        <CardTitle className="text-3xl font-black">Admin Access</CardTitle>
+                        <CardTitle className="text-3xl font-black">Portal Access</CardTitle>
                         <CardDescription className="text-base font-medium mt-2">
                             Secure portal for directory management
                         </CardDescription>
