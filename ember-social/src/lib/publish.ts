@@ -262,6 +262,117 @@ async function waitForIgProcessing(containerId: string, accessToken: string, max
     throw new Error('Instagram media processing timeout')
 }
 
+// YouTube: title caps at 100 chars, description at 5,000.
+const YT_MAX_TITLE_CHARS = 100
+const YT_MAX_DESCRIPTION_CHARS = 5000
+
+function deriveYouTubeTitle(content: string): string {
+    const firstLine = (content || '').split('\n').map(s => s.trim()).find(Boolean) || 'New video'
+    if (firstLine.length <= YT_MAX_TITLE_CHARS) return firstLine
+    return firstLine.slice(0, YT_MAX_TITLE_CHARS - 1).trimEnd() + '…'
+}
+
+function trimForYouTubeDescription(content: string): string {
+    if (!content || content.length <= YT_MAX_DESCRIPTION_CHARS) return content
+    return content.slice(0, YT_MAX_DESCRIPTION_CHARS - 1).trimEnd() + '…'
+}
+
+// Google access tokens expire after ~1 hour. Scheduled posts will almost always
+// run with a stale token, so we refresh from the stored refresh_token first.
+async function refreshGoogleAccessToken(refreshToken: string): Promise<{ accessToken: string; expiresAt: string }> {
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            client_id: process.env.GOOGLE_CLIENT_ID || '',
+            client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token',
+        }).toString(),
+    })
+    const data = await res.json()
+    if (!res.ok || data.error) {
+        throw new Error(data.error_description || data.error || 'Failed to refresh Google token')
+    }
+    const expiresIn: number = data.expires_in || 3600
+    return {
+        accessToken: data.access_token,
+        expiresAt: new Date(Date.now() + expiresIn * 1000).toISOString(),
+    }
+}
+
+async function publishToYouTube(
+    accessToken: string,
+    rawContent: string,
+    mediaUrls: string[] | null
+): Promise<{ id: string }> {
+    if (!mediaUrls || mediaUrls.length === 0) {
+        throw new Error('YouTube requires a video to upload')
+    }
+
+    let videoUrl = mediaUrls[0]
+    const isVideo = /\.(mp4|mov|m3u8)(\?|$)/i.test(videoUrl) || videoUrl.includes('stream.mux.com')
+    if (!isVideo) {
+        throw new Error('YouTube requires a video file (mp4/mov); images are not supported')
+    }
+
+    // Convert Mux HLS playlist to a downloadable mp4
+    if (videoUrl.includes('stream.mux.com') && videoUrl.endsWith('.m3u8')) {
+        const playbackId = videoUrl.split('/').pop()!.replace('.m3u8', '')
+        videoUrl = `https://stream.mux.com/${playbackId}/capped-1080p.mp4`
+    }
+
+    // YouTube has no fetch-by-URL upload — download the bytes, then upload them.
+    const videoRes = await fetch(videoUrl)
+    if (!videoRes.ok) throw new Error(`Failed to download video for upload (${videoRes.status})`)
+    const videoBuffer = Buffer.from(await videoRes.arrayBuffer())
+    const contentType = videoRes.headers.get('content-type') || 'video/mp4'
+
+    const metadata = {
+        snippet: {
+            title: deriveYouTubeTitle(rawContent),
+            description: trimForYouTubeDescription(rawContent),
+        },
+        status: { privacyStatus: 'public' },
+    }
+
+    // 1. Start a resumable upload session
+    const initRes = await fetch(
+        'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status',
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json; charset=UTF-8',
+                'X-Upload-Content-Type': contentType,
+                'X-Upload-Content-Length': String(videoBuffer.length),
+            },
+            body: JSON.stringify(metadata),
+        }
+    )
+    if (!initRes.ok) {
+        const body = await initRes.text()
+        throw new Error(`YouTube upload init failed (${initRes.status}): ${body.slice(0, 300)}`)
+    }
+    const uploadUrl = initRes.headers.get('location')
+    if (!uploadUrl) throw new Error('YouTube did not return a resumable upload URL')
+
+    // 2. Upload the video bytes
+    const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': contentType,
+            'Content-Length': String(videoBuffer.length),
+        },
+        body: videoBuffer,
+    })
+    const uploadData = await uploadRes.json()
+    if (!uploadRes.ok || uploadData.error) {
+        throw new Error(uploadData.error?.message || `YouTube upload failed (${uploadRes.status})`)
+    }
+    return { id: uploadData.id }
+}
+
 export async function publishPost(postId: string): Promise<PublishOutcome> {
     // Clear any previous error at the start of a new attempt so stale
     // messages don't linger after a successful retry.
@@ -291,7 +402,7 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
 
     const { data: accounts } = await supabase
         .from('social_accounts')
-        .select('platform, account_id, account_name, access_token')
+        .select('platform, account_id, account_name, access_token, refresh_token, token_expires_at')
         .eq('workspace_id', postAny.workspace_id)
         .in('platform', postAny.platforms)
 
@@ -360,6 +471,24 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
                     // Append warning to last_error later — track it on the result
                     ;(publishedRef as any)._firstCommentWarning = firstCommentWarning
                 }
+            } else if (account.platform === 'youtube') {
+                // Google tokens last ~1h; refresh if missing/expired before uploading.
+                let token: string = account.access_token
+                const expiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : 0
+                if (!expiresAt || expiresAt < Date.now() + 60_000) {
+                    if (!account.refresh_token) {
+                        throw new Error('YouTube token expired and no refresh token stored — reconnect the channel')
+                    }
+                    const refreshed = await refreshGoogleAccessToken(account.refresh_token)
+                    token = refreshed.accessToken
+                    await supabase
+                        .from('social_accounts')
+                        .update({ access_token: token, token_expires_at: refreshed.expiresAt } as never)
+                        .eq('workspace_id', postAny.workspace_id)
+                        .eq('platform', 'youtube')
+                        .eq('account_id', account.account_id)
+                }
+                publishedRef = await publishToYouTube(token, postAny.content, postAny.media_urls)
             } else {
                 throw new Error(`Publishing to ${account.platform} not yet supported`)
             }

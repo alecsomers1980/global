@@ -24,7 +24,7 @@ const PLATFORMS: { id: Platform; label: string; description: string }[] = [
 ]
 
 // Platforms with OAuth flows implemented
-const SUPPORTED_PLATFORMS: Platform[] = ['facebook', 'instagram', 'google_business']
+const SUPPORTED_PLATFORMS: Platform[] = ['facebook', 'instagram', 'google_business', 'youtube']
 
 export default function PlatformsPage({ params }: { params: Promise<{ id: string }> }) {
     const [workspaceId, setWorkspaceId] = useState('')
@@ -61,6 +61,8 @@ export default function PlatformsPage({ params }: { params: Promise<{ id: string
             window.location.href = `/api/auth/instagram/init?workspaceId=${workspaceId}`
         } else if (platform === 'google_business') {
             window.location.href = `/api/auth/gbp/init?workspaceId=${workspaceId}`
+        } else if (platform === 'youtube') {
+            window.location.href = `/api/auth/youtube/init?workspaceId=${workspaceId}`
         } else {
             alert(`${PLATFORM_LABELS[platform]} connection coming soon.`)
         }
@@ -73,6 +75,8 @@ export default function PlatformsPage({ params }: { params: Promise<{ id: string
             window.location.href = `/api/auth/instagram/init?workspaceId=${workspaceId}&reauth=1`
         } else if (platform === 'google_business') {
             window.location.href = `/api/auth/gbp/init?workspaceId=${workspaceId}&reauth=1`
+        } else if (platform === 'youtube') {
+            window.location.href = `/api/auth/youtube/init?workspaceId=${workspaceId}&reauth=1`
         }
     }
 
@@ -142,9 +146,11 @@ export default function PlatformsPage({ params }: { params: Promise<{ id: string
                     <AlertCircle className="w-4 h-4" />
                     {error === 'no_instagram_account'
                         ? 'No Instagram Business account found linked to your Facebook Pages. Make sure your Instagram is converted to a Business account and linked to a Facebook Page.'
-                        : error === 'auth_failed'
-                            ? 'Authentication failed. Please try again.'
-                            : `Connection error: ${error}`
+                        : error === 'no_youtube_channel'
+                            ? 'No YouTube channel found on this Google account. Create a channel at youtube.com, then reconnect.'
+                            : error === 'auth_failed'
+                                ? 'Authentication failed. Please try again.'
+                                : `Connection error: ${error}`
                     }
                 </div>
             )}
