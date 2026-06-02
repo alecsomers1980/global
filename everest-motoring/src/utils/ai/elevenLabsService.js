@@ -54,18 +54,19 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    // Trailing silence strategy: an ellipsis followed by a 3-second SSML break.
-    // The ellipsis gives the FINAL WORD a natural falling decay so the model
-    // doesn't clip its last phoneme — a hard <break> placed directly after the
-    // last word truncates it (the "half word cut off at the end" artefact).
-    // The break then supplies the bulk silence. The mp3 must be at least as
-    // long as the muxed clip — otherwise Fal compose fills the gap by HOLDING
-    // the last sample (the older "stuck voice" artefact). Voice (~4-5s) +
-    // ellipsis (~0.7s) + 3s break comfortably covers the 8s clip; the mux
-    // truncates any excess trailing silence at clip length.
-    const paddedText = `${text} ... <break time="3.0s"/>`;
+    // Trailing decay: a single ellipsis gives the FINAL WORD a natural falling
+    // cadence so the model doesn't clip its last phoneme (the "half word cut
+    // off at the end" artefact). We deliberately do NOT append an SSML
+    // <break> tag here: on eleven_multilingual_v2 a long standalone break
+    // makes the model hallucinate phantom speech — it finishes the line, then
+    // mumbles non-words a moment later (the "babble at the end" artefact).
+    // Bulk trailing silence is handled downstream instead: the mux step
+    // (videoAudioMuxer) plays the real audio duration we measure below and
+    // leaves the remaining clip length as true silence, which avoids both the
+    // clipped-last-word and the older "stuck voice" artefacts.
+    const paddedText = `${text} ...`;
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, ellipsis +3s trailing silence): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, ellipsis trailing decay): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',
