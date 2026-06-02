@@ -12,7 +12,9 @@ function getResend() {
 const FROM_ADDRESS =
   process.env.RESEND_FROM_EMAIL || 'Everest Motoring <onboarding@resend.dev>';
 
-export const sendEmail = async ({ to, subject, react, scheduledAt }) => {
+const DEFAULT_REPLY_TO = process.env.RESEND_REPLY_TO || null;
+
+export const sendEmail = async ({ to, subject, react, scheduledAt, replyTo }) => {
   const resend = getResend();
   if (!resend) {
     console.warn('sendEmail skipped: RESEND_API_KEY is not set');
@@ -21,6 +23,9 @@ export const sendEmail = async ({ to, subject, react, scheduledAt }) => {
   try {
     const payload = { from: FROM_ADDRESS, to, subject, react };
     if (scheduledAt) payload.scheduledAt = scheduledAt;
+
+    const finalReplyTo = replyTo || DEFAULT_REPLY_TO;
+    if (finalReplyTo) payload.replyTo = finalReplyTo;
 
     const { data, error } = await resend.emails.send(payload);
 

@@ -1,6 +1,11 @@
 "use server";
 
+import * as React from "react";
 import { createClient } from "@/utils/supabase/server";
+import { sendEmail } from "@/lib/resend";
+import { SystemNotificationEmail } from "@/emails/SystemNotification";
+
+const STAFF_EMAIL = process.env.STAFF_NOTIFICATION_EMAIL || "info@everestmotoring.co.za";
 
 export async function submitValueMyCar(formData) {
     try {
@@ -92,6 +97,30 @@ export async function submitValueMyCar(formData) {
             return { error: "Database error" };
         }
 
+        // Staff email notification — fire-and-forget
+        const vehicleDesc = `${year} ${make} ${model}`;
+        const mileageFormatted = new Intl.NumberFormat("en-ZA").format(mileage);
+
+        sendEmail({
+            to: STAFF_EMAIL,
+            subject: `📋 Trade-In Valuation Request — ${vehicleDesc}`,
+            react: React.createElement(SystemNotificationEmail, {
+                subject: `Trade-In Valuation Request`,
+                details: [
+                    { label: "Vehicle", value: vehicleDesc },
+                    { label: "Mileage", value: `${mileageFormatted} km` },
+                    { label: "Condition", value: condition },
+                    { label: "Fuel / Trans", value: `${fuel_type} / ${transmission}` },
+                    { label: "Client", value: client_name },
+                    { label: "Phone", value: client_phone },
+                    { label: "Email", value: client_email },
+                    { label: "Location", value: [client_suburb, client_province].filter(Boolean).join(", ") || "Not provided" },
+                ],
+                actionLink: "https://everestmotoring.co.za/admin/trade-ins",
+                actionLabel: "Review in Trade-In Dashboard",
+            }),
+        }).catch((err) => console.warn("Staff trade-in notification failed:", err));
+
         return { success: true };
 
     } catch (error) {
@@ -99,3 +128,4 @@ export async function submitValueMyCar(formData) {
         return { error: "Server action failed" };
     }
 }
+
