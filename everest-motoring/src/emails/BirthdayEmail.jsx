@@ -14,85 +14,90 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
+const LOGO_URL = 'https://everestmotoring.co.za/images/logo.png';
+
+const brandConfig = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffff01',
+        'primary-dark': '#e6e600',
+        secondary: '#000000',
+      },
+    },
+  },
+};
+
 export const BirthdayEmail = ({
   customerName = 'Valued Client',
 }) => {
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primary: '#d32f2f',
-                secondary: '#1a237e',
-                slate: '#0f1723',
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={brandConfig}>
         <Head />
         <Preview>Happy Birthday from Everest Motoring! 🎂</Preview>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto py-12 w-[600px] border border-slate-100 shadow-sm rounded-2xl overflow-hidden text-center">
+        <Body className="bg-neutral-100 font-sans">
+          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-slate py-8 text-center border-b-4 border-primary mb-6">
-              <Img
-                src={`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://everestmotoring.vercel.app'}/images/logo.png`}
-                width="180"
-                height="auto"
-                alt="Everest Motoring"
-                className="mx-auto"
-              />
+            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
+              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
             </Section>
-            <Section className="py-10">
-              <Heading className="text-4xl font-bold text-slate m-0 mb-4 px-10">
-                HAPPY BIRTHDAY, {customerName.toUpperCase()}!
+
+            <Section className="px-10 pt-10 pb-4 text-center">
+              <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
+                Happy Birthday, {customerName}!
               </Heading>
-              <Text className="text-slate-500 text-lg leading-relaxed mb-10 px-10">
-                Wishing you a fantastic day on the road and many smooth kilometers ahead.
+              <Text className="text-neutral-600 text-lg leading-relaxed m-0">
+                Wishing you a fantastic day on the road and many smooth kilometres ahead.
               </Text>
+            </Section>
 
-              {/* The Gift Card */}
-              <Section className="mx-10 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-8 mb-10">
-                <Text className="text-primary font-bold text-xs uppercase tracking-[0.2em] mb-2">A Special Gift for You</Text>
-                <Heading as="h2" className="text-2xl font-bold text-slate m-0 mb-4">
-                  Complimentary Valet or R500 Service Credit
-                </Heading>
-                <Text className="text-slate-600 mb-6">
-                  Stop by our showroom during your birthday month to claim your gift as a token of our appreciation.
-                </Text>
-                <Button
-                  className="bg-secondary text-white font-bold py-4 px-10 rounded-full shadow-lg"
-                  href="https://everestmotoring.co.za/contact"
-                >
-                  Book Your Birthday Gift
-                </Button>
-              </Section>
-
+            {/* Celebration image */}
+            <Section className="px-10 pb-6">
               <Img
                 src="https://images.unsplash.com/photo-1464349153735-7db50ed83c84?auto=format&fit=crop&q=80&w=800"
                 width="520"
-                height="260"
+                height="auto"
                 alt="Celebration"
-                className="mx-auto rounded-lg mb-10"
+                className="rounded-xl object-cover w-full h-auto"
               />
+            </Section>
 
-              <Text className="text-slate-400 text-xs">
+            {/* Gift card */}
+            <Section className="px-10 pb-8">
+              <Section className="bg-neutral-50 border-2 border-dashed border-primary-dark rounded-xl px-6 py-8 text-center">
+                <Text className="text-neutral-500 font-bold text-xs uppercase tracking-[0.2em] m-0 mb-2">
+                  A Special Gift for You
+                </Text>
+                <Heading as="h2" className="text-2xl font-bold text-neutral-900 m-0 mb-3">
+                  A Complimentary Car Wash 🚗✨
+                </Heading>
+                <Text className="text-neutral-600 m-0 mb-6">
+                  Pop in to Everest Motoring during your birthday month and we'll treat your car to a
+                  complimentary wash — our way of saying thank you. Simply collect it at our showroom.
+                </Text>
+                <Button className="bg-primary text-black font-bold py-4 px-8 rounded-lg" href="https://everestmotoring.co.za/contact">
+                  Book Your Car Wash
+                </Button>
+              </Section>
+            </Section>
+
+            <Section className="px-10 pb-10 text-center">
+              <Text className="text-neutral-400 text-xs m-0">
                 Offer valid for 30 days. Please bring your ID when visiting.
               </Text>
             </Section>
 
             {/* Footer */}
-            <Section className="bg-slate py-8 px-8 text-center mt-10">
-              <Text className="text-slate-400 text-sm m-0">
-                Everest Motoring | White River, Mpumalanga
-              </Text>
-              <Text className="text-slate-500 text-xs mt-4">
+            <Section className="bg-secondary py-8 px-8 text-center">
+              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+              <Text className="text-neutral-500 text-xs mt-4 m-0">
                 You are receiving this because you subscribed to our communications.
                 <br />
-                <Link href="#" className="text-primary-light underline">Unsubscribe</Link>
+                <Link href="#" className="text-primary underline">Unsubscribe</Link>
               </Text>
             </Section>
           </Container>

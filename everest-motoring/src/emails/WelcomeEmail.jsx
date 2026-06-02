@@ -14,79 +14,72 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
+const LOGO_URL = 'https://everestmotoring.co.za/images/logo.png';
+
+const brandConfig = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffff01',
+        'primary-dark': '#e6e600',
+        secondary: '#000000',
+      },
+    },
+  },
+};
+
 export const WelcomeEmail = ({
   customerName = 'Valued Customer',
 }) => {
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primary: '#d32f2f',
-                secondary: '#1a237e',
-                slate: '#0f1723',
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={brandConfig}>
         <Head />
         <Preview>Welcome to the Everest Motoring Family</Preview>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto py-10 w-[600px] border border-slate-100 shadow-sm rounded-xl">
+        <Body className="bg-neutral-100 font-sans">
+          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-slate py-8 text-center rounded-t-lg border-b-4 border-primary">
-              <Img
-                src={`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://everestmotoring.vercel.app'}/images/logo.png`}
-                width="180"
-                height="auto"
-                alt="Everest Motoring"
-                className="mx-auto"
-              />
+            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
+              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
             </Section>
 
             {/* Content */}
-            <Section className="px-10 text-center">
-              <Heading className="text-3xl font-bold text-slate m-0 mb-6">
+            <Section className="px-10 py-10 text-center">
+              <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-6">
                 Welcome to the Family, {customerName}!
               </Heading>
-              <Text className="text-slate-600 text-lg leading-relaxed mb-8">
-                Thank you for choosing Everest Motoring. We're honored to assist you in finding your next premium vehicle. 
-                Our team is dedicated to providing you with the highest quality service and a seamless buying experience.
+              <Text className="text-neutral-600 text-lg leading-relaxed mb-8">
+                Thank you for choosing Everest Motoring. We're honoured to help you find your next
+                premium vehicle, and to give you a seamless, transparent buying experience from start
+                to finish.
               </Text>
 
-              {/* USP Icons/Grid */}
-              <Section className="bg-slate-50 p-6 rounded-lg mb-8 text-left">
-                <Text className="font-bold text-slate mb-2 flex items-center">
-                  ✅ Premium Inspection on all vehicles
-                </Text>
-                <Text className="font-bold text-slate mb-2">
-                  ✅ Transparent Finance Options
-                </Text>
-                <Text className="font-bold text-slate">
-                  ✅ AI-Driven Digital Showroom
-                </Text>
+              <Section className="bg-neutral-50 border border-neutral-200 p-6 rounded-xl mb-8 text-left">
+                <Text className="font-bold text-neutral-900 m-0 mb-2">✅ Premium inspection on every vehicle</Text>
+                <Text className="font-bold text-neutral-900 m-0 mb-2">✅ Transparent finance options</Text>
+                <Text className="font-bold text-neutral-900 m-0">✅ AI-driven digital showroom</Text>
               </Section>
 
-              <Button
-                className="bg-secondary text-white font-bold py-4 px-10 rounded-full shadow-lg"
-                href="https://everestmotoring.co.za/inventory"
-              >
-                Browse Our Current Showroom
-              </Button>
+              <Section className="text-center">
+                <Button
+                  className="bg-primary text-black font-bold py-4 px-8 rounded-lg"
+                  href="https://everestmotoring.co.za/inventory"
+                >
+                  Browse Our Showroom
+                </Button>
+              </Section>
             </Section>
 
             {/* Footer */}
-            <Section className="bg-slate py-8 px-8 text-center rounded-b-lg mt-8">
-              <Text className="text-slate-400 text-sm m-0">
-                Everest Motoring | White River, Mpumalanga
-              </Text>
-              <Text className="text-slate-500 text-xs mt-4">
+            <Section className="bg-secondary py-8 px-8 text-center">
+              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+              <Text className="text-neutral-500 text-xs mt-4 m-0">
                 You are receiving this because you subscribed to our communications.
                 <br />
-                <Link href="#" className="text-primary-light underline">Unsubscribe</Link>
+                <Link href="#" className="text-primary underline">Unsubscribe</Link>
               </Text>
             </Section>
           </Container>

@@ -10,101 +10,100 @@ import {
   Section,
   Text,
   Tailwind,
-  Row,
-  Column,
 } from '@react-email/components';
 import * as React from 'react';
+
+const LOGO_URL = 'https://everestmotoring.co.za/images/logo.png';
+
+const brandConfig = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffff01',
+        'primary-dark': '#e6e600',
+        secondary: '#000000',
+      },
+    },
+  },
+};
 
 export const OneMonthFollowupEmail = ({
   customerName = 'Valued Client',
   vehicleModel = 'Toyota Fortuner',
+  carImageUrl = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
 }) => {
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primary: '#d32f2f',
-                secondary: '#1a237e',
-                slate: '#0f1723',
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={brandConfig}>
         <Head />
-        <Preview>One Month with your {vehicleModel} - How is it going?</Preview>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto py-10 w-[600px]">
+        <Preview>One month with your {vehicleModel} — how is it going?</Preview>
+        <Body className="bg-neutral-100 font-sans">
+          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-slate py-8 text-center rounded-t-lg border-b-4 border-primary mb-10">
-              <Img
-                src={`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://everestmotoring.vercel.app'}/images/logo.png`}
-                width="180"
-                height="auto"
-                alt="Everest Motoring"
-                className="mx-auto"
-              />
+            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
+              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
             </Section>
 
-            <Section className="px-5 text-center">
-              <Heading className="text-3xl font-bold text-slate m-0 mb-4">
+            <Section className="px-10 pt-10 pb-6 text-center">
+              <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
                 One Month of Excellence
               </Heading>
-              <Text className="text-slate-600 text-lg leading-relaxed">
-                Hi {customerName}, it's been exactly one month since you drove away in your <strong>{vehicleModel}</strong>.
+              <Text className="text-neutral-600 text-lg leading-relaxed m-0 mb-2">
+                Hi {customerName}, it's been exactly one month since you drove away in your{' '}
+                <strong>{vehicleModel}</strong>.
               </Text>
-              <Text className="text-slate-600 text-lg leading-relaxed mb-8">
-                We hope you're loving every kilometer. How has your experience been with Everest Motoring so far?
-              </Text>
-
-              {/* Star Rating Placeholder */}
-              <Section className="bg-slate-50 py-8 rounded-xl border border-slate-100 mb-10">
-                <Text className="font-bold text-slate uppercase tracking-wider mb-4">Rate Your Experience</Text>
-                <Text className="text-3xl text-[#FFD700]">★ ★ ★ ★ ★</Text>
-              </Section>
-
-              <Row className="mb-10">
-                <Column className="pr-2">
-                  <Section className="bg-white border border-slate-200 p-6 rounded-lg text-center shadow-sm">
-                    <Text className="font-bold text-slate m-0 mb-2">Service Center</Text>
-                    <Link href="https://everestmotoring.co.za/service" className="text-primary font-bold text-sm underline">Book First Service</Link>
-                  </Section>
-                </Column>
-                <Column className="pl-2">
-                  <Section className="bg-white border border-slate-200 p-6 rounded-lg text-center shadow-sm">
-                    <Text className="font-bold text-slate m-0 mb-2">Owner's Guide</Text>
-                    <Link href="https://everestmotoring.co.za/guide" className="text-primary font-bold text-sm underline">View Maintenance Tips</Link>
-                  </Section>
-                </Column>
-              </Row>
-
-              <Text className="text-slate-500 italic text-sm">
-                "Share a photo of your new ride and tag us to be featured on our social media!"
+              <Text className="text-neutral-600 text-lg leading-relaxed m-0">
+                We hope you're loving every kilometre. How has your experience with Everest Motoring
+                been so far?
               </Text>
             </Section>
 
-            <Footer />
+            {/* Inventory car image */}
+            {carImageUrl && (
+              <Section className="px-10 pb-6">
+                <Img
+                  src={carImageUrl}
+                  width="520"
+                  height="auto"
+                  alt={vehicleModel}
+                  className="rounded-xl object-cover w-full h-auto"
+                />
+              </Section>
+            )}
+
+            {/* Rating */}
+            <Section className="px-10 pb-8">
+              <Section className="bg-neutral-50 border border-neutral-200 rounded-xl py-8 text-center">
+                <Text className="font-bold text-neutral-900 uppercase tracking-wider m-0 mb-3">
+                  Rate Your Experience
+                </Text>
+                <Text className="text-3xl text-primary-dark m-0">★ ★ ★ ★ ★</Text>
+              </Section>
+            </Section>
+
+            <Section className="px-10 pb-10 text-center">
+              <Text className="text-neutral-500 italic text-sm m-0">
+                Share a photo of your new ride and tag us to be featured on our social media!
+              </Text>
+            </Section>
+
+            {/* Footer */}
+            <Section className="bg-secondary py-8 px-8 text-center">
+              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+              <Text className="text-neutral-500 text-xs mt-4 m-0">
+                You are receiving this because you subscribed to our communications.
+                <br />
+                <Link href="#" className="text-primary underline">Unsubscribe</Link>
+              </Text>
+            </Section>
           </Container>
         </Body>
       </Tailwind>
     </Html>
   );
 };
-
-const Footer = () => (
-            <Section className="bg-slate py-8 px-8 text-center rounded-b-lg mt-10">
-              <Text className="text-slate-400 text-sm m-0">
-                Everest Motoring | White River, Mpumalanga
-              </Text>
-              <Text className="text-slate-500 text-xs mt-4">
-                You are receiving this because you subscribed to our communications.
-                <br />
-                <Link href="#" className="text-primary-light underline">Unsubscribe</Link>
-              </Text>
-            </Section>
-);
 
 export default OneMonthFollowupEmail;

@@ -10,130 +10,120 @@ import {
   Section,
   Text,
   Tailwind,
+  Button,
 } from '@react-email/components';
 import * as React from 'react';
+
+const LOGO_URL = 'https://everestmotoring.co.za/images/logo.png';
+
+const brandConfig = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffff01',
+        'primary-dark': '#e6e600',
+        secondary: '#000000',
+      },
+    },
+  },
+};
 
 export const PostSaleReviewEmail = ({
   customerName = 'Valued Client',
   vehicleModel = 'your new vehicle',
+  carImageUrl = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
   deliveryPhotoUrl = null,
-  videoUrl = null,
+  videoUrl = 'https://everestmotoring.co.za/media/celebration',
   reviewUrl = 'https://www.google.com/search?q=Everest+Motoring',
 }) => {
-  const logoUrl = `${
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://everestmotoring.vercel.app'
-  }/images/logo.png`;
+  // Thumbnail for the celebration video: prefer the handover photo, then the
+  // inventory car image.
+  const videoThumb = deliveryPhotoUrl || carImageUrl;
 
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primary: '#d32f2f',
-                secondary: '#1a237e',
-                slate: '#0f1723',
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={brandConfig}>
         <Head />
-        <Preview>How is your {vehicleModel}? Share your experience.</Preview>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto py-10 w-[600px]">
-            <Section className="bg-slate py-8 text-center rounded-t-lg border-b-4 border-primary mb-10">
-              <Img
-                src={logoUrl}
-                width="180"
-                height="auto"
-                alt="Everest Motoring"
-                className="mx-auto"
-              />
+        <Preview>Congratulations on your {vehicleModel}!</Preview>
+        <Body className="bg-neutral-100 font-sans">
+          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+            {/* Header / Logo */}
+            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
+              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
             </Section>
 
-            <Section className="px-5 text-center">
-              <Heading className="text-3xl font-bold text-slate m-0 mb-4">
+            <Section className="px-10 pt-10 pb-6 text-center">
+              <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
                 Congratulations on your new ride!
               </Heading>
-              <Text className="text-slate-600 text-lg leading-relaxed mb-6">
-                Hi {customerName}, it's been a few days since you drove away in your{' '}
-                <strong>{vehicleModel}</strong>. We hope it's been everything you were hoping for.
+              <Text className="text-neutral-600 text-lg leading-relaxed m-0">
+                Hi {customerName}, we hope your <strong>{vehicleModel}</strong> has been everything
+                you were hoping for.
               </Text>
+            </Section>
 
-              {videoUrl ? (
-                <Section className="mb-8">
-                  <Link href={videoUrl} className="no-underline">
-                    <div style={{ position: 'relative', display: 'inline-block' }}>
-                      <Img
-                        src={deliveryPhotoUrl || `${logoUrl}`}
-                        width="500"
-                        height="auto"
-                        alt="Watch your handover video"
-                        className="rounded-xl mx-auto block"
-                      />
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          backgroundColor: 'rgba(211, 47, 47, 0.92)',
-                          color: '#ffffff',
-                          borderRadius: '9999px',
-                          width: '72px',
-                          height: '72px',
-                          lineHeight: '72px',
-                          textAlign: 'center',
-                          fontSize: '28px',
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        ▶
-                      </div>
-                    </div>
-                  </Link>
-                  <Text className="text-slate-500 text-sm mt-2">
-                    Click to watch your handover video
-                  </Text>
-                </Section>
-              ) : deliveryPhotoUrl ? (
-                <Section className="mb-8">
-                  <Img
-                    src={deliveryPhotoUrl}
-                    width="500"
-                    height="auto"
-                    alt="Your new ride"
-                    className="rounded-xl mx-auto"
-                  />
-                </Section>
-              ) : null}
-
-              <Text className="text-slate-600 text-lg leading-relaxed mb-8">
-                If you have a moment, we'd really appreciate hearing about your experience.
-                Honest reviews from clients like you help others trust us with their next vehicle.
-              </Text>
-
-              <Section className="mb-10">
-                <Link
-                  href={reviewUrl}
-                  className="bg-primary text-black font-bold px-8 py-4 rounded-lg no-underline inline-block"
-                >
-                  Leave a Google Review
-                </Link>
+            {/* Inventory car image */}
+            {carImageUrl && (
+              <Section className="px-10 pb-6">
+                <Img
+                  src={carImageUrl}
+                  width="520"
+                  height="auto"
+                  alt={vehicleModel}
+                  className="rounded-xl object-cover w-full h-auto"
+                />
               </Section>
+            )}
 
-              <Text className="text-slate-500 italic text-sm">
+            {/* Celebration video created when the car was marked sold */}
+            {videoUrl && (
+              <Section className="px-10 pb-6 text-center">
+                <Link href={videoUrl} className="no-underline">
+                  <Section className="relative rounded-xl overflow-hidden border border-neutral-200">
+                    {videoThumb && (
+                      <Img
+                        src={videoThumb}
+                        width="520"
+                        height="auto"
+                        alt="Watch your celebration video"
+                        className="w-full h-auto object-cover opacity-90"
+                      />
+                    )}
+                    <Section className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                      <Text className="bg-primary text-black font-bold rounded-full m-0" style={{ width: '64px', height: '64px', lineHeight: '64px', textAlign: 'center', fontSize: '24px' }}>
+                        ▶
+                      </Text>
+                    </Section>
+                  </Section>
+                </Link>
+                <Text className="text-neutral-500 text-sm mt-2 m-0">
+                  🎉 Tap to watch your celebration video
+                </Text>
+              </Section>
+            )}
+
+            <Section className="px-10 pb-2 text-center">
+              <Text className="text-neutral-600 text-lg leading-relaxed mb-6">
+                If you have a moment, we'd really appreciate hearing about your experience. Honest
+                reviews from clients like you help others trust us with their next vehicle.
+              </Text>
+              <Section className="text-center mb-6">
+                <Button className="bg-primary text-black font-bold py-4 px-8 rounded-lg" href={reviewUrl}>
+                  Leave a Google Review
+                </Button>
+              </Section>
+              <Text className="text-neutral-500 italic text-sm m-0">
                 Thank you for choosing Everest Motoring.
               </Text>
             </Section>
 
-            <Section className="bg-slate py-8 px-8 text-center rounded-b-lg mt-10">
-              <Text className="text-slate-400 text-sm m-0">
-                Everest Motoring | White River, Mpumalanga
-              </Text>
-              <Text className="text-slate-500 text-xs mt-4">
+            {/* Footer */}
+            <Section className="bg-secondary py-8 px-8 text-center mt-6">
+              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+              <Text className="text-neutral-500 text-xs mt-4 m-0">
                 You are receiving this because you recently purchased a vehicle from us.
               </Text>
             </Section>

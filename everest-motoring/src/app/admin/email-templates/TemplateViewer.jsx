@@ -27,14 +27,14 @@ export default function TemplateViewer({ templates }) {
                             onClick={() => setActiveKey(t.key)}
                             className={`text-left px-3 py-3 rounded-xl transition-all ${
                                 t.key === activeKey
-                                    ? "bg-primary text-white shadow-sm"
+                                    ? "bg-primary text-black shadow-sm"
                                     : "text-slate-700 hover:bg-slate-100"
                             }`}
                         >
                             <span className="block font-bold text-sm">{t.name}</span>
                             <span
                                 className={`block text-xs mt-0.5 leading-snug ${
-                                    t.key === activeKey ? "text-white/80" : "text-slate-400"
+                                    t.key === activeKey ? "text-black/70" : "text-slate-400"
                                 }`}
                             >
                                 {t.description}

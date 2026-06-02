@@ -16,6 +16,20 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
+const LOGO_URL = 'https://everestmotoring.co.za/images/logo.png';
+
+const brandConfig = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffff01',
+        'primary-dark': '#e6e600',
+        secondary: '#000000',
+      },
+    },
+  },
+};
+
 export const SystemNotificationEmail = ({
   subject = 'New Lead Received',
   details = [
@@ -28,73 +42,55 @@ export const SystemNotificationEmail = ({
 }) => {
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primary: '#d32f2f',
-                secondary: '#1a237e',
-                slate: '#0f1723',
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={brandConfig}>
         <Head />
         <Preview>System Notification: {subject}</Preview>
-        <Body className="bg-slate-50 font-sans">
-          <Container className="mx-auto py-10 w-[600px]">
+        <Body className="bg-neutral-100 font-sans">
+          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-slate py-8 text-center rounded-t-lg border-b-4 border-primary">
-              <Img
-                src={`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://everestmotoring.vercel.app'}/images/logo.png`}
-                width="180"
-                height="auto"
-                alt="Everest Motoring"
-                className="mx-auto"
-              />
+            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
+              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
+              <Text className="text-primary text-xs font-bold uppercase tracking-[0.2em] mt-3 m-0">
+                Internal Notification
+              </Text>
             </Section>
-            <Section className="bg-white p-10 shadow-sm rounded-b-lg mb-8 border border-slate-100">
-                <Heading className="text-2xl font-bold text-slate m-0 mb-6">
-                    {subject}
-                </Heading>
 
-                <Section className="bg-slate-50 border border-slate-100 rounded-lg p-6 mb-8">
-                    {details.map((item, idx) => (
-                        <Row key={idx} className={idx < details.length - 1 ? "border-b border-slate-200 py-3" : "py-3"}>
-                            <Column className="w-1/3">
-                                <Text className="text-slate-400 text-xs font-bold uppercase tracking-wider m-0">{item.label}</Text>
-                            </Column>
-                            <Column>
-                                <Text className="text-slate-800 font-bold m-0">{item.value}</Text>
-                            </Column>
-                        </Row>
-                    ))}
-                </Section>
+            <Section className="px-10 py-10">
+              <Heading className="text-2xl font-bold text-neutral-900 m-0 mb-6">{subject}</Heading>
 
-                <Button
-                    className="bg-secondary text-white font-bold py-4 px-8 rounded shadow-md text-center block w-full"
-                    href={actionLink}
-                >
-                    {actionLabel}
+              <Section className="bg-neutral-50 border border-neutral-200 rounded-xl px-6 py-2 mb-8">
+                {details.map((item, idx) => (
+                  <Row key={idx} className={idx < details.length - 1 ? 'border-b border-neutral-200' : ''}>
+                    <Column className="w-2/5 py-3 align-top">
+                      <Text className="text-neutral-400 text-xs font-bold uppercase tracking-wider m-0">
+                        {item.label}
+                      </Text>
+                    </Column>
+                    <Column className="py-3 align-top">
+                      <Text className="text-neutral-900 font-bold m-0">{item.value}</Text>
+                    </Column>
+                  </Row>
+                ))}
+              </Section>
+
+              <Section className="text-center">
+                <Button className="bg-primary text-black font-bold py-4 px-8 rounded-lg" href={actionLink}>
+                  {actionLabel}
                 </Button>
+              </Section>
 
-                <Text className="text-slate-400 text-xs mt-10">
-                    This is an automated system notification. If you did not expect this alert, please contact the IT administrator.
-                </Text>
+              <Text className="text-neutral-400 text-xs mt-10 m-0">
+                This is an automated system notification. If you did not expect this alert, please
+                contact the administrator.
+              </Text>
             </Section>
 
             {/* Footer */}
-            <Section className="bg-slate py-8 px-8 text-center rounded-b-lg mt-10">
-              <Text className="text-slate-400 text-sm m-0">
-                Everest Motoring | White River, Mpumalanga
-              </Text>
-              <Text className="text-slate-500 text-xs mt-4">
-                You are receiving this because you subscribed to our communications.
-                <br />
-                <Link href="#" className="text-primary-light underline">Unsubscribe</Link>
-              </Text>
+            <Section className="bg-secondary py-8 px-8 text-center">
+              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
             </Section>
           </Container>
         </Body>

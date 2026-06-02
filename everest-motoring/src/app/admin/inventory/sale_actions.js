@@ -93,7 +93,7 @@ async function markCarAsSoldInner(formData) {
 
     const { data: car, error: carErr } = await admin
         .from("cars")
-        .select("id, make, model, year")
+        .select("id, make, model, year, main_image_url")
         .eq("id", carId)
         .single();
     if (carErr || !car) {
@@ -186,6 +186,7 @@ async function markCarAsSoldInner(formData) {
                 react: React.createElement(PostSaleReviewEmail, {
                     customerName: buyerName,
                     vehicleModel,
+                    carImageUrl: car.main_image_url,
                     deliveryPhotoUrl,
                     reviewUrl,
                 }),
@@ -346,7 +347,7 @@ async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, 
 
     const { data: car } = await admin
         .from("cars")
-        .select("make, model, year")
+        .select("make, model, year, main_image_url")
         .eq("id", carId)
         .single();
     const vehicleModel = car ? `${car.year} ${car.make} ${car.model}` : "your new vehicle";
@@ -360,6 +361,7 @@ async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, 
         react: React.createElement(PostSaleReviewEmail, {
             customerName: buyerName,
             vehicleModel,
+            carImageUrl: car?.main_image_url,
             deliveryPhotoUrl,
             videoUrl,
             reviewUrl,
