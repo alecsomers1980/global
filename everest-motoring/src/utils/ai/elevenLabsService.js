@@ -54,19 +54,20 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { apiKey, voiceId } = requireEnv();
 
-    // Trailing decay: a single ellipsis gives the FINAL WORD a natural falling
-    // cadence so the model doesn't clip its last phoneme (the "half word cut
-    // off at the end" artefact). We deliberately do NOT append an SSML
-    // <break> tag here: on eleven_multilingual_v2 a long standalone break
-    // makes the model hallucinate phantom speech — it finishes the line, then
-    // mumbles non-words a moment later (the "babble at the end" artefact).
-    // Bulk trailing silence is handled downstream instead: the mux step
-    // (videoAudioMuxer) plays the real audio duration we measure below and
-    // leaves the remaining clip length as true silence, which avoids both the
-    // clipped-last-word and the older "stuck voice" artefacts.
-    const paddedText = `${text} ...`;
+    // Send the script line as CLEAN text — no trailing ellipsis, no SSML
+    // <break> tag. Both make eleven_multilingual_v2 improvise non-verbal
+    // sounds after the line: it reads a trailing "..." as "trailing off" and a
+    // standalone <break> as dead air to fill, and in either case hallucinates
+    // phantom audio — mumbling, breaths, or "ha ha" laughter (the "babble at
+    // the end" artefact). We strip any trailing ellipsis/dots and ensure the
+    // line ends on sentence-final punctuation so the last word still gets a
+    // natural decay (no clipping). Trailing silence to fill the 8s clip is
+    // handled downstream: the mux step (videoAudioMuxer) plays the real
+    // measured duration and leaves the rest of the clip as true silence.
+    const trimmed = String(text).trim().replace(/\s*(?:\.{2,}|…)\s*$/u, '').trim();
+    const speakText = /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 
-    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${text.length} chars, ellipsis trailing decay): "${text.slice(0, 60)}${text.length > 60 ? '…' : ''}"`);
+    console.log(`[ElevenLabs] Synthesizing scene ${sceneNum} voiceover (${speakText.length} chars, clean text): "${speakText.slice(0, 60)}${speakText.length > 60 ? '…' : ''}"`);
 
     const ttsRes = await fetch(`${ELEVENLABS_BASE}/text-to-speech/${voiceId}?output_format=mp3_44100_128`, {
         method: 'POST',
@@ -76,7 +77,7 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
             'Accept': 'audio/mpeg',
         },
         body: JSON.stringify({
-            text: paddedText,
+            text: speakText,
             model_id: process.env.ELEVENLABS_MODEL_ID || DEFAULT_MODEL,
             voice_settings: DEFAULT_VOICE_SETTINGS,
         }),
