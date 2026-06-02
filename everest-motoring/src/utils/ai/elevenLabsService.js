@@ -11,6 +11,7 @@
  */
 
 import { createAdminClient } from '@/utils/supabase/server';
+import { SILENCE_MP3_BASE64 } from './silenceAsset';
 
 const ELEVENLABS_BASE = 'https://api.elevenlabs.io/v1';
 
@@ -33,6 +34,52 @@ const DEFAULT_VOICE_SETTINGS = {
 
 const STORAGE_BUCKET = 'vehicles';
 
+// MPEG1 Layer III @ 44.1 kHz = 1152 samples per frame.
+const MS_PER_FRAME = (1152 / 44100) * 1000; // ≈ 26.122 ms
+
+// Parse a CBR mp3 buffer into whole frames (skipping any ID3v2 tag).
+function parseMp3Frames(buf) {
+    const frames = [];
+    let i = 0;
+    if (buf.slice(0, 3).toString() === 'ID3') {
+        const sz = ((buf[6] & 0x7f) << 21) | ((buf[7] & 0x7f) << 14) | ((buf[8] & 0x7f) << 7) | (buf[9] & 0x7f);
+        i = 10 + sz;
+    }
+    while (i + 4 <= buf.length) {
+        if (buf[i] !== 0xFF || (buf[i + 1] & 0xE0) !== 0xE0) { i++; continue; }
+        const padding = (buf[i + 2] & 0x02) >> 1;
+        const frameLen = Math.floor((144 * 128000) / 44100) + padding; // 417 or 418 bytes
+        if (i + frameLen > buf.length) break;
+        frames.push(buf.slice(i, i + frameLen));
+        i += frameLen;
+    }
+    return frames;
+}
+
+let _silenceFrames = null;
+function getSilenceFrames() {
+    if (!_silenceFrames) _silenceFrames = parseMp3Frames(Buffer.from(SILENCE_MP3_BASE64, 'base64'));
+    return _silenceFrames;
+}
+
+// Append CBR mp3 silence frames so the voiceover lasts just past the clip
+// length. Fal's compose LOOPS audio shorter than the clip (the "stuck /
+// repeating voice that drags into the next scene" artefact) and plays longer
+// audio once — so padding to just over the clip length guarantees the muxed
+// scene ends on clean silence. Frames are appended whole (no mid-frame cut)
+// and cycled if more silence is needed than the bundled asset holds.
+function padWithSilence(voiceBuf, targetMs) {
+    const voiceMs = (voiceBuf.length / 16000) * 1000;
+    const needMs = targetMs - voiceMs;
+    if (needMs <= 0) return voiceBuf;
+    const frames = getSilenceFrames();
+    if (frames.length === 0) return voiceBuf;
+    const needFrames = Math.ceil(needMs / MS_PER_FRAME);
+    const parts = [voiceBuf];
+    for (let k = 0; k < needFrames; k++) parts.push(frames[k % frames.length]);
+    return Buffer.concat(parts);
+}
+
 function requireEnv() {
     const apiKey = process.env.ELEVENLABS_API_KEY;
     const voiceId = process.env.ELEVENLABS_VOICE_ID;
@@ -47,7 +94,7 @@ function requireEnv() {
  * `carId` and `sceneNum` are used only for the storage filename — they
  * make it possible to inspect/debug per-car audio in the Supabase UI.
  */
-export async function synthesizeVoiceover({ text, carId, sceneNum }) {
+export async function synthesizeVoiceover({ text, carId, sceneNum, clipDurationMs = 8000 }) {
     if (!text || !String(text).trim()) {
         throw new Error('synthesizeVoiceover requires a non-empty text line.');
     }
@@ -95,6 +142,13 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
         throw new Error(`ElevenLabs returned a suspiciously small mp3 (${audioBuffer.length} bytes) — likely an API error masquerading as audio.`);
     }
 
+    // Pad the voiceover with real trailing silence to just past the clip
+    // length. Fal's compose loops audio shorter than the clip (the "stuck /
+    // repeating voice" artefact); padding past the clip makes the muxed scene
+    // end on clean silence. +250ms keeps us safely over the clip so Fal never
+    // loops; the tiny overshoot is trimmed/frozen harmlessly at stitch time.
+    const finalBuffer = padWithSilence(audioBuffer, clipDurationMs + 250);
+
     // Upload to Supabase storage and return its public URL so Fal's
     // FFmpeg compose endpoint can fetch it during the mux step.
     const supabase = await createAdminClient();
@@ -103,7 +157,7 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
 
     const { error: uploadError } = await supabase.storage
         .from(STORAGE_BUCKET)
-        .upload(fileName, audioBuffer, {
+        .upload(fileName, finalBuffer, {
             contentType: 'audio/mpeg',
             upsert: true,
         });
@@ -115,14 +169,10 @@ export async function synthesizeVoiceover({ text, carId, sceneNum }) {
     const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
     const audioUrl = data.publicUrl;
 
-    // Estimate mp3 duration from byte length. ElevenLabs returns CBR 128kbps
-    // mp3 when we request `mp3_44100_128`, so bytes / 16000 ≈ seconds. This
-    // is precise enough for muxing (the Fal compose keyframe `duration`
-    // controls how long the audio track plays before silence — if we pass
-    // the clip duration instead, Fal pads/loops the audio tail, which is
-    // what causes the "voice sounds stuck at the end" glitch).
-    const durationMs = Math.round((audioBuffer.length / 16000) * 1000);
+    // Estimate mp3 duration from byte length (CBR 128 kbps mp3 => bytes/16000 ≈
+    // seconds). This is the silence-padded length (~clip length).
+    const durationMs = Math.round((finalBuffer.length / 16000) * 1000);
 
-    console.log(`[ElevenLabs] Scene ${sceneNum} audio stored: ${audioUrl} (${audioBuffer.length} bytes, ~${durationMs}ms)`);
-    return { audioUrl, bytes: audioBuffer.length, durationMs };
+    console.log(`[ElevenLabs] Scene ${sceneNum} audio stored: ${audioUrl} (voice ${audioBuffer.length}B -> padded ${finalBuffer.length}B, ~${durationMs}ms)`);
+    return { audioUrl, bytes: finalBuffer.length, durationMs };
 }

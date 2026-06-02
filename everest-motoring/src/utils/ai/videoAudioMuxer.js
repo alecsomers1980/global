@@ -7,8 +7,6 @@
  * mirrors videoStitchingService.js which already calls fal-ai/ffmpeg-api.
  */
 
-import { ensureSilenceUrl } from './silenceTrack';
-
 const FAL_COMPOSE_URL = 'https://fal.run/fal-ai/ffmpeg-api/compose';
 
 /**
@@ -41,27 +39,6 @@ export async function muxAudioOntoVideo({ videoUrl, audioUrl, videoDurationMs = 
         videoDurationMs,
     );
 
-    // Build the audio track. When the voiceover is shorter than the clip, Fal
-    // would hold the last sample to fill the gap (the "stuck voice that drags
-    // into the next clip" artefact). Lay explicit silence over the remainder so
-    // the tail is cleanly silent instead.
-    const audioKeyframes = [{ url: audioUrl, timestamp: 0, duration: audioMs }];
-    if (audioMs < videoDurationMs) {
-        try {
-            const silenceUrl = await ensureSilenceUrl();
-            audioKeyframes.push({
-                url: silenceUrl,
-                timestamp: audioMs,
-                duration: videoDurationMs - audioMs,
-            });
-        } catch (silenceErr) {
-            // Non-fatal: if we can't provision the silence track, fall back to
-            // the single voice keyframe (the old behaviour) rather than failing
-            // the whole render.
-            console.warn(`[Audio Mux] Could not add silence pad: ${silenceErr.message}`);
-        }
-    }
-
     const requestBody = {
         tracks: [
             {
@@ -74,12 +51,14 @@ export async function muxAudioOntoVideo({ videoUrl, audioUrl, videoDurationMs = 
             {
                 id: '2',
                 type: 'audio',
-                keyframes: audioKeyframes,
+                keyframes: [
+                    { url: audioUrl, timestamp: 0, duration: audioMs },
+                ],
             },
         ],
     };
 
-    console.log(`[Audio Mux] Composing scene: video=${videoUrl.slice(-60)} (${videoDurationMs}ms) + audio=${audioUrl.slice(-60)} (${audioMs}ms) + ${audioKeyframes.length > 1 ? `${videoDurationMs - audioMs}ms silence` : 'no pad'}`);
+    console.log(`[Audio Mux] Composing scene: video=${videoUrl.slice(-60)} (${videoDurationMs}ms) + audio=${audioUrl.slice(-60)} (${audioMs}ms)`);
 
     const response = await fetch(FAL_COMPOSE_URL, {
         method: 'POST',
