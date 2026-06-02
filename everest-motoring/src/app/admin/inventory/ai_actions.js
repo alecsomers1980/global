@@ -368,6 +368,97 @@ export async function requestSceneRegenerationAction(carId, sceneNumbers) {
     }
 }
 
+/**
+ * Queue an AUDIO-ONLY redo of the given scenes — re-runs the ElevenLabs
+ * voiceover and re-muxes it onto the EXISTING silent video clip, so no Veo/Kie
+ * video credits are spent. Costs only ElevenLabs characters + a Fal mux per
+ * scene, plus one re-stitch and re-ingest. Requires each selected scene to have
+ * a saved `clip_url` (the silent Veo output); videos rendered before clip
+ * persistence don't have it, so those must use a full scene redo once first.
+ * The cron's "ai_redoing_audio" phase picks this up.
+ */
+export async function requestAudioRedoAction(carId, sceneNumbers) {
+    if (!Array.isArray(sceneNumbers) || sceneNumbers.length === 0) {
+        return { success: false, error: "Invalid scene numbers" };
+    }
+    const seen = new Set();
+    for (const n of sceneNumbers) {
+        if (!Number.isInteger(n) || n < 1 || n > 4 || seen.has(n)) {
+            return { success: false, error: "Invalid scene numbers" };
+        }
+        seen.add(n);
+    }
+
+    try {
+        const supabase = await createAdminClient();
+        const { data: car, error: fetchErr } = await supabase
+            .from("cars")
+            .select("id, video_url, ai_pipeline_state")
+            .eq("id", carId)
+            .limit(1)
+            .single();
+        if (fetchErr || !car) {
+            return { success: false, error: "Car not found" };
+        }
+
+        const state = car.ai_pipeline_state;
+        const isValid =
+            typeof car.video_url === "string" &&
+            car.video_url.startsWith("cf:") &&
+            state &&
+            Array.isArray(state.script) && state.script.length === 4 &&
+            Array.isArray(state.scenes) && state.scenes.length === 4 &&
+            state.scenes.every(s => s && typeof s.muxed_url === "string" && s.muxed_url.length > 0);
+        if (!isValid) {
+            return { success: false, error: "Car must be in cf:<uid> state with a complete pipeline state to redo audio" };
+        }
+
+        // Audio-only redo needs the silent source clip for each selected scene.
+        // Videos rendered before clip persistence won't have it.
+        for (const n of sceneNumbers) {
+            const entry = state.scenes.find(s => s.scene === n);
+            if (!entry || !entry.clip_url) {
+                return { success: false, error: `Scene ${n} has no saved silent clip, so its audio can't be redone on its own yet. Use "Regenerate selected" once — after that, audio redos are free.` };
+            }
+        }
+
+        let nextState;
+        try {
+            nextState = typeof structuredClone === "function"
+                ? structuredClone(state)
+                : JSON.parse(JSON.stringify(state));
+        } catch (e) {
+            return { success: false, error: "Pipeline state is malformed" };
+        }
+
+        // Clear ONLY muxed_url for each selected scene — keep clip_url (the
+        // silent video) so the cron re-voices onto the existing clip instead of
+        // re-rendering it.
+        for (const n of sceneNumbers) {
+            const entry = nextState.scenes.find(s => s.scene === n);
+            delete entry.muxed_url;
+        }
+        nextState.audio_redo_scenes = [...sceneNumbers].sort((a, b) => a - b);
+        nextState.previous_cf_uid = car.video_url.slice(3);
+
+        const { error: updateErr } = await supabase
+            .from("cars")
+            .update({
+                video_url: "ai_redoing_audio",
+                ai_pipeline_state: nextState,
+            })
+            .eq("id", carId);
+        if (updateErr) {
+            return { success: false, error: updateErr.message };
+        }
+
+        revalidatePath("/admin/inventory");
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message || "Unknown error" };
+    }
+}
+
 export async function optimizeDescriptionAction(carPayload, manualDescription) {
     console.log("=========================================");
     console.log("[SERVER ACTION HIT] optimizeDescriptionAction invoked!");

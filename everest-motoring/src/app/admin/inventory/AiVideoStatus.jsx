@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { checkHeyGenVideoStatus, queueAiWalkaround, requestSceneRegenerationAction } from "./ai_actions";
+import { checkHeyGenVideoStatus, queueAiWalkaround, requestSceneRegenerationAction, requestAudioRedoAction } from "./ai_actions";
 
 export default function AiVideoStatus({ carId, videoUrl }) {
     const [isChecking, setIsChecking] = useState(false);
@@ -85,6 +85,25 @@ export default function AiVideoStatus({ carId, videoUrl }) {
         }
     };
 
+    const handleRedoAudioScenes = async () => {
+        if (selectedScenes.length === 0) return;
+        const list = selectedScenes.join(", ");
+        if (!window.confirm(`Redo ONLY the voiceover for scenes ${list}?\n\nThis re-voices the existing video clips — NO video re-render, so it costs no video credits (just the voiceover + a re-stitch). Use this for audio glitches like babble or a clipped word.\n\nThe current video stays live until the redo finishes, then is replaced automatically.\n\nProceed?`)) return;
+        setIsChecking(true);
+        try {
+            const res = await requestAudioRedoAction(carId, selectedScenes);
+            if (!res || !res.success) {
+                alert("Failed to queue audio redo: " + ((res && res.error) || "Unknown error"));
+                setIsChecking(false);
+                return;
+            }
+            window.location.reload();
+        } catch (error) {
+            alert("Failed to queue audio redo: " + error.message);
+            setIsChecking(false);
+        }
+    };
+
     // If it's already safely hosted (Mux or Cloudflare):
     if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
         return (
@@ -112,7 +131,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
                                 type="button"
                                 onClick={() => toggleScene(n)}
                                 disabled={isChecking}
-                                className={`text-[11px] font-bold w-6 h-6 rounded-md border transition-colors disabled:opacity-70 ${on ? "bg-primary text-white border-primary" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`}
+                                className={`text-[11px] font-bold w-6 h-6 rounded-md border transition-colors disabled:opacity-70 ${on ? "bg-primary text-black border-primary" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`}
                                 title={`Toggle scene ${n}`}
                             >
                                 {n}
@@ -124,10 +143,19 @@ export default function AiVideoStatus({ carId, videoUrl }) {
                     onClick={handleRedoSelectedScenes}
                     disabled={isChecking || selectedScenes.length === 0}
                     className="text-[11px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Regenerate scenes ${selectedScenes.join(", ")}`}
+                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Regenerate scenes ${selectedScenes.join(", ")} (video + audio)`}
                 >
                     <span className="material-symbols-outlined text-[12px]">refresh</span>
-                    {isChecking ? "Queuing..." : "Regenerate selected"}
+                    {isChecking ? "Queuing..." : "Regenerate selected (video)"}
+                </button>
+                <button
+                    onClick={handleRedoAudioScenes}
+                    disabled={isChecking || selectedScenes.length === 0}
+                    className="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-emerald-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Redo voiceover only for scenes ${selectedScenes.join(", ")} — no video credits`}
+                >
+                    <span className="material-symbols-outlined text-[12px]">volume_up</span>
+                    {isChecking ? "Queuing..." : "Redo audio only (free)"}
                 </button>
             </div>
         );

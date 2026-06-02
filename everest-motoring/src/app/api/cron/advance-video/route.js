@@ -39,6 +39,7 @@ const IN_PROGRESS_STATES = [
     "ai_processing",
     "ai_rendering_clips",
     "ai_redoing_scenes",
+    "ai_redoing_audio",
     "ai_stitching_video",
     "cf_ingesting",
 ];
@@ -208,6 +209,9 @@ export async function GET(request) {
                     videoDurationMs: CLIP_DURATION_MS,
                     audioDurationMs,
                 });
+                // Persist the silent Veo clip URL so the voiceover can later be
+                // redone (audio-only) without paying to re-render the video.
+                current.clip_url = poll.videoUrl;
                 current.muxed_url = muxedUrl;
 
                 if (sceneNum < TOTAL_SCENES) {
@@ -329,6 +333,7 @@ export async function GET(request) {
                     videoDurationMs: CLIP_DURATION_MS,
                     audioDurationMs,
                 });
+                entry.clip_url = poll.videoUrl;
                 entry.muxed_url = muxedUrl;
 
                 // Pop the head of the redo queue. If more to go, save state
@@ -362,6 +367,76 @@ export async function GET(request) {
             await updateCar(admin, car.id, { ai_pipeline_state: state });
             console.log(`${logPrefix} defensive: popped already-muxed redo scene ${sceneNum}`);
             return NextResponse.json({ advanced: car.id, defensive_pop: sceneNum });
+        }
+
+        if (car.video_url === "ai_redoing_audio") {
+            // Audio-only redo: re-voice selected scenes WITHOUT re-rendering the
+            // (expensive) video clip. requestAudioRedoAction listed the scenes in
+            // state.audio_redo_scenes and cleared each one's muxed_url while
+            // keeping its clip_url (the silent Veo clip). We re-run TTS + mux
+            // onto that stored clip — zero Kie/Veo credits — then hand off to the
+            // existing stitch + ingest phases. One scene per tick.
+            const state = car.ai_pipeline_state;
+            if (!state || !Array.isArray(state.script) || !Array.isArray(state.scenes) || !Array.isArray(state.audio_redo_scenes)) {
+                throw new Error("Missing or malformed ai_pipeline_state on ai_redoing_audio car.");
+            }
+            if (state.audio_redo_scenes.length === 0) {
+                await updateCar(admin, car.id, {
+                    video_url: "ai_stitching_video",
+                    ai_pipeline_state: state,
+                });
+                console.log(`${logPrefix} audio redo queue empty -> ai_stitching_video`);
+                return NextResponse.json({ advanced: car.id, phase: "ai_stitching_video" });
+            }
+
+            const sceneNum = state.audio_redo_scenes[0];
+            const entry = state.scenes.find((s) => s.scene === sceneNum);
+            if (!entry) {
+                throw new Error(`Audio redo queue references scene ${sceneNum} but it is not in state.scenes.`);
+            }
+            if (!entry.clip_url) {
+                throw new Error(`Audio redo scene ${sceneNum} has no stored clip_url — cannot re-voice without the silent clip.`);
+            }
+            const scriptForScene = state.script[sceneNum - 1];
+            if (!scriptForScene) {
+                throw new Error(`Pipeline state inconsistent: missing script for audio redo scene ${sceneNum}.`);
+            }
+
+            console.log(`${logPrefix} audio redo scene ${sceneNum}: TTS + mux onto stored clip (no video gen)`);
+            const { audioUrl, durationMs: audioDurationMs } = await synthesizeVoiceover({
+                text: scriptForScene.voiceover_text,
+                carId: car.id,
+                sceneNum,
+            });
+            const muxedUrl = await muxAudioOntoVideo({
+                videoUrl: entry.clip_url,
+                audioUrl,
+                videoDurationMs: CLIP_DURATION_MS,
+                audioDurationMs,
+            });
+            entry.muxed_url = muxedUrl;
+
+            state.audio_redo_scenes.shift();
+            if (state.audio_redo_scenes.length > 0) {
+                await updateCar(admin, car.id, { ai_pipeline_state: state });
+                console.log(`${logPrefix} audio redo scene ${sceneNum} done; next ${state.audio_redo_scenes[0]}`);
+                return NextResponse.json({
+                    advanced: car.id,
+                    audio_redone_scene: sceneNum,
+                    next_audio_scene: state.audio_redo_scenes[0],
+                });
+            }
+
+            await updateCar(admin, car.id, {
+                video_url: "ai_stitching_video",
+                ai_pipeline_state: state,
+            });
+            console.log(`${logPrefix} all audio redos done -> ai_stitching_video`);
+            return NextResponse.json({
+                advanced: car.id,
+                audio_redone_scene: sceneNum,
+                phase: "ai_stitching_video",
+            });
         }
 
         if (car.video_url === "ai_stitching_video") {
@@ -404,6 +479,7 @@ export async function GET(request) {
             // state.stitched_url, and clear the transient redo metadata.
             const persistedState = { ...state };
             delete persistedState.redo_scenes;
+            delete persistedState.audio_redo_scenes;
             const previousCfUid = persistedState.previous_cf_uid;
             delete persistedState.previous_cf_uid;
 
