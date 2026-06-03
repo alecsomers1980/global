@@ -92,7 +92,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-50"
                     >
                         <span className="material-symbols-outlined text-base">refresh</span>
-                        Try a different scene
+                        Regenerate
                     </button>
                     <span className="text-xs text-slate-500">
                         Video will be embedded in the scheduled review email automatically.
@@ -122,36 +122,25 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                     {error}
                 </div>
             )}
-            {previousStyle && (
-                <p className="text-sm text-slate-600">
-                    Previously generated: <strong>{SEEDANCE_STYLES.find((s) => s.key === previousStyle)?.label}</strong>. Pick any scene below to try a new one — it will replace the current video.
-                </p>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-                {SEEDANCE_STYLES.map((style) => {
-                    const wasPrevious = previousStyle === style.key;
-                    return (
-                        <button
-                            key={style.key}
-                            type="button"
-                            disabled={starting}
-                            onClick={() => handleStart(style.key)}
-                            className={`text-left rounded-xl border-2 p-4 transition-colors disabled:opacity-50 disabled:cursor-wait ${wasPrevious ? 'border-slate-400 bg-slate-50' : 'border-slate-200 hover:border-primary hover:bg-primary/5'}`}
-                        >
-                            <div className="flex items-center justify-between mb-1">
-                                <div className="font-bold text-slate-900">{style.label}</div>
-                                {wasPrevious && (
-                                    <span className="text-[10px] uppercase tracking-wide bg-slate-200 text-slate-600 px-2 py-0.5 rounded">used</span>
-                                )}
-                            </div>
-                            <div className="text-xs uppercase tracking-wide text-primary mb-2">{style.tagline}</div>
-                            <div className="text-sm text-slate-600">{style.description}</div>
-                        </button>
-                    );
-                })}
+            <div className="rounded-xl border-2 border-slate-200 p-4">
+                <div className="font-bold text-slate-900 mb-1">Pixel Build</div>
+                <div className="text-xs uppercase tracking-wide text-primary mb-2">Handover video</div>
+                <div className="text-sm text-slate-600 mb-4">
+                    The car assembles itself from glowing voxels right next to the buyer — on the
+                    exact background of the delivery photo — with everyone smiling at camera as it
+                    completes.
+                </div>
+                <button
+                    type="button"
+                    disabled={starting}
+                    onClick={() => handleStart("pixel_build")}
+                    className="px-6 py-3 bg-primary hover:bg-primary-dark text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-wait"
+                >
+                    {starting ? "Starting…" : previousStyle ? "Regenerate Handover Video" : "Generate Handover Video"}
+                </button>
             </div>
             <p className="text-xs text-slate-500">
-                Pick one scene. Generates an 8-second 16:9 landscape clip from the delivery photo using Seedance 2 Fast.
+                Generates an 8-second 16:9 clip from the delivery photo using Seedance 2 Fast.
             </p>
         </div>
     );

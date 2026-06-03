@@ -16,6 +16,7 @@ export default function MarkSoldButton({ car }) {
         buyer_name: "",
         buyer_email: "",
         buyer_phone: "",
+        buyer_birthday: "",
         notes: "",
     });
 
@@ -39,6 +40,7 @@ export default function MarkSoldButton({ car }) {
                         buyer_name: sale.buyer_name || "",
                         buyer_email: sale.buyer_email || "",
                         buyer_phone: sale.buyer_phone || "",
+                        buyer_birthday: sale.buyer_birthday || "",
                         notes: sale.notes || "",
                     });
                 }
@@ -240,6 +242,23 @@ export default function MarkSoldButton({ car }) {
                                             If provided, a review request email will be scheduled for 4 days from now.
                                         </p>
                                     )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                                        Buyer Birthday
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="buyer_birthday"
+                                        disabled={!!existingSale}
+                                        value={form.buyer_birthday}
+                                        onChange={(e) => setForm({ ...form, buyer_birthday: e.target.value })}
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                    />
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        Used to send a birthday greeting later. Optional.
+                                    </p>
                                 </div>
 
                                 <div>

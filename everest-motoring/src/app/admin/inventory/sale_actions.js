@@ -74,6 +74,7 @@ async function markCarAsSoldInner(formData) {
     const buyerName = formData.get("buyer_name");
     const buyerEmail = formData.get("buyer_email") || null;
     const buyerPhone = formData.get("buyer_phone") || null;
+    const buyerBirthday = formData.get("buyer_birthday") || null;
     const notes = formData.get("notes") || null;
     const photoFile = formData.get("delivery_photo");
 
@@ -127,6 +128,7 @@ async function markCarAsSoldInner(formData) {
             buyer_name: buyerName,
             buyer_email: buyerEmail,
             buyer_phone: buyerPhone,
+            buyer_birthday: buyerBirthday,
             delivery_photo_url: deliveryPhotoUrl,
             notes,
             sold_at: sold_at.toISOString(),
