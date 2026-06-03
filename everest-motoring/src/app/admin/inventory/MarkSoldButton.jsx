@@ -288,10 +288,10 @@ export default function MarkSoldButton({ car }) {
                                     )}
                                 </div>
 
-                                {existingSale && existingSale.delivery_photo_url && (
+                                {existingSale && (
                                     <div>
                                         <label className="block text-sm font-bold text-slate-700 mb-2">
-                                            Handover Video (Seedance 2)
+                                            Handover Video
                                         </label>
                                         <SaleVideoPicker
                                             sale={existingSale}

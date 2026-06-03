@@ -7,6 +7,7 @@ import {
     SEEDANCE_STYLE_PROMPTS,
 } from "@/utils/ai/seedanceService";
 import { buildSeedancePrompt } from "@/utils/ai/seedanceService";
+import { generateCongratsCardVideo } from "@/utils/ai/congratsCard";
 
 async function requireAdmin() {
     const supabase = await createClient();
@@ -74,4 +75,41 @@ export async function pollTestHandoverVideo(taskId) {
     if (result.error) return { status: "failed", error: result.error };
     if (result.isComplete && result.videoUrl) return { status: "ready", videoUrl: result.videoUrl };
     return { status: "pending" };
+}
+
+/**
+ * Test the no-delivery-photo "Congratulations card" video — car image + caption
+ * + voiceover — without a sale record. Runs synchronously (~30s) and returns
+ * the finished video URL.
+ */
+export async function startTestCongratsCard(formData) {
+    await requireAdmin();
+    const admin = await createAdminClient();
+
+    const fullName = formData.get("buyer_name") || "Valued Customer";
+    const carLabel = formData.get("car_label") || "vehicle";
+    const file = formData.get("image");
+    if (!file || typeof file !== "object" || file.size === 0) {
+        return { error: "Please choose a car image to test with." };
+    }
+
+    const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
+    const fileName = `test/${Date.now()}.${ext}`;
+    const { error: upErr } = await admin.storage
+        .from("delivery-photos")
+        .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
+    if (upErr) return { error: `Image upload failed: ${upErr.message}` };
+    const { data: urlData } = admin.storage.from("delivery-photos").getPublicUrl(fileName);
+
+    try {
+        const videoUrl = await generateCongratsCardVideo({
+            carImageUrl: urlData.publicUrl,
+            fullName,
+            carLabel,
+            carId: "cardtest",
+        });
+        return { success: true, videoUrl };
+    } catch (err) {
+        return { error: err.message || "Failed to generate card." };
+    }
 }

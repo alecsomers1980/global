@@ -43,11 +43,17 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
         setError(null);
         setStarting(true);
         setSelectedStyle(styleKey);
+        setStatus("generating");
         try {
             const res = await startSaleVideo(sale.id, styleKey);
             if (res.error) {
                 setError(res.error);
                 setStatus("failed");
+            } else if (res.ready && res.videoUrl) {
+                // Congratulations-card path completes synchronously.
+                setVideoUrl(res.videoUrl);
+                setStatus("ready");
+                if (onUpdated) onUpdated({ sale_video_status: "ready", sale_video_url: res.videoUrl });
             } else {
                 setStatus("generating");
             }
@@ -57,14 +63,6 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
         } finally {
             setStarting(false);
         }
-    }
-
-    if (!sale?.delivery_photo_url) {
-        return (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-                Upload a delivery photo above, save the sale, then return here to generate a handover video.
-            </div>
-        );
     }
 
     if (status === "ready" && videoUrl) {
@@ -122,26 +120,45 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                     {error}
                 </div>
             )}
-            <div className="rounded-xl border-2 border-slate-200 p-4">
-                <div className="font-bold text-slate-900 mb-1">Pixel Build</div>
-                <div className="text-xs uppercase tracking-wide text-primary mb-2">Handover video</div>
-                <div className="text-sm text-slate-600 mb-4">
-                    The car assembles itself from glowing voxels right next to the buyer — on the
-                    exact background of the delivery photo — with everyone smiling at camera as it
-                    completes.
+            {sale?.delivery_photo_url ? (
+                <div className="rounded-xl border-2 border-slate-200 p-4">
+                    <div className="font-bold text-slate-900 mb-1">Pixel Build</div>
+                    <div className="text-xs uppercase tracking-wide text-primary mb-2">Handover video</div>
+                    <div className="text-sm text-slate-600 mb-4">
+                        The car assembles itself from glowing voxels right next to the buyer — on the
+                        exact background of the delivery photo — with everyone smiling at camera as it
+                        completes.
+                    </div>
+                    <button
+                        type="button"
+                        disabled={starting}
+                        onClick={() => handleStart("pixel_build")}
+                        className="px-6 py-3 bg-primary hover:bg-primary-dark text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-wait"
+                    >
+                        {starting ? "Starting…" : previousStyle ? "Regenerate Handover Video" : "Generate Handover Video"}
+                    </button>
+                    <p className="text-xs text-slate-500 mt-3">8-second 16:9 clip from the delivery photo (Seedance 2 Fast).</p>
                 </div>
-                <button
-                    type="button"
-                    disabled={starting}
-                    onClick={() => handleStart("pixel_build")}
-                    className="px-6 py-3 bg-primary hover:bg-primary-dark text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-wait"
-                >
-                    {starting ? "Starting…" : previousStyle ? "Regenerate Handover Video" : "Generate Handover Video"}
-                </button>
-            </div>
-            <p className="text-xs text-slate-500">
-                Generates an 8-second 16:9 clip from the delivery photo using Seedance 2 Fast.
-            </p>
+            ) : (
+                <div className="rounded-xl border-2 border-slate-200 p-4">
+                    <div className="font-bold text-slate-900 mb-1">Congratulations Card</div>
+                    <div className="text-xs uppercase tracking-wide text-primary mb-2">No delivery photo</div>
+                    <div className="text-sm text-slate-600 mb-4">
+                        No delivery photo on file, so we'll use the vehicle's main image with a
+                        “Congratulations on your new vehicle, {sale?.buyer_name || "{buyer}"}” caption
+                        and a short voiceover.
+                    </div>
+                    <button
+                        type="button"
+                        disabled={starting}
+                        onClick={() => handleStart("congrats_card")}
+                        className="px-6 py-3 bg-primary hover:bg-primary-dark text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-wait"
+                    >
+                        {starting ? "Generating…" : previousStyle ? "Regenerate Card" : "Generate Congratulations Card"}
+                    </button>
+                    <p className="text-xs text-slate-500 mt-3">Takes ~30 seconds. Tip: upload a delivery photo above for the animated Pixel Build instead.</p>
+                </div>
+            )}
         </div>
     );
 }

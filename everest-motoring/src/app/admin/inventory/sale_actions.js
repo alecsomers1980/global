@@ -12,6 +12,7 @@ import {
     SEEDANCE_STYLE_PROMPTS,
     buildSeedancePrompt,
 } from "@/utils/ai/seedanceService";
+import { generateCongratsCardVideo } from "@/utils/ai/congratsCard";
 
 const REVIEW_DELAY_DAYS = 4;
 
@@ -217,16 +218,62 @@ export async function startSaleVideo(saleId, styleKey) {
     await requireAdmin();
     const admin = await createAdminClient();
 
-    if (!SEEDANCE_STYLE_PROMPTS[styleKey]) return { error: "Invalid video style." };
-
     const { data: sale, error: saleErr } = await admin
         .from("sales")
-        .select("id, buyer_name, delivery_photo_url, sale_video_status")
+        .select("id, buyer_name, delivery_photo_url, car_id, sale_video_status")
         .eq("id", saleId)
         .single();
     if (saleErr || !sale) return { error: "Sale not found." };
-    if (!sale.delivery_photo_url) return { error: "Delivery photo required before generating video." };
     if (sale.sale_video_status === "generating") return { error: "A video is already being generated for this sale." };
+
+    // No delivery photo -> build a "Congratulations" card from the car's main
+    // image instead of the Pixel Build (which needs a person in the photo).
+    // This runs synchronously (render card + voiceover + mux, ~30s) and returns
+    // ready, so there's nothing to poll.
+    if (!sale.delivery_photo_url) {
+        const { data: car } = await admin
+            .from("cars")
+            .select("make, model, year, main_image_url")
+            .eq("id", sale.car_id)
+            .single();
+        if (!car?.main_image_url) {
+            return { error: "No delivery photo, and this vehicle has no main image to use for a card." };
+        }
+        try {
+            await admin.from("sales").update({
+                sale_video_style: "congrats_card",
+                sale_video_status: "generating",
+                sale_video_url: null,
+                sale_video_error: null,
+                sale_video_started_at: new Date().toISOString(),
+                sale_video_completed_at: null,
+            }).eq("id", saleId);
+
+            const carLabel = `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim();
+            const videoUrl = await generateCongratsCardVideo({
+                carImageUrl: car.main_image_url,
+                fullName: sale.buyer_name,
+                carLabel,
+                carId: sale.car_id,
+            });
+
+            await admin.from("sales").update({
+                sale_video_status: "ready",
+                sale_video_url: videoUrl,
+                sale_video_completed_at: new Date().toISOString(),
+            }).eq("id", saleId);
+            return { success: true, ready: true, videoUrl };
+        } catch (err) {
+            console.error("congrats card video error:", err);
+            await admin.from("sales").update({
+                sale_video_status: "failed",
+                sale_video_error: err.message || "Card generation failed",
+            }).eq("id", saleId);
+            return { error: err.message || "Failed to generate congratulations card." };
+        }
+    }
+
+    if (!SEEDANCE_STYLE_PROMPTS[styleKey]) return { error: "Invalid video style." };
 
     const prompt = buildSeedancePrompt(styleKey, { buyerName: sale.buyer_name });
 
