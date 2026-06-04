@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 
 const DEALERSHIP = {
     name: "Everest Motoring",
@@ -149,31 +149,35 @@ function extractJson(text) {
     return repairJson(jsonStr);
 }
 
-async function runGemini(prompt) {
-    if (!process.env.GOOGLE_GEMINI_API_KEY) {
-        throw new Error("Missing GOOGLE_GEMINI_API_KEY");
+async function runClaude(prompt) {
+    if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error("Missing ANTHROPIC_API_KEY");
     }
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-    const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
-        generationConfig: {
-            responseMimeType: "application/json",
-        },
+    const msg = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 8000,
+        messages: [
+            {
+                role: "user",
+                content: `${prompt}\n\nReturn ONLY the raw JSON object — no markdown code fences, no commentary before or after.`,
+            },
+        ],
     });
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const text = (msg.content || [])
+        .map((b) => (b.type === "text" ? b.text : ""))
+        .join("");
 
-    // JSON mode should return clean JSON, but fall back to extractJson
-    // with multiple repair strategies for edge cases.
+    // Claude usually returns clean JSON; fall back to extractJson with multiple
+    // repair strategies for edge cases (fences, stray prose).
     try {
         return JSON.parse(text);
     } catch {
         try {
             return extractJson(text);
         } catch (repairErr) {
-            // Log a snippet so we can diagnose what Gemini returned
             console.error("[newsGenerator] JSON parse failed. Raw snippet (first 400 chars):", text.slice(0, 400));
             console.error("[newsGenerator] Raw snippet (last 200 chars):", text.slice(-200));
             throw new Error(`Failed to parse AI response as JSON: ${repairErr.message}`);
@@ -320,7 +324,7 @@ export async function generateNewsArticle({ category, recentTitles, car }) {
         throw new Error(`Unknown category: ${category}`);
     }
 
-    const article = await runGemini(prompt);
+    const article = await runClaude(prompt);
 
     if (!article.title || !article.body_md) {
         throw new Error("AI returned incomplete article (missing title or body_md)");
