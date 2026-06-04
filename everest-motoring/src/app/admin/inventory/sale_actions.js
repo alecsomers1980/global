@@ -228,23 +228,27 @@ export async function startSaleVideo(saleId, styleKey) {
         return { error: "A video is already being generated for this sale." };
     }
 
-    // Source image: the delivery photo if provided, otherwise the car's main
-    // (first) image. Either way we generate the Pixel Build clip silently and
-    // add a congratulations voiceover once it's ready (no on-screen text).
+    // With a delivery photo -> Pixel Build that animates the people in it.
+    // Without one -> the car's main image with the car-only Pixel Build (no
+    // people added). Either way the clip is generated silently and a
+    // congratulations voiceover is added once it's ready (no on-screen text).
     let imageUrl = sale.delivery_photo_url;
-    if (!imageUrl) {
+    let useStyle;
+    if (imageUrl) {
+        useStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
+    } else {
         const { data: car } = await admin
             .from("cars")
             .select("main_image_url")
             .eq("id", sale.car_id)
             .single();
         imageUrl = car?.main_image_url || null;
+        useStyle = "pixel_build_car_only";
     }
     if (!imageUrl) {
         return { error: "No delivery photo, and this vehicle has no main image to use." };
     }
 
-    const useStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
     const prompt = buildSeedancePrompt(useStyle, { buyerName: sale.buyer_name });
 
     try {

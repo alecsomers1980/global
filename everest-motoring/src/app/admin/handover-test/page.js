@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { startTestHandoverVideo, pollTestHandoverVideo } from "../inventory/handover_test_actions";
 
 const STYLES = [
-    { key: "pixel_build", label: "Pixel Build", hint: "Car assembles next to the person / on the photo background" },
+    { key: "pixel_build", label: "Pixel Build (with people)", hint: "Car assembles next to the person in the photo" },
+    { key: "pixel_build_car_only", label: "Pixel Build (car only)", hint: "Car-only build, no people added — for the car's main image" },
     { key: "dream_drive", label: "Dream Drive Transition", hint: "Showroom morphs into a coastal sunset" },
     { key: "reveal", label: "Time-Lapse Reveal", hint: "Silk cover pulls away, sun sets, city lights bloom" },
     { key: "hero_orbit", label: "Stylized Hero Walkaround", hint: "3D drone orbit with cinematic grade" },
