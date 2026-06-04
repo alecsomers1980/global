@@ -141,22 +141,22 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
                 </div>
             ) : (
                 <div className="rounded-xl border-2 border-slate-200 p-4">
-                    <div className="font-bold text-slate-900 mb-1">Congratulations Card</div>
+                    <div className="font-bold text-slate-900 mb-1">Pixel Build (from car image)</div>
                     <div className="text-xs uppercase tracking-wide text-primary mb-2">No delivery photo</div>
                     <div className="text-sm text-slate-600 mb-4">
-                        No delivery photo on file, so we'll use the vehicle's main image with a
-                        “Congratulations on your new vehicle, {sale?.buyer_name || "{buyer}"}” caption
-                        and a short voiceover.
+                        No delivery photo on file, so we'll use the vehicle's main image for the Pixel
+                        Build animation, with a congratulations voiceover for{" "}
+                        {sale?.buyer_name || "the buyer"}.
                     </div>
                     <button
                         type="button"
                         disabled={starting}
-                        onClick={() => handleStart("congrats_card")}
+                        onClick={() => handleStart("pixel_build")}
                         className="px-6 py-3 bg-primary hover:bg-primary-dark text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-wait"
                     >
-                        {starting ? "Generating…" : previousStyle ? "Regenerate Card" : "Generate Congratulations Card"}
+                        {starting ? "Generating…" : previousStyle ? "Regenerate Handover Video" : "Generate Handover Video"}
                     </button>
-                    <p className="text-xs text-slate-500 mt-3">Takes ~30 seconds. Tip: upload a delivery photo above for the animated Pixel Build instead.</p>
+                    <p className="text-xs text-slate-500 mt-3">Takes ~1–3 minutes. Tip: upload a delivery photo above so the car builds next to the buyer.</p>
                 </div>
             )}
         </div>

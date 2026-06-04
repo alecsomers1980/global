@@ -5,9 +5,9 @@ import {
     startSeedanceClip,
     pollSeedanceClip,
     SEEDANCE_STYLE_PROMPTS,
+    buildSeedancePrompt,
 } from "@/utils/ai/seedanceService";
-import { buildSeedancePrompt } from "@/utils/ai/seedanceService";
-import { generateCongratsCardVideo } from "@/utils/ai/congratsCard";
+import { addCongratsVoiceover } from "@/utils/ai/congratsVoiceover";
 
 async function requireAdmin() {
     const supabase = await createClient();
@@ -24,17 +24,15 @@ async function requireAdmin() {
 
 /**
  * Generate a handover video from an uploaded photo WITHOUT creating a sale
- * record — purely for previewing/iterating on the Seedance styles (e.g. the
- * "Pixel Build" car-assembles-next-to-the-person look). Uses the exact same
- * generation parameters as the real post-sale video. Each run costs Kie credits
- * (one 8s Seedance clip), so it's a real generation, just sale-less.
+ * record — for previewing the styles + the congratulations voiceover. Same
+ * parameters as the real post-sale video (silent clip; voiceover added on
+ * completion in the poll). Each run costs Kie credits.
  */
 export async function startTestHandoverVideo(formData) {
     await requireAdmin();
     const admin = await createAdminClient();
 
     const styleKey = formData.get("style");
-    const buyerName = formData.get("buyer_name") || "friend";
     const file = formData.get("image");
 
     if (!SEEDANCE_STYLE_PROMPTS[styleKey]) return { error: "Invalid video style." };
@@ -42,7 +40,6 @@ export async function startTestHandoverVideo(formData) {
         return { error: "Please choose a photo to test with." };
     }
 
-    // Upload the test image to the public delivery-photos bucket so Kie can fetch it.
     const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
     const fileName = `test/${Date.now()}.${ext}`;
     const { error: upErr } = await admin.storage
@@ -50,66 +47,40 @@ export async function startTestHandoverVideo(formData) {
         .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
     if (upErr) return { error: `Image upload failed: ${upErr.message}` };
     const { data: urlData } = admin.storage.from("delivery-photos").getPublicUrl(fileName);
-    const imageUrl = urlData.publicUrl;
 
     try {
-        const prompt = buildSeedancePrompt(styleKey, { buyerName });
+        const prompt = buildSeedancePrompt(styleKey, { buyerName: formData.get("buyer_name") || "friend" });
         const { taskId } = await startSeedanceClip({
-            imageUrl,
+            imageUrl: urlData.publicUrl,
             prompt,
             durationSeconds: 8,
             aspectRatio: "16:9",
             resolution: "720p",
-            generateAudio: true,
+            generateAudio: false,
         });
-        return { success: true, taskId, imageUrl };
+        return { success: true, taskId };
     } catch (err) {
         return { error: err.message || "Failed to start generation." };
     }
 }
 
-export async function pollTestHandoverVideo(taskId) {
+export async function pollTestHandoverVideo(taskId, fullName, carLabel) {
     await requireAdmin();
     if (!taskId) return { status: "none" };
     const result = await pollSeedanceClip(taskId);
     if (result.error) return { status: "failed", error: result.error };
-    if (result.isComplete && result.videoUrl) return { status: "ready", videoUrl: result.videoUrl };
+    if (result.isComplete && result.videoUrl) {
+        let finalUrl = result.videoUrl;
+        try {
+            finalUrl = await addCongratsVoiceover(result.videoUrl, {
+                fullName: fullName || "friend",
+                carLabel: carLabel || "vehicle",
+                carId: "test",
+            });
+        } catch (voErr) {
+            console.warn("test voiceover mux failed, using silent clip:", voErr.message);
+        }
+        return { status: "ready", videoUrl: finalUrl };
+    }
     return { status: "pending" };
-}
-
-/**
- * Test the no-delivery-photo "Congratulations card" video — car image + caption
- * + voiceover — without a sale record. Runs synchronously (~30s) and returns
- * the finished video URL.
- */
-export async function startTestCongratsCard(formData) {
-    await requireAdmin();
-    const admin = await createAdminClient();
-
-    const fullName = formData.get("buyer_name") || "Valued Customer";
-    const carLabel = formData.get("car_label") || "vehicle";
-    const file = formData.get("image");
-    if (!file || typeof file !== "object" || file.size === 0) {
-        return { error: "Please choose a car image to test with." };
-    }
-
-    const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
-    const fileName = `test/${Date.now()}.${ext}`;
-    const { error: upErr } = await admin.storage
-        .from("delivery-photos")
-        .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
-    if (upErr) return { error: `Image upload failed: ${upErr.message}` };
-    const { data: urlData } = admin.storage.from("delivery-photos").getPublicUrl(fileName);
-
-    try {
-        const videoUrl = await generateCongratsCardVideo({
-            carImageUrl: urlData.publicUrl,
-            fullName,
-            carLabel,
-            carId: "cardtest",
-        });
-        return { success: true, videoUrl };
-    } catch (err) {
-        return { error: err.message || "Failed to generate card." };
-    }
 }

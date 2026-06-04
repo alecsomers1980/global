@@ -12,7 +12,7 @@ import {
     SEEDANCE_STYLE_PROMPTS,
     buildSeedancePrompt,
 } from "@/utils/ai/seedanceService";
-import { generateCongratsCardVideo } from "@/utils/ai/congratsCard";
+import { addCongratsVoiceover } from "@/utils/ai/congratsVoiceover";
 
 const REVIEW_DELAY_DAYS = 4;
 
@@ -224,73 +224,43 @@ export async function startSaleVideo(saleId, styleKey) {
         .eq("id", saleId)
         .single();
     if (saleErr || !sale) return { error: "Sale not found." };
-    if (sale.sale_video_status === "generating") return { error: "A video is already being generated for this sale." };
-
-    // No delivery photo -> build a "Congratulations" card from the car's main
-    // image instead of the Pixel Build (which needs a person in the photo).
-    // This runs synchronously (render card + voiceover + mux, ~30s) and returns
-    // ready, so there's nothing to poll.
-    if (!sale.delivery_photo_url) {
-        const { data: car } = await admin
-            .from("cars")
-            .select("make, model, year, main_image_url")
-            .eq("id", sale.car_id)
-            .single();
-        if (!car?.main_image_url) {
-            return { error: "No delivery photo, and this vehicle has no main image to use for a card." };
-        }
-        try {
-            await admin.from("sales").update({
-                sale_video_style: "congrats_card",
-                sale_video_status: "generating",
-                sale_video_url: null,
-                sale_video_error: null,
-                sale_video_started_at: new Date().toISOString(),
-                sale_video_completed_at: null,
-            }).eq("id", saleId);
-
-            const carLabel = `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim();
-            const videoUrl = await generateCongratsCardVideo({
-                carImageUrl: car.main_image_url,
-                fullName: sale.buyer_name,
-                carLabel,
-                carId: sale.car_id,
-            });
-
-            await admin.from("sales").update({
-                sale_video_status: "ready",
-                sale_video_url: videoUrl,
-                sale_video_completed_at: new Date().toISOString(),
-            }).eq("id", saleId);
-            return { success: true, ready: true, videoUrl };
-        } catch (err) {
-            console.error("congrats card video error:", err);
-            await admin.from("sales").update({
-                sale_video_status: "failed",
-                sale_video_error: err.message || "Card generation failed",
-            }).eq("id", saleId);
-            return { error: err.message || "Failed to generate congratulations card." };
-        }
+    if (sale.sale_video_status === "generating" || sale.sale_video_status === "finalizing") {
+        return { error: "A video is already being generated for this sale." };
     }
 
-    if (!SEEDANCE_STYLE_PROMPTS[styleKey]) return { error: "Invalid video style." };
+    // Source image: the delivery photo if provided, otherwise the car's main
+    // (first) image. Either way we generate the Pixel Build clip silently and
+    // add a congratulations voiceover once it's ready (no on-screen text).
+    let imageUrl = sale.delivery_photo_url;
+    if (!imageUrl) {
+        const { data: car } = await admin
+            .from("cars")
+            .select("main_image_url")
+            .eq("id", sale.car_id)
+            .single();
+        imageUrl = car?.main_image_url || null;
+    }
+    if (!imageUrl) {
+        return { error: "No delivery photo, and this vehicle has no main image to use." };
+    }
 
-    const prompt = buildSeedancePrompt(styleKey, { buyerName: sale.buyer_name });
+    const useStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
+    const prompt = buildSeedancePrompt(useStyle, { buyerName: sale.buyer_name });
 
     try {
         const { taskId } = await startSeedanceClip({
-            imageUrl: sale.delivery_photo_url,
+            imageUrl,
             prompt,
             durationSeconds: 8,
             aspectRatio: "16:9",
             resolution: "720p",
-            generateAudio: true,
+            generateAudio: false, // congratulations voiceover is muxed on after
         });
 
         const { error: updErr } = await admin
             .from("sales")
             .update({
-                sale_video_style: styleKey,
+                sale_video_style: useStyle,
                 sale_video_task_id: taskId,
                 sale_video_status: "generating",
                 sale_video_url: null,
@@ -332,6 +302,10 @@ export async function pollSaleVideo(saleId) {
     if (sale.sale_video_status === "ready") {
         return { status: "ready", videoUrl: sale.sale_video_url };
     }
+    // The clip is rendered and we're muxing the voiceover — keep the UI waiting.
+    if (sale.sale_video_status === "finalizing") {
+        return { status: "generating" };
+    }
     if (sale.sale_video_status !== "generating" || !sale.sale_video_task_id) {
         return { status: sale.sale_video_status || "none" };
     }
@@ -339,11 +313,34 @@ export async function pollSaleVideo(saleId) {
     const result = await pollSeedanceClip(sale.sale_video_task_id);
 
     if (result.isComplete && result.videoUrl) {
+        // Claim finalization first so a concurrent poll doesn't re-mux.
+        await admin.from("sales").update({ sale_video_status: "finalizing" }).eq("id", saleId);
+
+        // Add the congratulations voiceover onto the (silent) Pixel Build clip.
+        // Best-effort: if it fails, fall back to the silent clip rather than
+        // failing the whole sale video.
+        let finalUrl = result.videoUrl;
+        try {
+            const { data: car } = await admin
+                .from("cars")
+                .select("make, model, year")
+                .eq("id", sale.car_id)
+                .single();
+            const carLabel = car ? `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim() : "vehicle";
+            finalUrl = await addCongratsVoiceover(result.videoUrl, {
+                fullName: sale.buyer_name,
+                carLabel,
+                carId: sale.car_id,
+            });
+        } catch (voErr) {
+            console.warn("Congrats voiceover mux failed, using silent clip:", voErr.message);
+        }
+
         await admin
             .from("sales")
             .update({
                 sale_video_status: "ready",
-                sale_video_url: result.videoUrl,
+                sale_video_url: finalUrl,
                 sale_video_completed_at: new Date().toISOString(),
             })
             .eq("id", saleId);
@@ -359,14 +356,14 @@ export async function pollSaleVideo(saleId) {
                     buyerName: sale.buyer_name,
                     carId: sale.car_id,
                     deliveryPhotoUrl: sale.delivery_photo_url,
-                    videoUrl: result.videoUrl,
+                    videoUrl: finalUrl,
                     scheduledFor,
                 });
             }
         }
 
         revalidatePath("/admin/inventory");
-        return { status: "ready", videoUrl: result.videoUrl };
+        return { status: "ready", videoUrl: finalUrl };
     }
 
     if (result.error) {
