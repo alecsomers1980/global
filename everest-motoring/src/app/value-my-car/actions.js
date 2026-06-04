@@ -36,13 +36,15 @@ export async function submitValueMyCar(formData) {
         }
 
         // 3. Handle File Uploads
-        const fileKeys = ["image_front", "image_left", "image_right", "image_back", "image_roof"];
+        const fileKeys = ["image_front", "image_left", "image_right", "image_back", "image_roof", "image_interior_front", "image_interior_back"];
         const imageUrls = {
             image_front: null,
             image_left: null,
             image_right: null,
             image_back: null,
-            image_roof: null
+            image_roof: null,
+            image_interior_front: null,
+            image_interior_back: null
         };
 
         for (const key of fileKeys) {
@@ -89,6 +91,8 @@ export async function submitValueMyCar(formData) {
             image_right: imageUrls.image_right,
             image_back: imageUrls.image_back,
             image_roof: imageUrls.image_roof,
+            image_interior_front: imageUrls.image_interior_front,
+            image_interior_back: imageUrls.image_interior_back,
             status: "pending_valuation"
         };
 

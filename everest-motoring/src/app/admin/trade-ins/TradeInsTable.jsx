@@ -156,12 +156,12 @@ export default function TradeInsTable({ initialRequests }) {
                                                 <div>
                                                     <h4 className="font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">Uploaded Images</h4>
                                                     <div className="grid grid-cols-3 gap-2">
-                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof].filter(Boolean).map((img, i) => (
+                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof, req.image_interior_front, req.image_interior_back].filter(Boolean).map((img, i) => (
                                                             <a href={img} target="_blank" rel="noreferrer" key={i} className="aspect-square bg-slate-100 rounded border border-slate-200 overflow-hidden block hover:opacity-80">
                                                                 <img src={img} className="w-full h-full object-cover" alt="Vehicle Part" />
                                                             </a>
                                                         ))}
-                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof].filter(Boolean).length === 0 && (
+                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof, req.image_interior_front, req.image_interior_back].filter(Boolean).length === 0 && (
                                                             <span className="text-sm text-slate-400 italic">No images provided.</span>
                                                         )}
                                                     </div>

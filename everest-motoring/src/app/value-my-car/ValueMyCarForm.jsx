@@ -31,8 +31,12 @@ export default function ValueMyCarForm() {
         image_left: null,
         image_right: null,
         image_back: null,
-        image_roof: null
+        image_roof: null,
+        image_interior_front: null,
+        image_interior_back: null
     });
+
+    const [progress, setProgress] = useState(0);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -84,6 +88,12 @@ export default function ValueMyCarForm() {
         }
 
         setStatus("submitting");
+        setProgress(6);
+        // Animate toward ~92% while the upload + save round-trips, then snap to
+        // 100% on success so the user sees real movement rather than a frozen button.
+        const progressTimer = setInterval(() => {
+            setProgress((p) => (p < 92 ? Math.min(92, p + Math.random() * 9 + 2) : p));
+        }, 450);
 
         // Convert state to FormData to reuse the server action structure easily
         const submissionData = new FormData();
@@ -99,11 +109,14 @@ export default function ValueMyCarForm() {
         });
 
         const result = await submitValueMyCar(submissionData);
+        clearInterval(progressTimer);
 
         if (result?.error) {
             setStatus("error");
+            setProgress(0);
             alert("Failed to submit inquiry. Please try again or call us directly.");
         } else {
+            setProgress(100);
             trackEvent("generate_lead", {
                 form: "value_my_car",
                 make: formData.make || null,
@@ -165,7 +178,7 @@ export default function ValueMyCarForm() {
                             {step > 2 && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
                             2. Upload Photos
                         </div>
-                        <div className="text-xs text-slate-500">4 exterior shots of your car.</div>
+                        <div className="text-xs text-slate-500">Exterior &amp; interior photos of your car.</div>
                     </div>
                     <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 3 ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
                         <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
@@ -287,36 +300,50 @@ export default function ValueMyCarForm() {
                         {/* Front */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front View *</label>
-                            <input type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
                             {files.image_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Left Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Left Side *</label>
-                            <input type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
                             {files.image_left && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Right Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Right Side *</label>
-                            <input type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
                             {files.image_right && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Back View */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back View *</label>
-                            <input type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
                             {files.image_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Roof */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Roof (Optional)</label>
-                            <input type="file" name="image_roof" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input type="file" name="image_roof" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
                             {files.image_roof && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Front Interior */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front Interior (Optional)</label>
+                            <input type="file" name="image_interior_front" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_interior_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                        </div>
+
+                        {/* Back Interior */}
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back Interior (Optional)</label>
+                            <input type="file" name="image_interior_back" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            {files.image_interior_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
                     </div>
 
@@ -376,18 +403,32 @@ export default function ValueMyCarForm() {
                         <button
                             type="submit"
                             disabled={status === "submitting"}
-                            className="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-secondary/30 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 bg-secondary hover:bg-slate-800 text-white font-bold py-4 px-8 rounded-lg shadow-lg shadow-secondary/30 transition-all flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {status === "submitting" ? (
                                 <>
                                     <span className="material-symbols-outlined animate-spin">refresh</span>
-                                    Uploading and Submitting...
+                                    Submitting… {Math.round(progress)}%
                                 </>
                             ) : (
                                 <>Submit for Free Valuation <span className="material-symbols-outlined text-sm">check_circle</span></>
                             )}
                         </button>
                     </div>
+
+                    {status === "submitting" && (
+                        <div className="pt-2">
+                            <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                                    style={{ width: `${Math.round(progress)}%` }}
+                                />
+                            </div>
+                            <p className="text-xs text-slate-500 mt-2 text-center font-medium">
+                                Uploading your photos and submitting — {Math.round(progress)}%
+                            </p>
+                        </div>
+                    )}
                 </div>
             )}
         </form>
