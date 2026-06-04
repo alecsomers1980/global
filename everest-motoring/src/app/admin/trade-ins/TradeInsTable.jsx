@@ -1,18 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TradeInStatusSelector from "./TradeInStatusSelector";
 
 export default function TradeInsTable({ initialRequests }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [expandedRows, setExpandedRows] = useState([]);
+    // Lightbox: { images: string[], index: number } | null
+    const [lightbox, setLightbox] = useState(null);
 
     const toggleExpand = (id) => {
         setExpandedRows(prev =>
             prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]
         );
     };
+
+    const getImages = (req) =>
+        [req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof, req.image_interior_front, req.image_interior_back].filter(Boolean);
+
+    const closeLightbox = () => setLightbox(null);
+    const navLightbox = (dir) =>
+        setLightbox(lb => (lb ? { ...lb, index: (lb.index + dir + lb.images.length) % lb.images.length } : lb));
+
+    useEffect(() => {
+        if (!lightbox) return;
+        const onKey = (e) => {
+            if (e.key === "Escape") closeLightbox();
+            else if (e.key === "ArrowRight") navLightbox(1);
+            else if (e.key === "ArrowLeft") navLightbox(-1);
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [lightbox]);
 
     // Filter logic
     const filteredRequests = initialRequests.filter(req => {
@@ -156,12 +176,17 @@ export default function TradeInsTable({ initialRequests }) {
                                                 <div>
                                                     <h4 className="font-bold text-slate-900 border-b border-slate-100 pb-2 mb-4">Uploaded Images</h4>
                                                     <div className="grid grid-cols-3 gap-2">
-                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof, req.image_interior_front, req.image_interior_back].filter(Boolean).map((img, i) => (
-                                                            <a href={img} target="_blank" rel="noreferrer" key={i} className="aspect-square bg-slate-100 rounded border border-slate-200 overflow-hidden block hover:opacity-80">
+                                                        {getImages(req).map((img, i) => (
+                                                            <button
+                                                                type="button"
+                                                                key={i}
+                                                                onClick={() => setLightbox({ images: getImages(req), index: i })}
+                                                                className="aspect-square bg-slate-100 rounded border border-slate-200 overflow-hidden block hover:opacity-80 cursor-zoom-in"
+                                                            >
                                                                 <img src={img} className="w-full h-full object-cover" alt="Vehicle Part" />
-                                                            </a>
+                                                            </button>
                                                         ))}
-                                                        {[req.image_front, req.image_back, req.image_left, req.image_right, req.image_roof, req.image_interior_front, req.image_interior_back].filter(Boolean).length === 0 && (
+                                                        {getImages(req).length === 0 && (
                                                             <span className="text-sm text-slate-400 italic">No images provided.</span>
                                                         )}
                                                     </div>
@@ -184,6 +209,55 @@ export default function TradeInsTable({ initialRequests }) {
                     </tbody>
                 </table>
             </div>
+
+            {lightbox && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 select-none"
+                    onClick={closeLightbox}
+                >
+                    <button
+                        type="button"
+                        onClick={closeLightbox}
+                        className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+                        aria-label="Close"
+                    >
+                        <span className="material-symbols-outlined text-4xl">close</span>
+                    </button>
+
+                    {lightbox.images.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); navLightbox(-1); }}
+                            className="absolute left-2 md:left-6 text-white/70 hover:text-white transition-colors"
+                            aria-label="Previous"
+                        >
+                            <span className="material-symbols-outlined text-6xl">chevron_left</span>
+                        </button>
+                    )}
+
+                    <img
+                        src={lightbox.images[lightbox.index]}
+                        onClick={(e) => e.stopPropagation()}
+                        className="max-h-[88vh] max-w-[88vw] object-contain rounded-lg shadow-2xl"
+                        alt="Vehicle"
+                    />
+
+                    {lightbox.images.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); navLightbox(1); }}
+                            className="absolute right-2 md:right-6 text-white/70 hover:text-white transition-colors"
+                            aria-label="Next"
+                        >
+                            <span className="material-symbols-outlined text-6xl">chevron_right</span>
+                        </button>
+                    )}
+
+                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/80 text-sm font-medium bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                        {lightbox.index + 1} / {lightbox.images.length}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
