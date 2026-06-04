@@ -1,7 +1,7 @@
 "use server";
 
 import * as React from "react";
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 import { sendEmail } from "@/lib/resend";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
 
@@ -9,7 +9,9 @@ const STAFF_EMAIL = process.env.STAFF_NOTIFICATION_EMAIL || "info@everestmotorin
 
 export async function submitValueMyCar(formData) {
     try {
-        const supabase = await createClient();
+        // Public form has no logged-in user, so uploads/inserts run with the
+        // service role (server-side only) to bypass RLS on the storage bucket.
+        const admin = await createAdminClient();
 
         // 1. Vehicle Details
         const category = formData.get("category");
@@ -50,7 +52,7 @@ export async function submitValueMyCar(formData) {
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
                 const filePath = `requests/${fileName}`;
 
-                const { error: uploadError } = await supabase.storage
+                const { error: uploadError } = await admin.storage
                     .from('valuations')
                     .upload(filePath, file);
 
@@ -59,7 +61,7 @@ export async function submitValueMyCar(formData) {
                     return { error: `Failed to upload ${key}` };
                 }
 
-                const { data: publicUrlData } = supabase.storage
+                const { data: publicUrlData } = admin.storage
                     .from('valuations')
                     .getPublicUrl(filePath);
 
@@ -90,7 +92,7 @@ export async function submitValueMyCar(formData) {
             status: "pending_valuation"
         };
 
-        const { error } = await supabase.from("value_my_car_requests").insert([newRequest]);
+        const { error } = await admin.from("value_my_car_requests").insert([newRequest]);
 
         if (error) {
             console.error("Supabase Error saving valuation request:", error);
