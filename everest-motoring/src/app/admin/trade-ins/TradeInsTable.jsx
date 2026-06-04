@@ -126,7 +126,7 @@ export default function TradeInsTable({ initialRequests }) {
                                     </td>
 
                                     <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                                        <TradeInStatusSelector requestId={req.id} currentStatus={req.status} />
+                                        <TradeInStatusSelector requestId={req.id} currentStatus={req.status} request={req} />
                                     </td>
 
                                     <td className="p-4 flex flex-col items-end gap-2 text-right" onClick={(e) => e.stopPropagation()}>
