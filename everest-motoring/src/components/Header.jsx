@@ -32,7 +32,6 @@ export default function Header({ siteConfig }) {
             <div className="flex items-center gap-4">
                 <div className="hidden md:flex items-center gap-4">
                     <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/admin">Admin</Link>
-                    <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/login">Client</Link>
                     <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary" href="/register">Affiliate</Link>
                 </div>
                 <button
@@ -93,9 +92,8 @@ export default function Header({ siteConfig }) {
                             Contact
                         </Link>
 
-                        <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
+                        <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-2 text-center">
                             <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/admin" onClick={closeMobileMenu}>Admin</Link>
-                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/login" onClick={closeMobileMenu}>Client</Link>
                             <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/register" onClick={closeMobileMenu}>Affiliate</Link>
                         </div>
                     </nav>

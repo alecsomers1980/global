@@ -240,13 +240,6 @@ export default async function CarDetailsPage({ params }) {
 
                                 <LeadForm carId={car.id} />
 
-                                <div className="mt-8 pt-6 border-t border-white/10">
-                                    <h4 className="text-white font-bold mb-3">Ready to start financing?</h4>
-                                    <a href={`/login?register=client&car_id=${car.id}`} className="block w-full text-center bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-black transition-colors py-3 rounded-lg font-bold">
-                                        Create Client Account
-                                    </a>
-                                </div>
-
                                 <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-400">
                                     <span className="material-symbols-outlined text-green-500">lock</span>
                                     Secure Lead System

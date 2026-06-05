@@ -4,8 +4,7 @@ import * as React from "react";
 import { sendEmail } from "@/lib/resend";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
 
-// TEST recipient — change to info@everestmotoring.co.za once testing is done.
-const CONTACT_EMAIL = "alec@firewireit.co.za";
+const CONTACT_EMAIL = ["info@everestmotoring.co.za", "anton@everestmotoring.co.za"];
 
 export async function submitContactForm(formData) {
     try {

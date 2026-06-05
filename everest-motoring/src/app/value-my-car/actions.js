@@ -5,7 +5,7 @@ import { createAdminClient } from "@/utils/supabase/server";
 import { sendEmail } from "@/lib/resend";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
 
-const STAFF_EMAIL = process.env.STAFF_NOTIFICATION_EMAIL || "info@everestmotoring.co.za";
+const STAFF_EMAIL = ["info@everestmotoring.co.za", "anton@everestmotoring.co.za"];
 
 export async function submitValueMyCar(formData) {
     try {
