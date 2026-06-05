@@ -1,8 +1,13 @@
 "use server";
 
+import * as React from "react";
 import { createClient } from "@/utils/supabase/server";
-
 import { cookies } from "next/headers";
+import { sendEmail } from "@/lib/resend";
+import { SystemNotificationEmail } from "@/emails/SystemNotification";
+
+// TEST recipient — change to info@everestmotoring.co.za once testing is done.
+const LEAD_NOTIFICATION_EMAIL = "alec@firewireit.co.za";
 
 export async function submitLead(formData) {
     try {
@@ -55,6 +60,35 @@ export async function submitLead(formData) {
             console.error("Supabase Error saving lead:", error);
             return { error: "Database error" };
         }
+
+        // Staff notification email — fire-and-forget (never block the lead save).
+        let vehicleDesc = "a vehicle";
+        try {
+            const { data: car } = await supabase
+                .from("cars")
+                .select("make, model, year")
+                .eq("id", car_id)
+                .single();
+            if (car) vehicleDesc = `${car.year} ${car.make} ${car.model}`;
+        } catch { /* ignore — still send the notification */ }
+
+        sendEmail({
+            to: LEAD_NOTIFICATION_EMAIL,
+            replyTo: client_email || undefined,
+            subject: `🚗 New Vehicle Inquiry — ${vehicleDesc}`,
+            react: React.createElement(SystemNotificationEmail, {
+                subject: "New Vehicle Inquiry",
+                details: [
+                    { label: "Vehicle", value: vehicleDesc },
+                    { label: "Name", value: client_name },
+                    { label: "Phone", value: client_phone },
+                    { label: "Email", value: client_email || "Not provided" },
+                    { label: "Source", value: lead_source === "affiliate_link" ? "Affiliate link" : "Website" },
+                ],
+                actionLink: "https://everestmotoring.co.za/admin/leads",
+                actionLabel: "View in Leads Dashboard",
+            }),
+        }).catch((err) => console.warn("Lead notification email failed:", err));
 
         return { success: true };
 
