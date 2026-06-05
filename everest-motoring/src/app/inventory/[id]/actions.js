@@ -1,7 +1,7 @@
 "use server";
 
 import * as React from "react";
-import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { sendEmail } from "@/lib/resend";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
@@ -11,7 +11,9 @@ const LEAD_NOTIFICATION_EMAIL = "alec@firewireit.co.za";
 
 export async function submitLead(formData) {
     try {
-        const supabase = await createClient();
+        // Public form has no logged-in user; run DB writes with the service role
+        // (server-side only) so the leads RLS policy doesn't reject the insert.
+        const supabase = await createAdminClient();
 
         const car_id = formData.get("car_id");
         const client_name = formData.get("client_name");
@@ -26,7 +28,7 @@ export async function submitLead(formData) {
         let affiliate_id = null;
         let lead_source = "website_direct";
 
-        const cookieStore = cookies();
+        const cookieStore = await cookies();
         const refCode = cookieStore.get("everest_affiliate_id")?.value;
 
         if (refCode) {
