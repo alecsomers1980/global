@@ -7,7 +7,11 @@ import { SEEDANCE_STYLES } from "@/utils/ai/seedanceService";
 const POLL_INTERVAL_MS = 8000;
 
 export default function SaleVideoPicker({ sale, onUpdated }) {
-    const [status, setStatus] = useState(sale?.sale_video_status || "none");
+    // "finalizing" (cron muxing the voiceover) is shown as in-progress so a
+    // reopened dialog keeps polling instead of offering to generate again.
+    const [status, setStatus] = useState(
+        sale?.sale_video_status === "finalizing" ? "generating" : (sale?.sale_video_status || "none")
+    );
     const [videoUrl, setVideoUrl] = useState(sale?.sale_video_url || null);
     const [selectedStyle, setSelectedStyle] = useState(sale?.sale_video_style || null);
     const [previousStyle, setPreviousStyle] = useState(null);

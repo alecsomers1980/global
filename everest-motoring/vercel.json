@@ -11,6 +11,10 @@
         {
             "path": "/api/cron/advance-video",
             "schedule": "* * * * *"
+        },
+        {
+            "path": "/api/cron/advance-sale-video",
+            "schedule": "* * * * *"
         }
     ]
 }
