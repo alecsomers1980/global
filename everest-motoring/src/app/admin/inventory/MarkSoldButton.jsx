@@ -179,7 +179,7 @@ export default function MarkSoldButton({ car }) {
                                         <select
                                             value={selectedLeadId}
                                             onChange={(e) => handleLeadSelect(e.target.value)}
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white"
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-slate-900"
                                         >
                                             <option value="">— Manual entry —</option>
                                             {leads.map((lead) => (
@@ -207,7 +207,7 @@ export default function MarkSoldButton({ car }) {
                                             disabled={!!existingSale}
                                             value={form.buyer_name}
                                             onChange={(e) => setForm({ ...form, buyer_name: e.target.value })}
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 disabled:bg-slate-50 disabled:text-slate-600"
                                         />
                                     </div>
                                     <div>
@@ -220,7 +220,7 @@ export default function MarkSoldButton({ car }) {
                                             disabled={!!existingSale}
                                             value={form.buyer_phone}
                                             onChange={(e) => setForm({ ...form, buyer_phone: e.target.value })}
-                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                            className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 disabled:bg-slate-50 disabled:text-slate-600"
                                         />
                                     </div>
                                 </div>
@@ -235,7 +235,7 @@ export default function MarkSoldButton({ car }) {
                                         disabled={!!existingSale}
                                         value={form.buyer_email}
                                         onChange={(e) => setForm({ ...form, buyer_email: e.target.value })}
-                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 disabled:bg-slate-50 disabled:text-slate-600"
                                     />
                                     {!existingSale && (
                                         <p className="text-xs text-slate-500 mt-1">
@@ -254,7 +254,7 @@ export default function MarkSoldButton({ car }) {
                                         disabled={!!existingSale}
                                         value={form.buyer_birthday}
                                         onChange={(e) => setForm({ ...form, buyer_birthday: e.target.value })}
-                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600"
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 disabled:bg-slate-50 disabled:text-slate-600"
                                     />
                                     <p className="text-xs text-slate-500 mt-1">
                                         Used to send a birthday greeting later. Optional.
@@ -308,7 +308,7 @@ export default function MarkSoldButton({ car }) {
                                         disabled={!!existingSale}
                                         value={form.notes}
                                         onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg disabled:bg-slate-50 disabled:text-slate-600 resize-none"
+                                        className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 disabled:bg-slate-50 disabled:text-slate-600 resize-none"
                                     ></textarea>
                                 </div>
 
