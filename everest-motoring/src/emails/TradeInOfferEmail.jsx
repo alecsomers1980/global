@@ -37,7 +37,7 @@ export const TradeInOfferEmail = ({ body = '' }) => {
         <Head />
         <Preview>Your trade-in offer from Everest Motoring</Preview>
         <Body className="bg-neutral-100 font-sans">
-          <Container className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+          <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
             <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
               <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />

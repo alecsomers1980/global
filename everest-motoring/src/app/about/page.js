@@ -4,7 +4,6 @@ export const metadata = {
 };
 
 import PageBanner from "@/components/PageBanner";
-import Image from "next/image";
 
 const teamMembers = [
     { name: "Anton Thornhill", role: "General Manager", image: "/images/team/Anton.jpg" },
@@ -53,14 +52,8 @@ export default function AboutPage() {
                     <div className="grid md:grid-cols-5 gap-12 items-start">
                         {/* Photo */}
                         <div className="md:col-span-2 flex flex-col items-center">
-                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-200">
-                                <Image
-                                    src="/images/team/Christo.jpg"
-                                    alt="Christo Pieterse - Director of Everest Motoring"
-                                    fill
-                                    className="object-cover object-top"
-                                    sizes="(max-width: 768px) 100vw, 40vw"
-                                />
+                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-100 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-slate-300 text-[140px]">person</span>
                             </div>
                             <div className="mt-6 text-center">
                                 <h3 className="text-2xl font-bold text-slate-900">Christo Pieterse</h3>

@@ -6,7 +6,7 @@ import { SystemNotificationEmail } from "@/emails/SystemNotification";
 import { OneMonthFollowupEmail } from "@/emails/1MonthFollowup";
 import { ThreeYearTradeInEmail } from "@/emails/3YearTradeIn";
 import { AffiliateMediaKit } from "@/emails/AffiliateMediaKit";
-import { BirthdayEmail } from "@/emails/BirthdayEmail";
+import { OneYearEmail } from "@/emails/OneYearEmail";
 import { NewsletterEmail } from "@/emails/Newsletter";
 import { PostSaleReviewEmail } from "@/emails/PostSaleReview";
 
@@ -60,10 +60,10 @@ const TEMPLATES = [
         element: <ThreeYearTradeInEmail />,
     },
     {
-        key: "birthday",
-        name: "Birthday",
-        description: "Birthday greeting sent to existing clients.",
-        element: <BirthdayEmail />,
+        key: "one-year",
+        name: "1-Year Anniversary",
+        description: "Sent one year after purchase — congratulates the client and offers a free car wash.",
+        element: <OneYearEmail />,
     },
 ];
 

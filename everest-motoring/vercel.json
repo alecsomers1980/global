@@ -5,6 +5,10 @@
             "schedule": "0 9 1 * *"
         },
         {
+            "path": "/api/cron/anniversary-emails",
+            "schedule": "0 8 1 * *"
+        },
+        {
             "path": "/api/cron/cleanup-sold-cf-streams",
             "schedule": "0 3 * * *"
         },
