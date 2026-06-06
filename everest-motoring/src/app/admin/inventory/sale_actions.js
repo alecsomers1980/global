@@ -57,6 +57,40 @@ export async function getSaleForCar(carId) {
     return data;
 }
 
+// Attach (or replace) the delivery photo on an existing sale — used when a sale
+// was recorded without a photo and we now want to create a handover video that
+// includes the buyer.
+export async function addDeliveryPhotoToSale(formData) {
+    await requireAdmin();
+    const admin = await createAdminClient();
+
+    const saleId = formData.get("sale_id");
+    const file = formData.get("delivery_photo");
+    if (!saleId) return { error: "Missing sale." };
+    if (!file || typeof file !== "object" || file.size === 0) {
+        return { error: "Please choose a photo to upload." };
+    }
+
+    const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
+    const fileName = `${saleId}-${Date.now()}.${ext}`;
+    const { error: upErr } = await admin.storage
+        .from("delivery-photos")
+        .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
+    if (upErr) return { error: `Upload failed: ${upErr.message}` };
+
+    const { data: urlData } = admin.storage.from("delivery-photos").getPublicUrl(fileName);
+    const url = urlData.publicUrl;
+
+    const { error: updErr } = await admin
+        .from("sales")
+        .update({ delivery_photo_url: url })
+        .eq("id", saleId);
+    if (updErr) return { error: updErr.message };
+
+    revalidatePath("/admin/inventory");
+    return { success: true, url };
+}
+
 export async function markCarAsSold(formData) {
     try {
         return await markCarAsSoldInner(formData);
@@ -233,9 +267,9 @@ export async function startSaleVideo(saleId, styleKey) {
     // people added). Either way the clip is generated silently and a
     // congratulations voiceover is added once it's ready (no on-screen text).
     let imageUrl = sale.delivery_photo_url;
-    let useStyle;
+    let promptStyle;
     if (imageUrl) {
-        useStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
+        promptStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
     } else {
         const { data: car } = await admin
             .from("cars")
@@ -243,13 +277,17 @@ export async function startSaleVideo(saleId, styleKey) {
             .eq("id", sale.car_id)
             .single();
         imageUrl = car?.main_image_url || null;
-        useStyle = "pixel_build_car_only";
+        promptStyle = "pixel_build_car_only";
     }
     if (!imageUrl) {
         return { error: "No delivery photo, and this vehicle has no main image to use." };
     }
 
-    const prompt = buildSeedancePrompt(useStyle, { buyerName: sale.buyer_name });
+    const prompt = buildSeedancePrompt(promptStyle, { buyerName: sale.buyer_name });
+    // The sales.sale_video_style DB check constraint only allows the original
+    // style keys, so store the base "pixel_build" for the car-only variant —
+    // the prompt is what actually differs, not the stored label.
+    const storedStyle = promptStyle === "pixel_build_car_only" ? "pixel_build" : promptStyle;
 
     try {
         const { taskId } = await startSeedanceClip({
@@ -264,7 +302,7 @@ export async function startSaleVideo(saleId, styleKey) {
         const { error: updErr } = await admin
             .from("sales")
             .update({
-                sale_video_style: useStyle,
+                sale_video_style: storedStyle,
                 sale_video_task_id: taskId,
                 sale_video_status: "generating",
                 sale_video_url: null,

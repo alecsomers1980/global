@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getLeadsForCar, markCarAsSold, getSaleForCar } from "./sale_actions";
+import { getLeadsForCar, markCarAsSold, getSaleForCar, addDeliveryPhotoToSale } from "./sale_actions";
 import SaleVideoPicker from "./SaleVideoPicker";
 import { trackEvent } from "@/lib/gtag";
 
@@ -9,6 +9,7 @@ export default function MarkSoldButton({ car }) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [photoUploading, setPhotoUploading] = useState(false);
     const [leads, setLeads] = useState([]);
     const [selectedLeadId, setSelectedLeadId] = useState("");
     const [existingSale, setExistingSale] = useState(null);
@@ -100,6 +101,27 @@ export default function MarkSoldButton({ car }) {
             alert(`Failed to mark as sold: ${err?.message || err}`);
         } finally {
             setSubmitting(false);
+        }
+    }
+
+    async function handlePhotoUpload(e) {
+        const file = e.target.files?.[0];
+        if (!file || !existingSale) return;
+        setPhotoUploading(true);
+        try {
+            const fd = new FormData();
+            fd.set("sale_id", existingSale.id);
+            fd.set("delivery_photo", file);
+            const res = await addDeliveryPhotoToSale(fd);
+            if (res?.error) {
+                alert(res.error);
+            } else {
+                setExistingSale((s) => ({ ...s, delivery_photo_url: res.url }));
+            }
+        } catch (err) {
+            alert("Upload failed: " + (err?.message || err));
+        } finally {
+            setPhotoUploading(false);
         }
     }
 
@@ -272,7 +294,19 @@ export default function MarkSoldButton({ car }) {
                                             className="rounded-lg max-h-64 border border-slate-200"
                                         />
                                     ) : existingSale ? (
-                                        <p className="text-sm text-slate-500 italic">No photo on file.</p>
+                                        <div className="space-y-2">
+                                            <p className="text-sm text-slate-500 italic">
+                                                No photo on file. Upload one to create a handover video that includes the buyer.
+                                            </p>
+                                            <input
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/webp"
+                                                disabled={photoUploading}
+                                                onChange={handlePhotoUpload}
+                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 disabled:opacity-60"
+                                            />
+                                            {photoUploading && <p className="text-xs text-slate-500">Uploading…</p>}
+                                        </div>
                                     ) : (
                                         <>
                                             <input

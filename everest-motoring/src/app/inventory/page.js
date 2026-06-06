@@ -107,8 +107,8 @@ export default async function InventoryPage({ searchParams }) {
 
                                         {/* Status Badge / Sold band */}
                                         {car.status === 'sold' ? (
-                                            <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-                                                <div className="w-[150%] py-2.5 bg-black/70 shadow-lg rotate-[-34deg] text-center">
+                                            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] py-3 bg-black/70 shadow-lg rotate-[-34deg] text-center">
                                                     <span className="text-primary font-black text-2xl tracking-[0.3em] uppercase">Sold</span>
                                                 </div>
                                             </div>
