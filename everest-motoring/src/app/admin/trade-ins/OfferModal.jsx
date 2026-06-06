@@ -24,7 +24,7 @@ To proceed, please book an inspection at our dealership and bring along:
 
 This offer is valid for 7 days from the date of this email.
 
-To arrange your inspection, contact us on 013 854 0600 or info@everestmotoring.co.za.
+To arrange your inspection, contact us on +27 78 893 8881 or info@everestmotoring.co.za.
 
 Kind regards,
 The Everest Motoring Team`;

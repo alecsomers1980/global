@@ -423,10 +423,6 @@ export default function VehicleForm({ initialData = null }) {
                 <h3 className="block text-sm font-bold text-slate-700 mb-4">Condition & History</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Registration Year</label>
-                        <input type="number" name="registration_year" defaultValue={initialData?.registration_year || ""} min="1990" max="2030" placeholder="2023" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
-                    </div>
-                    <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">New / Used</label>
                         <select name="condition" defaultValue={initialData?.condition || "used"} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white">
                             <option value="used">Used</option>
@@ -459,10 +455,6 @@ export default function VehicleForm({ initialData = null }) {
                             <option value="">— Select —</option>
                             {COLOURS.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Manufacturer Colour</label>
-                        <input type="text" name="manufacturer_colour" defaultValue={initialData?.manufacturer_colour || ""} placeholder="e.g. Santorini Black" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
                     </div>
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Service History</label>
@@ -542,7 +534,7 @@ export default function VehicleForm({ initialData = null }) {
                         <select
                             name="sold_roadworthy"
                             required
-                            defaultValue={initialData?.sold_roadworthy == null ? "" : initialData.sold_roadworthy ? "yes" : "no"}
+                            defaultValue={initialData?.sold_roadworthy == null ? "yes" : initialData.sold_roadworthy ? "yes" : "no"}
                             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white"
                         >
                             <option value="">— Please select —</option>
@@ -561,40 +553,13 @@ export default function VehicleForm({ initialData = null }) {
                         <select
                             name="eligible_for_finance"
                             required
-                            defaultValue={initialData?.eligible_for_finance == null ? "" : initialData.eligible_for_finance ? "yes" : "no"}
+                            defaultValue={initialData?.eligible_for_finance == null ? "yes" : initialData.eligible_for_finance ? "yes" : "no"}
                             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none bg-white"
                         >
                             <option value="">— Please select —</option>
                             <option value="yes">Yes</option>
                             <option value="no">No</option>
                         </select>
-                    </div>
-                </div>
-            </div>
-
-            {/* ======== Pricing ======== */}
-            <div className="pt-4 border-t border-slate-100 space-y-4">
-                <h3 className="block text-sm font-bold text-slate-700 mb-4">Pricing Extras</h3>
-                <p className="text-xs text-slate-500 -mt-2 mb-2">Retail price is set above. These are optional extras for export feeds and internal tracking.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Trade-in Price (ZAR)</label>
-                        <input type="number" name="trade_in_price" defaultValue={initialData?.trade_in_price || ""} min="0" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Reconditioning Cost (ZAR)</label>
-                        <input type="number" name="reconditioning_cost" defaultValue={initialData?.reconditioning_cost || ""} min="0" placeholder="Internal use" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
-                    </div>
-                    <div className="flex items-center pt-7">
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                            <input
-                                type="checkbox"
-                                name="price_on_application"
-                                defaultChecked={initialData?.price_on_application || false}
-                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-black checked:border-black transition-colors"
-                            />
-                            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Price On Application (POA)</span>
-                        </label>
                     </div>
                 </div>
             </div>

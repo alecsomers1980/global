@@ -10,7 +10,6 @@ const teamMembers = [
     { name: "Anton Thornhill", role: "General Manager", image: "/images/team/Anton.jpg" },
     { name: "Jaco Van Zyl", role: "Sales Executive", image: "/images/team/Jaco.jpg" },
     { name: "Moffat Maseko", role: "Driver", image: "/images/team/Moffat.jpg" },
-    { name: "Bonginkosi Tloubatla", role: "Driver", image: "/images/team/Bonginkosi.jpg" },
 ];
 
 export default function AboutPage() {
@@ -112,15 +111,8 @@ export default function AboutPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {teamMembers.map((member) => (
                             <div key={member.name} className="group cursor-pointer">
-                                <div className="relative h-[400px] w-full overflow-hidden rounded-2xl mb-6 bg-slate-100">
-                                    <Image
-                                        src={member.image}
-                                        alt={member.name}
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                        className="object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="relative h-[400px] w-full overflow-hidden rounded-2xl mb-6 bg-slate-100 flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-slate-300 text-[120px]">person</span>
                                 </div>
                                 <div className="text-center">
                                     <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>

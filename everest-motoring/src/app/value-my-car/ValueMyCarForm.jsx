@@ -50,23 +50,39 @@ export default function ValueMyCarForm() {
         }
     };
 
+    const [invalid, setInvalid] = useState([]);
+
+    // Returns true if all required pairs are filled; otherwise records the
+    // missing fields, scrolls to the first one and highlights them.
+    const requireFields = (pairs) => {
+        const missing = pairs.filter(([, v]) => !v).map(([k]) => k);
+        setInvalid(missing);
+        if (missing.length > 0) {
+            const el = document.getElementById("vmc-" + missing[0]);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            return false;
+        }
+        return true;
+    };
+
+    const errRing = (name) => (invalid.includes(name) ? " ring-2 ring-red-400 border-red-400" : "");
+
     const nextStep = (e) => {
         if (e) e.preventDefault();
 
-        // Basic validation for Step 1
         if (step === 1) {
-            if (!formData.make || !formData.model || !formData.year || !formData.fuel_type || !formData.transmission || !formData.condition || !formData.mileage) {
-                alert("Please fill in all required vehicle details before continuing.");
-                return;
-            }
+            if (!requireFields([
+                ["make", formData.make], ["model", formData.model], ["year", formData.year],
+                ["mileage", formData.mileage], ["fuel_type", formData.fuel_type],
+                ["transmission", formData.transmission], ["condition", formData.condition],
+            ])) return;
         }
 
-        // Basic validation for Step 2
         if (step === 2) {
-            if (!files.image_front || !files.image_left || !files.image_right || !files.image_back) {
-                alert("Please upload the 4 required photos (Front, Left, Right, Back) before continuing.");
-                return;
-            }
+            if (!requireFields([
+                ["image_front", files.image_front], ["image_left", files.image_left],
+                ["image_right", files.image_right], ["image_back", files.image_back],
+            ])) return;
         }
 
         setStep(prev => prev + 1);
@@ -82,10 +98,11 @@ export default function ValueMyCarForm() {
         e.preventDefault();
 
         // Final validation
-        if (!formData.client_name || !formData.client_phone || !formData.client_email) {
-            alert("Please provide your name, phone number, and email.");
-            return;
-        }
+        if (!requireFields([
+            ["client_name", formData.client_name],
+            ["client_phone", formData.client_phone],
+            ["client_email", formData.client_email],
+        ])) return;
 
         setStatus("submitting");
         setProgress(6);
@@ -197,15 +214,15 @@ export default function ValueMyCarForm() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Make *</label>
-                            <input type="text" name="make" value={formData.make} onChange={handleChange} placeholder="e.g. Toyota" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-make" type="text" name="make" value={formData.make} onChange={handleChange} placeholder="e.g. Toyota" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('make')}`} />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Model *</label>
-                            <input type="text" name="model" value={formData.model} onChange={handleChange} placeholder="e.g. Fortuner" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-model" type="text" name="model" value={formData.model} onChange={handleChange} placeholder="e.g. Fortuner" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('model')}`} />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Year *</label>
-                            <select name="year" value={formData.year} onChange={handleChange} required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all bg-white">
+                            <select id="vmc-year" name="year" value={formData.year} onChange={handleChange} required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all bg-white${errRing('year')}`}>
                                 <option value="">Select Year</option>
                                 {Array.from({ length: 30 }, (_, i) => 2025 - i).map(year => (
                                     <option key={year} value={year}>{year}</option>
@@ -215,15 +232,15 @@ export default function ValueMyCarForm() {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Mileage (km) *</label>
-                            <input type="number" name="mileage" value={formData.mileage} onChange={handleChange} placeholder="e.g. 45000" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-mileage" type="number" name="mileage" value={formData.mileage} onChange={handleChange} placeholder="e.g. 45000" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('mileage')}`} />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                    <div className="space-y-8 pt-4">
                         {/* Fuel Type */}
-                        <div>
+                        <div id="vmc-fuel_type">
                             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Fuel Type *</label>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className={`grid grid-cols-2 gap-3 rounded-xl${errRing('fuel_type')}`}>
                                 {['Petrol', 'Diesel', 'Electric', 'Hybrid'].map(type => (
                                     <button
                                         key={type} type="button"
@@ -237,9 +254,9 @@ export default function ValueMyCarForm() {
                         </div>
 
                         {/* Transmission */}
-                        <div>
+                        <div id="vmc-transmission">
                             <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Transmission *</label>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className={`grid grid-cols-2 gap-3 rounded-xl${errRing('transmission')}`}>
                                 {['Automatic', 'Manual'].map(type => (
                                     <button
                                         key={type} type="button"
@@ -254,9 +271,9 @@ export default function ValueMyCarForm() {
                     </div>
 
                     {/* Condition */}
-                    <div className="pt-4">
+                    <div id="vmc-condition" className="pt-4">
                         <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Overall Condition *</label>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div className={`grid grid-cols-2 sm:grid-cols-5 gap-3 rounded-xl${errRing('condition')}`}>
                             {['Excellent', 'Good', 'Average', 'Poor', 'Non-runner'].map(cond => (
                                 <button
                                     key={cond} type="button"
@@ -300,28 +317,28 @@ export default function ValueMyCarForm() {
                         {/* Front */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front View *</label>
-                            <input type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input id="vmc-image_front" type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_front')}`} />
                             {files.image_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Left Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Left Side *</label>
-                            <input type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input id="vmc-image_left" type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_left')}`} />
                             {files.image_left && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Right Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Right Side *</label>
-                            <input type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input id="vmc-image_right" type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_right')}`} />
                             {files.image_right && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
                         {/* Back View */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back View *</label>
-                            <input type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
+                            <input id="vmc-image_back" type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_back')}`} />
                             {files.image_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
                         </div>
 
@@ -364,15 +381,15 @@ export default function ValueMyCarForm() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Full Name *</label>
-                            <input type="text" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="John Doe" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-client_name" type="text" name="client_name" value={formData.client_name} onChange={handleChange} placeholder="John Doe" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('client_name')}`} />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Email Address *</label>
-                            <input type="email" name="client_email" value={formData.client_email} onChange={handleChange} placeholder="john@example.com" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-client_email" type="email" name="client_email" value={formData.client_email} onChange={handleChange} placeholder="john@example.com" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('client_email')}`} />
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Phone Number *</label>
-                            <input type="tel" name="client_phone" value={formData.client_phone} onChange={handleChange} placeholder="082 123 4567" required className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                            <input id="vmc-client_phone" type="tel" name="client_phone" value={formData.client_phone} onChange={handleChange} placeholder="082 123 4567" required className={`w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all${errRing('client_phone')}`} />
                         </div>
                     </div>
 
