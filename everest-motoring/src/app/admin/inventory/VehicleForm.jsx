@@ -389,7 +389,7 @@ export default function VehicleForm({ initialData = null }) {
                                 type="checkbox"
                                 name="is_featured"
                                 defaultChecked={initialData?.is_featured || false}
-                                className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded cursor-pointer checked:bg-amber-500 checked:border-amber-500 transition-colors"
+                                className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded cursor-pointer checked:bg-black checked:border-black transition-colors"
                             />
                             <span className="material-symbols-outlined absolute text-white text-[18px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">star</span>
                         </div>
@@ -494,7 +494,7 @@ export default function VehicleForm({ initialData = null }) {
                                     type="checkbox"
                                     name={opt.name}
                                     defaultChecked={initialData?.[opt.name] || false}
-                                    className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors relative"
+                                    className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-black checked:border-black transition-colors relative"
                                 />
                                 <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{opt.label}</span>
                             </label>
@@ -591,7 +591,7 @@ export default function VehicleForm({ initialData = null }) {
                                 type="checkbox"
                                 name="price_on_application"
                                 defaultChecked={initialData?.price_on_application || false}
-                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors"
+                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-black checked:border-black transition-colors"
                             />
                             <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">Price On Application (POA)</span>
                         </label>
@@ -614,7 +614,7 @@ export default function VehicleForm({ initialData = null }) {
                                                 name="features"
                                                 value={feature}
                                                 defaultChecked={hasFeature(feature)}
-                                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors"
+                                                className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-black checked:border-black transition-colors"
                                             />
                                             <span className="material-symbols-outlined absolute text-white text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                                         </div>

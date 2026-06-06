@@ -49,9 +49,9 @@ export default async function InventoryPage({ searchParams }) {
         console.error("Error fetching vehicles:", error.message || error, JSON.stringify(error));
     }
 
-    // Filter sold cars older than 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Keep sold cars visible (with the SOLD banner) for 2 weeks, then drop them.
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
     const cars = (allCars || []).filter(car => {
         if (car.status === "available") return true;
@@ -59,7 +59,7 @@ export default async function InventoryPage({ searchParams }) {
             const soldAtStr = car.sales?.[0]?.sold_at;
             if (!soldAtStr) return false; // If marked sold but no sale record, hide it as a fallback
             const soldAtDate = new Date(soldAtStr);
-            return soldAtDate >= sevenDaysAgo;
+            return soldAtDate >= twoWeeksAgo;
         }
         return false;
     });
@@ -105,18 +105,20 @@ export default async function InventoryPage({ searchParams }) {
                                             </div>
                                         )}
 
-                                        {/* Status Badge */}
-                                        <div className="absolute top-4 left-4">
-                                            {car.status === 'sold' ? (
-                                                <span className="px-3 py-1 bg-black/90 backdrop-blur-sm text-white font-bold text-xs uppercase tracking-wider rounded-md shadow-lg border border-slate-700">
-                                                    Sold
-                                                </span>
-                                            ) : (
+                                        {/* Status Badge / Sold band */}
+                                        {car.status === 'sold' ? (
+                                            <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+                                                <div className="w-[150%] py-2.5 bg-black/70 shadow-lg rotate-[-34deg] text-center">
+                                                    <span className="text-primary font-black text-2xl tracking-[0.3em] uppercase">Sold</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="absolute top-4 left-4">
                                                 <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-green-700 font-bold text-xs uppercase tracking-wider rounded-md border border-white/20 shadow-lg">
                                                     {car.status === 'available' ? 'Available' : 'Reserved'}
                                                 </span>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Details Area */}

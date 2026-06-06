@@ -135,52 +135,67 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {filteredCars.map((car) => (
-                            <tr key={car.id} className="hover:bg-slate-50 transition-colors">
-                                <td className="p-6">
-                                    {car.main_image_url ? (
-                                        <img src={car.main_image_url} className="w-20 h-14 object-cover rounded-lg border border-white/10 shadow-lg" alt={`${car.make} ${car.model}`} />
-                                    ) : (
-                                        <div className="w-20 h-14 bg-white/5 rounded-lg flex items-center justify-center text-slate-600">
-                                            <span className="material-symbols-outlined text-2xl">directions_car</span>
+                        {(() => {
+                            const renderRow = (car) => (
+                                <tr key={car.id} className="hover:bg-slate-50 transition-colors">
+                                    <td className="p-6">
+                                        {car.main_image_url ? (
+                                            <img src={car.main_image_url} className="w-20 h-14 object-cover rounded-lg border border-white/10 shadow-lg" alt={`${car.make} ${car.model}`} />
+                                        ) : (
+                                            <div className="w-20 h-14 bg-white/5 rounded-lg flex items-center justify-center text-slate-600">
+                                                <span className="material-symbols-outlined text-2xl">directions_car</span>
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-6">
+                                        <p className="font-black text-slate-900 text-lg tracking-tight">{car.year} {car.make} {car.model}</p>
+                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km • {car.transmission}</p>
+                                    </td>
+                                    <td className="p-6 font-black text-slate-900 text-lg">
+                                        R {new Intl.NumberFormat('en-ZA').format(car.price)}
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-md mb-2 ${car.status === 'available' ? 'bg-green-100 text-green-700' :
+                                            car.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-slate-200 text-slate-600'
+                                            }`}>
+                                            {car.status}
+                                        </span>
+                                        <div className="mt-1">
+                                            <AiVideoStatus carId={car.id} videoUrl={car.video_url} />
                                         </div>
+                                        {car.social_shared_at && (
+                                            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md border border-blue-200">
+                                                <span className="material-symbols-outlined text-[12px]">share</span>
+                                                Shared
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-4 flex justify-end gap-2">
+                                        <SeoFixButton car={car} />
+                                        <SocialPostButton car={car} />
+                                        <MarkSoldButton car={car} />
+                                        <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
+                                            <span className="material-symbols-outlined">edit</span>
+                                        </a>
+                                        <DeleteVehicleButton car={car} deleteCarAction={deleteCarAction} />
+                                    </td>
+                                </tr>
+                            );
+                            const activeCars = filteredCars.filter(c => c.status !== 'sold');
+                            const soldCars = filteredCars.filter(c => c.status === 'sold');
+                            return (
+                                <>
+                                    {activeCars.map(renderRow)}
+                                    {soldCars.length > 0 && (
+                                        <tr key="sold-heading">
+                                            <td colSpan="5" className="bg-slate-100 text-slate-500 font-black uppercase tracking-[0.2em] text-xs p-4">Sold</td>
+                                        </tr>
                                     )}
-                                </td>
-                                <td className="p-6">
-                                    <p className="font-black text-slate-900 text-lg tracking-tight">{car.year} {car.make} {car.model}</p>
-                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km • {car.transmission}</p>
-                                </td>
-                                <td className="p-6 font-black text-slate-900 text-lg">
-                                    R {new Intl.NumberFormat('en-ZA').format(car.price)}
-                                </td>
-                                <td className="p-4">
-                                    <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-md mb-2 ${car.status === 'available' ? 'bg-green-100 text-green-700' :
-                                        car.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-                                            'bg-slate-200 text-slate-600'
-                                        }`}>
-                                        {car.status}
-                                    </span>
-                                    <div className="mt-1">
-                                        <AiVideoStatus carId={car.id} videoUrl={car.video_url} />
-                                    </div>
-                                    {car.social_shared_at && (
-                                        <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md border border-blue-200">
-                                            <span className="material-symbols-outlined text-[12px]">share</span>
-                                            Shared
-                                        </div>
-                                    )}
-                                </td>
-                                <td className="p-4 flex justify-end gap-2">
-                                    <SeoFixButton car={car} />
-                                    <SocialPostButton car={car} />
-                                    <MarkSoldButton car={car} />
-                                    <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
-                                        <span className="material-symbols-outlined">edit</span>
-                                    </a>
-                                    <DeleteVehicleButton car={car} deleteCarAction={deleteCarAction} />
-                                </td>
-                            </tr>
-                        ))}
+                                    {soldCars.map(renderRow)}
+                                </>
+                            );
+                        })()}
 
                         {filteredCars.length === 0 && (
                             <tr>
