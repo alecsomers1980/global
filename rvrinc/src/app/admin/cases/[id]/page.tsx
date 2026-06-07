@@ -4,19 +4,30 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Briefcase, User, Calendar, Clock, FileText, History, AlertTriangle } from "lucide-react";
 import { getStatusLabel, getStatusColor, getPhaseProgress, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { getBranchLabel } from "@/lib/branch";
 import { getPrescriptionInfo } from "@/lib/prescription";
 import StatusUpdateForm from "@/components/admin/StatusUpdateForm";
+import AssignAttorneyForm from "@/components/admin/AssignAttorneyForm";
+import SharePointFiles from "@/components/admin/SharePointFiles";
+import { listCaseFiles } from "@/lib/sharepoint";
 
 export default async function CaseDetailPage({ params }: { params: { id: string } }) {
     const supabase = createClient();
 
     const { data: caseData } = await supabase
         .from("cases")
-        .select("*, client:profiles!client_id(full_name, email), attorney:profiles!attorney_id(full_name, email)")
+        .select("*")
         .eq("id", params.id)
         .single();
 
     if (!caseData) return notFound();
+
+    // Fetch all attorneys for the reassignment dropdown
+    const { data: allAttorneys } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("role", ["attorney", "admin", "staff"])
+        .order("full_name");
 
     // Fetch related documents
     const { data: documents } = await supabase
@@ -26,17 +37,37 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
         .order("created_at", { ascending: false });
 
     // Fetch status history
-    const { data: statusHistory } = await supabase
+    const { data: rawHistory } = await supabase
         .from("case_status_history")
-        .select("*, changed_by_profile:profiles!changed_by(full_name)")
+        .select("*")
         .eq("case_id", params.id)
         .order("changed_at", { ascending: false });
+
+    // Resolve changed_by names in memory (avoid PostgREST embed)
+    const changerIds = (rawHistory || [])
+        .map((h: any) => h.changed_by)
+        .filter((v: any, i: number, a: any[]) => v && a.indexOf(v) === i);
+    const changerMap = new Map<string, string>();
+    if (changerIds.length > 0) {
+        const { data: changers } = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", changerIds);
+        changers?.forEach((p: any) => changerMap.set(p.id, p.full_name));
+    }
+    const statusHistory = rawHistory?.map((h: any) => ({
+        ...h,
+        changed_by_profile: { full_name: changerMap.get(h.changed_by) || null },
+    })) || [];
 
     const { bgColor, textColor } = getStatusColor(caseData.status);
     const statusLabel = getStatusLabel(caseData.status);
     const progress = getPhaseProgress(caseData.status);
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
     const prescription = getPrescriptionInfo(caseData.accident_date, caseData.status);
+
+    // Fetch SharePoint files for this case
+    const sharePointData = await listCaseFiles(caseData.case_number);
 
     return (
         <div className="space-y-8 max-w-6xl">
@@ -57,7 +88,7 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                             </span>
                         </div>
                         <p className="text-gray-500">
-                            Case #{caseData.case_number}
+                            {caseData.case_number}
                             {caseData.accident_date && (
                                 <span className="ml-4 text-gray-400">
                                     Accident: {new Date(caseData.accident_date).toLocaleDateString('en-ZA')}
@@ -67,9 +98,58 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                     </div>
                 </div>
 
+                {/* Case Details Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <div>
+                        <p className="text-xs text-gray-400 uppercase tracking-wide">Branch</p>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            caseData.branch === 'marble-hall' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                        }`}>
+                            {getBranchLabel(caseData.branch || 'pretoria')}
+                        </span>
+                    </div>
+                    {caseData.id_number && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">ID / Passport</p>
+                            <p className="font-mono text-sm font-semibold text-slate-800">{caseData.id_number}</p>
+                        </div>
+                    )}
+                    {caseData.raf_ref && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">RAF Ref</p>
+                            <p className="font-mono text-sm font-semibold text-slate-800">{caseData.raf_ref}</p>
+                        </div>
+                    )}
+                    {caseData.place_of_accident && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Place of Accident</p>
+                            <p className="text-sm text-slate-800">{caseData.place_of_accident}</p>
+                        </div>
+                    )}
+                    {caseData.date_of_lodgement && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Date of Lodgement</p>
+                            <p className="text-sm text-slate-800">{caseData.date_of_lodgement}</p>
+                        </div>
+                    )}
+                    {caseData.date_of_summons && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Date of Summons</p>
+                            <p className="text-sm text-slate-800">{caseData.date_of_summons}</p>
+                        </div>
+                    )}
+                    {caseData.date_of_relodgement && (
+                        <div>
+                            <p className="text-xs text-gray-400 uppercase tracking-wide">Date of Re-Lodgement</p>
+                            <p className="text-sm text-slate-800">{caseData.date_of_relodgement}</p>
+                        </div>
+                    )}
+                </div>
+
                 {caseData.description && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                        <p className="text-gray-700">{caseData.description}</p>
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Notes</p>
+                        <p className="text-gray-700 text-sm">{caseData.description}</p>
                     </div>
                 )}
 
@@ -151,23 +231,14 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                 {/* Key Info Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
                     <div className="flex items-start gap-3">
-                        <User className="w-5 h-5 text-brand-gold mt-0.5" />
-                        <div>
-                            <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Client</p>
-                            <p className="font-semibold text-slate-800">{caseData.client?.full_name || "N/A"}</p>
-                            {caseData.client?.email && (
-                                <p className="text-xs text-gray-500">{caseData.client.email}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex items-start gap-3">
                         <Briefcase className="w-5 h-5 text-brand-gold mt-0.5" />
                         <div>
-                            <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Attorney</p>
-                            <p className="font-semibold text-slate-800">{caseData.attorney?.full_name || "Unassigned"}</p>
-                            {caseData.attorney?.email && (
-                                <p className="text-xs text-gray-500">{caseData.attorney.email}</p>
-                            )}
+                            <p className="text-xs text-gray-400 uppercase tracking-wide font-medium mb-1">Attorney</p>
+                            <AssignAttorneyForm
+                                caseId={caseData.id}
+                                currentAttorneyId={caseData.attorney_id}
+                                attorneys={allAttorneys || []}
+                            />
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -246,6 +317,13 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                     )}
                 </div>
             </div>
+
+            {/* SharePoint Case Files */}
+            <SharePointFiles
+                files={sharePointData.files}
+                folderUrl={sharePointData.folderUrl}
+                error={sharePointData.error}
+            />
 
             {/* Documents */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-8">

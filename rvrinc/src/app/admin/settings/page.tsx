@@ -11,7 +11,7 @@ create table if not exists public.case_statuses (
   id serial primary key,
   slug text unique not null,
   label text not null,
-  phase text not null check (phase in ('intake', 'claim', 'litigation', 'court', 'raf_damages', 'settlement')),
+  phase text not null check (phase in ('intake', 'claim', 'litigation', 'prep_court', 'court', 'general_damages', 'payment', 'costs', 'undertaking', 'finalization')),
   sort_order int not null,
   default_note text,
   requires_note boolean default false,
@@ -20,42 +20,133 @@ create table if not exists public.case_statuses (
   client_message text not null
 );
 
--- 2. Insert all 34 RAF statuses
+-- 1b. Drop phase constraint so legacy rows can be remapped/cleared (re-added after DELETE)
+ALTER TABLE public.case_statuses DROP CONSTRAINT IF EXISTS case_statuses_phase_check;
+
+-- 1c. Remap legacy status slugs on existing cases & history to the new taxonomy
+WITH slug_map(old_slug, new_slug) AS (VALUES
+  ('claim_documents_returned', 'raf_objection_expired'),
+  ('waiting_application_date', 'applied_court_date'),
+  ('application_default_judgment', 'apply_default_judgment_roll'),
+  ('applied_default_judgment_date', 'applied_court_date'),
+  ('client_send_documents', 'client_provide_documents'),
+  ('default_judgment_general_damages', 'apply_new_court_date'),
+  ('awaiting_general_damages_date', 'follow_up_court_date_general'),
+  ('applied_raf_undertaking', 'sent_undertaking_request'),
+  ('no_undertaking_received', 'followed_up_undertaking'),
+  ('waiting_undertaking_date', 'followed_up_undertaking'),
+  ('client_provide_bank_letter', 'request_bank_letter'),
+  ('client_attend_expert', 'client_attend_medico_legal'),
+  ('demanded_interest_payment', 'send_interest_letter')
+)
+UPDATE public.cases c SET status = m.new_slug FROM slug_map m WHERE c.status = m.old_slug;
+
+WITH slug_map(old_slug, new_slug) AS (VALUES
+  ('claim_documents_returned', 'raf_objection_expired'),
+  ('waiting_application_date', 'applied_court_date'),
+  ('application_default_judgment', 'apply_default_judgment_roll'),
+  ('applied_default_judgment_date', 'applied_court_date'),
+  ('client_send_documents', 'client_provide_documents'),
+  ('default_judgment_general_damages', 'apply_new_court_date'),
+  ('awaiting_general_damages_date', 'follow_up_court_date_general'),
+  ('applied_raf_undertaking', 'sent_undertaking_request'),
+  ('no_undertaking_received', 'followed_up_undertaking'),
+  ('waiting_undertaking_date', 'followed_up_undertaking'),
+  ('client_provide_bank_letter', 'request_bank_letter'),
+  ('client_attend_expert', 'client_attend_medico_legal'),
+  ('demanded_interest_payment', 'send_interest_letter')
+)
+UPDATE public.case_status_history h SET new_status = m.new_slug FROM slug_map m WHERE h.new_status = m.old_slug;
+
+WITH slug_map(old_slug, new_slug) AS (VALUES
+  ('claim_documents_returned', 'raf_objection_expired'),
+  ('waiting_application_date', 'applied_court_date'),
+  ('application_default_judgment', 'apply_default_judgment_roll'),
+  ('applied_default_judgment_date', 'applied_court_date'),
+  ('client_send_documents', 'client_provide_documents'),
+  ('default_judgment_general_damages', 'apply_new_court_date'),
+  ('awaiting_general_damages_date', 'follow_up_court_date_general'),
+  ('applied_raf_undertaking', 'sent_undertaking_request'),
+  ('no_undertaking_received', 'followed_up_undertaking'),
+  ('waiting_undertaking_date', 'followed_up_undertaking'),
+  ('client_provide_bank_letter', 'request_bank_letter'),
+  ('client_attend_expert', 'client_attend_medico_legal'),
+  ('demanded_interest_payment', 'send_interest_letter')
+)
+UPDATE public.case_status_history h SET old_status = m.new_slug FROM slug_map m WHERE h.old_status = m.old_slug;
+
+-- 2. Re-seed all 67 RAF statuses (re-add constraint on the now-empty table first)
+DELETE FROM public.case_statuses;
+ALTER TABLE public.case_statuses ADD CONSTRAINT case_statuses_phase_check
+  CHECK (phase in ('intake', 'claim', 'litigation', 'prep_court', 'court', 'general_damages', 'payment', 'costs', 'undertaking', 'finalization'));
 insert into public.case_statuses (slug, label, phase, sort_order, default_note, requires_note, requires_date, requires_client_action, client_message) values
-('consultation_complete', 'Consultation Complete', 'intake', 1, NULL, true, false, false, 'Your initial consultation has been completed. Our team is reviewing your case.'),
-('requested_records', 'Requested Hospital Records & Accident Report', 'intake', 2, NULL, false, false, false, 'We have submitted requests for your hospital records and accident report.'),
-('client_obtain_records', 'Client to Obtain Hospital Records', 'intake', 3, NULL, false, false, true, 'We need your help to obtain your hospital records.'),
-('client_obtain_accident_report', 'Client to Obtain Accident Report', 'intake', 4, NULL, false, false, true, 'We need your help to obtain the accident report.'),
-('client_obtain_records_and_report', 'Client to Obtain Hospital Records & Accident Report', 'intake', 5, NULL, false, false, true, 'We need your help to obtain both your hospital records and the accident report.'),
-('client_sign_affidavit', 'Client to Sign Affidavit & Send Certified ID', 'intake', 6, NULL, false, false, true, 'Please sign the affidavit and send it back together with a certified copy of your ID.'),
-('claim_lodged', 'Claim Lodged', 'claim', 7, 'We have diarized our file for 120 days for the RAF to assess the claim.', false, false, false, 'Your claim has been lodged with the RAF. We have set a 120-day follow-up period.'),
-('claim_documents_returned', 'Claim Documents Returned', 'claim', 8, 'We will now bring an application, and will continue with your claim.', false, false, false, 'Your claim documents have been returned. We are preparing an application.'),
-('drafting_summons', 'Drafting Summons (Advocate Review)', 'litigation', 9, NULL, false, false, false, 'We are drafting the Summons for advocate review.'),
-('summons_issued_served', 'Summons Issued & Served', 'litigation', 10, NULL, false, false, false, 'The Summons has been issued and served on the RAF.'),
-('matter_defended', 'Matter Defended', 'litigation', 11, 'We now have to mediate with RAF.', false, false, false, 'The RAF has entered a defence. We will proceed to mediation.'),
-('proceeding_default', 'Proceeding on Default Basis', 'litigation', 12, NULL, false, false, false, 'We are proceeding on a default basis.'),
-('waiting_application_date', 'Waiting for Application Date', 'litigation', 13, NULL, false, false, false, 'We are waiting for the court to provide a date.'),
-('followed_up_court_date', 'Followed Up Court Date', 'litigation', 14, NULL, false, false, false, 'We have followed up with the court regarding the date.'),
-('application_default_judgment', 'Application for Default Judgment', 'litigation', 15, NULL, false, false, false, 'We are bringing an application for Default Judgment.'),
-('applied_default_judgment_date', 'Applied for Default Judgment Date', 'litigation', 16, NULL, false, false, false, 'We have applied for a Default Judgment date.'),
-('default_judgment_merits', 'Default Judgment Date: Merits Only', 'court', 17, NULL, true, true, false, 'A court date has been set for Default Judgment on merits.'),
-('default_judgment_quantum', 'Default Judgment Date: Quantum Only', 'court', 18, NULL, true, true, false, 'A court date has been set for Default Judgment on quantum.'),
-('default_judgment_merits_quantum', 'Default Judgment Date: Merits & Quantum', 'court', 19, NULL, true, true, false, 'A court date has been set for Default Judgment on merits and quantum.'),
-('client_send_documents', 'Client to Send Documents', 'court', 20, NULL, true, false, true, 'We require certain documents from you. Please submit them urgently.'),
-('client_sign_discovery', 'Client to Sign Discovery Affidavit', 'court', 21, NULL, false, false, true, 'Please sign the Discovery Affidavit and return it to our offices.'),
-('client_sign_damages', 'Client to Sign Damages Affidavit', 'court', 22, NULL, false, false, true, 'Please sign the Damages Affidavit and urgently return it to our offices.'),
-('matter_heard', 'Matter Heard', 'court', 23, NULL, true, false, false, 'Your matter has been heard. Your attorney will contact you regarding the outcome.'),
-('raf_undecided_general', 'RAF Undecided on General Damages', 'raf_damages', 24, 'We will now bring an application.', false, false, false, 'The RAF has not yet decided on General Damages. We are preparing an application.'),
-('raf_rejected_general', 'RAF Rejected General Damages', 'raf_damages', 25, 'We will refer your matter to the HPCSA.', false, false, false, 'The RAF has rejected your General Damages claim. We are referring to the HPCSA.'),
-('raf_accepted_general', 'RAF Accepted General Damages', 'raf_damages', 26, NULL, false, false, false, 'The RAF has accepted your General Damages claim.'),
-('default_judgment_general_damages', 'Default Judgment Date: General Damages', 'court', 27, NULL, true, true, false, 'A court date has been set for Default Judgment on General Damages.'),
-('awaiting_general_damages_date', 'Awaiting General Damages Date', 'raf_damages', 28, NULL, false, false, false, 'We are awaiting a court date for General Damages.'),
-('applied_raf_undertaking', 'Applied to RAF for Undertaking', 'raf_damages', 29, NULL, false, false, false, 'We have applied to the RAF for an Undertaking.'),
-('no_undertaking_received', 'No Undertaking from RAF', 'raf_damages', 30, 'We will bring an application.', false, false, false, 'No undertaking received from the RAF. We are preparing an application.'),
-('waiting_undertaking_date', 'Waiting for Undertaking Date', 'raf_damages', 31, NULL, false, false, false, 'We are waiting for a date regarding your undertaking.'),
-('client_provide_bank_letter', 'Client to Provide Bank Letter', 'settlement', 32, NULL, false, false, true, 'Please provide a bank confirmation letter for payment processing.'),
-('client_attend_expert', 'Client to Attend Expert Appointments', 'settlement', 33, NULL, false, false, true, 'You need to attend expert appointments. We will contact you.'),
-('demanded_interest_payment', 'Demanded Interest Payment from RAF', 'settlement', 34, NULL, false, false, false, 'We have demanded payment of interest on the capital amount.')
+('consultation_complete', 'Consultation complete', 'intake', 1, NULL, false, false, false, 'Consultation complete'),
+('consultation_letter_sent', 'Confirmation of consultation letter sent to client', 'intake', 2, NULL, false, false, false, 'Confirmation of consultation letter sent to client'),
+('requested_records', 'Requested Hospital records & Accident report', 'intake', 3, NULL, false, false, false, 'Requested Hospital records & Accident report'),
+('client_obtain_records', 'Client to assist in obtaining hospital records', 'intake', 4, NULL, false, false, true, 'Client to assist in obtaining hospital records'),
+('client_obtain_accident_report', 'Client to assist in obtaining accident report', 'intake', 5, NULL, false, false, true, 'Client to assist in obtaining accident report'),
+('client_obtain_records_and_report', 'Client to assist in obtaining hospital records & accident report', 'intake', 6, NULL, false, false, true, 'Client to assist in obtaining hospital records & accident report'),
+('client_sign_affidavit', 'Client to sign affidavit & send certified copy of ID', 'intake', 7, NULL, false, false, true, 'Client to sign affidavit & send certified copy of ID'),
+('claim_lodged', 'Claim lodged date', 'claim', 8, NULL, false, true, false, 'Claim lodged date'),
+('raf_objection_expired', 'Time expired for RAF to object, Summons to be drafted', 'claim', 9, NULL, false, false, false, 'Time expired for RAF to object, Summons to be drafted'),
+('drafting_summons', 'Drafting Summons', 'litigation', 10, NULL, false, false, false, 'Drafting Summons'),
+('advocate_review_summons', 'Advocate review Summons', 'litigation', 11, NULL, false, false, false, 'Advocate review Summons'),
+('summons_issued_served', 'Summons issued and served', 'litigation', 12, NULL, false, false, false, 'Summons issued and served'),
+('matter_defended', 'Matter defended', 'litigation', 13, NULL, false, false, false, 'Matter defended'),
+('mediation', 'Mediation', 'litigation', 14, NULL, false, false, false, 'Mediation'),
+('application_compel_mediate', 'Application to compel to mediate', 'litigation', 15, NULL, false, false, false, 'Application to compel to mediate'),
+('application_delinquent_mediator', 'Application for delinquent mediator', 'litigation', 16, NULL, false, false, false, 'Application for delinquent mediator'),
+('apply_default_judgment_roll', 'Apply for date on default judgment roll after mediation was unsuccessful', 'litigation', 17, NULL, false, false, false, 'Apply for date on default judgment roll after mediation was unsuccessful'),
+('notice_of_bar', 'Notice of bar', 'litigation', 18, NULL, false, false, false, 'Notice of bar'),
+('plea', 'Plea', 'litigation', 19, NULL, false, false, false, 'Plea'),
+('proceeding_default', 'Proceeding on default basis', 'litigation', 20, NULL, false, false, false, 'Proceeding on default basis'),
+('applied_court_date', 'Applied for date from court', 'litigation', 21, NULL, false, false, false, 'Applied for date from court'),
+('followed_up_court_date', 'Followed up on court date', 'litigation', 22, NULL, false, false, false, 'Followed up on court date'),
+('default_judgment_merits', 'Obtain default judgment date – merits only', 'litigation', 23, NULL, false, true, false, 'Obtain default judgment date – merits only'),
+('default_judgment_quantum', 'Obtain default judgment date – quantum only', 'litigation', 24, NULL, false, true, false, 'Obtain default judgment date – quantum only'),
+('default_judgment_merits_quantum', 'Obtain default judgment date – merits & quantum', 'litigation', 25, NULL, false, true, false, 'Obtain default judgment date – merits & quantum'),
+('client_provide_documents', 'Client to provide multiple documents in order to prove claim', 'prep_court', 26, NULL, false, false, true, 'Client to provide multiple documents in order to prove claim'),
+('client_sign_discovery', 'Client to sign Discovery Affidavit', 'prep_court', 27, NULL, false, false, true, 'Client to sign Discovery Affidavit'),
+('client_attend_medico_legal', 'Client to attend to medico-legal appointments', 'prep_court', 28, NULL, false, false, true, 'Client to attend to medico-legal appointments'),
+('client_attend_inspection', 'Client to attend to inspection in loco', 'prep_court', 29, NULL, false, false, true, 'Client to attend to inspection in loco'),
+('waiting_medico_legal_reports', 'Waiting for medico-legal reports from the experts', 'prep_court', 30, NULL, false, false, false, 'Waiting for medico-legal reports from the experts'),
+('client_sign_damages', 'Client to sign damages affidavit', 'prep_court', 31, NULL, false, false, true, 'Client to sign damages affidavit'),
+('matter_heard', 'Matter heard', 'court', 32, NULL, false, false, false, 'Matter heard'),
+('obtained_outcome', 'Obtained outcome', 'court', 33, NULL, false, false, false, 'Obtained outcome'),
+('follow_up_court_order', 'Follow up on court order', 'court', 34, NULL, false, false, false, 'Follow up on court order'),
+('court_order_sent_raf', 'Court order sent to RAF for payment', 'court', 35, NULL, false, false, false, 'Court order sent to RAF for payment'),
+('court_ordered_trust', 'Court ordered for a Trust to be established – all monies will go to the Trust', 'court', 36, NULL, false, false, false, 'Court ordered for a Trust to be established – all monies will go to the Trust'),
+('raf_undecided_general', 'RAF undecided on General damages', 'general_damages', 37, NULL, false, false, false, 'RAF undecided on General damages'),
+('apply_compel_raf_general', 'Apply for date to compel RAF to make a decision on the General Damages', 'general_damages', 38, NULL, false, false, false, 'Apply for date to compel RAF to make a decision on the General Damages'),
+('raf_accepted_general', 'RAF accepted General damages', 'general_damages', 39, NULL, false, false, false, 'RAF accepted General damages'),
+('apply_new_court_date', 'Apply to Court for a new court date', 'general_damages', 40, NULL, false, false, false, 'Apply to Court for a new court date'),
+('settled_general_damages', 'Settled general damages with RAF', 'general_damages', 41, NULL, false, false, false, 'Settled general damages with RAF'),
+('follow_up_court_date_general', 'Follow up on date for court', 'general_damages', 42, NULL, false, false, false, 'Follow up on date for court'),
+('raf_rejected_general', 'RAF rejected General damages', 'general_damages', 43, NULL, false, false, false, 'RAF rejected General damages'),
+('referred_hpcsa', 'Referred matter to HPCSA for a decision on the General damages', 'general_damages', 44, NULL, false, false, false, 'Referred matter to HPCSA for a decision on the General damages'),
+('followed_up_hpcsa', 'Followed up from HPCSA regarding outcome', 'general_damages', 45, NULL, false, false, false, 'Followed up from HPCSA regarding outcome'),
+('no_response_hpcsa', 'No response from HPCSA, we have to bring an application to compel them', 'general_damages', 46, NULL, false, false, false, 'No response from HPCSA, we have to bring an application to compel them'),
+('received_hpcsa_outcome', 'Received outcome from HPCSA', 'general_damages', 47, NULL, false, false, false, 'Received outcome from HPCSA'),
+('not_qualify_general', 'You do not qualify for General Damages', 'general_damages', 48, NULL, false, false, false, 'You do not qualify for General Damages'),
+('qualify_general', 'You qualify for General Damages, so we have to apply for a new date to go to court', 'general_damages', 49, NULL, false, false, false, 'You qualify for General Damages, so we have to apply for a new date to go to court'),
+('followed_up_new_date_general', 'Followed up new date from court for general damages', 'general_damages', 50, NULL, false, false, false, 'Followed up new date from court for general damages'),
+('received_payment_general', 'Received payment of General Damages from RAF', 'payment', 51, NULL, false, false, false, 'Received payment of General Damages from RAF'),
+('received_payment_loss_earnings', 'Received payment of Loss of Earnings from RAF', 'payment', 52, NULL, false, false, false, 'Received payment of Loss of Earnings from RAF'),
+('received_payment_medical', 'Received payment of past medical expenses from RAF – you will receive your part after we deducted our fee; the rest goes to the medical aid', 'payment', 53, NULL, false, false, false, 'Received payment of past medical expenses from RAF – you will receive your part after we deducted our fee; the rest goes to the medical aid'),
+('send_interest_letter', 'Send letter for interest on capital to RAF', 'payment', 54, NULL, false, false, false, 'Send letter for interest on capital to RAF'),
+('request_bank_letter', 'Request bank letter from client to be sent to belinda@rvrinc.co.za', 'payment', 55, NULL, false, false, true, 'Request bank letter from client to be sent to belinda@rvrinc.co.za'),
+('made_payment_client', 'Made payment to client', 'payment', 56, NULL, false, false, false, 'Made payment to client'),
+('deducted_fees', 'Deducted experts and counsel fees from capital', 'payment', 57, NULL, false, false, false, 'Deducted experts and counsel fees from capital'),
+('received_interest', 'Received interest from RAF, pay over to you after deducting our fees', 'payment', 58, NULL, false, false, false, 'Received interest from RAF, pay over to you after deducting our fees'),
+('compiled_file_cost_consultant', 'Compiled file for cost consultant', 'costs', 59, NULL, false, false, false, 'Compiled file for cost consultant'),
+('file_at_cost_consultant', 'File at cost consultant', 'costs', 60, NULL, false, false, false, 'File at cost consultant'),
+('obtain_taxation_date', 'Obtain taxation date', 'costs', 61, NULL, false, true, false, 'Obtain taxation date'),
+('received_costs_refund', 'Received money from RAF for costs – refund client for expert and counsel fees', 'costs', 62, NULL, false, false, false, 'Received money from RAF for costs – refund client for expert and counsel fees'),
+('follow_up_interest_payment', 'Follow up payment of interest on capital from RAF', 'costs', 63, NULL, false, false, false, 'Follow up payment of interest on capital from RAF'),
+('received_undertaking', 'Received Undertaking from RAF', 'undertaking', 64, NULL, false, false, false, 'Received Undertaking from RAF'),
+('sent_undertaking_request', 'Sent request to RAF for Undertaking', 'undertaking', 65, NULL, false, false, false, 'Sent request to RAF for Undertaking'),
+('followed_up_undertaking', 'Followed up at RAF for Undertaking', 'undertaking', 66, NULL, false, false, false, 'Followed up at RAF for Undertaking'),
+('matter_finalized', 'All aspects of the matter have been finalized. Matter finalized. Close file', 'finalization', 67, NULL, false, false, false, 'All aspects of the matter have been finalized. Matter finalized. Close file')
 ON CONFLICT (slug) DO NOTHING;
 
 -- 3. Create status history table

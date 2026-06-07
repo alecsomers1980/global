@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { CaseStatusModal } from "@/components/CaseStatusModal";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
@@ -16,6 +17,7 @@ const navLinks = [
 
 export function Header() {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [caseModalOpen, setCaseModalOpen] = useState(false);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -47,11 +49,9 @@ export function Header() {
 
                 {/* Desktop Button */}
                 <div className="hidden md:flex items-center gap-4">
-                    <Link href="/case-update">
-                        <Button variant="brand" size="sm">
-                            Update on Your Case
-                        </Button>
-                    </Link>
+                    <Button variant="brand" size="sm" onClick={() => setCaseModalOpen(true)}>
+                        View Case Status
+                    </Button>
                 </div>
 
                 {/* Mobile Hamburger */}
@@ -79,15 +79,15 @@ export function Header() {
                             </Link>
                         ))}
                         <div className="border-t border-border/40 mt-2 pt-3 flex flex-col gap-2 px-4">
-                            <Link href="/case-update" onClick={() => setMobileOpen(false)}>
-                                <Button variant="brand" size="sm" className="w-full">
-                                    Update on Your Case
-                                </Button>
-                            </Link>
+                            <Button variant="brand" size="sm" className="w-full" onClick={() => { setCaseModalOpen(true); setMobileOpen(false); }}>
+                                View Case Status
+                            </Button>
                         </div>
                     </nav>
                 </div>
             )}
+
+            <CaseStatusModal open={caseModalOpen} onOpenChange={setCaseModalOpen} />
         </header>
     );
 }

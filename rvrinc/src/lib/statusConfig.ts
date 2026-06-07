@@ -1,7 +1,17 @@
 // Central RAF Status Configuration for RVR Inc
-// All 34 statuses organized by phase with metadata
+// All 67 statuses organized by phase with metadata
 
-export type StatusPhase = 'intake' | 'claim' | 'litigation' | 'court' | 'raf_damages' | 'settlement';
+export type StatusPhase =
+    | 'intake'
+    | 'claim'
+    | 'litigation'
+    | 'prep_court'
+    | 'court'
+    | 'general_damages'
+    | 'payment'
+    | 'costs'
+    | 'undertaking'
+    | 'finalization';
 
 export interface StatusConfig {
     slug: string;
@@ -19,57 +29,102 @@ export const PHASE_CONFIG: Record<StatusPhase, { label: string; color: string; b
     intake: { label: 'Intake', color: '#3B82F6', bgColor: 'bg-blue-100', textColor: 'text-blue-800', icon: 'clipboard-list' },
     claim: { label: 'Claim Lodged', color: '#F59E0B', bgColor: 'bg-amber-100', textColor: 'text-amber-800', icon: 'file-text' },
     litigation: { label: 'Litigation', color: '#F97316', bgColor: 'bg-orange-100', textColor: 'text-orange-800', icon: 'scale' },
+    prep_court: { label: 'Prep for Court', color: '#06B6D4', bgColor: 'bg-cyan-100', textColor: 'text-cyan-800', icon: 'folder-open' },
     court: { label: 'Court', color: '#EF4444', bgColor: 'bg-red-100', textColor: 'text-red-800', icon: 'gavel' },
-    raf_damages: { label: 'RAF/Damages', color: '#8B5CF6', bgColor: 'bg-purple-100', textColor: 'text-purple-800', icon: 'shield' },
-    settlement: { label: 'Settlement', color: '#10B981', bgColor: 'bg-green-100', textColor: 'text-green-800', icon: 'check-circle' },
+    general_damages: { label: 'General Damages', color: '#8B5CF6', bgColor: 'bg-purple-100', textColor: 'text-purple-800', icon: 'shield' },
+    payment: { label: 'Payment', color: '#10B981', bgColor: 'bg-emerald-100', textColor: 'text-emerald-800', icon: 'banknote' },
+    costs: { label: 'Costs', color: '#14B8A6', bgColor: 'bg-teal-100', textColor: 'text-teal-800', icon: 'calculator' },
+    undertaking: { label: 'Undertaking', color: '#6366F1', bgColor: 'bg-indigo-100', textColor: 'text-indigo-800', icon: 'file-check' },
+    finalization: { label: 'Finalised', color: '#22C55E', bgColor: 'bg-green-100', textColor: 'text-green-800', icon: 'check-circle' },
 };
 
 export const RAF_STATUSES: StatusConfig[] = [
     // INTAKE
-    { slug: 'consultation_complete', label: 'Consultation Complete', phase: 'intake', sortOrder: 1, requiresNote: true, requiresDate: false, requiresClientAction: false, clientMessage: 'Your initial consultation has been completed. Our team is reviewing your case.' },
-    { slug: 'requested_records', label: 'Requested Hospital Records & Accident Report', phase: 'intake', sortOrder: 2, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We have submitted requests for your hospital records and accident report.' },
-    { slug: 'client_obtain_records', label: 'Client to Obtain Hospital Records', phase: 'intake', sortOrder: 3, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'We need your help to obtain your hospital records. Please collect them and submit to our office.' },
-    { slug: 'client_obtain_accident_report', label: 'Client to Obtain Accident Report', phase: 'intake', sortOrder: 4, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'We need your help to obtain the accident report. Please collect it and submit to our office.' },
-    { slug: 'client_obtain_records_and_report', label: 'Client to Obtain Records & Accident Report', phase: 'intake', sortOrder: 5, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'We need your help to obtain both your hospital records and the accident report.' },
-    { slug: 'client_sign_affidavit', label: 'Client to Sign Affidavit & Send Certified ID', phase: 'intake', sortOrder: 6, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Please sign the affidavit and send it back together with a certified copy of your ID.' },
+    { slug: 'consultation_complete', label: 'Consultation complete', phase: 'intake', sortOrder: 1, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Consultation complete' },
+    { slug: 'consultation_letter_sent', label: 'Confirmation of consultation letter sent to client', phase: 'intake', sortOrder: 2, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Confirmation of consultation letter sent to client' },
+    { slug: 'requested_records', label: 'Requested Hospital records & Accident report', phase: 'intake', sortOrder: 3, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Requested Hospital records & Accident report' },
+    { slug: 'client_obtain_records', label: 'Client to assist in obtaining hospital records', phase: 'intake', sortOrder: 4, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to assist in obtaining hospital records' },
+    { slug: 'client_obtain_accident_report', label: 'Client to assist in obtaining accident report', phase: 'intake', sortOrder: 5, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to assist in obtaining accident report' },
+    { slug: 'client_obtain_records_and_report', label: 'Client to assist in obtaining hospital records & accident report', phase: 'intake', sortOrder: 6, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to assist in obtaining hospital records & accident report' },
+    { slug: 'client_sign_affidavit', label: 'Client to sign affidavit & send certified copy of ID', phase: 'intake', sortOrder: 7, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to sign affidavit & send certified copy of ID' },
 
     // CLAIM LODGED
-    { slug: 'claim_lodged', label: 'Claim Lodged', phase: 'claim', sortOrder: 7, defaultNote: 'We have diarized our file for 120 days for the RAF to assess the claim.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Your claim has been lodged with the RAF. We have set a 120-day follow-up period.' },
-    { slug: 'claim_documents_returned', label: 'Claim Documents Returned', phase: 'claim', sortOrder: 8, defaultNote: 'We will now bring an application, and will continue with your claim.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Your claim documents have been returned. We are preparing an application.' },
+    { slug: 'claim_lodged', label: 'Claim lodged date', phase: 'claim', sortOrder: 8, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Claim lodged date' },
+    { slug: 'raf_objection_expired', label: 'Time expired for RAF to object, Summons to be drafted', phase: 'claim', sortOrder: 9, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Time expired for RAF to object, Summons to be drafted' },
 
     // LITIGATION
-    { slug: 'drafting_summons', label: 'Drafting Summons (Advocate Review)', phase: 'litigation', sortOrder: 9, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are drafting the Summons for advocate review.' },
-    { slug: 'summons_issued_served', label: 'Summons Issued & Served', phase: 'litigation', sortOrder: 10, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'The Summons has been issued and served on the RAF.' },
-    { slug: 'matter_defended', label: 'Matter Defended', phase: 'litigation', sortOrder: 11, defaultNote: 'We now have to mediate with RAF.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'The RAF has entered a defence. We will proceed to mediation.' },
-    { slug: 'proceeding_default', label: 'Proceeding on Default Basis', phase: 'litigation', sortOrder: 12, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are proceeding on a default basis.' },
-    { slug: 'waiting_application_date', label: 'Waiting for Application Date', phase: 'litigation', sortOrder: 13, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are waiting for the court to provide a date.' },
-    { slug: 'followed_up_court_date', label: 'Followed Up Court Date', phase: 'litigation', sortOrder: 14, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We have followed up with the court regarding the date.' },
-    { slug: 'application_default_judgment', label: 'Application for Default Judgment', phase: 'litigation', sortOrder: 15, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are bringing an application for Default Judgment.' },
-    { slug: 'applied_default_judgment_date', label: 'Applied for Default Judgment Date', phase: 'litigation', sortOrder: 16, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We have applied for a Default Judgment date.' },
+    { slug: 'drafting_summons', label: 'Drafting Summons', phase: 'litigation', sortOrder: 10, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Drafting Summons' },
+    { slug: 'advocate_review_summons', label: 'Advocate review Summons', phase: 'litigation', sortOrder: 11, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Advocate review Summons' },
+    { slug: 'summons_issued_served', label: 'Summons issued and served', phase: 'litigation', sortOrder: 12, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Summons issued and served' },
+    { slug: 'matter_defended', label: 'Matter defended', phase: 'litigation', sortOrder: 13, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Matter defended' },
+    { slug: 'mediation', label: 'Mediation', phase: 'litigation', sortOrder: 14, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Mediation' },
+    { slug: 'application_compel_mediate', label: 'Application to compel to mediate', phase: 'litigation', sortOrder: 15, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Application to compel to mediate' },
+    { slug: 'application_delinquent_mediator', label: 'Application for delinquent mediator', phase: 'litigation', sortOrder: 16, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Application for delinquent mediator' },
+    { slug: 'apply_default_judgment_roll', label: 'Apply for date on default judgment roll after mediation was unsuccessful', phase: 'litigation', sortOrder: 17, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Apply for date on default judgment roll after mediation was unsuccessful' },
+    { slug: 'notice_of_bar', label: 'Notice of bar', phase: 'litigation', sortOrder: 18, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Notice of bar' },
+    { slug: 'plea', label: 'Plea', phase: 'litigation', sortOrder: 19, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Plea' },
+    { slug: 'proceeding_default', label: 'Proceeding on default basis', phase: 'litigation', sortOrder: 20, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Proceeding on default basis' },
+    { slug: 'applied_court_date', label: 'Applied for date from court', phase: 'litigation', sortOrder: 21, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Applied for date from court' },
+    { slug: 'followed_up_court_date', label: 'Followed up on court date', phase: 'litigation', sortOrder: 22, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up on court date' },
+    { slug: 'default_judgment_merits', label: 'Obtain default judgment date – merits only', phase: 'litigation', sortOrder: 23, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Obtain default judgment date – merits only' },
+    { slug: 'default_judgment_quantum', label: 'Obtain default judgment date – quantum only', phase: 'litigation', sortOrder: 24, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Obtain default judgment date – quantum only' },
+    { slug: 'default_judgment_merits_quantum', label: 'Obtain default judgment date – merits & quantum', phase: 'litigation', sortOrder: 25, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Obtain default judgment date – merits & quantum' },
+
+    // PREPARATION FOR COURT
+    { slug: 'client_provide_documents', label: 'Client to provide multiple documents in order to prove claim', phase: 'prep_court', sortOrder: 26, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to provide multiple documents in order to prove claim' },
+    { slug: 'client_sign_discovery', label: 'Client to sign Discovery Affidavit', phase: 'prep_court', sortOrder: 27, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to sign Discovery Affidavit' },
+    { slug: 'client_attend_medico_legal', label: 'Client to attend to medico-legal appointments', phase: 'prep_court', sortOrder: 28, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to attend to medico-legal appointments' },
+    { slug: 'client_attend_inspection', label: 'Client to attend to inspection in loco', phase: 'prep_court', sortOrder: 29, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to attend to inspection in loco' },
+    { slug: 'waiting_medico_legal_reports', label: 'Waiting for medico-legal reports from the experts', phase: 'prep_court', sortOrder: 30, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Waiting for medico-legal reports from the experts' },
+    { slug: 'client_sign_damages', label: 'Client to sign damages affidavit', phase: 'prep_court', sortOrder: 31, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Client to sign damages affidavit' },
 
     // COURT
-    { slug: 'default_judgment_merits', label: 'Default Judgment Date: Merits Only', phase: 'court', sortOrder: 17, requiresNote: true, requiresDate: true, requiresClientAction: false, clientMessage: 'A court date has been set for Default Judgment on merits.' },
-    { slug: 'default_judgment_quantum', label: 'Default Judgment Date: Quantum Only', phase: 'court', sortOrder: 18, requiresNote: true, requiresDate: true, requiresClientAction: false, clientMessage: 'A court date has been set for Default Judgment on quantum.' },
-    { slug: 'default_judgment_merits_quantum', label: 'Default Judgment Date: Merits & Quantum', phase: 'court', sortOrder: 19, requiresNote: true, requiresDate: true, requiresClientAction: false, clientMessage: 'A court date has been set for Default Judgment on merits and quantum.' },
-    { slug: 'client_send_documents', label: 'Client to Send Documents', phase: 'court', sortOrder: 20, requiresNote: true, requiresDate: false, requiresClientAction: true, clientMessage: 'We require certain documents from you. Please see the list and submit them urgently.' },
-    { slug: 'client_sign_discovery', label: 'Client to Sign Discovery Affidavit', phase: 'court', sortOrder: 21, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Please sign the Discovery Affidavit and return it to our offices.' },
-    { slug: 'client_sign_damages', label: 'Client to Sign Damages Affidavit', phase: 'court', sortOrder: 22, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Please sign the Damages Affidavit and urgently return it to our offices.' },
-    { slug: 'matter_heard', label: 'Matter Heard', phase: 'court', sortOrder: 23, requiresNote: true, requiresDate: false, requiresClientAction: false, clientMessage: 'Your matter has been heard. Your attorney will contact you regarding the outcome.' },
+    { slug: 'matter_heard', label: 'Matter heard', phase: 'court', sortOrder: 32, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Matter heard' },
+    { slug: 'obtained_outcome', label: 'Obtained outcome', phase: 'court', sortOrder: 33, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Obtained outcome' },
+    { slug: 'follow_up_court_order', label: 'Follow up on court order', phase: 'court', sortOrder: 34, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Follow up on court order' },
+    { slug: 'court_order_sent_raf', label: 'Court order sent to RAF for payment', phase: 'court', sortOrder: 35, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Court order sent to RAF for payment' },
+    { slug: 'court_ordered_trust', label: 'Court ordered for a Trust to be established – all monies will go to the Trust', phase: 'court', sortOrder: 36, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Court ordered for a Trust to be established – all monies will go to the Trust' },
 
-    // RAF DAMAGES
-    { slug: 'raf_undecided_general', label: 'RAF Undecided on General Damages', phase: 'raf_damages', sortOrder: 24, defaultNote: 'We will now bring an application.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'The RAF has not yet decided on General Damages. We are preparing an application.' },
-    { slug: 'raf_rejected_general', label: 'RAF Rejected General Damages', phase: 'raf_damages', sortOrder: 25, defaultNote: 'We will refer your matter to the HPCSA.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'The RAF has rejected your General Damages claim. We are referring to the HPCSA.' },
-    { slug: 'raf_accepted_general', label: 'RAF Accepted General Damages', phase: 'raf_damages', sortOrder: 26, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'The RAF has accepted your General Damages claim.' },
-    { slug: 'default_judgment_general_damages', label: 'Default Judgment Date: General Damages', phase: 'court', sortOrder: 27, requiresNote: true, requiresDate: true, requiresClientAction: false, clientMessage: 'A court date has been set for Default Judgment on General Damages.' },
-    { slug: 'awaiting_general_damages_date', label: 'Awaiting General Damages Date', phase: 'raf_damages', sortOrder: 28, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are awaiting a court date for General Damages.' },
-    { slug: 'applied_raf_undertaking', label: 'Applied to RAF for Undertaking', phase: 'raf_damages', sortOrder: 29, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We have applied to the RAF for an Undertaking.' },
-    { slug: 'no_undertaking_received', label: 'No Undertaking from RAF', phase: 'raf_damages', sortOrder: 30, defaultNote: 'We will bring an application.', requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'No undertaking received from the RAF. We are preparing an application.' },
-    { slug: 'waiting_undertaking_date', label: 'Waiting for Undertaking Date', phase: 'raf_damages', sortOrder: 31, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We are waiting for a date regarding your undertaking.' },
+    // GENERAL DAMAGES
+    { slug: 'raf_undecided_general', label: 'RAF undecided on General damages', phase: 'general_damages', sortOrder: 37, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'RAF undecided on General damages' },
+    { slug: 'apply_compel_raf_general', label: 'Apply for date to compel RAF to make a decision on the General Damages', phase: 'general_damages', sortOrder: 38, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Apply for date to compel RAF to make a decision on the General Damages' },
+    { slug: 'raf_accepted_general', label: 'RAF accepted General damages', phase: 'general_damages', sortOrder: 39, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'RAF accepted General damages' },
+    { slug: 'apply_new_court_date', label: 'Apply to Court for a new court date', phase: 'general_damages', sortOrder: 40, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Apply to Court for a new court date' },
+    { slug: 'settled_general_damages', label: 'Settled general damages with RAF', phase: 'general_damages', sortOrder: 41, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Settled general damages with RAF' },
+    { slug: 'follow_up_court_date_general', label: 'Follow up on date for court', phase: 'general_damages', sortOrder: 42, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Follow up on date for court' },
+    { slug: 'raf_rejected_general', label: 'RAF rejected General damages', phase: 'general_damages', sortOrder: 43, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'RAF rejected General damages' },
+    { slug: 'referred_hpcsa', label: 'Referred matter to HPCSA for a decision on the General damages', phase: 'general_damages', sortOrder: 44, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Referred matter to HPCSA for a decision on the General damages' },
+    { slug: 'followed_up_hpcsa', label: 'Followed up from HPCSA regarding outcome', phase: 'general_damages', sortOrder: 45, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up from HPCSA regarding outcome' },
+    { slug: 'no_response_hpcsa', label: 'No response from HPCSA, we have to bring an application to compel them', phase: 'general_damages', sortOrder: 46, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'No response from HPCSA, we have to bring an application to compel them' },
+    { slug: 'received_hpcsa_outcome', label: 'Received outcome from HPCSA', phase: 'general_damages', sortOrder: 47, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received outcome from HPCSA' },
+    { slug: 'not_qualify_general', label: 'You do not qualify for General Damages', phase: 'general_damages', sortOrder: 48, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'You do not qualify for General Damages' },
+    { slug: 'qualify_general', label: 'You qualify for General Damages, so we have to apply for a new date to go to court', phase: 'general_damages', sortOrder: 49, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'You qualify for General Damages, so we have to apply for a new date to go to court' },
+    { slug: 'followed_up_new_date_general', label: 'Followed up new date from court for general damages', phase: 'general_damages', sortOrder: 50, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up new date from court for general damages' },
 
-    // SETTLEMENT
-    { slug: 'client_provide_bank_letter', label: 'Client to Provide Bank Letter', phase: 'settlement', sortOrder: 32, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Please provide a bank confirmation letter for payment processing.' },
-    { slug: 'client_attend_expert', label: 'Client to Attend Expert Appointments', phase: 'settlement', sortOrder: 33, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'You need to attend expert appointments. We will contact you to arrange details.' },
-    { slug: 'demanded_interest_payment', label: 'Demanded Interest Payment from RAF', phase: 'settlement', sortOrder: 34, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'We have demanded payment of interest on the capital amount owed to you.' },
+    // PAYMENT
+    { slug: 'received_payment_general', label: 'Received payment of General Damages from RAF', phase: 'payment', sortOrder: 51, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received payment of General Damages from RAF' },
+    { slug: 'received_payment_loss_earnings', label: 'Received payment of Loss of Earnings from RAF', phase: 'payment', sortOrder: 52, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received payment of Loss of Earnings from RAF' },
+    { slug: 'received_payment_medical', label: 'Received payment of past medical expenses from RAF – you will receive your part after we deducted our fee; the rest goes to the medical aid', phase: 'payment', sortOrder: 53, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received payment of past medical expenses from RAF – you will receive your part after we deducted our fee; the rest goes to the medical aid' },
+    { slug: 'send_interest_letter', label: 'Send letter for interest on capital to RAF', phase: 'payment', sortOrder: 54, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Send letter for interest on capital to RAF' },
+    { slug: 'request_bank_letter', label: 'Request bank letter from client to be sent to belinda@rvrinc.co.za', phase: 'payment', sortOrder: 55, requiresNote: false, requiresDate: false, requiresClientAction: true, clientMessage: 'Request bank letter from client to be sent to belinda@rvrinc.co.za' },
+    { slug: 'made_payment_client', label: 'Made payment to client', phase: 'payment', sortOrder: 56, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Made payment to client' },
+    { slug: 'deducted_fees', label: 'Deducted experts and counsel fees from capital', phase: 'payment', sortOrder: 57, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Deducted experts and counsel fees from capital' },
+    { slug: 'received_interest', label: 'Received interest from RAF, pay over to you after deducting our fees', phase: 'payment', sortOrder: 58, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received interest from RAF, pay over to you after deducting our fees' },
+
+    // COSTS
+    { slug: 'compiled_file_cost_consultant', label: 'Compiled file for cost consultant', phase: 'costs', sortOrder: 59, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Compiled file for cost consultant' },
+    { slug: 'file_at_cost_consultant', label: 'File at cost consultant', phase: 'costs', sortOrder: 60, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'File at cost consultant' },
+    { slug: 'obtain_taxation_date', label: 'Obtain taxation date', phase: 'costs', sortOrder: 61, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Obtain taxation date' },
+    { slug: 'received_costs_refund', label: 'Received money from RAF for costs – refund client for expert and counsel fees', phase: 'costs', sortOrder: 62, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received money from RAF for costs – refund client for expert and counsel fees' },
+    { slug: 'follow_up_interest_payment', label: 'Follow up payment of interest on capital from RAF', phase: 'costs', sortOrder: 63, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Follow up payment of interest on capital from RAF' },
+
+    // UNDERTAKING
+    { slug: 'received_undertaking', label: 'Received Undertaking from RAF', phase: 'undertaking', sortOrder: 64, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received Undertaking from RAF' },
+    { slug: 'sent_undertaking_request', label: 'Sent request to RAF for Undertaking', phase: 'undertaking', sortOrder: 65, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Sent request to RAF for Undertaking' },
+    { slug: 'followed_up_undertaking', label: 'Followed up at RAF for Undertaking', phase: 'undertaking', sortOrder: 66, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up at RAF for Undertaking' },
+
+    // FINALIZATION
+    { slug: 'matter_finalized', label: 'All aspects of the matter have been finalized. Matter finalized. Close file', phase: 'finalization', sortOrder: 67, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'All aspects of the matter have been finalized. Matter finalized. Close file' },
 ];
 
 // Helper functions
@@ -100,16 +155,18 @@ export function getClientMessage(slug: string): string {
     return getStatusConfig(slug)?.clientMessage || 'Your case is being processed. We will update you shortly.';
 }
 
-export function getPhaseProgress(slug: string): { current: number; total: number; percentage: number } {
-    const config = getStatusConfig(slug);
-    if (!config) return { current: 0, total: 6, percentage: 0 };
+const PHASE_ORDER: StatusPhase[] = ['intake', 'claim', 'litigation', 'prep_court', 'court', 'general_damages', 'payment', 'costs', 'undertaking', 'finalization'];
 
-    const phases: StatusPhase[] = ['intake', 'claim', 'litigation', 'court', 'raf_damages', 'settlement'];
-    const phaseIndex = phases.indexOf(config.phase);
+export function getPhaseProgress(slug: string): { current: number; total: number; percentage: number } {
+    const total = PHASE_ORDER.length;
+    const config = getStatusConfig(slug);
+    if (!config) return { current: 0, total, percentage: 0 };
+
+    const phaseIndex = PHASE_ORDER.indexOf(config.phase);
     return {
         current: phaseIndex + 1,
-        total: 6,
-        percentage: Math.round(((phaseIndex + 1) / 6) * 100),
+        total,
+        percentage: Math.round(((phaseIndex + 1) / total) * 100),
     };
 }
 

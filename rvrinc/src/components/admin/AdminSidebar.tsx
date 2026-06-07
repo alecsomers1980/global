@@ -5,14 +5,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
-    FileText,
     Briefcase,
-    Users,
     Settings,
     LogOut,
     Shield,
     ShieldCheck,
-    CalendarDays,
     Globe,
     BarChart3
 } from "lucide-react";
@@ -23,10 +20,7 @@ import { useRouter } from "next/navigation";
 const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Case Manager", href: "/admin/cases", icon: Briefcase },
-    { name: "Bookings", href: "/admin/bookings", icon: CalendarDays },
-    { name: "Documents", href: "/admin/documents", icon: FileText },
     { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-    { name: "Clients", href: "/admin/clients", icon: Users },
     { name: "User Management", href: "/admin/users", icon: ShieldCheck },
     { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
@@ -36,6 +30,7 @@ interface AdminSidebarProps {
         full_name: string | null;
         email: string | null;
         role: string | null;
+        branch?: string | null;
     };
 }
 
@@ -91,6 +86,11 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
                         <div className="mt-2 text-xs font-bold uppercase tracking-wider text-brand-gold bg-brand-gold/10 inline-block px-2 py-0.5 rounded border border-brand-gold/20">
                             {user.role}
                         </div>
+                        {user.branch && (
+                            <div className="mt-1 text-xs text-slate-400">
+                                {user.branch === 'marble-hall' ? 'Marble Hall' : 'Pretoria'} Branch
+                            </div>
+                        )}
                     </div>
                 )}
 

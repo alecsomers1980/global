@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/adminServer";
 import { FileText, Search, Filter, Download, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { DownloadButton } from "@/components/portal/DownloadButton";
+import { DownloadButton } from "@/components/admin/DownloadButton";
 
 export default async function AdminDocumentsPage() {
     const supabase = createClient();

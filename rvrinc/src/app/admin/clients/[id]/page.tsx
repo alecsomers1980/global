@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/adminServer";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -84,7 +84,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
                                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer">
                                     <div>
                                         <p className="font-semibold text-slate-800">{c.title}</p>
-                                        <p className="text-xs text-gray-500">#{c.case_number} &bull; Attorney: {c.attorney?.full_name || "Unassigned"}</p>
+                                        <p className="text-xs text-gray-500">{c.case_number} &bull; Attorney: {c.attorney?.full_name || "Unassigned"}</p>
                                     </div>
                                     <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${statusColor[c.status] || statusColor.pending}`}>
                                         {c.status}

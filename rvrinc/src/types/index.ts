@@ -1,10 +1,13 @@
 export type Role = 'client' | 'attorney' | 'admin' | 'staff';
+export type Branch = 'pretoria' | 'marble-hall';
 
 export interface UserProfile {
     id: string;
     email: string;
     role: Role;
     full_name: string;
+    branch?: Branch;
+    profile_completed?: boolean;
     avatar_url?: string;
     created_at: string;
 }

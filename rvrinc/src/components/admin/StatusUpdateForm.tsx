@@ -15,6 +15,7 @@ export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdate
     const [scheduledDate, setScheduledDate] = useState("");
     const [isPending, startTransition] = useTransition();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const selectedConfig = RAF_STATUSES.find(s => s.slug === selectedStatus);
 
@@ -27,7 +28,12 @@ export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdate
         formData.set("scheduledDate", scheduledDate);
 
         startTransition(async () => {
-            await updateCaseStatus(formData);
+            setError(null);
+            const result = await updateCaseStatus(formData);
+            if (result?.error) {
+                setError(result.error);
+                return;
+            }
             setNotes("");
             setScheduledDate("");
             setShowSuccess(true);
@@ -118,6 +124,12 @@ export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdate
             >
                 {isPending ? "Updating..." : "Update Status"}
             </button>
+
+            {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">
+                    {error}
+                </div>
+            )}
 
             {showSuccess && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800 text-center animate-pulse">

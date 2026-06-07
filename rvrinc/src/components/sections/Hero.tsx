@@ -1,8 +1,13 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { CaseStatusModal } from "@/components/CaseStatusModal";
 
 export function Hero() {
+    const [caseModalOpen, setCaseModalOpen] = useState(false);
     return (
         <section className="relative w-full min-h-[90vh] bg-brand-navy overflow-hidden flex items-center">
             <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-0 items-center">
@@ -46,11 +51,9 @@ export function Hero() {
                                 Start Your Claim
                             </Button>
                         </Link>
-                        <Link href="/case-update">
-                            <Button size="lg" variant="outline" className="w-full sm:w-auto text-brand-gold border-brand-gold/40 hover:bg-brand-gold/10">
-                                Update on Your Case
-                            </Button>
-                        </Link>
+                        <Button size="lg" variant="outline" className="w-full sm:w-auto text-brand-gold border-brand-gold/40 hover:bg-brand-gold/10" onClick={() => setCaseModalOpen(true)}>
+                            View Case Status
+                        </Button>
                     </div>
 
                     {/* Trust Line */}
@@ -68,8 +71,10 @@ export function Hero() {
                         className="object-cover object-center"
                         priority
                     />
-                    {/* Gradient overlay for left blend */}
+                    {/* Gradient overlay for left blend (matches text side) */}
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/40 to-transparent" />
+                    {/* Gradient overlay for right edge fade */}
+                    <div className="absolute inset-0 bg-gradient-to-l from-brand-navy to-transparent to-30%" />
                     {/* Subtle gold accent line */}
                     <div className="absolute left-0 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-brand-gold/30 to-transparent" />
                 </div>
@@ -84,6 +89,8 @@ export function Hero() {
                     className="object-cover object-right opacity-10"
                 />
             </div>
+
+            <CaseStatusModal open={caseModalOpen} onOpenChange={setCaseModalOpen} />
         </section>
     );
 }

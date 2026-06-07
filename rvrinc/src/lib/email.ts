@@ -199,7 +199,7 @@ export async function sendCaseUpdateEmail({
         <div style="background:#f8fafc; padding:16px; border-left:4px solid #d4a843; border-radius:4px; margin:16px 0;">
             <p style="margin:0;">${updateMessage}</p>
         </div>
-        <p>You can view your case details in the <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://rvrinc.co.za'}/portal/cases" style="color:#d4a843; font-weight:600;">Client Portal</a>.</p>
+        <p>You can view your case status using the <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://rvrinc.co.za'}" style="color:#d4a843; font-weight:600;">Case Status Lookup</a> on our website.</p>
         <p style="margin-top:24px;">Kind regards,<br><strong>Roets &amp; Van Rensburg Inc.</strong></p>
     `;
 

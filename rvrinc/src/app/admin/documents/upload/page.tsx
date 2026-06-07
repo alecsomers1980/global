@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { DocumentUpload } from "@/components/portal/DocumentUpload";
+import { DocumentUpload } from "@/components/admin/DocumentUpload";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";

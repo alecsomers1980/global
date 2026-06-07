@@ -1,23 +1,73 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, BarChart3, AlertTriangle, Users, Calendar, Clock, UserCheck } from "lucide-react";
+import { ArrowLeft, BarChart3, AlertTriangle, Users, Calendar, Clock, UserCheck, History } from "lucide-react";
 import { getStatusLabel, getStatusColor, PHASE_CONFIG, RAF_STATUSES, type StatusPhase } from "@/lib/statusConfig";
+import { getBranchLabel } from "@/lib/branch";
 
-export default async function ReportsPage() {
+interface Props {
+    searchParams: { branch?: string; changedBy?: string; dateFrom?: string; dateTo?: string };
+}
+
+export default async function ReportsPage({ searchParams }: Props) {
     const supabase = createClient();
+    const branchFilter = searchParams.branch || "";
+    const changedByFilter = searchParams.changedBy || "";
+    const dateFromFilter = searchParams.dateFrom || "";
+    const dateToFilter = searchParams.dateTo || "";
 
-    // Fetch all cases
-    const { data: cases } = await supabase
+    // Get current user's role and branch
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role, branch")
+        .eq("id", user?.id)
+        .single();
+
+    const isAdmin = profile?.role === 'admin';
+    const effectiveBranch = isAdmin ? branchFilter : (profile?.branch || '');
+
+    // Fetch all cases (with branch filter for non-admin)
+    let casesQuery = supabase
         .from("cases")
-        .select("*, client:profiles!client_id(full_name), attorney:profiles!attorney_id(full_name)")
-        .order("updated_at", { ascending: false });
+        .select("*, attorney:profiles!attorney_id(full_name)");
+    if (effectiveBranch) casesQuery = casesQuery.eq('branch', effectiveBranch);
+    const { data: cases } = await casesQuery.order("updated_at", { ascending: false }).limit(10000);
 
     // Fetch status history for time analysis
-    const { data: history } = await supabase
+    let historyQuery = supabase
         .from("case_status_history")
-        .select("*")
-        .order("changed_at", { ascending: true });
+        .select("*");
+    if (effectiveBranch) historyQuery = historyQuery.eq('cases.branch', effectiveBranch);
+    const { data: history } = await historyQuery.order("changed_at", { ascending: true });
+
+    // Fetch status history with changer details (audit trail)
+    let activityQuery = supabase
+        .from("case_status_history")
+        .select("*, cases!inner(case_number, title, branch), changed_by_profile:profiles!changed_by(full_name)")
+        .order("changed_at", { ascending: false });
+
+    if (effectiveBranch) activityQuery = activityQuery.eq('cases.branch', effectiveBranch);
+    if (changedByFilter) activityQuery = activityQuery.eq('changed_by', changedByFilter);
+    if (dateFromFilter) activityQuery = activityQuery.gte('changed_at', dateFromFilter + 'T00:00:00');
+    if (dateToFilter) activityQuery = activityQuery.lte('changed_at', dateToFilter + 'T23:59:59');
+
+    const { data: recentActivity } = await activityQuery.limit(200);
+
+    // Fetch distinct users who made changes for filter dropdown
+    const { data: changedByUsers } = await supabase
+        .from("case_status_history")
+        .select("changed_by, changed_by_profile:profiles!changed_by(full_name)")
+        .order("changed_at", { ascending: false })
+        .limit(500);
+
+    const uniqueChangers: [string, string][] = changedByUsers
+        ? Array.from(new Map(
+            changedByUsers
+                .filter((u: any) => u.changed_by)
+                .map((u: any) => [u.changed_by as string, (u.changed_by_profile as any)?.full_name || 'Unknown'] as [string, string])
+        ).entries())
+        : [];
 
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
     const now = new Date();
@@ -112,7 +162,7 @@ export default async function ReportsPage() {
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <p className="font-semibold text-sm text-slate-800">{c.title}</p>
-                                                <p className="text-xs text-gray-500">{c.client?.full_name} • #{c.case_number}</p>
+                                                <p className="text-xs text-gray-500">{c.case_number}</p>
                                             </div>
                                             <span className="text-xs font-bold text-red-700 bg-red-200 px-2 py-0.5 rounded">{daysOverdue}d overdue</span>
                                         </div>
@@ -140,7 +190,7 @@ export default async function ReportsPage() {
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <p className="font-semibold text-sm text-slate-800">{c.title}</p>
-                                                <p className="text-xs text-gray-500">{c.client?.full_name}</p>
+                                                <p className="text-xs text-gray-500">{c.case_number}</p>
                                             </div>
                                             <span className={`text-xs font-bold px-2 py-0.5 rounded ${bgColor} ${textColor}`}>
                                                 {getStatusLabel(c.status)}
@@ -210,7 +260,7 @@ export default async function ReportsPage() {
                                     <div className="flex justify-between items-center">
                                         <div>
                                             <p className="font-semibold text-sm text-slate-800">{c.title}</p>
-                                            <p className="text-xs text-gray-500">{c.client?.full_name} • {c.attorney?.full_name || 'Unassigned'}</p>
+                                            <p className="text-xs text-gray-500">{c.attorney?.full_name || 'Unassigned'}</p>
                                             <p className="text-xs mt-1">
                                                 <span className={`font-bold ${isUrgent ? 'text-red-700' : 'text-blue-700'}`}>
                                                     {date.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -227,6 +277,100 @@ export default async function ReportsPage() {
                     </div>
                 ) : (
                     <p className="text-gray-400 text-center py-6 text-sm">No upcoming court dates.</p>
+                )}
+            </div>
+
+            {/* REPORT 6: Recent Activity (Audit Trail) */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
+                    <History className="w-5 h-5 text-brand-gold" /> Audit Trail — Case Status Changes
+                    <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700">{recentActivity?.length || 0} records</span>
+                </h2>
+
+                {/* Audit Filters */}
+                <form action="/admin/reports" method="GET" className="flex flex-wrap gap-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    {isAdmin && (
+                        <select name="branch" defaultValue={branchFilter} className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                            <option value="">All Branches</option>
+                            <option value="pretoria">Pretoria</option>
+                            <option value="marble-hall">Marble Hall</option>
+                        </select>
+                    )}
+                    <select name="changedBy" defaultValue={changedByFilter} className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+                        <option value="">All Users</option>
+                        {uniqueChangers.map(([id, name]) => (
+                            <option key={id} value={id}>{name}</option>
+                        ))}
+                    </select>
+                    <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500">From:</span>
+                        <input type="date" name="dateFrom" defaultValue={dateFromFilter} className="px-2 py-1.5 border border-gray-200 rounded-lg text-sm bg-white" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500">To:</span>
+                        <input type="date" name="dateTo" defaultValue={dateToFilter} className="px-2 py-1.5 border border-gray-200 rounded-lg text-sm bg-white" />
+                    </div>
+                    <Button type="submit" variant="outline" size="sm">Apply Filters</Button>
+                    {(branchFilter || changedByFilter || dateFromFilter || dateToFilter) && (
+                        <Link href="/admin/reports">
+                            <Button type="button" variant="ghost" size="sm">Clear</Button>
+                        </Link>
+                    )}
+                </form>
+
+                {recentActivity && recentActivity.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 text-gray-500 font-medium">
+                                <tr>
+                                    <th className="px-4 py-3 text-left">Case</th>
+                                    <th className="px-4 py-3 text-left">Branch</th>
+                                    <th className="px-4 py-3 text-left">Status Change</th>
+                                    <th className="px-4 py-3 text-left">Updated By</th>
+                                    <th className="px-4 py-3 text-left">Date & Time</th>
+                                    <th className="px-4 py-3 text-left">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {recentActivity.map((entry: any) => {
+                                    const { bgColor, textColor } = getStatusColor(entry.new_status);
+                                    return (
+                                        <tr key={entry.id} className="hover:bg-gray-50">
+                                            <td className="px-4 py-3">
+                                                <Link href={`/admin/cases/${entry.case_id}`} className="hover:text-brand-gold">
+                                                    <span className="font-semibold text-slate-800">{entry.cases?.case_number}</span>
+                                                    <span className="text-gray-400 ml-1">— {entry.cases?.title}</span>
+                                                </Link>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                    entry.cases?.branch === 'marble-hall' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                                }`}>
+                                                    {getBranchLabel(entry.cases?.branch || 'pretoria')}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-1.5">
+                                                    {entry.old_status && (
+                                                        <span className="text-xs text-gray-400 line-through">{getStatusLabel(entry.old_status)}</span>
+                                                    )}
+                                                    {entry.old_status && <span className="text-gray-300">→</span>}
+                                                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${bgColor} ${textColor}`}>
+                                                        {getStatusLabel(entry.new_status)}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-slate-600">{entry.changed_by_profile?.full_name || "System"}</td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs">{new Date(entry.changed_at).toLocaleString("en-ZA")}</td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs max-w-[200px] truncate">{entry.notes || "—"}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <p className="text-gray-400 text-center py-6 text-sm">No activity recorded matching your filters.</p>
                 )}
             </div>
         </div>

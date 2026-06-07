@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/adminServer";
 import { Users, Mail, Phone, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";

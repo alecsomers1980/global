@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Loader2, Search, UserPlus, Mail } from "lucide-react";
+import { Loader2, Search, UserPlus, Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -103,7 +103,9 @@ export default function UserManagementPage() {
                         <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
                             <tr>
                                 <th className="px-6 py-4">User</th>
+                                <th className="px-6 py-4">Branch</th>
                                 <th className="px-6 py-4">Role</th>
+                                <th className="px-6 py-4">Profile</th>
                                 <th className="px-6 py-4">Joined</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
@@ -111,13 +113,13 @@ export default function UserManagementPage() {
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center">
+                                    <td colSpan={6} className="px-6 py-12 text-center">
                                         <Loader2 className="h-8 w-8 animate-spin mx-auto text-brand-gold" />
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                         No users found.
                                     </td>
                                 </tr>
@@ -139,6 +141,17 @@ export default function UserManagementPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
+                                            {user.branch ? (
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                    user.branch === 'marble-hall' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                                }`}>
+                                                    {user.branch === 'marble-hall' ? 'Marble Hall' : 'Pretoria'}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-400 text-xs">—</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <select
                                                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand-gold focus:border-brand-gold block w-full p-2.5"
                                                 value={user.role || 'client'}
@@ -150,6 +163,17 @@ export default function UserManagementPage() {
                                                 <option value="admin">Admin</option>
                                                 <option value="staff">Staff</option>
                                             </select>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {user.profile_completed !== false ? (
+                                                <span className="flex items-center gap-1 text-green-600 text-xs">
+                                                    <CheckCircle2 className="w-3.5 h-3.5" /> Complete
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1 text-amber-600 text-xs">
+                                                    <AlertCircle className="w-3.5 h-3.5" /> Pending
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
                                             {new Date(user.created_at).toLocaleDateString()}

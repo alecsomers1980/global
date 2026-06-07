@@ -9,27 +9,33 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Loader2, RefreshCw } from "lucide-react";
-import { caseSchema } from "@/lib/schemas";
 
-export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys: any[] }) {
+export function NewCaseForm({ attorneys, userBranch }: { attorneys: any[]; userBranch?: string | null }) {
     const [title, setTitle] = useState("");
     const [caseNumber, setCaseNumber] = useState("");
-    const [clientId, setClientId] = useState("");
     const [attorneyId, setAttorneyId] = useState("");
+    const [branch, setBranch] = useState(userBranch || "pretoria");
     const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("open");
+    const [status, setStatus] = useState("consultation_complete");
     const [accidentDate, setAccidentDate] = useState("");
+    const [idNumber, setIdNumber] = useState("");
+    const [rafRef, setRafRef] = useState("");
+    const [dateOfLodgement, setDateOfLodgement] = useState("");
+    const [dateOfSummons, setDateOfSummons] = useState("");
+    const [dateOfRelodgement, setDateOfRelodgement] = useState("");
+    const [placeOfAccident, setPlaceOfAccident] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
 
     const generateCaseNumber = () => {
+        const prefix = "KC";
         const date = new Date();
-        const year = date.getFullYear();
+        const year = date.getFullYear().toString().slice(-2);
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const random = Math.floor(1000 + Math.random() * 9000);
-        return `RVR-${year}${month}${day}-${random}`;
+        return `${prefix}${year}${month}${day}-${random}`;
     };
 
     useEffect(() => {
@@ -40,23 +46,9 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
         e.preventDefault();
         setLoading(true);
 
-        // Zod Validation
-        const formData = {
-            title,
-            case_number: caseNumber,
-            client_id: clientId,
-            attorney_id: attorneyId || undefined,
-            description,
-            status,
-            accident_date: accidentDate || undefined,
-        };
-
-        const result = caseSchema.safeParse(formData);
-
-        if (!result.success) {
+        if (!title || title.length < 3) {
+            alert("Case Title (Client Name) is required (min 3 characters).");
             setLoading(false);
-            const errorMessage = result.error.errors.map(e => e.message).join("\n");
-            alert(errorMessage);
             return;
         }
 
@@ -66,11 +58,18 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                 .insert({
                     title,
                     case_number: caseNumber,
-                    client_id: clientId,
                     attorney_id: attorneyId || null,
+                    branch,
                     description,
                     status,
                     accident_date: accidentDate || null,
+                    id_number: idNumber || null,
+                    raf_ref: rafRef || null,
+                    date_of_lodgement: dateOfLodgement || null,
+                    date_of_summons: dateOfSummons || null,
+                    date_of_relodgement: dateOfRelodgement || null,
+                    place_of_accident: placeOfAccident || null,
+                    client_id: null, // no client portal yet
                 });
 
             if (error) throw error;
@@ -90,10 +89,10 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
 
             <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label>Case Title</Label>
+                    <Label>Case Title (Client Name)</Label>
                     <Input
                         required
-                        placeholder="e.g. Smith Estate Planning"
+                        placeholder="e.g. S'FISO SIBONGISENI GUMEDE"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
@@ -103,7 +102,7 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                     <div className="flex gap-2">
                         <Input
                             required
-                            placeholder="e.g. RVR-20240219-1234"
+                            placeholder="e.g. KC250524-1234"
                             value={caseNumber}
                             onChange={(e) => setCaseNumber(e.target.value)}
                         />
@@ -120,21 +119,76 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                    <Label>Assign Client</Label>
-                    <Select
-                        required
-                        value={clientId}
-                        onChange={(e) => setClientId(e.target.value)}
-                    >
-                        <option value="" disabled>Select Client</option>
-                        {clients.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.full_name} ({c.email || 'No Email'})
-                            </option>
-                        ))}
+                    <Label>RAF Reference</Label>
+                    <Input
+                        placeholder="e.g. RAF-2024-00123"
+                        value={rafRef}
+                        onChange={(e) => setRafRef(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label>Identity / Passport Number</Label>
+                    <Input
+                        placeholder="e.g. 7608245830081"
+                        value={idNumber}
+                        onChange={(e) => setIdNumber(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label>Place of Accident</Label>
+                    <Input
+                        placeholder="e.g. N4 Highway, Pretoria"
+                        value={placeOfAccident}
+                        onChange={(e) => setPlaceOfAccident(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                    <Label>Date of Accident</Label>
+                    <Input
+                        type="date"
+                        value={accidentDate}
+                        onChange={(e) => setAccidentDate(e.target.value)}
+                    />
+                    <p className="text-xs text-amber-600">Required for RAF prescription tracking.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label>Date of Lodgement</Label>
+                    <Input
+                        type="date"
+                        value={dateOfLodgement}
+                        onChange={(e) => setDateOfLodgement(e.target.value)}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label>Date of Summons</Label>
+                    <Input
+                        type="date"
+                        value={dateOfSummons}
+                        onChange={(e) => setDateOfSummons(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                    <Label>Branch</Label>
+                    <Select value={branch} onChange={(e) => setBranch(e.target.value)}>
+                        <option value="pretoria">Pretoria</option>
+                        <option value="marble-hall">Marble Hall</option>
                     </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Date of Re-Lodgement</Label>
+                    <Input
+                        type="date"
+                        value={dateOfRelodgement}
+                        onChange={(e) => setDateOfRelodgement(e.target.value)}
+                    />
                 </div>
                 <div className="space-y-2">
                     <Label>Assign Attorney</Label>
@@ -150,41 +204,29 @@ export function NewCaseForm({ clients, attorneys }: { clients: any[], attorneys:
                         ))}
                     </Select>
                 </div>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                    placeholder="Brief overview of the legal matter..."
-                    className="h-32"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                    <Label>Accident Date</Label>
-                    <Input
-                        type="date"
-                        value={accidentDate}
-                        onChange={(e) => setAccidentDate(e.target.value)}
-                    />
-                    <p className="text-xs text-amber-600">Required for RAF prescription tracking. The 3-year claim window starts from this date.</p>
+                    <Label>Status</Label>
+                    <Select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                    >
+                        <option value="consultation_complete">Consultation complete (Intake)</option>
+                        <option value="requested_records">Requested records (Intake)</option>
+                        <option value="claim_lodged">Claim lodged date</option>
+                        <option value="drafting_summons">Drafting Summons</option>
+                        <option value="summons_issued_served">Summons issued and served</option>
+                    </Select>
                 </div>
             </div>
 
             <div className="space-y-2">
-                <Label>Status</Label>
-                <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                >
-                    <option value="open">Open</option>
-                    <option value="discovery">Discovery</option>
-                    <option value="litigation">Litigation</option>
-                    <option value="closed">Closed</option>
-                </Select>
+                <Label>Description / Notes</Label>
+                <Textarea
+                    placeholder="Brief overview of the legal matter..."
+                    className="h-24"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
             </div>
 
             <div className="pt-4 flex justify-end gap-3">

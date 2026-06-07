@@ -10,36 +10,38 @@ export default async function AdminDashboard() {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Get User Role
+    // Get User Role & Branch
     const { data: profile } = await supabase
         .from("profiles")
-        .select("role")
+        .select("role, branch")
         .eq("id", user?.id)
         .single();
 
-    const isAttorney = profile?.role === 'attorney';
-    const userId = user?.id!;
+    const isAdmin = profile?.role === 'admin';
+    const effectiveBranch = isAdmin ? null : (profile?.branch || '');
 
     // 1. Cases Stat
-    let casesQuery = supabase.from("cases").select("*", { count: 'exact', head: true });
-    if (isAttorney) casesQuery = casesQuery.eq('attorney_id', userId);
-    const { count: casesCount } = await casesQuery;
+    let casesQuery = supabase.from("cases").select("id");
+    if (effectiveBranch) casesQuery = casesQuery.eq('branch', effectiveBranch);
+    const { data: allCases } = await casesQuery;
+    const casesCount = allCases?.length || 0;
 
-    // 2. Clients Stat (Show all for now, or maybe hide for attorneys? I'll leave as is but just filtered by role=client)
-    const { count: clientsCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true }).eq('role', 'client');
+    // 2. Clients Stat
+    const { data: clients } = await supabase.from("profiles").select("id").eq('role', 'client');
+    const clientsCount = clients?.length || 0;
 
-    // 3. Documents Stat (Skip complex filter for now to avoid errors, or try simple join if possible. I'll leave as global count for simplicity or maybe hide)
-    const { count: documentsCount } = await supabase.from("documents").select("*", { count: 'exact', head: true });
+    // 3. Documents Stat
+    const { data: allDocs } = await supabase.from("documents").select("id");
+    const documentsCount = allDocs?.length || 0;
 
     // 4. Pending Appointments
-    let appointmentsQuery = supabase.from("appointments").select("*", { count: 'exact', head: true }).eq('status', 'pending');
-    if (isAttorney) appointmentsQuery = appointmentsQuery.eq('attorney_id', userId);
-    const { count: pendingAppointments } = await appointmentsQuery;
+    const { data: pendingApps } = await supabase.from("appointments").select("id").eq('status', 'pending');
+    const pendingAppointments = pendingApps?.length || 0;
 
     // 5. Cases with approaching prescription deadlines
     const { data: prescriptionCases } = await supabase
         .from("cases")
-        .select("id, case_number, title, accident_date, status, client:profiles!client_id(full_name), attorney:profiles!attorney_id(full_name)")
+        .select("id, case_number, title, accident_date, status")
         .not("accident_date", "is", null)
         .neq("status", "closed")
         .order("accident_date", { ascending: true });
@@ -52,11 +54,11 @@ export default async function AdminDashboard() {
     // 6. Recent Cases Table
     let recentCasesQuery = supabase
         .from("cases")
-        .select("*, client:profiles!client_id(full_name)")
+        .select("id, case_number, title, status, created_at")
         .order("created_at", { ascending: false })
         .limit(5);
 
-    if (isAttorney) recentCasesQuery = recentCasesQuery.eq('attorney_id', userId);
+    if (effectiveBranch) recentCasesQuery = recentCasesQuery.eq('branch', effectiveBranch);
     const { data: recentCases } = await recentCasesQuery;
 
     return (
@@ -130,7 +132,7 @@ export default async function AdminDashboard() {
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-bold text-slate-800 text-sm truncate">{c.title}</p>
-                                                <p className="text-xs text-gray-500 mt-0.5">#{c.case_number} &bull; {c.client?.full_name || "Unknown"}</p>
+                                                <p className="text-xs text-gray-500 mt-0.5">{c.case_number}</p>
                                             </div>
                                             <Clock className={`w-4 h-4 flex-shrink-0 ml-2 ${
                                                 isExpired || isCritical ? "text-red-500" :
@@ -184,7 +186,6 @@ export default async function AdminDashboard() {
                             <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
                                 <tr>
                                     <th className="px-6 py-3">Title</th>
-                                    <th className="px-6 py-3">Client</th>
                                     <th className="px-6 py-3">Status</th>
                                 </tr>
                             </thead>
@@ -192,7 +193,6 @@ export default async function AdminDashboard() {
                                 {recentCases?.map((c: any) => (
                                     <tr key={c.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-3 font-medium text-slate-800">{c.title}</td>
-                                        <td className="px-6 py-3 text-gray-600">{c.client?.full_name || 'Unknown'}</td>
                                         <td className="px-6 py-3">
                                             <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${c.status === 'open' ? 'bg-blue-100 text-blue-800' :
                                                 c.status === 'closed' ? 'bg-gray-100 text-gray-800' :
@@ -217,13 +217,6 @@ export default async function AdminDashboard() {
                                 <Briefcase className="w-8 h-8 text-brand-navy mb-4 group-hover:text-brand-gold transition-colors" />
                                 <h3 className="font-bold text-slate-800">Create New Case</h3>
                                 <p className="text-sm text-gray-500 mt-1">Open a new file for a client.</p>
-                            </div>
-                        </Link>
-                        <Link href="/admin/users/invite">
-                            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer group">
-                                <Users className="w-8 h-8 text-brand-navy mb-4 group-hover:text-brand-gold transition-colors" />
-                                <h3 className="font-bold text-slate-800">Invite Client</h3>
-                                <p className="text-sm text-gray-500 mt-1">Send a registration invite.</p>
                             </div>
                         </Link>
                         <Link href="/admin/documents/upload">

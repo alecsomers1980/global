@@ -1,11 +1,11 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const EXEMPT_ADMIN_PATHS = ['/admin/complete-profile', '/admin/update-password']
+
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
+        request: { headers: request.headers },
     })
 
     const supabase = createServerClient(
@@ -17,51 +17,64 @@ export async function middleware(request: NextRequest) {
                     return request.cookies.get(name)?.value
                 },
                 set(name: string, value: string, options: CookieOptions) {
-                    request.cookies.set({
-                        name,
-                        value,
-                        ...options,
-                    })
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    })
-                    response.cookies.set({
-                        name,
-                        value,
-                        ...options,
-                    })
+                    request.cookies.set({ name, value, ...options })
+                    response = NextResponse.next({ request: { headers: request.headers } })
+                    response.cookies.set({ name, value, ...options })
                 },
                 remove(name: string, options: CookieOptions) {
-                    request.cookies.set({
-                        name,
-                        value: '',
-                        ...options,
-                    })
-                    response = NextResponse.next({
-                        request: {
-                            headers: request.headers,
-                        },
-                    })
-                    response.cookies.set({
-                        name,
-                        value: '',
-                        ...options,
-                    })
+                    request.cookies.set({ name, value: '', ...options })
+                    response = NextResponse.next({ request: { headers: request.headers } })
+                    response.cookies.set({ name, value: '', ...options })
                 },
             },
         }
     )
 
-    await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const pathname = request.nextUrl.pathname
+
+    // Admin route protection
+    if (pathname.startsWith('/admin')) {
+        // Not logged in → redirect to login
+        if (!user) {
+            const loginUrl = new URL('/login', request.url)
+            return NextResponse.redirect(loginUrl)
+        }
+
+        // Exempt these paths from profile completion check
+        if (!EXEMPT_ADMIN_PATHS.includes(pathname)) {
+            // Check if profile is completed
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('profile_completed')
+                .eq('id', user.id)
+                .single()
+
+            if (profile && profile.profile_completed === false) {
+                const completeUrl = new URL('/admin/complete-profile', request.url)
+                return NextResponse.redirect(completeUrl)
+            }
+        }
+    }
+
+    // Redirect logged-in users away from login page
+    if (user && pathname === '/login') {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('profile_completed')
+            .eq('id', user.id)
+            .single()
+
+        if (profile?.profile_completed === false) {
+            return NextResponse.redirect(new URL('/admin/complete-profile', request.url))
+        }
+        return NextResponse.redirect(new URL('/admin', request.url))
+    }
 
     return response
 }
 
 export const config = {
-    matcher: [
-        '/portal/:path*',
-        '/api/:path*',
-    ],
+    matcher: ['/admin/:path*', '/login', '/api/:path*'],
 }

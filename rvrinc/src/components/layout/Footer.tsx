@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Facebook, Linkedin, Instagram } from "lucide-react";
 import { CONTACT_EMAIL } from "@/lib/config";
+import { FooterCaseSection } from "./FooterCaseSection";
 
 export function Footer() {
     return (
@@ -35,12 +36,7 @@ export function Footer() {
                     </ul>
                 </div>
 
-                <div className="space-y-4">
-                    <h4 className="text-sm font-bold uppercase tracking-wider text-brand-gold">Update on Your Case</h4>
-                    <p className="text-sm text-gray-300">Existing clients can track the progress of their case.</p>
-                    <Link href="/case-update" className="inline-block px-4 py-2 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-navy transition-colors rounded-md text-sm">
-                        Check Your Case
-                    </Link>
+                <FooterCaseSection />
 
                     {/* Social Media */}
                     <div className="pt-4">
@@ -56,7 +52,6 @@ export function Footer() {
                                 <Instagram className="w-4 h-4" />
                             </a>
                         </div>
-                    </div>
                 </div>
             </div>
 

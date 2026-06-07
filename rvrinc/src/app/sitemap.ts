@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/insights`, priority: 0.7 },
     { url: `${SITE_URL}/practice-areas`, priority: 0.9 },
     { url: `${SITE_URL}/team`, priority: 0.8 },
-    { url: `${SITE_URL}/book`, priority: 0.6 },
+    { url: `${SITE_URL}/case-update`, priority: 0.7 },
     { url: `${SITE_URL}/start-claim`, priority: 0.7 },
     { url: `${SITE_URL}/login`, priority: 0.3 },
     { url: `${SITE_URL}/privacy-policy`, priority: 0.3 },
