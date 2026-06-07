@@ -11,8 +11,8 @@ import { muxAudioOntoVideo } from "./videoAudioMuxer";
 const CLIP_MS = 8000;
 
 export async function addCongratsVoiceover(videoUrl, { fullName, carLabel, carId } = {}) {
-    const firstName = (fullName || "").trim().split(/\s+/)[0] || "friend";
-    const line = `Congratulations ${firstName}, on your new ${carLabel || "vehicle"}. From all of us at Everest Motoring.`;
+    const name = (fullName || "").trim() || "friend";
+    const line = `Congratulations ${name}, on your new ${carLabel || "vehicle"}. From all of us at Everest Motoring.`;
 
     const { audioUrl, durationMs } = await synthesizeVoiceover({
         text: line,
