@@ -9,6 +9,8 @@ import {
   Section,
   Text,
   Tailwind,
+  Row,
+  Column,
 } from '@react-email/components';
 import * as React from 'react';
 
@@ -39,37 +41,49 @@ export const TradeInOfferEmail = ({ body = '' }) => {
         <Body className="bg-neutral-100 font-sans">
           <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
-              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
-              <Text className="text-primary text-xs font-bold uppercase tracking-[0.2em] mt-3 m-0">
-                Trade-In Offer
-              </Text>
+            <Section>
+              <Row>
+                <Column className="bg-secondary py-[32px] text-center border-b-4 border-primary">
+                  <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" align="center" />
+                  <Text className="text-primary text-xs font-bold uppercase tracking-[0.2em] mt-3 m-0">
+                    Trade-In Offer
+                  </Text>
+                </Column>
+              </Row>
             </Section>
 
             {/* Body (admin-edited) */}
-            <Section className="px-10 py-10">
-              {paragraphs.map((p, i) => (
-                <Text
-                  key={i}
-                  className="text-neutral-700 text-[15px] leading-relaxed m-0 mb-4"
-                  style={{ whiteSpace: 'pre-line' }}
-                >
-                  {p}
-                </Text>
-              ))}
+            <Section>
+              <Row>
+                <Column className="px-[40px] py-[40px]">
+                  {paragraphs.map((p, i) => (
+                    <Text
+                      key={i}
+                      className="text-neutral-700 text-[15px] leading-relaxed m-0 mb-4"
+                      style={{ whiteSpace: 'pre-line' }}
+                    >
+                      {p}
+                    </Text>
+                  ))}
+                </Column>
+              </Row>
             </Section>
 
             {/* Footer */}
-            <Section className="bg-secondary py-8 px-8 text-center">
-              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
-              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
-              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
-              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
-              <Text className="text-neutral-500 text-xs mt-4 m-0">
-                You are receiving this because you requested a vehicle valuation from us.
-                <br />
-                <Link href="#" className="text-primary underline">Unsubscribe</Link>
-              </Text>
+            <Section>
+              <Row>
+                <Column className="bg-secondary py-[32px] px-[32px] text-center">
+                  <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+                  <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+                  <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+                  <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+                  <Text className="text-neutral-500 text-xs mt-4 m-0">
+                    You are receiving this because you requested a vehicle valuation from us.
+                    <br />
+                    <Link href="#" className="text-primary underline">Unsubscribe</Link>
+                  </Text>
+                </Column>
+              </Row>
             </Section>
           </Container>
         </Body>

@@ -10,6 +10,8 @@ import {
   Section,
   Text,
   Tailwind,
+  Row,
+  Column,
 } from '@react-email/components';
 import * as React from 'react';
 
@@ -40,64 +42,92 @@ export const OneMonthFollowupEmail = ({
         <Body className="bg-neutral-100 font-sans">
           <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
-            <Section className="bg-secondary py-8 text-center border-b-4 border-primary">
-              <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" />
+            <Section>
+              <Row>
+                <Column className="bg-secondary py-[32px] text-center border-b-4 border-primary">
+                  <Img src={LOGO_URL} width="170" height="auto" alt="Everest Motoring" className="mx-auto" align="center" />
+                </Column>
+              </Row>
             </Section>
 
-            <Section className="px-10 pt-10 pb-6 text-center">
-              <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
-                One Month of Excellence
-              </Heading>
-              <Text className="text-neutral-600 text-lg leading-relaxed m-0 mb-2">
-                Hi {customerName}, it's been exactly one month since you drove away in your{' '}
-                <strong>{vehicleModel}</strong>.
-              </Text>
-              <Text className="text-neutral-600 text-lg leading-relaxed m-0">
-                We hope you're loving every kilometre. How has your experience with Everest Motoring
-                been so far?
-              </Text>
+            <Section>
+              <Row>
+                <Column className="px-[40px] pt-[40px] pb-[24px] text-center">
+                  <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
+                    One Month of Excellence
+                  </Heading>
+                  <Text className="text-neutral-600 text-lg leading-relaxed m-0 mb-2">
+                    Hi {customerName}, it's been exactly one month since you drove away in your{' '}
+                    <strong>{vehicleModel}</strong>.
+                  </Text>
+                  <Text className="text-neutral-600 text-lg leading-relaxed m-0">
+                    We hope you're loving every kilometre. How has your experience with Everest Motoring
+                    been so far?
+                  </Text>
+                </Column>
+              </Row>
             </Section>
 
             {/* Inventory car image */}
             {carImageUrl && (
-              <Section className="px-10 pb-6">
-                <Img
-                  src={carImageUrl}
-                  width="520"
-                  height="auto"
-                  alt={vehicleModel}
-                  className="rounded-xl object-cover w-full h-auto"
-                />
+              <Section>
+                <Row>
+                  <Column className="px-[40px] pb-[24px]">
+                    <Img
+                      src={carImageUrl}
+                      width="520"
+                      height="auto"
+                      alt={vehicleModel}
+                      className="rounded-xl object-cover w-full h-auto"
+                    />
+                  </Column>
+                </Row>
               </Section>
             )}
 
             {/* Rating */}
-            <Section className="px-10 pb-8">
-              <Section className="bg-neutral-50 border border-neutral-200 rounded-xl py-8 text-center">
-                <Text className="font-bold text-neutral-900 uppercase tracking-wider m-0 mb-3">
-                  Rate Your Experience
-                </Text>
-                <Text className="text-3xl text-primary-dark m-0">★ ★ ★ ★ ★</Text>
-              </Section>
+            <Section>
+              <Row>
+                <Column className="px-[40px] pb-[32px]">
+                  <Section>
+                    <Row>
+                      <Column className="bg-neutral-50 border border-neutral-200 rounded-xl py-[32px] text-center">
+                        <Text className="font-bold text-neutral-900 uppercase tracking-wider m-0 mb-3">
+                          Rate Your Experience
+                        </Text>
+                        <Text className="text-3xl text-primary-dark m-0">★ ★ ★ ★ ★</Text>
+                      </Column>
+                    </Row>
+                  </Section>
+                </Column>
+              </Row>
             </Section>
 
-            <Section className="px-10 pb-10 text-center">
-              <Text className="text-neutral-500 italic text-sm m-0">
-                Share a photo of your new ride and tag us to be featured on our social media!
-              </Text>
+            <Section>
+              <Row>
+                <Column className="px-[40px] pb-[40px] text-center">
+                  <Text className="text-neutral-500 italic text-sm m-0">
+                    Share a photo of your new ride and tag us to be featured on our social media!
+                  </Text>
+                </Column>
+              </Row>
             </Section>
 
             {/* Footer */}
-            <Section className="bg-secondary py-8 px-8 text-center">
-              <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
-              <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
-              <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
-              <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
-              <Text className="text-neutral-500 text-xs mt-4 m-0">
-                You are receiving this because you subscribed to our communications.
-                <br />
-                <Link href="#" className="text-primary underline">Unsubscribe</Link>
-              </Text>
+            <Section>
+              <Row>
+                <Column className="bg-secondary py-[32px] px-[32px] text-center">
+                  <Text className="text-primary font-bold text-sm m-0 mb-1">EVEREST MOTORING</Text>
+                  <Text className="text-neutral-400 text-sm m-0">White River, Mpumalanga</Text>
+                  <Text className="text-neutral-400 text-sm m-0 mt-2">013 854 0600 • info@everestmotoring.co.za</Text>
+                  <Text className="text-neutral-400 text-sm m-0">everestmotoring.co.za</Text>
+                  <Text className="text-neutral-500 text-xs mt-4 m-0">
+                    You are receiving this because you subscribed to our communications.
+                    <br />
+                    <Link href="#" className="text-primary underline">Unsubscribe</Link>
+                  </Text>
+                </Column>
+              </Row>
             </Section>
           </Container>
         </Body>
