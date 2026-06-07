@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { getStatusLabel, getStatusColor, getStatusConfig, PHASE_CONFIG, RAF_STATUSES, type StatusPhase } from "@/lib/statusConfig";
 import { getBranchLabel } from "@/lib/branch";
 import CaseSearch from "@/components/admin/CaseSearch";
+import { fetchAllRows } from "@/lib/fetchAllRows";
 
 const SORT_FIELDS = [
     { key: "case_number", label: "Case #" },
@@ -70,35 +71,37 @@ export default async function AdminCasesPage({ searchParams }: Props) {
     allAttorneys?.forEach((a: any) => attorneyMap.set(a.id, a.full_name));
 
     // Fetch all cases for phase counts (unfiltered except branch)
-    let allQuery = supabase.from("cases").select("id, status, branch");
-    if (effectiveBranch) allQuery = allQuery.eq('branch', effectiveBranch);
-    const { data: allCases } = await allQuery.limit(10000);
+    const allCases = await fetchAllRows(() => {
+        let q = supabase.from("cases").select("id, status, branch");
+        if (effectiveBranch) q = q.eq("branch", effectiveBranch);
+        return q.order("id", { ascending: true });
+    });
 
     // Build filtered query (no embed — join attorney name in JS)
-    let query = supabase
-        .from("cases")
-        .select("*");
+    const rawCases = await fetchAllRows(() => {
+        let q = supabase.from("cases").select("*");
 
-    if (effectiveBranch) {
-        query = query.eq('branch', effectiveBranch);
-    }
-
-    // Apply search filter across multiple columns
-    if (search) {
-        query = query.or(
-            `title.ilike.%${search}%,case_number.ilike.%${search}%,id_number.ilike.%${search}%,description.ilike.%${search}%,raf_ref.ilike.%${search}%`
-        );
-    }
-
-    // Apply phase filter
-    if (phaseFilter) {
-        const phaseStatuses = RAF_STATUSES.filter(s => s.phase === phaseFilter).map(s => s.slug);
-        if (phaseStatuses.length > 0) {
-            query = query.in('status', phaseStatuses);
+        if (effectiveBranch) {
+            q = q.eq("branch", effectiveBranch);
         }
-    }
 
-    const { data: rawCases } = await query.order(sortField, { ascending: sortOrder === "asc" }).limit(10000);
+        // Apply search filter across multiple columns
+        if (search) {
+            q = q.or(
+                `title.ilike.%${search}%,case_number.ilike.%${search}%,id_number.ilike.%${search}%,description.ilike.%${search}%,raf_ref.ilike.%${search}%`
+            );
+        }
+
+        // Apply phase filter
+        if (phaseFilter) {
+            const phaseStatuses = RAF_STATUSES.filter(s => s.phase === phaseFilter).map(s => s.slug);
+            if (phaseStatuses.length > 0) {
+                q = q.in("status", phaseStatuses);
+            }
+        }
+
+        return q.order(sortField, { ascending: sortOrder === "asc" }).order("id", { ascending: true });
+    });
 
     // Attach attorney names from our lookup map
     const cases = rawCases?.map((c: any) => ({

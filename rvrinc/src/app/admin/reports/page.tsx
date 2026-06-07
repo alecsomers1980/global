@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { ArrowLeft, BarChart3, AlertTriangle, Users, Calendar, Clock, UserCheck, History } from "lucide-react";
 import { getStatusLabel, getStatusColor, PHASE_CONFIG, RAF_STATUSES, type StatusPhase } from "@/lib/statusConfig";
 import { getBranchLabel } from "@/lib/branch";
+import { fetchAllRows } from "@/lib/fetchAllRows";
 
 interface Props {
     searchParams: { branch?: string; changedBy?: string; dateFrom?: string; dateTo?: string };
@@ -28,11 +29,13 @@ export default async function ReportsPage({ searchParams }: Props) {
     const effectiveBranch = isAdmin ? branchFilter : (profile?.branch || '');
 
     // Fetch all cases (with branch filter for non-admin)
-    let casesQuery = supabase
-        .from("cases")
-        .select("*, attorney:profiles!attorney_id(full_name)");
-    if (effectiveBranch) casesQuery = casesQuery.eq('branch', effectiveBranch);
-    const { data: cases } = await casesQuery.order("updated_at", { ascending: false }).limit(10000);
+    const cases = await fetchAllRows(() => {
+        let q = supabase
+            .from("cases")
+            .select("*, attorney:profiles!attorney_id(full_name)");
+        if (effectiveBranch) q = q.eq("branch", effectiveBranch);
+        return q.order("updated_at", { ascending: false }).order("id", { ascending: true });
+    });
 
     // Fetch status history for time analysis
     let historyQuery = supabase
