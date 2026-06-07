@@ -4,7 +4,7 @@ import { WelcomeEmail } from '../src/emails/WelcomeEmail.jsx';
 import { AffiliateMediaKit } from '../src/emails/AffiliateMediaKit.jsx';
 import { OneMonthFollowupEmail } from '../src/emails/1MonthFollowup.jsx';
 import { ThreeYearTradeInEmail } from '../src/emails/3YearTradeIn.jsx';
-import { BirthdayEmail } from '../src/emails/BirthdayEmail.jsx';
+import { OneYearEmail } from '../src/emails/OneYearEmail.jsx';
 import { SystemNotificationEmail } from '../src/emails/SystemNotification.jsx';
 import React from 'react';
 
@@ -40,9 +40,9 @@ const testTemplates = async () => {
       react: React.createElement(ThreeYearTradeInEmail, { customerName: 'Alec' }),
     },
     {
-      name: 'Happy Birthday',
-      subject: 'v3 - Happy Birthday from Everest Motoring! 🎂',
-      react: React.createElement(BirthdayEmail, { customerName: 'Alec' }),
+      name: '1-Year Anniversary',
+      subject: 'v3 - Happy 1-Year Anniversary from Everest Motoring! 🎉',
+      react: React.createElement(OneYearEmail, { customerName: 'Alec', vehicleModel: '2024 Toyota Hilux' }),
     },
     {
       name: 'System Notification',
