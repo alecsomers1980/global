@@ -61,6 +61,8 @@ export function Footer() {
                     <Link href="/privacy-policy" className="hover:text-gray-300">Privacy Policy</Link>
                     <span className="hidden md:inline">|</span>
                     <Link href="/paia-manual" className="hover:text-gray-300">PAIA Manual</Link>
+                    <span className="hidden md:inline">|</span>
+                    <Link href="/admin" className="hover:text-gray-300">Admin</Link>
                 </div>
             </div>
         </footer>
