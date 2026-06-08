@@ -15,6 +15,15 @@
       border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8; 
+      background: #a8a8a8;
+  }
+
+  /* Brand typography: Arial body text, Microgramma D Extended headers
+     (applies across the public site and the admin portal). */
+  body {
+      font-family: Arial, Helvetica, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-microgramme), Arial, sans-serif;
   }
 }

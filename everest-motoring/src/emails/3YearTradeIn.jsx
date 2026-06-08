@@ -40,7 +40,7 @@ export const ThreeYearTradeInEmail = ({
       <Tailwind config={brandConfig}>
         <Head />
         <Preview>An exclusive upgrade offer for your {oldVehicle}</Preview>
-        <Body className="bg-neutral-100 font-sans">
+        <Body className="bg-neutral-100 font-sans" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
           <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
             <Section>

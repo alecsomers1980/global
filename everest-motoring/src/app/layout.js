@@ -1,13 +1,16 @@
-import { Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CookieConsent from "@/components/CookieConsent";
 import GoogleAnalyticsGate from "@/components/GoogleAnalyticsGate";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
+// Self-hosted brand header font (Microgramma D Extended Bold).
+const microgramme = localFont({
+  src: "../fonts/MicrogrammaDExtendedBold.otf",
+  variable: "--font-microgramme",
+  weight: "700",
+  display: "swap",
 });
 
 export const siteConfig = {
@@ -46,7 +49,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className={`${spaceGrotesk.variable} bg-background-light text-slate-900 font-display antialiased selection:bg-primary/20 selection:text-primary`}>
+      <body className={`${microgramme.variable} bg-background-light text-slate-900 font-body antialiased selection:bg-primary/20 selection:text-primary`}>
         <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
           <Header siteConfig={siteConfig} />
           <main className="flex-1 flex flex-col">{children}</main>

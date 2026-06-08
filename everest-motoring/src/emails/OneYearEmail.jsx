@@ -15,7 +15,7 @@ export const OneYearEmail = ({ customerName = 'Valued Client', vehicleModel = 'y
       <Tailwind config={brandConfig}>
         <Head />
         <Preview>Happy 1-Year Anniversary from Everest Motoring! 🎉</Preview>
-        <Body className="bg-neutral-100 font-sans">
+        <Body className="bg-neutral-100 font-sans" style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
           <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header band */}
             <Section>

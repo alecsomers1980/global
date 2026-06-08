@@ -21,8 +21,9 @@ export default {
         "background-dark": "#000000",
       },
       fontFamily: {
-        "display": ["var(--font-space-grotesk)", "sans-serif"],
-        "body": ["var(--font-space-grotesk)", "sans-serif"],
+        "display": ["var(--font-microgramme)", "Arial", "sans-serif"],
+        "body": ["Arial", "Helvetica", "sans-serif"],
+        "sans": ["Arial", "Helvetica", "sans-serif"],
       },
       borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
       boxShadow: {
