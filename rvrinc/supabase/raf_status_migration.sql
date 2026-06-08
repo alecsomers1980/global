@@ -153,16 +153,17 @@ insert into public.case_statuses (slug, label, phase, sort_order, default_note, 
 ('compiled_file_cost_consultant', 'Compiled file for cost consultant', 'costs', 59, NULL, false, false, false, 'Compiled file for cost consultant'),
 ('file_at_cost_consultant', 'File at cost consultant', 'costs', 60, NULL, false, false, false, 'File at cost consultant'),
 ('obtain_taxation_date', 'Obtain taxation date', 'costs', 61, NULL, false, true, false, 'Obtain taxation date'),
-('received_costs_refund', 'Received money from RAF for costs – refund client for expert and counsel fees', 'costs', 62, NULL, false, false, false, 'Received money from RAF for costs – refund client for expert and counsel fees'),
-('follow_up_interest_payment', 'Follow up payment of interest on capital from RAF', 'costs', 63, NULL, false, false, false, 'Follow up payment of interest on capital from RAF'),
+('receive_bill_send_raf', 'Receive Bill from Cost Consultant and send it to RAF to pay', 'costs', 62, NULL, false, false, false, 'Receive Bill from Cost Consultant and send it to RAF to pay'),
+('received_costs_refund', 'Received money from RAF for costs – refund client for expert and counsel fees', 'costs', 63, NULL, false, false, false, 'Received money from RAF for costs – refund client for expert and counsel fees'),
+('follow_up_interest_payment', 'Follow up payment of interest on capital from RAF', 'costs', 64, NULL, false, false, false, 'Follow up payment of interest on capital from RAF'),
 
 -- UNDERTAKING PHASE
-('received_undertaking', 'Received Undertaking from RAF', 'undertaking', 64, NULL, false, false, false, 'Received Undertaking from RAF'),
-('sent_undertaking_request', 'Sent request to RAF for Undertaking', 'undertaking', 65, NULL, false, false, false, 'Sent request to RAF for Undertaking'),
-('followed_up_undertaking', 'Followed up at RAF for Undertaking', 'undertaking', 66, NULL, false, false, false, 'Followed up at RAF for Undertaking'),
+('received_undertaking', 'Received Undertaking from RAF', 'undertaking', 65, NULL, false, false, false, 'Received Undertaking from RAF'),
+('sent_undertaking_request', 'Sent request to RAF for Undertaking', 'undertaking', 66, NULL, false, false, false, 'Sent request to RAF for Undertaking'),
+('followed_up_undertaking', 'Followed up at RAF for Undertaking', 'undertaking', 67, NULL, false, false, false, 'Followed up at RAF for Undertaking'),
 
 -- FINALIZATION PHASE
-('matter_finalized', 'All aspects of the matter have been finalized. Matter finalized. Close file', 'finalization', 67, NULL, false, false, false, 'All aspects of the matter have been finalized. Matter finalized. Close file')
+('matter_finalized', 'All aspects of the matter have been finalized. Matter finalized. Close file', 'finalization', 68, NULL, false, false, false, 'All aspects of the matter have been finalized. Matter finalized. Close file')
 ON CONFLICT (slug) DO NOTHING;
 
 -- 3. Create status history table

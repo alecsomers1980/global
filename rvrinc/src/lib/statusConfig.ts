@@ -115,16 +115,17 @@ export const RAF_STATUSES: StatusConfig[] = [
     { slug: 'compiled_file_cost_consultant', label: 'Compiled file for cost consultant', phase: 'costs', sortOrder: 59, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Compiled file for cost consultant' },
     { slug: 'file_at_cost_consultant', label: 'File at cost consultant', phase: 'costs', sortOrder: 60, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'File at cost consultant' },
     { slug: 'obtain_taxation_date', label: 'Obtain taxation date', phase: 'costs', sortOrder: 61, requiresNote: false, requiresDate: true, requiresClientAction: false, clientMessage: 'Obtain taxation date' },
-    { slug: 'received_costs_refund', label: 'Received money from RAF for costs – refund client for expert and counsel fees', phase: 'costs', sortOrder: 62, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received money from RAF for costs – refund client for expert and counsel fees' },
-    { slug: 'follow_up_interest_payment', label: 'Follow up payment of interest on capital from RAF', phase: 'costs', sortOrder: 63, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Follow up payment of interest on capital from RAF' },
+    { slug: 'receive_bill_send_raf', label: 'Receive Bill from Cost Consultant and send it to RAF to pay', phase: 'costs', sortOrder: 62, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Receive Bill from Cost Consultant and send it to RAF to pay' },
+    { slug: 'received_costs_refund', label: 'Received money from RAF for costs – refund client for expert and counsel fees', phase: 'costs', sortOrder: 63, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received money from RAF for costs – refund client for expert and counsel fees' },
+    { slug: 'follow_up_interest_payment', label: 'Follow up payment of interest on capital from RAF', phase: 'costs', sortOrder: 64, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Follow up payment of interest on capital from RAF' },
 
     // UNDERTAKING
-    { slug: 'received_undertaking', label: 'Received Undertaking from RAF', phase: 'undertaking', sortOrder: 64, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received Undertaking from RAF' },
-    { slug: 'sent_undertaking_request', label: 'Sent request to RAF for Undertaking', phase: 'undertaking', sortOrder: 65, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Sent request to RAF for Undertaking' },
-    { slug: 'followed_up_undertaking', label: 'Followed up at RAF for Undertaking', phase: 'undertaking', sortOrder: 66, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up at RAF for Undertaking' },
+    { slug: 'received_undertaking', label: 'Received Undertaking from RAF', phase: 'undertaking', sortOrder: 65, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Received Undertaking from RAF' },
+    { slug: 'sent_undertaking_request', label: 'Sent request to RAF for Undertaking', phase: 'undertaking', sortOrder: 66, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Sent request to RAF for Undertaking' },
+    { slug: 'followed_up_undertaking', label: 'Followed up at RAF for Undertaking', phase: 'undertaking', sortOrder: 67, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Followed up at RAF for Undertaking' },
 
     // FINALIZATION
-    { slug: 'matter_finalized', label: 'All aspects of the matter have been finalized. Matter finalized. Close file', phase: 'finalization', sortOrder: 67, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'All aspects of the matter have been finalized. Matter finalized. Close file' },
+    { slug: 'matter_finalized', label: 'All aspects of the matter have been finalized. Matter finalized. Close file', phase: 'finalization', sortOrder: 68, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'All aspects of the matter have been finalized. Matter finalized. Close file' },
 ];
 
 // Helper functions
