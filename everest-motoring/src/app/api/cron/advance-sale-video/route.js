@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/server";
 import { pollSeedanceClip } from "@/utils/ai/seedanceService";
 import { addCongratsVoiceover } from "@/utils/ai/congratsVoiceover";
+import { postSoldVideoToEmber } from "@/app/admin/inventory/socialAction";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -81,6 +82,10 @@ export async function GET(request) {
           sale_video_completed_at: new Date().toISOString(),
         })
         .eq("id", sale.id);
+
+      // Queue the celebration video to Everest's social pages (pending approval
+      // in ember-social), scheduled for the morning of the review-email day.
+      await postSoldVideoToEmber(sale.id);
 
       return NextResponse.json({ finalized: sale.id });
     }

@@ -13,6 +13,7 @@ import {
     buildSeedancePrompt,
 } from "@/utils/ai/seedanceService";
 import { addCongratsVoiceover } from "@/utils/ai/congratsVoiceover";
+import { postSoldVideoToEmber } from "./socialAction";
 
 const REVIEW_DELAY_DAYS = 4;
 
@@ -403,6 +404,10 @@ export async function pollSaleVideo(saleId) {
                 });
             }
         }
+
+        // Queue the celebration video to Everest's social pages (pending approval
+        // in ember-social), scheduled for the morning of the review-email day.
+        await postSoldVideoToEmber(saleId);
 
         revalidatePath("/admin/inventory");
         return { status: "ready", videoUrl: finalUrl };

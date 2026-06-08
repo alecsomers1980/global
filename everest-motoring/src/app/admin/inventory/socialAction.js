@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getVehicleUrl as buildVehicleUrl } from "@/utils/url/vehicleUrl";
 
@@ -233,4 +233,85 @@ export async function createSocialPost(car) {
         console.error("Error posting to Ember Social:", error);
         return { success: false, error: error.message };
     }
+}
+
+export async function postSoldVideoToEmber(saleId) {
+  const apiKey = process.env.EMBER_SOCIAL_API_KEY;
+  const apiUrl = process.env.EMBER_SOCIAL_URL || "http://localhost:3000";
+  if (!apiKey) return;
+
+  try {
+    const admin = await createAdminClient();
+
+    // Atomic claim: update social_post_created_at only if null
+    const { data: claimed } = await admin
+      .from("sales")
+      .update({ social_post_created_at: new Date().toISOString() })
+      .eq("id", saleId)
+      .is("social_post_created_at", null)
+      .select(
+        "id, car_id, buyer_name, sale_video_url, sale_video_status, sold_at, review_email_scheduled_for"
+      );
+
+    if (!claimed || claimed.length === 0) return; // already posted or claimed elsewhere
+    const sale = claimed[0];
+
+    // Video must be ready before posting
+    if (sale.sale_video_status !== "ready" || !sale.sale_video_url) {
+      await admin
+        .from("sales")
+        .update({ social_post_created_at: null })
+        .eq("id", saleId);
+      return;
+    }
+
+    // Look up the car details
+    const { data: car } = await admin
+      .from("cars")
+      .select("make, model, year")
+      .eq("id", sale.car_id)
+      .single();
+    const label = car
+      ? [car.year, car.make, car.model].filter(Boolean).join(" ")
+      : "their new car";
+
+    // Compute target posting time: 08:00 SAST (UTC+2) on the review-email day
+    const base = sale.review_email_scheduled_for
+      ? new Date(sale.review_email_scheduled_for)
+      : new Date(
+          new Date(sale.sold_at || Date.now()).getTime() + 4 * 24 * 60 * 60 * 1000
+        );
+    const sastDate = new Date(base.getTime() + 2 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 10);
+    const scheduled_at = `${sastDate}T06:00:00Z`; // 08:00 SAST
+
+    const content = `🎉 SOLD! Another happy Everest Motoring customer is hitting the road in their ${label}. 🚗
+
+Congratulations and enjoy every kilometre — from all of us at Everest Motoring, White River.
+
+Looking for your next car? Browse our showroom at everestmotoring.co.za
+
+#EverestMotoring #JustSold #WhiteRiver`;
+
+    const payload = {
+      content,
+      platforms: ["facebook", "instagram"],
+      media_urls: [sale.sale_video_url],
+      scheduled_at,
+    };
+
+    try {
+      await sendToEmber(payload, apiKey, apiUrl);
+    } catch (postErr) {
+      // Post failed — roll back the claim so it can be retried
+      await admin
+        .from("sales")
+        .update({ social_post_created_at: null })
+        .eq("id", saleId);
+      console.warn("[postSoldVideoToEmber] ember post failed:", postErr.message);
+    }
+  } catch (e) {
+    console.warn("[postSoldVideoToEmber] failed:", e.message);
+  }
 }
