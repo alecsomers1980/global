@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Plus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { getStatusLabel, getStatusColor, getStatusConfig, PHASE_CONFIG, RAF_STATUSES, type StatusPhase } from "@/lib/statusConfig";
+import { getStatusLabel, getStatusColor, getStatusConfig, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { getCaseStatuses } from "@/lib/statuses";
 import { getBranchLabel } from "@/lib/branch";
 import CaseSearch from "@/components/admin/CaseSearch";
 import { fetchAllRows } from "@/lib/fetchAllRows";
@@ -49,6 +50,8 @@ export default async function AdminCasesPage({ searchParams }: Props) {
     const sortField = searchParams.sort || "case_number";
     const sortOrder = (searchParams.order || "asc") as "asc" | "desc";
 
+    const statuses = await getCaseStatuses();
+
     const { data: { user } } = await supabase.auth.getUser();
 
     const { data: profile } = await supabase
@@ -94,7 +97,7 @@ export default async function AdminCasesPage({ searchParams }: Props) {
 
         // Apply phase filter
         if (phaseFilter) {
-            const phaseStatuses = RAF_STATUSES.filter(s => s.phase === phaseFilter).map(s => s.slug);
+            const phaseStatuses = statuses.filter(s => s.phase === phaseFilter).map(s => s.slug);
             if (phaseStatuses.length > 0) {
                 q = q.in("status", phaseStatuses);
             }
@@ -141,7 +144,7 @@ export default async function AdminCasesPage({ searchParams }: Props) {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {phases.map(([phase, config]) => {
                     const count = allCases?.filter((c: any) => {
-                        const sc = getStatusConfig(c.status);
+                        const sc = getStatusConfig(c.status, statuses);
                         return sc?.phase === phase;
                     }).length || 0;
                     const isActive = phaseFilter === phase;
@@ -211,8 +214,8 @@ export default async function AdminCasesPage({ searchParams }: Props) {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {cases?.map((c: any) => {
-                                const { bgColor, textColor } = getStatusColor(c.status);
-                                const label = getStatusLabel(c.status);
+                                const { bgColor, textColor } = getStatusColor(c.status, statuses);
+                                const label = getStatusLabel(c.status, statuses);
                                 return (
                                     <tr key={c.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4 text-xs font-mono text-gray-600">{c.case_number}</td>

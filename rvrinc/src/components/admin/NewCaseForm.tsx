@@ -9,8 +9,9 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
 import { Loader2, RefreshCw } from "lucide-react";
+import { PHASE_CONFIG, type StatusPhase, type StatusConfig } from "@/lib/statusConfig";
 
-export function NewCaseForm({ attorneys, userBranch }: { attorneys: any[]; userBranch?: string | null }) {
+export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: any[]; userBranch?: string | null; statuses: StatusConfig[] }) {
     const [title, setTitle] = useState("");
     const [caseNumber, setCaseNumber] = useState("");
     const [attorneyId, setAttorneyId] = useState("");
@@ -27,6 +28,7 @@ export function NewCaseForm({ attorneys, userBranch }: { attorneys: any[]; userB
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
+    const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
 
     const generateCaseNumber = () => {
         const prefix = "KC";
@@ -210,11 +212,15 @@ export function NewCaseForm({ attorneys, userBranch }: { attorneys: any[]; userB
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                     >
-                        <option value="consultation_complete">Consultation complete (Intake)</option>
-                        <option value="requested_records">Requested records (Intake)</option>
-                        <option value="claim_lodged">Claim lodged date</option>
-                        <option value="drafting_summons">Drafting Summons</option>
-                        <option value="summons_issued_served">Summons issued and served</option>
+                        {phases.map(([phase, config]) => (
+                            <optgroup key={phase} label={config.label}>
+                                {statuses.filter(s => s.phase === phase).map(s => (
+                                    <option key={s.slug} value={s.slug}>
+                                        {s.sortOrder}. {s.label}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        ))}
                     </Select>
                 </div>
             </div>

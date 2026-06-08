@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, BarChart3, AlertTriangle, Users, Calendar, Clock, UserCheck, History } from "lucide-react";
-import { getStatusLabel, getStatusColor, PHASE_CONFIG, RAF_STATUSES, type StatusPhase } from "@/lib/statusConfig";
+import { getStatusLabel, getStatusColor, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { getCaseStatuses } from "@/lib/statuses";
 import { getBranchLabel } from "@/lib/branch";
 import { fetchAllRows } from "@/lib/fetchAllRows";
 
@@ -12,6 +13,7 @@ interface Props {
 
 export default async function ReportsPage({ searchParams }: Props) {
     const supabase = createClient();
+    const statuses = await getCaseStatuses();
     const branchFilter = searchParams.branch || "";
     const changedByFilter = searchParams.changedBy || "";
     const dateFromFilter = searchParams.dateFrom || "";
@@ -78,7 +80,7 @@ export default async function ReportsPage({ searchParams }: Props) {
     // ---- REPORT 1: Pipeline Overview ----
     const pipelineData = phases.map(([phase, config]) => {
         const count = cases?.filter((c: any) => {
-            const statusConfig = RAF_STATUSES.find(s => s.slug === c.status);
+            const statusConfig = statuses.find(s => s.slug === c.status);
             return statusConfig?.phase === phase;
         }).length || 0;
         return { phase, ...config, count };
@@ -89,7 +91,7 @@ export default async function ReportsPage({ searchParams }: Props) {
     const overdueCases = cases?.filter((c: any) => c.diary_date && new Date(c.diary_date) < now) || [];
 
     // ---- REPORT 3: Client Action Pending ----
-    const clientActionStatuses = RAF_STATUSES.filter(s => s.requiresClientAction).map(s => s.slug);
+    const clientActionStatuses = statuses.filter(s => s.requiresClientAction).map(s => s.slug);
     const clientActionCases = cases?.filter((c: any) => clientActionStatuses.includes(c.status)) || [];
 
     // ---- REPORT 4: Attorney Workload ----
@@ -100,7 +102,7 @@ export default async function ReportsPage({ searchParams }: Props) {
             attorneyMap[name] = { name, total: 0, phases: {} };
         }
         attorneyMap[name].total++;
-        const statusConfig = RAF_STATUSES.find(s => s.slug === c.status);
+        const statusConfig = statuses.find(s => s.slug === c.status);
         const phase = statusConfig?.phase || 'unknown';
         attorneyMap[name].phases[phase] = (attorneyMap[name].phases[phase] || 0) + 1;
     });
@@ -187,7 +189,7 @@ export default async function ReportsPage({ searchParams }: Props) {
                     {clientActionCases.length > 0 ? (
                         <div className="space-y-3 max-h-[300px] overflow-y-auto">
                             {clientActionCases.map((c: any) => {
-                                const { bgColor, textColor } = getStatusColor(c.status);
+                                const { bgColor, textColor } = getStatusColor(c.status, statuses);
                                 return (
                                     <Link key={c.id} href={`/admin/cases/${c.id}`} className="block p-3 bg-amber-50 rounded-lg border border-amber-100 hover:bg-amber-100 transition-colors">
                                         <div className="flex justify-between items-start">
@@ -196,7 +198,7 @@ export default async function ReportsPage({ searchParams }: Props) {
                                                 <p className="text-xs text-gray-500">{c.case_number}</p>
                                             </div>
                                             <span className={`text-xs font-bold px-2 py-0.5 rounded ${bgColor} ${textColor}`}>
-                                                {getStatusLabel(c.status)}
+                                                {getStatusLabel(c.status, statuses)}
                                             </span>
                                         </div>
                                     </Link>
@@ -336,7 +338,7 @@ export default async function ReportsPage({ searchParams }: Props) {
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {recentActivity.map((entry: any) => {
-                                    const { bgColor, textColor } = getStatusColor(entry.new_status);
+                                    const { bgColor, textColor } = getStatusColor(entry.new_status, statuses);
                                     return (
                                         <tr key={entry.id} className="hover:bg-gray-50">
                                             <td className="px-4 py-3">
@@ -355,11 +357,11 @@ export default async function ReportsPage({ searchParams }: Props) {
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-1.5">
                                                     {entry.old_status && (
-                                                        <span className="text-xs text-gray-400 line-through">{getStatusLabel(entry.old_status)}</span>
+                                                        <span className="text-xs text-gray-400 line-through">{getStatusLabel(entry.old_status, statuses)}</span>
                                                     )}
                                                     {entry.old_status && <span className="text-gray-300">→</span>}
                                                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${bgColor} ${textColor}`}>
-                                                        {getStatusLabel(entry.new_status)}
+                                                        {getStatusLabel(entry.new_status, statuses)}
                                                     </span>
                                                 </div>
                                             </td>

@@ -1,11 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { NewCaseForm } from "@/components/admin/NewCaseForm";
+import { getCaseStatuses } from "@/lib/statuses";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 export default async function NewCasePage() {
     const supabase = createClient();
+    const statuses = await getCaseStatuses();
 
     // Fetch attorneys for dropdown
     const { data: attorneys } = await supabase
@@ -38,6 +40,7 @@ export default async function NewCasePage() {
                 <NewCaseForm
                     attorneys={attorneys || []}
                     userBranch={profile?.branch}
+                    statuses={statuses}
                 />
             </div>
         </div>

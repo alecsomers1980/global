@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getStatusLabel, getStatusColor, getPhaseProgress, getClientMessage, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { getCaseStatuses } from "@/lib/statuses";
 
 export async function POST(req: NextRequest) {
     try {
@@ -100,10 +101,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const statusLabel = getStatusLabel(caseData.status);
-        const { bgColor, textColor } = getStatusColor(caseData.status);
-        const progress = getPhaseProgress(caseData.status);
-        const clientMessage = getClientMessage(caseData.status);
+        const statuses = await getCaseStatuses();
+        const statusLabel = getStatusLabel(caseData.status, statuses);
+        const { bgColor, textColor } = getStatusColor(caseData.status, statuses);
+        const progress = getPhaseProgress(caseData.status, statuses);
+        const clientMessage = getClientMessage(caseData.status, statuses);
         const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
 
         return NextResponse.json({

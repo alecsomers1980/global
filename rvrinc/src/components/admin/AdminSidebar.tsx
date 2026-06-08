@@ -11,7 +11,8 @@ import {
     Shield,
     ShieldCheck,
     Globe,
-    BarChart3
+    BarChart3,
+    ListChecks
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +22,7 @@ const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Case Manager", href: "/admin/cases", icon: Briefcase },
     { name: "Reports", href: "/admin/reports", icon: BarChart3 },
+    { name: "Case Statuses", href: "/admin/statuses", icon: ListChecks },
     { name: "User Management", href: "/admin/users", icon: ShieldCheck },
     { name: "Settings", href: "/admin/settings", icon: Settings },
 ];

@@ -7,6 +7,7 @@ import { getStatusLabel, getStatusColor, getPhaseProgress, PHASE_CONFIG, type St
 import { getBranchLabel } from "@/lib/branch";
 import { getPrescriptionInfo } from "@/lib/prescription";
 import StatusUpdateForm from "@/components/admin/StatusUpdateForm";
+import { getCaseStatuses } from "@/lib/statuses";
 import AssignAttorneyForm from "@/components/admin/AssignAttorneyForm";
 import SharePointFiles from "@/components/admin/SharePointFiles";
 import { listCaseFiles } from "@/lib/sharepoint";
@@ -60,9 +61,10 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
         changed_by_profile: { full_name: changerMap.get(h.changed_by) || null },
     })) || [];
 
-    const { bgColor, textColor } = getStatusColor(caseData.status);
-    const statusLabel = getStatusLabel(caseData.status);
-    const progress = getPhaseProgress(caseData.status);
+    const statuses = await getCaseStatuses();
+    const { bgColor, textColor } = getStatusColor(caseData.status, statuses);
+    const statusLabel = getStatusLabel(caseData.status, statuses);
+    const progress = getPhaseProgress(caseData.status, statuses);
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
     const prescription = getPrescriptionInfo(caseData.accident_date, caseData.status);
 
@@ -262,7 +264,7 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Status Update Form */}
                 <div className="lg:col-span-1">
-                    <StatusUpdateForm caseId={caseData.id} currentStatus={caseData.status} />
+                    <StatusUpdateForm caseId={caseData.id} currentStatus={caseData.status} statuses={statuses} />
                 </div>
 
                 {/* Status Timeline */}
@@ -278,7 +280,7 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
 
                             <div className="space-y-6">
                                 {statusHistory.map((entry: any, index: number) => {
-                                    const entryColor = getStatusColor(entry.new_status);
+                                    const entryColor = getStatusColor(entry.new_status, statuses);
                                     return (
                                         <div key={entry.id} className="relative flex gap-4 pl-2">
                                             {/* Dot */}
@@ -287,11 +289,11 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                                             <div className="flex-1 pb-2">
                                                 <div className="flex items-center gap-2 flex-wrap">
                                                     <span className={`px-2 py-0.5 rounded text-xs font-bold ${entryColor.bgColor} ${entryColor.textColor}`}>
-                                                        {getStatusLabel(entry.new_status)}
+                                                        {getStatusLabel(entry.new_status, statuses)}
                                                     </span>
                                                     {entry.old_status && (
                                                         <span className="text-xs text-gray-400">
-                                                            from {getStatusLabel(entry.old_status)}
+                                                            from {getStatusLabel(entry.old_status, statuses)}
                                                         </span>
                                                     )}
                                                 </div>

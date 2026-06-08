@@ -130,37 +130,37 @@ export const RAF_STATUSES: StatusConfig[] = [
 
 // Helper functions
 
-export function getStatusConfig(slug: string): StatusConfig | undefined {
-    return RAF_STATUSES.find(s => s.slug === slug);
+export function getStatusConfig(slug: string, statuses: StatusConfig[] = RAF_STATUSES): StatusConfig | undefined {
+    return statuses.find(s => s.slug === slug);
 }
 
-export function getStatusLabel(slug: string): string {
-    return getStatusConfig(slug)?.label || slug;
+export function getStatusLabel(slug: string, statuses: StatusConfig[] = RAF_STATUSES): string {
+    return getStatusConfig(slug, statuses)?.label || slug;
 }
 
-export function getStatusPhase(slug: string): StatusPhase | undefined {
-    return getStatusConfig(slug)?.phase;
+export function getStatusPhase(slug: string, statuses: StatusConfig[] = RAF_STATUSES): StatusPhase | undefined {
+    return getStatusConfig(slug, statuses)?.phase;
 }
 
 export function getPhaseConfig(phase: StatusPhase) {
     return PHASE_CONFIG[phase];
 }
 
-export function getStatusColor(slug: string): { bgColor: string; textColor: string } {
-    const phase = getStatusPhase(slug);
+export function getStatusColor(slug: string, statuses: StatusConfig[] = RAF_STATUSES): { bgColor: string; textColor: string } {
+    const phase = getStatusPhase(slug, statuses);
     if (!phase) return { bgColor: 'bg-gray-100', textColor: 'text-gray-800' };
     return { bgColor: PHASE_CONFIG[phase].bgColor, textColor: PHASE_CONFIG[phase].textColor };
 }
 
-export function getClientMessage(slug: string): string {
-    return getStatusConfig(slug)?.clientMessage || 'Your case is being processed. We will update you shortly.';
+export function getClientMessage(slug: string, statuses: StatusConfig[] = RAF_STATUSES): string {
+    return getStatusConfig(slug, statuses)?.clientMessage || 'Your case is being processed. We will update you shortly.';
 }
 
 const PHASE_ORDER: StatusPhase[] = ['intake', 'claim', 'litigation', 'prep_court', 'court', 'general_damages', 'payment', 'costs', 'undertaking', 'finalization'];
 
-export function getPhaseProgress(slug: string): { current: number; total: number; percentage: number } {
+export function getPhaseProgress(slug: string, statuses: StatusConfig[] = RAF_STATUSES): { current: number; total: number; percentage: number } {
     const total = PHASE_ORDER.length;
-    const config = getStatusConfig(slug);
+    const config = getStatusConfig(slug, statuses);
     if (!config) return { current: 0, total, percentage: 0 };
 
     const phaseIndex = PHASE_ORDER.indexOf(config.phase);
@@ -171,10 +171,10 @@ export function getPhaseProgress(slug: string): { current: number; total: number
     };
 }
 
-export function getStatusesByPhase(phase: StatusPhase): StatusConfig[] {
-    return RAF_STATUSES.filter(s => s.phase === phase).sort((a, b) => a.sortOrder - b.sortOrder);
+export function getStatusesByPhase(phase: StatusPhase, statuses: StatusConfig[] = RAF_STATUSES): StatusConfig[] {
+    return statuses.filter(s => s.phase === phase).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
-export function isClientActionRequired(slug: string): boolean {
-    return getStatusConfig(slug)?.requiresClientAction || false;
+export function isClientActionRequired(slug: string, statuses: StatusConfig[] = RAF_STATUSES): boolean {
+    return getStatusConfig(slug, statuses)?.requiresClientAction || false;
 }

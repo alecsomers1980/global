@@ -2,14 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { updateCaseStatus } from "@/app/admin/cases/actions";
-import { RAF_STATUSES, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
+import { PHASE_CONFIG, type StatusPhase, type StatusConfig } from "@/lib/statusConfig";
 
 interface StatusUpdateFormProps {
     caseId: string;
     currentStatus: string;
+    statuses: StatusConfig[];
 }
 
-export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdateFormProps) {
+export default function StatusUpdateForm({ caseId, currentStatus, statuses }: StatusUpdateFormProps) {
     const [selectedStatus, setSelectedStatus] = useState(currentStatus);
     const [notes, setNotes] = useState("");
     const [scheduledDate, setScheduledDate] = useState("");
@@ -17,7 +18,7 @@ export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdate
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const selectedConfig = RAF_STATUSES.find(s => s.slug === selectedStatus);
+    const selectedConfig = statuses.find(s => s.slug === selectedStatus);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,7 +62,7 @@ export default function StatusUpdateForm({ caseId, currentStatus }: StatusUpdate
                 >
                     {phases.map(([phase, config]) => (
                         <optgroup key={phase} label={`${config.label}`}>
-                            {RAF_STATUSES.filter(s => s.phase === phase).map(status => (
+                            {statuses.filter(s => s.phase === phase).map(status => (
                                 <option key={status.slug} value={status.slug}>
                                     {status.sortOrder}. {status.label}
                                 </option>
