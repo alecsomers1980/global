@@ -24,7 +24,7 @@ export default function PageBanner({ title, subtitle, bgImageUrl, overlayOpacity
                 {/* Yellow Bar Accent */}
                 <div className="w-12 h-1 bg-primary mb-8 rounded-full shadow-[0_0_15px_rgba(255,255,1,0.5)]" />
                 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
                     {title}
                 </h1>
                 

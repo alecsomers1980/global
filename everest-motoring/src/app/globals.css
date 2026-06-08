@@ -18,12 +18,9 @@
       background: #a8a8a8;
   }
 
-  /* Brand typography: Arial body text, Microgramma D Extended headers
-     (applies across the public site and the admin portal). */
+  /* Brand typography: Arial everywhere by default. Only page-banner titles use
+     Microgramma D Extended — they opt in via the `font-display` utility class. */
   body {
       font-family: Arial, Helvetica, sans-serif;
-  }
-  h1, h2, h3, h4, h5, h6 {
-      font-family: var(--font-microgramme), Arial, sans-serif;
   }
 }

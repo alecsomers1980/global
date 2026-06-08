@@ -67,7 +67,7 @@ export default async function NewsIndexPage() {
                     {/* Yellow Bar Accent */}
                     <div className="w-12 h-1 bg-primary mb-8 rounded-full shadow-[0_0_15px_rgba(255,255,1,0.5)]" />
 
-                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
+                    <h1 className="font-display text-4xl md:text-5xl lg:text-7xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
                         Latest News <span className="text-primary">&</span> Guides
                     </h1>
                     
@@ -266,7 +266,7 @@ export default async function NewsIndexPage() {
                                             </p>
                                         )}
                                         <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                                            <span className="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+                                            <span className="text-sm font-bold text-black uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
                                                 Read Article
                                                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
                                             </span>

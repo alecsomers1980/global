@@ -54,7 +54,7 @@ export default async function Home() {
             <div className="mb-4 inline-flex items-center rounded-full bg-primary/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary-dark">
               Premium Pre-Owned Specialists
             </div>
-            <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-white lg:text-6xl">
+            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tight text-white lg:text-6xl">
               We sell cars with <br />
               <span className="text-primary font-black">Integrity & Expertise.</span>
             </h1>
