@@ -42,7 +42,7 @@ export const OneYearEmail = ({ customerName = 'Valued Client', vehicleModel = 'y
             <Section>
               <Row>
                 <Column className="px-[40px] pb-[24px]">
-                  <Img src="https://images.unsplash.com/photo-1464349153735-7db50ed83c84?auto=format&fit=crop&q=80&w=800" width="520" height="auto" alt="Celebration" align="center" className="rounded-xl object-cover w-full h-auto mx-auto" />
+                  <Img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800" width="520" height="auto" alt="Your car, one year on" align="center" className="rounded-xl object-cover w-full h-auto mx-auto" />
                 </Column>
               </Row>
             </Section>

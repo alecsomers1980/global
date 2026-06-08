@@ -55,7 +55,6 @@ export default async function AdminLayout({ children }) {
                         <a href="/admin/inventory" className="text-slate-400 hover:text-white transition-all">Inventory</a>
                         <a href="/admin/news" className="text-slate-400 hover:text-white transition-all">News</a>
                         <a href="/admin/leads" className="text-slate-400 hover:text-white transition-all">Car Inquiries</a>
-                        <a href="/admin/assign" className="text-slate-400 hover:text-white transition-all">Assign Vehicle</a>
                         <a href="/admin/trade-ins" className="text-slate-400 hover:text-white transition-all">Trade-In Requests</a>
                         <a href="/admin/email-templates" className="text-slate-400 hover:text-white transition-all">Email Templates</a>
                         <a href="/admin/subscribers" className="text-slate-400 hover:text-white transition-all">Subscribers</a>

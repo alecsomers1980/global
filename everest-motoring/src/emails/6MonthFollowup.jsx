@@ -29,7 +29,7 @@ const brandConfig = {
   },
 };
 
-export const OneMonthFollowupEmail = ({
+export const SixMonthFollowupEmail = ({
   customerName = 'Valued Client',
   vehicleModel = 'Toyota Fortuner',
   carImageUrl = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
@@ -38,7 +38,7 @@ export const OneMonthFollowupEmail = ({
     <Html>
       <Tailwind config={brandConfig}>
         <Head />
-        <Preview>One month with your {vehicleModel} — how is it going?</Preview>
+        <Preview>Six months with your {vehicleModel} — how is it going?</Preview>
         <Body className="bg-neutral-100 font-sans">
           <Container width="600" className="mx-auto my-10 w-[600px] max-w-full bg-white border border-neutral-200 rounded-2xl overflow-hidden">
             {/* Header / Logo */}
@@ -54,10 +54,10 @@ export const OneMonthFollowupEmail = ({
               <Row>
                 <Column className="px-[40px] pt-[40px] pb-[24px] text-center">
                   <Heading className="text-3xl font-bold text-neutral-900 m-0 mb-4">
-                    One Month of Excellence
+                    Six Months of Excellence
                   </Heading>
                   <Text className="text-neutral-600 text-lg leading-relaxed m-0 mb-2">
-                    Hi {customerName}, it's been exactly one month since you drove away in your{' '}
+                    Hi {customerName}, it's been six months since you drove away in your{' '}
                     <strong>{vehicleModel}</strong>.
                   </Text>
                   <Text className="text-neutral-600 text-lg leading-relaxed m-0">
@@ -78,7 +78,8 @@ export const OneMonthFollowupEmail = ({
                       width="520"
                       height="auto"
                       alt={vehicleModel}
-                      className="rounded-xl object-cover w-full h-auto"
+                      align="center"
+                      className="rounded-xl object-cover w-full h-auto mx-auto"
                     />
                   </Column>
                 </Row>
@@ -107,7 +108,7 @@ export const OneMonthFollowupEmail = ({
               <Row>
                 <Column className="px-[40px] pb-[40px] text-center">
                   <Text className="text-neutral-500 italic text-sm m-0">
-                    Share a photo of your new ride and tag us to be featured on our social media!
+                    Share a photo of your ride and tag us to be featured on our social media!
                   </Text>
                 </Column>
               </Row>
@@ -136,4 +137,4 @@ export const OneMonthFollowupEmail = ({
   );
 };
 
-export default OneMonthFollowupEmail;
+export default SixMonthFollowupEmail;

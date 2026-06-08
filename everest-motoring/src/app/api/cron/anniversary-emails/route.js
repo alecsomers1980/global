@@ -3,6 +3,7 @@ import * as React from "react";
 import { createAdminClient } from "@/utils/supabase/server";
 import { sendEmail } from "@/lib/resend";
 import { OneYearEmail } from "@/emails/OneYearEmail";
+import { SixMonthFollowupEmail } from "@/emails/6MonthFollowup";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
 
 export const runtime = "nodejs";
@@ -79,6 +80,54 @@ export async function GET(request) {
       }
     }
 
+    // --- 6-month follow-up: sales whose purchase was ~6 months ago this month ---
+    const start6 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 6, 1));
+    const end6 = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1));
+    let sixMonthSent = 0;
+    try {
+      const { data: sales6 } = await admin
+        .from("sales")
+        .select("id, buyer_name, buyer_email, car_id, sold_at")
+        .gte("sold_at", start6.toISOString())
+        .lt("sold_at", end6.toISOString());
+
+      for (const sale of sales6 || []) {
+        if (!sale.buyer_email) continue;
+        let vehicleModel = "your vehicle";
+        let carImageUrl;
+        try {
+          const { data: car } = await admin
+            .from("cars")
+            .select("make, model, year, main_image_url")
+            .eq("id", sale.car_id)
+            .single();
+          if (car) {
+            vehicleModel = [car.year, car.make, car.model].filter(Boolean).join(" ") || "your vehicle";
+            carImageUrl = car.main_image_url || undefined;
+          }
+        } catch {
+          // ignore car lookup failure
+        }
+
+        try {
+          await sendEmail({
+            to: sale.buyer_email,
+            subject: "Six months with your " + vehicleModel + " — how's it going?",
+            react: React.createElement(SixMonthFollowupEmail, {
+              customerName: sale.buyer_name || "Valued Client",
+              vehicleModel,
+              ...(carImageUrl ? { carImageUrl } : {}),
+            }),
+          });
+          sixMonthSent++;
+        } catch (followupError) {
+          console.error(`[cron/anniversary-emails] 6-month send failed for ${sale.buyer_email}:`, followupError);
+        }
+      }
+    } catch (followupQueryError) {
+      console.error("[cron/anniversary-emails] 6-month query failed:", followupQueryError);
+    }
+
     // Staff digest
     const monthLabel = start.toLocaleString("en-ZA", {
       month: "long",
@@ -111,6 +160,7 @@ export async function GET(request) {
       success: true,
       month: monthLabel,
       count: recipients.length,
+      sixMonthFollowups: sixMonthSent,
       recipients,
     });
   } catch (err) {

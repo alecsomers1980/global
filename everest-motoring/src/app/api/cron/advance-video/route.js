@@ -34,6 +34,12 @@ export const maxDuration = 300;
 
 const CLIP_DURATION_MS = 8000;
 const TOTAL_SCENES = 4;
+
+// If a car makes no real progress for this long it's considered stuck (a crash
+// mid-step or a dead render task) and is auto-failed so the queue can move on.
+// Must comfortably exceed the longest legitimate single step (a scene's render
+// poll window). Tunable without a redeploy via AI_STUCK_TIMEOUT_MIN.
+const STUCK_TIMEOUT_MS = Number(process.env.AI_STUCK_TIMEOUT_MIN || 20) * 60 * 1000;
 const IN_PROGRESS_STATES = [
     "ai_pending",
     "ai_processing",
@@ -71,7 +77,13 @@ async function pickNextCar(admin) {
 }
 
 async function updateCar(admin, carId, patch) {
-    const { error } = await admin.from("cars").update(patch).eq("id", carId);
+    // Every updateCar call represents real progress (the pending-poll ticks
+    // return without calling this), so stamp the progress time here — that's
+    // what the stuck-timeout check measures against.
+    const { error } = await admin
+        .from("cars")
+        .update({ ...patch, ai_progress_at: new Date().toISOString() })
+        .eq("id", carId);
     if (error) throw new Error(`updateCar: ${error.message}`);
 }
 
@@ -99,6 +111,24 @@ export async function GET(request) {
     const logPrefix = `[Cron Pipeline] ${car.id} (${carLabel}) phase=${car.video_url}:`;
 
     try {
+        // Self-heal: a car that hasn't progressed past the timeout is stuck
+        // (crashed mid-step or a render task that never returns). Fail it so the
+        // queue moves on to the next car. New cars have a null ai_progress_at
+        // (not yet touched) and are exempt until their first step stamps it.
+        if (car.ai_progress_at) {
+            const stuckMs = Date.now() - Date.parse(car.ai_progress_at);
+            if (stuckMs > STUCK_TIMEOUT_MS) {
+                const mins = Math.round(stuckMs / 60000);
+                console.error(`${logPrefix} no progress for ${mins} min -> auto-failing to unblock the queue`);
+                await updateCar(admin, car.id, {
+                    video_url: `error: timed out — no progress for ${mins} min (auto-failed to unblock the render queue)`,
+                    ai_pipeline_state: null,
+                });
+                revalidatePath("/admin/inventory");
+                return NextResponse.json({ advanced: car.id, timed_out: true, stuck_minutes: mins });
+            }
+        }
+
         if (car.video_url === "ai_pending") {
             // Phase 1: script + preflight. Mark intermediate state first so a
             // concurrent tick can't double-enter.

@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/utils/supabase/server";
+import SendNewsletterButton from "./SendNewsletterButton";
 
 export const metadata = {
     title: "Newsletter Subscribers | Everest Admin",
@@ -23,6 +24,12 @@ export default async function SubscribersPage() {
                 <p className="text-slate-400 mt-1 font-medium">
                     Email addresses captured from the newsletter sign-up forms.
                 </p>
+                <div className="mt-5">
+                    <SendNewsletterButton />
+                    <p className="text-slate-400 text-xs mt-2 font-medium">
+                        Sends the latest-arrivals newsletter to all subscribers now. It also goes out automatically once a year.
+                    </p>
+                </div>
             </div>
 
             <div className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">

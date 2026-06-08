@@ -1,9 +1,8 @@
 import { render } from "@react-email/components";
 import TemplateViewer from "./TemplateViewer";
 
-import WelcomeEmail from "@/emails/WelcomeEmail";
 import { SystemNotificationEmail } from "@/emails/SystemNotification";
-import { OneMonthFollowupEmail } from "@/emails/1MonthFollowup";
+import { SixMonthFollowupEmail } from "@/emails/6MonthFollowup";
 import { ThreeYearTradeInEmail } from "@/emails/3YearTradeIn";
 import { AffiliateMediaKit } from "@/emails/AffiliateMediaKit";
 import { OneYearEmail } from "@/emails/OneYearEmail";
@@ -17,12 +16,6 @@ export const metadata = {
 // Each template renders with its built-in default props, which already contain
 // representative sample data — so the gallery shows exactly what gets sent.
 const TEMPLATES = [
-    {
-        key: "welcome",
-        name: "Welcome",
-        description: "Sent to a new client when they register an account.",
-        element: <WelcomeEmail />,
-    },
     {
         key: "system-notification",
         name: "System Notification",
@@ -48,10 +41,10 @@ const TEMPLATES = [
         element: <PostSaleReviewEmail />,
     },
     {
-        key: "one-month-followup",
-        name: "1-Month Follow-Up",
-        description: "Check-in sent roughly one month after a purchase.",
-        element: <OneMonthFollowupEmail />,
+        key: "six-month-followup",
+        name: "6-Month Follow-Up",
+        description: "Check-in sent roughly six months after a purchase.",
+        element: <SixMonthFollowupEmail />,
     },
     {
         key: "three-year-tradein",
