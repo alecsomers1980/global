@@ -127,10 +127,10 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-[0.2em]">
-                            <th className="p-6">Image</th>
-                            <th className="p-6">Vehicle</th>
-                            <th className="p-6">Price</th>
-                            <th className="p-6">Status</th>
+                            <th className="p-6 w-[104px]">Image</th>
+                            <th className="p-6 w-[34%]">Vehicle</th>
+                            <th className="p-6 w-[150px] whitespace-nowrap">Price</th>
+                            <th className="p-6 w-[150px]">Status</th>
                             <th className="p-6 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -140,22 +140,22 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                 <tr key={car.id} className="hover:bg-slate-50 transition-colors">
                                     <td className="p-6">
                                         {car.main_image_url ? (
-                                            <img src={car.main_image_url} className="w-20 h-14 object-cover rounded-lg border border-white/10 shadow-lg" alt={`${car.make} ${car.model}`} />
+                                            <img src={car.main_image_url} className="w-24 h-16 object-cover rounded-lg border border-slate-200 shadow-sm" alt={`${car.make} ${car.model}`} />
                                         ) : (
-                                            <div className="w-20 h-14 bg-white/5 rounded-lg flex items-center justify-center text-slate-600">
+                                            <div className="w-24 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
                                                 <span className="material-symbols-outlined text-2xl">directions_car</span>
                                             </div>
                                         )}
                                     </td>
                                     <td className="p-6">
-                                        <p className="font-black text-slate-900 text-lg tracking-tight">{car.year} {car.make} {car.model}</p>
+                                        <p className="font-black text-slate-900 text-base tracking-tight">{car.year} {car.make} {car.model}</p>
                                         <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km • {car.transmission}</p>
                                     </td>
-                                    <td className="p-6 font-black text-slate-900 text-lg">
+                                    <td className="p-6 font-black text-slate-900 text-lg whitespace-nowrap">
                                         R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                     </td>
-                                    <td className="p-4">
-                                        <span className={`inline-block px-2 py-1 text-xs font-bold uppercase rounded-md mb-2 ${car.status === 'available' ? 'bg-green-100 text-green-700' :
+                                    <td className="p-6">
+                                        <span className={`inline-flex items-center px-3 py-1 text-[11px] font-bold uppercase tracking-wide rounded-full mb-2 ${car.status === 'available' ? 'bg-green-100 text-green-700' :
                                             car.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
                                                 'bg-slate-200 text-slate-600'
                                             }`}>
@@ -171,7 +171,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                             </div>
                                         )}
                                     </td>
-                                    <td className="p-4 flex justify-end gap-2">
+                                    <td className="p-6 flex justify-end gap-2">
                                         <SeoFixButton car={car} />
                                         <SocialPostButton car={car} />
                                         <MarkSoldButton car={car} />
@@ -189,7 +189,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                     {activeCars.map(renderRow)}
                                     {soldCars.length > 0 && (
                                         <tr key="sold-heading">
-                                            <td colSpan="5" className="bg-slate-100 text-slate-500 font-black uppercase tracking-[0.2em] text-xs p-4">Sold</td>
+                                            <td colSpan="5" className="bg-black text-primary font-black uppercase tracking-[0.3em] text-xs p-4">Sold</td>
                                         </tr>
                                     )}
                                     {soldCars.map(renderRow)}
