@@ -63,6 +63,10 @@ export default async function AdminLayout({ children }) {
                     </nav>
                 </div>
                 <div className="text-sm font-medium flex gap-4 items-center relative z-10">
+                    <a href="/admin/profile" className="text-slate-400 hover:text-white transition-all flex items-center gap-2 font-black uppercase tracking-widest text-[10px] bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                        <span className="material-symbols-outlined text-[18px]">account_circle</span>
+                        My Profile
+                    </a>
                     <a href="/" className="text-slate-400 hover:text-white transition-all flex items-center gap-2 font-black uppercase tracking-widest text-[10px] bg-white/5 px-4 py-2 rounded-full border border-white/10">
                         <span className="material-symbols-outlined text-[18px]">public</span>
                         View Site
