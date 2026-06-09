@@ -1,0 +1,77 @@
+@page { size: A4 landscape; margin: 0; }
+.spread { width: 297mm; height: 210mm; background: #FBF8F1; }
+@media screen {
+  .spread { margin: 24px auto; }
+}
+@media print {
+  html, body { background: white !important; }
+  body::before { display: none !important; }
+  .no-print { display: none !important; }
+  .spread { margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+  .spread:last-child { page-break-after: auto; }
+  /* Force ALL colours, backgrounds and images to print regardless of browser setting */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  img { image-rendering: -webkit-optimize-contrast; }
+}
+
+/* ─── Premium typographic refinements ─── */
+.dropcap::first-letter {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 3.8em;
+  line-height: 0.85;
+  float: left;
+  margin: 0.05em 0.12em 0 0;
+  color: #C5A059;
+}
+.pullquote {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+.pullquote::before {
+  content: "\201C";
+  font-size: 1.6em;
+  line-height: 0;
+  vertical-align: -0.3em;
+  color: #C5A059;
+  margin-right: 0.04em;
+}
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, #C5A059 0%, #C5A059 40%, transparent 100%);
+}
+.gold-rule-full {
+  height: 1px;
+  background: #C5A059;
+  opacity: 0.5;
+}
+.chapter-mark {
+  font-family: var(--font-playfair), serif;
+  font-style: italic;
+  color: #C5A059;
+  letter-spacing: 0.3em;
+  font-size: 11px;
+}
+.page-band {
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(27, 94, 32, 0.45);
+}
+.ornament {
+  font-family: var(--font-playfair), serif;
+  color: #C5A059;
+  font-size: 14px;
+  letter-spacing: 0.4em;
+}
+.ivory-bg { background: #FBF8F1; }
+.deep-cream-bg { background: #F3EEDF; }

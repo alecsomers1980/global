@@ -1,0 +1,512 @@
+/*
+Theme Name:   Ramenhead
+Theme URI:    https://www.ramenhead.co.za
+Description:  Hello Elementor child theme for Ramenhead — authentic Japanese ramen in Cape Town. Self-hosted Poppins, site-wide Restaurant + Menu + FAQ + Breadcrumb + Speakable JSON-LD schema, brand colours and helper shortcodes.
+Author:       Ramenhead
+Author URI:   https://www.ramenhead.co.za
+Template:     hello-elementor
+Version:      1.1.0
+Text Domain:  ramenhead
+License:      GPL v2 or later
+License URI:  https://www.gnu.org/licenses/gpl-2.0.html
+Tags:         restaurant, dark, elementor
+*/
+
+/* ========================================================================
+   Self-hosted Poppins — latin subset only (~40 KB total for 5 weights).
+   Fonts live in /fonts/. Preloaded weights 400/600 via functions.php.
+   ======================================================================== */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('fonts/poppins-300.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/poppins-400.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('fonts/poppins-500.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('fonts/poppins-600.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/poppins-700.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ========================================================================
+   Brand tokens
+   ======================================================================== */
+:root {
+    --rh-bg: #000000;
+    --rh-bg-alt: #0a0a0a;
+    --rh-fg: #ebe3d7;
+    --rh-fg-muted: #a6a39f;
+    --rh-accent: #EE3526;
+    --rh-border: rgba(235, 227, 215, 0.08);
+    --rh-font: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ========================================================================
+   Sensible defaults so non-Elementor pages (404, search, wp-login) match
+   the brand instead of inheriting Hello Elementor's white.
+   ======================================================================== */
+body {
+    background: var(--rh-bg);
+    color: var(--rh-fg-muted);
+    font-family: var(--rh-font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: var(--rh-fg);
+    transition: color 0.2s ease;
+}
+
+a:hover,
+a:focus {
+    color: var(--rh-accent);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--rh-fg);
+    font-family: var(--rh-font);
+    letter-spacing: -0.01em;
+}
+
+::selection {
+    background: var(--rh-accent);
+    color: var(--rh-bg);
+}
+
+/* Hidden SEO content used on home page (and as speakable target). */
+.rh-hidden-seo {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.page-not-found,
+.not-found {
+    background: var(--rh-bg);
+    color: var(--rh-fg);
+    padding: 120px 24px;
+    text-align: center;
+}
+
+a[href^="mailto:"],
+a[href^="tel:"],
+a[href^="https://wa.me/"] {
+    text-decoration: none;
+}
+
+a[href^="mailto:"]:hover,
+a[href^="tel:"]:hover,
+a[href^="https://wa.me/"]:hover {
+    color: var(--rh-accent);
+}
+
+/* ========================================================================
+   Footer partner logos
+   The four partner logos (Beyond / Fyn / Sushiya / Arum) are coloured
+   originals; invert them to white via filter and unify their size.
+   ======================================================================== */
+.rh-footer-logos .rh-partner-logo img,
+.rh-partner-logo img {
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+    max-height: 32px;
+    width: auto;
+    transition: opacity 0.25s ease;
+}
+
+.rh-partner-logo:hover img,
+.rh-partner-logo a:hover img {
+    opacity: 1;
+}
+
+/* ========================================================================
+   Footer text-editor links — clean, no underline
+   ======================================================================== */
+.elementor-location-footer .elementor-widget-text-editor a {
+    color: #ebe3d7;
+    text-decoration: none;
+    border: 0;
+    transition: color 0.2s ease;
+}
+
+.elementor-location-footer .elementor-widget-text-editor a:hover {
+    color: var(--rh-accent);
+}
+
+/* ========================================================================
+   Footer h5 headings — sit right against their content
+   The Elementor widget already provides the inter-block spacing; the raw
+   <h5> tag's user-agent margin was doubling the gap. Reset it so the
+   heading flows into its paragraph at normal text-line spacing.
+   ======================================================================== */
+.elementor-location-footer .elementor-widget-heading h5 {
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+}
+
+.elementor-location-footer .elementor-widget-text-editor > .elementor-widget-container > p:first-child,
+.elementor-location-footer .elementor-widget-text-editor p:first-child {
+    margin-top: 0;
+}
+
+.elementor-location-footer .elementor-widget-text-editor p {
+    margin: 0 0 4px 0;
+}
+
+/* ========================================================================
+   Site-wide content width — 80% of viewport on tablet & desktop.
+   Mobile (<768px) keeps Elementor's default (full width with section
+   padding) for readability on small screens.
+   The header location is excluded so the logo + nav still span edge-to-edge.
+   ======================================================================== */
+@media (min-width: 768px) {
+    .elementor:not(.elementor-location-header)
+    .elementor-section.elementor-top-section
+    > .elementor-container {
+        max-width: 80% !important;
+    }
+}
+
+/* ========================================================================
+   Global brand button — used in post content, footer, anywhere
+   ======================================================================== */
+.rh-btn,
+a.rh-btn {
+    display: inline-block;
+    padding: 12px 26px;
+    border: 1px solid var(--rh-fg);
+    border-radius: 50px;
+    color: var(--rh-fg);
+    background: transparent;
+    font-family: var(--rh-font);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.rh-btn:hover,
+a.rh-btn:hover,
+.rh-btn:focus,
+a.rh-btn:focus {
+    background: var(--rh-accent);
+    border-color: var(--rh-accent);
+    color: var(--rh-bg);
+}
+
+/* ========================================================================
+   Media page — horizontal category pills (single row, scrolls on mobile)
+   ======================================================================== */
+.rh-cat-pills,
+.rh-cat-pills > .elementor-container,
+.rh-cat-pills > .elementor-container > .elementor-column,
+.rh-cat-pills > .elementor-container > .elementor-column > .elementor-widget-wrap {
+    display: flex !important;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.rh-cat-pills .elementor-widget-button {
+    flex: 0 0 auto;
+    width: auto !important;
+    margin: 6px 4px;
+}
+
+@media (max-width: 1024px) {
+    .rh-cat-pills > .elementor-container,
+    .rh-cat-pills > .elementor-container > .elementor-column > .elementor-widget-wrap {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .rh-cat-pills > .elementor-container::-webkit-scrollbar,
+    .rh-cat-pills > .elementor-container > .elementor-column > .elementor-widget-wrap::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.rh-cat-pill .elementor-button.is-active,
+.rh-cat-pill.is-active .elementor-button {
+    background: var(--rh-accent) !important;
+    border-color: var(--rh-accent) !important;
+    color: var(--rh-bg) !important;
+}
+
+/* ========================================================================
+   Media page — premium image-overlay post cards
+   Posts widget output rewritten with title + excerpt absolutely positioned
+   over the featured image, with a gradient overlay for legibility.
+   ======================================================================== */
+.rh-overlay-grid .elementor-posts-container {
+    gap: 24px;
+}
+
+.rh-overlay-grid .elementor-post {
+    position: relative;
+    overflow: hidden;
+    background: #0a0a0a;
+    border: 1px solid var(--rh-border);
+    aspect-ratio: 4 / 5;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.rh-overlay-grid .elementor-post:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.rh-overlay-grid .elementor-post__thumbnail__link,
+.rh-overlay-grid .elementor-post__thumbnail {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+/* Default state: image dimmed so the overlaid title carries the card.
+   Hover: image becomes clear and the text fades out, letting the photo speak. */
+.rh-overlay-grid .elementor-post__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+    transition: opacity 0.5s ease;
+    /* Crisp scaling on retina + prevent compositor blur. */
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.rh-overlay-grid .elementor-post:hover .elementor-post__thumbnail img {
+    opacity: 1;
+}
+
+.rh-overlay-grid .elementor-post__text {
+    position: absolute;
+    inset: 0;
+    padding: 28px 24px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.25) 0%,
+        rgba(0, 0, 0, 0.35) 45%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+    pointer-events: none;
+    transition: background 0.5s ease, opacity 0.5s ease;
+}
+
+.rh-overlay-grid .elementor-post:hover .elementor-post__text {
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0) 60%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+.rh-overlay-grid .elementor-post__title,
+.rh-overlay-grid .elementor-post__excerpt,
+.rh-overlay-grid .elementor-post__meta-data {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.rh-overlay-grid .elementor-post:hover .elementor-post__title,
+.rh-overlay-grid .elementor-post:hover .elementor-post__excerpt,
+.rh-overlay-grid .elementor-post:hover .elementor-post__meta-data {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.rh-overlay-grid .elementor-post__text > * {
+    pointer-events: auto;
+}
+
+.rh-overlay-grid .elementor-post__title {
+    margin: 0 0 8px;
+    line-height: 1.25;
+}
+
+.rh-overlay-grid .elementor-post__title a {
+    color: var(--rh-fg) !important;
+    text-decoration: none;
+}
+
+.rh-overlay-grid .elementor-post__title a:hover {
+    color: var(--rh-accent) !important;
+}
+
+.rh-overlay-grid .elementor-post__meta-data {
+    color: rgba(235, 227, 215, 0.7);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    order: -1;
+}
+
+.rh-overlay-grid .elementor-post__excerpt {
+    margin: 0 0 14px;
+    color: rgba(235, 227, 215, 0.8);
+}
+
+.rh-overlay-grid .elementor-post__read-more {
+    color: var(--rh-accent) !important;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--rh-accent);
+    padding-bottom: 2px;
+    align-self: flex-start;
+}
+
+.rh-overlay-grid .elementor-post[data-rh-hidden="1"] {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .rh-overlay-grid .elementor-post {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* ========================================================================
+   Single Post page — sticky hero with title; content scrolls over it
+   ======================================================================== */
+.rh-post-hero {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    min-height: 520px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.rh-post-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.35) 0%,
+        rgba(0, 0, 0, 0.55) 60%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+.rh-post-hero .elementor-container,
+.rh-post-hero > .elementor-element {
+    position: relative;
+    z-index: 2;
+}
+
+/* The featured-image widget inside the hero fills the whole section. */
+.rh-post-hero .elementor-widget-theme-post-featured-image,
+.rh-post-hero .rh-hero-img {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 0;
+}
+
+.rh-post-hero .rh-hero-img .elementor-widget-container,
+.rh-post-hero .rh-hero-img a,
+.rh-post-hero .rh-hero-img img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    display: block;
+}
+
+.rh-post-hero .rh-hero-eyebrow,
+.rh-post-hero .rh-hero-title {
+    position: relative;
+    z-index: 3;
+    padding: 0 24px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+}
+
+.rh-post-content {
+    position: relative;
+    z-index: 2;
+    background: var(--rh-bg);
+}
+
+.rh-post-content .elementor-widget-theme-post-content p,
+.rh-post-content .elementor-widget-theme-post-content,
+.rh-post-content p {
+    color: var(--rh-fg-muted);
+    line-height: 1.8;
+    font-size: 17px;
+    font-weight: 300;
+}
+
+.rh-post-content .elementor-widget-theme-post-content a:not(.rh-btn) {
+    color: var(--rh-fg);
+    border-bottom: 1px solid rgba(235, 227, 215, 0.3);
+    text-decoration: none;
+}
+
+.rh-post-content .elementor-widget-theme-post-content a:not(.rh-btn):hover {
+    color: var(--rh-accent);
+    border-color: var(--rh-accent);
+}

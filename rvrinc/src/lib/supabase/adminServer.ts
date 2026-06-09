@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createClient as createPlainClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 function cookieHandlers(cookieStore: ReturnType<typeof cookies>) {
@@ -42,5 +43,18 @@ export const createAuthClient = () => {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         { cookies: cookieHandlers(cookieStore) }
+    )
+}
+
+// Plain service-role client — no cookies, no SSR session handling.
+// Unlike createClient() (which uses @supabase/ssr and still routes through
+// cookie-based middleware), this bypasses RLS at the Postgres policy level
+// unconditionally because it never attaches any session context to requests.
+// Use this for write operations where you need guaranteed RLS bypass.
+export const createServiceClient = () => {
+    return createPlainClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
     )
 }

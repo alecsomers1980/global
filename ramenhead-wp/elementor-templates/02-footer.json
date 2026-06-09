@@ -1,0 +1,810 @@
+{
+  "version": "0.4",
+  "title": "Ramenhead Footer",
+  "type": "footer",
+  "content": [
+    {
+      "id": "f1000001",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "%",
+          "size": 80
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "right": "0",
+          "bottom": "60",
+          "left": "0",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "56",
+          "right": "0",
+          "bottom": "40",
+          "left": "0",
+          "isLinked": false
+        },
+        "structure": "20",
+        "gap": "extended"
+      },
+      "elements": [
+        {
+          "id": "f1000002",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "_inline_size": 50
+          },
+          "elements": [
+            {
+              "id": "f1000003",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "AUTHENTIC JAPANESE RAMEN",
+                "header_size": "h4",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "f1000004",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>If you're as serious about ramen as we are, you've found the best place in Cape Town to slurp silky freshly made noodles, sip umami-rich broth which has been simmered and nurtured for days, and socialise with brimful glasses of sake.</p><p>Taking our cue from the ramen houses in Japan, not only with the authenticity of our ingredients and the care lavished on the preparation, we are casual, we are edgy, and we have a vibe — day and night, right in the heart of the city. Because the noodles are freshly made on-site, we limit the number of guests per half hour so you get the finest bowl of ramen.</p>",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.7
+                }
+              }
+            },
+            {
+              "id": "f1000005",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "OUR RESTAURANTS",
+                "header_size": "h4",
+                "title_color": "#ebe3d7",
+                "_margin": {
+                  "unit": "px",
+                  "top": "28",
+                  "right": "0",
+                  "bottom": "20",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "f1000006",
+              "elType": "section",
+              "isInner": true,
+              "settings": {
+                "structure": "40",
+                "gap": "default",
+                "_css_classes": "rh-footer-logos"
+              },
+              "elements": [
+                {
+                  "id": "f1000006a",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 25,
+                    "_inline_size": 25,
+                    "content_position": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000006b",
+                      "elType": "widget",
+                      "widgetType": "image",
+                      "settings": {
+                        "image": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/beyond-logo.svg"
+                        },
+                        "image_size": "full",
+                        "link_to": "custom",
+                        "link": {
+                          "url": "https://beyondrestaurant.co.za/",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "_css_classes": "rh-partner-logo"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "f1000006c",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 25,
+                    "_inline_size": 25,
+                    "content_position": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000006d",
+                      "elType": "widget",
+                      "widgetType": "image",
+                      "settings": {
+                        "image": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/fyn-logo.svg"
+                        },
+                        "image_size": "full",
+                        "link_to": "custom",
+                        "link": {
+                          "url": "https://fynrestaurant.com/",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "_css_classes": "rh-partner-logo"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "f1000006e",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 25,
+                    "_inline_size": 25,
+                    "content_position": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000006f",
+                      "elType": "widget",
+                      "widgetType": "image",
+                      "settings": {
+                        "image": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/sushiya-logo.svg"
+                        },
+                        "image_size": "full",
+                        "link_to": "custom",
+                        "link": {
+                          "url": "https://www.sushiya.co.za/",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "_css_classes": "rh-partner-logo"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "f1000006g",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 25,
+                    "_inline_size": 25,
+                    "content_position": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000006h",
+                      "elType": "widget",
+                      "widgetType": "image",
+                      "settings": {
+                        "image": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/arum.png"
+                        },
+                        "image_size": "full",
+                        "link_to": "custom",
+                        "link": {
+                          "url": "https://arum.co.za/",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "_css_classes": "rh-partner-logo"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "f1000020",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "_inline_size": 50
+          },
+          "elements": [
+            {
+              "id": "f1000021",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "DINNER",
+                "header_size": "h5",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase",
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "2",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000022",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Tues–Sat 5–10pm</p>",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "22",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000023",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "RAMENHEAD HAPPY HOUR",
+                "header_size": "h5",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase",
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "2",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000024",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Weekdays 5–7pm</p><p>50% off all small plates<br>&amp; selected cocktails.</p>",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "22",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000025",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "LOCATIONS",
+                "header_size": "h5",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase",
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "2",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000026",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Speaker's Corner<br>37 Parliament St, Cape Town</p>",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "22",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000027",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "CONTACT",
+                "header_size": "h5",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase",
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "2",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000028",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>WhatsApp: <a href=\"https://wa.me/27673128061\">+27 67 312 8061</a></p><p>Email: <a href=\"mailto:info@ramenhead.co.za\">info@ramenhead.co.za</a></p>",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "22",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000029",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "BOOK VIA DINEPLAN. WALK-INS ARE WELCOME. NO CASH PAYMENTS.",
+                "header_size": "h5",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "typography_text_transform": "uppercase",
+                "_margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "right": "0",
+                  "bottom": "2",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "f1000030",
+              "elType": "section",
+              "isInner": true,
+              "settings": {
+                "structure": "30",
+                "gap": "default",
+                "_css_classes": "rh-footer-buttons"
+              },
+              "elements": [
+                {
+                  "id": "f1000030a",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": 33
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000030b",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "MENU",
+                        "link": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/menu.pdf",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "size": "sm",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "#ebe3d7",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 2
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "10",
+                          "right": "20",
+                          "bottom": "10",
+                          "left": "20",
+                          "isLinked": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "f1000030c",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": 33
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000030d",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "DRINKS MENU",
+                        "link": {
+                          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/menu_drinks.pdf",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "size": "sm",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "#ebe3d7",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 2
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "10",
+                          "right": "20",
+                          "bottom": "10",
+                          "left": "20",
+                          "isLinked": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "f1000030e",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": 33
+                  },
+                  "elements": [
+                    {
+                      "id": "f1000030f",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "BUY VOUCHER",
+                        "link": {
+                          "url": "https://www.voucherplan.co.za/event/9aa986c760c0da21e14789e83d70ce5a",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "size": "sm",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "#ebe3d7",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 2
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "10",
+                          "right": "20",
+                          "bottom": "10",
+                          "left": "20",
+                          "isLinked": false
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "f1000031",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>We can accommodate most dietary needs with prior notice, but not severe, fatal, or allium/garlic allergies. For questions, please contact reservations.</p>",
+                "text_color": "rgba(166,163,159,0.7)",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 11
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": "20",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f1000040",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "20",
+          "bottom": "20",
+          "left": "20",
+          "isLinked": false
+        },
+        "border_border": "solid",
+        "border_width": {
+          "unit": "px",
+          "top": "1",
+          "right": "0",
+          "bottom": "0",
+          "left": "0",
+          "isLinked": false
+        },
+        "border_color": "rgba(235,227,215,0.08)"
+      },
+      "elements": [
+        {
+          "id": "f1000041",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "f1000042",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "2026 © Ramenhead. All Rights Reserved.",
+                "header_size": "p",
+                "align": "center",
+                "title_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 11
+                },
+                "typography_font_weight": "300",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": []
+}

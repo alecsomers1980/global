@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/auth'
 import type { Branch, Section, Document } from '@/lib/types'
 import { UploadDocumentDialog } from '@/components/UploadDocumentDialog'
 import { DeleteDocumentButton } from '@/components/DeleteDocumentButton'
@@ -33,20 +34,17 @@ export default async function SubsectionPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; sectionSlug: string; subsectionSlug: string }>
-  searchParams: Promise<{ q?: string; month?: string; year?: string }>
+  searchParams: Promise<{ q?: string; month?: string; year?: string; uploaded_by?: string }>
 }) {
   const { slug, sectionSlug, subsectionSlug } = await params
   const sp = await searchParams
   const q = sp.q?.trim() ?? ''
   const month = sp.month ?? ''
   const year = sp.year ?? ''
+  const uploadedBy = sp.uploaded_by ?? ''
 
+  const { profile } = await requireAuth()
   const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) notFound()
 
   const { data: branch } = await supabase
     .from('branches')
@@ -72,28 +70,40 @@ export default async function SubsectionPage({
     .single<Section>()
   if (!section) notFound()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  const isSuperAdmin = profile?.role === 'super_admin'
+  const isSuperAdmin = profile.role === 'super_admin'
   let canUpload = isSuperAdmin
-
-  if (!isSuperAdmin) {
+  if (!canUpload) {
     const { data: perm } = await supabase
       .from('permissions')
       .select('can_upload')
-      .eq('user_id', user.id)
-      .eq('branch_id', branch.id)
-      .in('section_id', [section.id, parent.id])
-      .order('section_id')
-    if (!perm || perm.length === 0) notFound()
-    canUpload = perm.some((p) => p.can_upload)
+      .eq('user_id', profile.id)
+      .eq('section_id', section.id)
+      .maybeSingle()
+    canUpload = !!perm?.can_upload
   }
 
   const path = `/dashboard/branches/${branch.slug}/${parent.slug}/${section.slug}`
+
+  // Fetch recent uploaders for the dropdown
+  const { data: allDocsForUploaders } = await supabase
+    .from('documents')
+    .select('uploaded_by')
+    .eq('section_id', section.id)
+    .is('deleted_at', null)
+    .eq('status', 'ready')
+    .order('uploaded_at', { ascending: false })
+    .limit(200)
+  const allUploaderIds = [...new Set((allDocsForUploaders ?? []).map((d) => d.uploaded_by).filter(Boolean) as string[])]
+  const allUploaders = new Map<string, string>()
+  if (allUploaderIds.length > 0) {
+    const { data: uploaderRows } = await supabase
+      .from('profiles')
+      .select('id, full_name, email')
+      .in('id', allUploaderIds)
+    for (const row of uploaderRows ?? []) {
+      allUploaders.set(row.id, row.full_name ?? row.email ?? '—')
+    }
+  }
 
   let query = supabase
     .from('documents')
@@ -103,6 +113,10 @@ export default async function SubsectionPage({
     .eq('status', 'ready')
 
   if (q) query = query.ilike('name', `%${q}%`)
+
+  if (uploadedBy) {
+    query = query.eq('uploaded_by', uploadedBy)
+  }
 
   if (year) {
     const y = Number(year)
@@ -122,7 +136,7 @@ export default async function SubsectionPage({
     }
   }
 
-  const { data: documentsData } = await query.order('document_date', { ascending: false })
+  const { data: documentsData } = await query.order('document_date', { ascending: false }).limit(200)
   const documents = (documentsData ?? []) as Document[]
 
   const uploaderIds = [...new Set(documents.map((d) => d.uploaded_by).filter((v): v is string => !!v))]
@@ -198,13 +212,25 @@ export default async function SubsectionPage({
           defaultValue={year}
           className="w-28 rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
+        <select
+          name="uploaded_by"
+          defaultValue={uploadedBy}
+          className="rounded-lg border border-slate-300 px-3 py-2 text-sm max-w-[200px]"
+        >
+          <option value="">Any uploader</option>
+          {[...allUploaders.entries()]
+            .sort(([, a], [, b]) => a.localeCompare(b))
+            .map(([id, name]) => (
+              <option key={id} value={id}>{name}</option>
+            ))}
+        </select>
         <button
           type="submit"
           className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
         >
           Filter
         </button>
-        {(q || month || year) && (
+        {(q || month || year || uploadedBy) && (
           <Link href={path} className="text-sm text-slate-500 hover:underline self-center">
             Clear
           </Link>
@@ -226,6 +252,9 @@ export default async function SubsectionPage({
                   Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Uploaded
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Uploaded by
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -242,6 +271,12 @@ export default async function SubsectionPage({
                   <td className="px-6 py-4 text-sm font-medium text-slate-900">{doc.name}</td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {new Date(doc.document_date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {new Date(doc.uploaded_at).toLocaleString('en-ZA', {
+                      day: '2-digit', month: 'short', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit',
+                    })}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {(doc.uploaded_by && uploaders.get(doc.uploaded_by)) ?? '—'}

@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, Calendar, Trophy, BookOpen, Users, Heart, Clock,
 import type { Metadata } from "next";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import SecondaryBanner from "@/components/SecondaryBanner";
+import SubscribeButton from "@/components/SubscribeButton";
 import { createServerSupabase } from "@/lib/supabase-server";
 
 // ─── SECTION RENDERERS ────────────────────────────────────────────────────────
@@ -419,12 +420,7 @@ export default async function NewsletterArticle({ params }: { params: { slug: st
                 <p className="text-sm text-brand-green/60 leading-relaxed mb-6">
                   Get every edition of the Riverview Reporter delivered straight to your inbox.
                 </p>
-                <Link
-                  href="/#newsletter"
-                  className="inline-flex w-full justify-center items-center gap-2 px-6 py-3.5 bg-brand-green text-white font-bold rounded-xl text-sm hover:bg-brand-green/90 transition-colors group"
-                >
-                  Subscribe <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <SubscribeButton variant="green" className="w-full justify-center text-sm px-6 py-3.5 rounded-xl group" />
               </div>
 
               {/* Nav to other edition */}
@@ -467,12 +463,9 @@ export default async function NewsletterArticle({ params }: { params: { slug: st
             Never miss a Riverview Reporter — subscribe to receive every digital edition directly in your inbox as soon as it is published.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/#newsletter"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-brand-green text-white font-bold rounded-full hover:bg-brand-green/90 transition-all hover:shadow-lg hover:-translate-y-1"
-            >
+            <SubscribeButton variant="green">
               Subscribe Newsletter <ArrowRight className="w-4 h-4" />
-            </Link>
+            </SubscribeButton>
             <Link
               href="/news"
               className="inline-flex items-center gap-3 px-8 py-4 bg-white text-brand-green font-bold rounded-full hover:bg-brand-gold border border-brand-green/10 hover:border-transparent hover:text-white transition-all hover:shadow-lg hover:-translate-y-1"

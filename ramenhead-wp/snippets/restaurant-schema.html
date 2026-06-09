@@ -1,0 +1,87 @@
+<!--
+  Restaurant + LocalBusiness JSON-LD schema for Ramenhead.
+
+  This is the same schema already baked into the footer Elementor template
+  (02-footer.json). Use this file if you ever need to paste it manually
+  into an Elementor HTML widget, or into theme functions.php via wp_head.
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Ramenhead",
+  "alternateName": "Ramenhead Cape Town",
+  "image": [
+    "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-02.jpg",
+    "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-04.jpg",
+    "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-07.jpg"
+  ],
+  "logo": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/logo.png",
+  "@id": "https://www.ramenhead.co.za/#restaurant",
+  "url": "https://www.ramenhead.co.za/",
+  "telephone": "+27673128061",
+  "email": "info@ramenhead.co.za",
+  "priceRange": "R150–R420",
+  "servesCuisine": ["Japanese", "Ramen", "Asian"],
+  "acceptsReservations": "True",
+  "paymentAccepted": "Credit Card, Debit Card, EFT (No Cash)",
+  "hasMenu": "https://www.ramenhead.co.za/menu/",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "37 Parliament Street, Speaker's Corner",
+    "addressLocality": "Cape Town",
+    "addressRegion": "Western Cape",
+    "postalCode": "8001",
+    "addressCountry": "ZA"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -33.9249,
+    "longitude": 18.4192
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "17:00",
+      "closes": "22:00"
+    }
+  ],
+  "sameAs": [
+    "https://www.instagram.com/ramenhead.za/",
+    "https://www.facebook.com/ramenhead.za"
+  ],
+  "department": [
+    {
+      "@type": "Restaurant",
+      "@id": "https://www.ramenhead.co.za/#timeoutmarket",
+      "name": "Ramenhead — Time Out Market Cape Town",
+      "image": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-02.jpg",
+      "telephone": "+27673128061",
+      "servesCuisine": ["Japanese", "Ramen"],
+      "priceRange": "R150–R420",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Time Out Market, V&A Waterfront",
+        "addressLocality": "Cape Town",
+        "addressRegion": "Western Cape",
+        "postalCode": "8002",
+        "addressCountry": "ZA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -33.9036,
+        "longitude": 18.4198
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "17:00",
+          "closes": "22:00"
+        }
+      ]
+    }
+  ]
+}
+</script>

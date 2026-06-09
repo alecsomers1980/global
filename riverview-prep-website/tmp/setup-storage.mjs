@@ -4,7 +4,7 @@ import fs from 'fs'
 const envRaw = fs.readFileSync('.env.local', 'utf8')
 const env = Object.fromEntries(envRaw.split('\n').filter(Boolean).map(l => l.split('=')))
 
-const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL || 'https://kfkhkoeobxblhyygqwoh.supabase.co'
+const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL || 'https://ctfwxbrjyxjcdsrbdxxz.supabase.co'
 const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)

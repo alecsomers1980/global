@@ -1,25 +1,28 @@
 import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/auth'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
+  const { profile } = await requireAuth()
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, full_name')
-    .eq('id', user!.id)
-    .single()
+  const isSuperAdmin = profile.role === 'super_admin'
+  const displayName = profile.full_name || profile.email
 
-  const { data: branches } = await supabase
+  let { data: branches } = await supabase
     .from('branches')
     .select('id, name, slug')
     .order('name')
 
-  const isSuperAdmin = profile?.role === 'super_admin'
-  const displayName = profile?.full_name ?? user!.email ?? 'User'
+  // Non-super-admins only see branches where they have at least one permission.
+  if (!isSuperAdmin && branches) {
+    const { data: perms } = await supabase
+      .from('permissions')
+      .select('branch_id')
+      .eq('user_id', profile.id)
+    const allowedIds = new Set((perms ?? []).map((p) => p.branch_id))
+    branches = branches.filter((b) => allowedIds.has(b.id))
+  }
 
   return (
     <div className="p-8">

@@ -18,6 +18,8 @@ export default function NewslettersAdminPage() {
   const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState<Set<string>>(new Set());
+  const [sentStatus, setSentStatus] = useState<Record<string, { ok: boolean; msg: string }>>({});
   const supabase = createClient();
 
   const fetchNewsletters = useCallback(async () => {
@@ -52,6 +54,35 @@ export default function NewslettersAdminPage() {
     }
   }
 
+  async function handleSendEmail(slug: string, title: string) {
+    const count = await supabase
+      .from('newsletter_subscribers')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    const subscriberCount = count.count || 0;
+    if (subscriberCount === 0) {
+      alert('No active subscribers found. The newsletter_subscribers table may be empty.');
+      return;
+    }
+
+    if (!confirm(`Send "${title}" to ${subscriberCount} subscriber(s)?\n\nMake sure you have set RESEND_API_KEY in your .env.local file.`)) return;
+
+    setSending(prev => { const next = new Set(prev); next.add(slug); return next; });
+    try {
+      const res = await fetch(`/api/newsletter/${slug}/send`, { method: 'POST' });
+      const json = await res.json();
+      if (res.ok) {
+        setSentStatus(prev => ({ ...prev, [slug]: { ok: true, msg: `Sent to ${json.sent_to} subscriber(s)` } }));
+      } else {
+        setSentStatus(prev => ({ ...prev, [slug]: { ok: false, msg: json.error || 'Failed' } }));
+      }
+    } catch (err: any) {
+      setSentStatus(prev => ({ ...prev, [slug]: { ok: false, msg: err.message || 'Network error' } }));
+    }
+    setSending(prev => { const next = new Set(prev); next.delete(slug); return next; });
+  }
+
   return (
     <div>
       <style>{`
@@ -73,6 +104,12 @@ export default function NewslettersAdminPage() {
         .nl-btn-copy:hover { background: rgba(196,164,89,0.05); }
         .nl-btn-del { background: none; border: 1px solid rgba(239,68,68,0.15); color: rgba(239,68,68,0.5); }
         .nl-btn-del:hover { background: rgba(239,68,68,0.05); color: #ef4444; }
+        .nl-btn-send { background: #164e24; border: 1px solid #164e24; color: #ffffff; }
+        .nl-btn-send:hover { background: #1a5c2b; }
+        .nl-btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+        .nl-send-status { font-size: 11px; margin-top: 8px; }
+        .nl-send-status.ok { color: #059669; }
+        .nl-send-status.err { color: #ef4444; }
         .empty-state { padding: 60px; text-align: center; color: rgba(0,0,0,0.3); background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; }
         .error-state { padding: 32px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.1); border-radius: 12px; color: #ef4444; }
       `}</style>
@@ -107,9 +144,21 @@ export default function NewslettersAdminPage() {
               <p className="nl-excerpt">{nl.excerpt || 'No excerpt provided.'}</p>
               <div className="nl-actions">
                 <Link href={`/admin/newsletters/edit/${nl.id}`} className="nl-btn nl-btn-edit">Edit</Link>
-                <button onClick={() => handleCopyEmailHtml(nl.slug)} className="nl-btn nl-btn-copy" title="Copy table-based HTML to clipboard for use in an email client">Email HTML</button>
+                <button onClick={() => handleCopyEmailHtml(nl.slug)} className="nl-btn nl-btn-copy" title="Copy table-based HTML to clipboard for use in an email client">HTML</button>
+                <button
+                  onClick={() => handleSendEmail(nl.slug, nl.title)}
+                  className="nl-btn nl-btn-send"
+                  disabled={sending.has(nl.slug)}
+                >
+                  {sending.has(nl.slug) ? 'Sending...' : 'Send'}
+                </button>
                 <button onClick={() => handleDelete(nl.id)} className="nl-btn nl-btn-del">Delete</button>
               </div>
+              {sentStatus[nl.slug] && (
+                <div className={`nl-send-status ${sentStatus[nl.slug].ok ? 'ok' : 'err'}`}>
+                  {sentStatus[nl.slug].ok ? '✓' : '✗'} {sentStatus[nl.slug].msg}
+                </div>
+              )}
             </div>
           ))}
         </div>

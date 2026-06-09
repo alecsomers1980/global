@@ -133,8 +133,8 @@ export default function BeyondTheClassroomPage() {
               </div>
 
               <div className="mt-12 text-center">
-                <a href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-green text-white rounded-full font-bold text-sm shadow-md hover:bg-brand-green/90 transition-all">
-                  <Download className="w-4 h-4" /> Sport Uniform Guidelines (PDF)
+                <a href="mailto:admin@riverviewprep.org?subject=Sport%20Uniform%20Guidelines" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-green text-white rounded-full font-bold text-sm shadow-md hover:bg-brand-green/90 transition-all">
+                  <Download className="w-4 h-4" /> Request Sport Uniform Guidelines
                 </a>
               </div>
 
@@ -210,7 +210,7 @@ export default function BeyondTheClassroomPage() {
                     <span className="text-[9px] uppercase tracking-widest text-brand-gold font-bold mb-2">{item.focus}</span>
                     <h4 className="font-bold text-brand-green text-lg mb-1">{item.name}</h4>
                     <p className="text-brand-green/60 text-xs leading-relaxed mb-4 flex-grow">{item.desc}</p>
-                    <a href="#" className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-brand-green hover:text-brand-gold transition-colors mt-auto">
+                    <a href="/contact" className="inline-flex items-center gap-1 text-[10px] font-black uppercase text-brand-green hover:text-brand-gold transition-colors mt-auto">
                       Inquire via Office <Compass className="w-3 h-3" />
                     </a>
                   </div>

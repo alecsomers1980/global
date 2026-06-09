@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -9,32 +10,40 @@ import {
   Building2,
   ShieldCheck,
   LogOut,
+  Search,
 } from 'lucide-react'
+import { GlobalSearch } from '@/components/GlobalSearch'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { profile } = await requireAuth()
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  // Check if user needs to change password (first login)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user?.user_metadata?.needs_password_change) {
+    redirect('/auth/set-password')
+  }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, full_name')
-    .eq('id', user.id)
-    .single()
+  const isSuperAdmin = profile.role === 'super_admin'
 
-  const { data: branches } = await supabase
+  let { data: branches } = await supabase
     .from('branches')
     .select('id, name, slug')
     .order('name')
 
-  const isSuperAdmin = profile?.role === 'super_admin'
+  // Non-super-admins only see branches where they have at least one permission.
+  if (!isSuperAdmin && branches) {
+    const { data: perms } = await supabase
+      .from('permissions')
+      .select('branch_id')
+      .eq('user_id', profile.id)
+    const allowedIds = new Set((perms ?? []).map((p) => p.branch_id))
+    branches = branches.filter((b) => allowedIds.has(b.id))
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -119,7 +128,7 @@ export default async function DashboardLayout({
         </nav>
 
         <div className="px-4 py-4 border-t border-white/10">
-          <p className="text-xs text-slate-400 truncate mb-3">{user.email}</p>
+          <p className="text-xs text-slate-400 truncate mb-3">{profile.email}</p>
           <form action="/auth/signout" method="POST">
             <button
               type="submit"
@@ -132,7 +141,13 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 bg-slate-50 min-h-screen">{children}</main>
+      <main className="flex-1 bg-slate-50 min-h-screen">
+        {/* Global search bar */}
+        <div className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-3">
+          <GlobalSearch />
+        </div>
+        {children}
+      </main>
     </div>
   )
 }

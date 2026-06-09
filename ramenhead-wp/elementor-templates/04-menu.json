@@ -1,0 +1,1168 @@
+{
+  "version": "0.4",
+  "title": "Menu",
+  "type": "page",
+  "content": [
+    {
+      "id": "m1000001",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "right": "24",
+          "bottom": "0",
+          "left": "24",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "56",
+          "right": "16",
+          "bottom": "0",
+          "left": "16",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "m1000002",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "m1000003",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Ramenhead",
+                "header_size": "div",
+                "align": "center",
+                "title_color": "#EE3526",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "500",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 5
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000004",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Our Menu",
+                "header_size": "h1",
+                "align": "center",
+                "title_color": "#ebe3d7",
+                "_margin": {
+                  "unit": "px",
+                  "top": "16",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 72
+                },
+                "typography_font_size_mobile": {
+                  "unit": "px",
+                  "size": 42
+                },
+                "typography_font_weight": "700",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.05
+                },
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": -1
+                }
+              }
+            },
+            {
+              "id": "m1000005",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Crafted with obsession. Served with soul.",
+                "header_size": "p",
+                "align": "center",
+                "title_color": "#a6a39f",
+                "_margin": {
+                  "unit": "px",
+                  "top": "20",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "typography_font_weight": "300",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 1.5
+                }
+              }
+            },
+            {
+              "id": "m1000006",
+              "elType": "widget",
+              "widgetType": "divider",
+              "settings": {
+                "color": "#EE3526",
+                "weight": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "width": {
+                  "unit": "px",
+                  "size": 60
+                },
+                "align": "center",
+                "_margin": {
+                  "unit": "px",
+                  "top": "28",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m1000010",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "right": "24",
+          "bottom": "20",
+          "left": "24",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "56",
+          "right": "16",
+          "bottom": "10",
+          "left": "16",
+          "isLinked": false
+        },
+        "structure": "20",
+        "gap": "extended"
+      },
+      "elements": [
+        {
+          "id": "m1000011",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "_inline_size": 50
+          },
+          "elements": [
+            {
+              "id": "m1000012",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "OTSUMAMI",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000013",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Snacks for drinks",
+                "header_size": "p",
+                "title_color": "rgba(166,163,159,0.7)",
+                "_margin": {
+                  "unit": "px",
+                  "top": "6",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "300",
+                "typography_font_style": "italic"
+              }
+            },
+            {
+              "id": "m1000015",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "ots001",
+                    "title": "EDAMAME",
+                    "item_description": "Chilli & garlic salt",
+                    "price": "70",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ots002",
+                    "title": "RAMEN CHIP",
+                    "item_description": "Seasonal vegetable spicy dip",
+                    "price": "70",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ots003",
+                    "title": "PORK CHASHU BITES",
+                    "item_description": "Pickled ginger, spring onion",
+                    "price": "75",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#ebe3d7",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "heading_typography_font_weight": "500",
+                "heading_typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.6
+                },
+                "description_typography_typography": "custom",
+                "description_typography_font_family": "Poppins",
+                "description_typography_font_size": {
+                  "unit": "px",
+                  "size": 12.5
+                },
+                "description_typography_font_weight": "300",
+                "description_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.55
+                },
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "price_typography_font_weight": "600"
+              }
+            },
+            {
+              "id": "m1000016",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "GYOZA",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "_margin": {
+                  "unit": "px",
+                  "top": "40",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000018",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "gyo001",
+                    "title": "AUBERGINE & SWEETCORN",
+                    "item_description": "Crispy chilli & garlic, fresh basil, spring onion",
+                    "price": "115",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "gyo002",
+                    "title": "OSTRICH & WAGYU",
+                    "item_description": "Danja & apricot chutney, coriander dressing",
+                    "price": "135",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#ebe3d7",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "heading_typography_font_weight": "500",
+                "heading_typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.6
+                },
+                "description_typography_typography": "custom",
+                "description_typography_font_family": "Poppins",
+                "description_typography_font_size": {
+                  "unit": "px",
+                  "size": 12.5
+                },
+                "description_typography_font_weight": "300",
+                "description_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.55
+                },
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "price_typography_font_weight": "600"
+              }
+            }
+          ]
+        },
+        {
+          "id": "m1000020",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "_inline_size": 50
+          },
+          "elements": [
+            {
+              "id": "m1000021",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "ADD ONS / EXTRAS",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000023",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "ext001",
+                    "title": "Ajitamago egg",
+                    "item_description": "",
+                    "price": "22",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ext002",
+                    "title": "Chicken wonton",
+                    "item_description": "",
+                    "price": "18",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ext003",
+                    "title": "Noodles",
+                    "item_description": "",
+                    "price": "32",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ext004",
+                    "title": "Chicken chashu",
+                    "item_description": "",
+                    "price": "30",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ext005",
+                    "title": "Pork chashu",
+                    "item_description": "",
+                    "price": "32",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#a6a39f",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "heading_typography_font_weight": "400",
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "price_typography_font_weight": "500"
+              }
+            },
+            {
+              "id": "m1000024",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "DEZĀTO",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "_margin": {
+                  "unit": "px",
+                  "top": "40",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000026",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "dez001",
+                    "title": "OKINAWA DANGO",
+                    "item_description": "Sweet dumpling, matcha sugar, dark chocolate",
+                    "price": "70",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "dez002",
+                    "title": "KONBINI SANDO",
+                    "item_description": "Strawberries & cream sandwich",
+                    "price": "75",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#ebe3d7",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "heading_typography_font_weight": "500",
+                "heading_typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.6
+                },
+                "description_typography_typography": "custom",
+                "description_typography_font_family": "Poppins",
+                "description_typography_font_size": {
+                  "unit": "px",
+                  "size": 12.5
+                },
+                "description_typography_font_weight": "300",
+                "description_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.55
+                },
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "price_typography_font_weight": "600"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m1000030",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "24",
+          "bottom": "20",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "m1000031",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "m1000032",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "SMALL PLATES",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000033",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "These Izakaya style small plates are for sharing before your ramen.",
+                "header_size": "p",
+                "title_color": "rgba(166,163,159,0.7)",
+                "_margin": {
+                  "unit": "px",
+                  "top": "6",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 12
+                },
+                "typography_font_weight": "300",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.5
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000035",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "sml001",
+                    "title": "FRESH CABBAGE SALAD",
+                    "item_description": "Ponzu, crispy onion, smoked chilli",
+                    "price": "85",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "sml002",
+                    "title": "OKONOMIYAKI FRIES",
+                    "item_description": "Spring onion, nori, katsuobushi",
+                    "price": "75",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "sml003",
+                    "title": "TUNA TARTARE",
+                    "item_description": "Spicy sour dressing, wasabi, fresh daikon",
+                    "price": "125",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "sml004",
+                    "title": "SAKE STEAMED MUSSELS",
+                    "item_description": "Umami garlic butter, shiso",
+                    "price": "125",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "sml005",
+                    "title": "KARAAGE",
+                    "item_description": "Tokyo fried chicken, tomato chutney, curry sauce",
+                    "price": "130",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#ebe3d7",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "heading_typography_font_weight": "500",
+                "heading_typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.6
+                },
+                "description_typography_typography": "custom",
+                "description_typography_font_family": "Poppins",
+                "description_typography_font_size": {
+                  "unit": "px",
+                  "size": 12.5
+                },
+                "description_typography_font_weight": "300",
+                "description_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.55
+                },
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "price_typography_font_weight": "600"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m1000040",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "right": "24",
+          "bottom": "60",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "m1000041",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "m1000042",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "RAMEN BOWLS",
+                "header_size": "h2",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000043",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Prices shown as Medium / Large",
+                "header_size": "p",
+                "title_color": "rgba(166,163,159,0.7)",
+                "_margin": {
+                  "unit": "px",
+                  "top": "6",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 12
+                },
+                "typography_font_weight": "300",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.5
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "m1000045",
+              "elType": "widget",
+              "widgetType": "price-list",
+              "settings": {
+                "price_list": [
+                  {
+                    "_id": "ram001",
+                    "title": "TONKOTSU",
+                    "item_description": "Rich pork bone broth, Tokyo noodles, pork belly chashu, pickled ginger, ajitamago, mayu, rayu, kikurage",
+                    "price": "150 / 220",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ram002",
+                    "title": "TOFU SESAME ABURA SOBA (SOUPLESS)",
+                    "item_description": "Sesame & mala spice, kitakata noodles, smoked tofu, shiitake, menma, rayu",
+                    "price": "150 / 225",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ram003",
+                    "title": "TORCHED CAPE WAGYU (MS9+)",
+                    "item_description": "Wagyu MS9+, Tokyo noodles, beef broth, shoyu tare, spring onions, truffled kikurage, shiitake, menma",
+                    "price": "420",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ram004",
+                    "title": "TORI PAITAN",
+                    "item_description": "Rich and creamy chicken broth, Tokyo style noodles, shoyu tare, chicken wonton, chicken chashu, spring onion, chilli oil",
+                    "price": "160 / 230",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  },
+                  {
+                    "_id": "ram005",
+                    "title": "KAROO LAMB TANTANMEN",
+                    "item_description": "Spicy roast mince, Japanese curry broth, kitakata noodles, coriander, raita, roast tomato, garlic oil",
+                    "price": "150 / 225",
+                    "image": {
+                      "url": ""
+                    },
+                    "link": {
+                      "url": "",
+                      "is_external": "",
+                      "nofollow": ""
+                    }
+                  }
+                ],
+                "show_image": "no",
+                "show_separator": "",
+                "separator_style": "solid",
+                "separator_color": "rgba(166,163,159,0.08)",
+                "separator_weight": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "heading_color": "#ebe3d7",
+                "description_color": "rgba(166,163,159,0.65)",
+                "price_color": "#EE3526",
+                "heading_typography_typography": "custom",
+                "heading_typography_font_family": "Poppins",
+                "heading_typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "heading_typography_font_weight": "500",
+                "heading_typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 0.6
+                },
+                "description_typography_typography": "custom",
+                "description_typography_font_family": "Poppins",
+                "description_typography_font_size": {
+                  "unit": "px",
+                  "size": 12.5
+                },
+                "description_typography_font_weight": "300",
+                "description_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.55
+                },
+                "price_typography_typography": "custom",
+                "price_typography_font_family": "Poppins",
+                "price_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "price_typography_font_weight": "600"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m1000050",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "40",
+          "right": "24",
+          "bottom": "100",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "m1000051",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "m1000052",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p style=\"text-align:center;\">Prices in South African Rand (ZAR).<br>All dishes are prepared in kitchens that handle allergens.<br>Please inform your server of any dietary requirements.</p>",
+                "text_color": "rgba(166,163,159,0.4)",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 11
+                },
+                "typography_font_weight": "300",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 1
+                },
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.8
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "background_background": "classic",
+    "background_color": "#000000",
+    "hide_title": "yes"
+  }
+}

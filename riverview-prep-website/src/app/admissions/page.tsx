@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { CheckCircle2, FileText, CreditCard, ClipboardCheck, Award, Info, Landmark, Download } from "lucide-react";
+import { CheckCircle2, FileText, CreditCard, ClipboardCheck, Award, Info, Landmark, Download, ArrowRight } from "lucide-react";
 import SecondaryBanner from "@/components/SecondaryBanner";
+import Link from "next/link";
 
 const steps = [
   { title: "Submit Forms", desc: "Return completed application forms together with copies of child’s birth certificate, clinic card, latest report, and parents IDs.", icon: <FileText /> },
@@ -41,6 +42,19 @@ export default function AdmissionsPage() {
         title="Admissions" 
         subtitle="STARTING THE JOURNEY"
       />
+
+      {/* ── 🟢 Apply Now CTA Bar ─────────────────────────────────────── */}
+      <section className="py-8 bg-brand-green text-white">
+        <div className="container mx-auto px-6 max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 className="font-bold text-lg">Ready to Apply?</h3>
+            <p className="text-white/60 text-sm">Complete our new online application form — no paper required.</p>
+          </div>
+          <Link href="/admissions/apply" className="inline-flex items-center gap-2 px-8 py-3.5 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all shadow-lg hover:shadow-xl">
+            Apply Now <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
 
       {/* ── 🟢 1. Steps Section ────────────────────────────────────────── */}
       <section className="py-20 bg-white">
@@ -200,9 +214,13 @@ export default function AdmissionsPage() {
                     <p className="text-brand-green/40 text-[10px] uppercase tracking-wider mt-0.5">{doc.type} • {doc.size}</p>
                   </div>
                 </div>
-                <button className="p-3 rounded-xl bg-neutral-50 border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-all duration-300">
+                <a
+                  href={`mailto:admin@riverviewprep.org?subject=Request: ${encodeURIComponent(doc.name)}`}
+                  className="p-3 rounded-xl bg-neutral-50 border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-all duration-300"
+                  title="Request this document via email"
+                >
                   <Download className="w-5 h-5" />
-                </button>
+                </a>
               </div>
             ))}
           </div>

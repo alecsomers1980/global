@@ -1,0 +1,45 @@
+<!--
+  Beyond — Media page category filter.
+  Paste into WPCode as an HTML Snippet, Auto Insert → Site Wide Footer.
+  Self-guards: does nothing on pages that have no .bg-media-grid, so it's
+  safe to run site-wide. No jQuery, no AJAX — pure client-side show/hide.
+-->
+<script>
+(function(){
+    function init(){
+        var pills = document.querySelectorAll('a[href^="#filter-"]');
+        var grid  = document.querySelector('.bg-media-grid .elementor-posts-container');
+        if (!pills.length || !grid) return;               // not the Media page
+        var posts = grid.querySelectorAll('.elementor-post');
+
+        function apply(slug){
+            posts.forEach(function(p){
+                if (slug === 'all' || p.classList.contains('category-' + slug)) {
+                    p.removeAttribute('data-bg-hidden');
+                } else {
+                    p.setAttribute('data-bg-hidden', '1');
+                }
+            });
+            pills.forEach(function(a){
+                var s = (a.getAttribute('href') || '').replace('#filter-', '');
+                if (s === slug) a.classList.add('is-active');
+                else            a.classList.remove('is-active');
+            });
+            if (history.replaceState) history.replaceState(null, '', '#filter-' + slug);
+        }
+
+        pills.forEach(function(a){
+            a.addEventListener('click', function(e){
+                e.preventDefault();
+                apply((a.getAttribute('href') || '').replace('#filter-', ''));
+            });
+        });
+
+        // Honour deep links e.g. /media/#filter-reviews
+        var hash = (window.location.hash || '').replace('#filter-', '');
+        apply(hash && document.querySelector('a[href="#filter-' + hash + '"]') ? hash : 'all');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>

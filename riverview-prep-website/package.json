@@ -19,8 +19,10 @@
     "pdf-export-images": "^1.2.0",
     "pdf-parse": "^2.4.5",
     "pdf.js-extract": "^0.2.1",
+    "pg": "^8.20.0",
     "react": "^18",
     "react-dom": "^18",
+    "resend": "^6.12.2",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {

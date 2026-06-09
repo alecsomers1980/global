@@ -6,6 +6,7 @@ import { ArrowRight, BookOpen, Trophy, Users, Calendar } from "lucide-react";
 import NewsletterHeader from "@/components/NewsletterHeader";
 import SecondaryBanner from "@/components/SecondaryBanner";
 import FallbackImage from "@/components/FallbackImage";
+import SubscribeButton from "@/components/SubscribeButton";
 import type { Metadata } from "next";
 import { createServerSupabase } from "@/lib/supabase-server";
 
@@ -257,12 +258,7 @@ export default async function NewsPage() {
                     inbox every fortnight during term time.
                   </p>
                 </div>
-                <Link
-                  href="/#newsletter"
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-colors text-sm mt-8 self-start"
-                >
-                  Subscribe <ArrowRight className="w-4 h-4" />
-                </Link>
+                <SubscribeButton variant="gold" />
               </div>
             </div>
           </div>

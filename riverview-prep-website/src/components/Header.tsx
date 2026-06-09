@@ -76,7 +76,7 @@ export default function Header() {
             alt="Riverview Preparatory School"
             width={140}
             height={40}
-            className="header-logo w-auto h-32 object-contain transition-opacity duration-500"
+            className="header-logo w-auto h-16 md:h-20 lg:h-32 object-contain transition-opacity duration-500"
             priority
           />
         </Link>

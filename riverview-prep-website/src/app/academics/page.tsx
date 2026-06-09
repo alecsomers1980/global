@@ -184,21 +184,21 @@ export default function AcademicsPage() {
               <div className="telemetry-monospace text-brand-green mb-2">RESOURCES & CALENDARS</div>
               <h3 className="text-2xl font-bold text-brand-green mb-6">Stay Accountable.</h3>
               
-              <div className="p-6 bg-white rounded-2xl border border-brand-green/5 flex items-center justify-between hover:border-brand-gold/30 hover:shadow-md transition-all group">
+              <a href="/term calendar/May 2026.pdf" target="_blank" rel="noopener noreferrer" className="p-6 bg-white rounded-2xl border border-brand-green/5 flex items-center justify-between hover:border-brand-gold/30 hover:shadow-md transition-all group cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-brand-gold/10 rounded-xl text-brand-gold"><FileText className="w-6 h-6" /></div>
                   <div><p className="font-bold text-brand-green text-sm flex-wrap">Term Dates 2026</p><p className="text-brand-green/40 text-[10px] uppercase">PDF Document</p></div>
                 </div>
-                <button className="p-2 rounded-full border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-colors"><Download className="w-4 h-4" /></button>
-              </div>
+                <span className="p-2 rounded-full border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-colors"><Download className="w-4 h-4" /></span>
+              </a>
 
-              <div className="p-6 bg-white rounded-2xl border border-brand-green/5 flex items-center justify-between hover:border-brand-gold/30 hover:shadow-md transition-all group">
+              <a href="/term calendar/June 2026.pdf" target="_blank" rel="noopener noreferrer" className="p-6 bg-white rounded-2xl border border-brand-green/5 flex items-center justify-between hover:border-brand-gold/30 hover:shadow-md transition-all group cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-brand-gold/10 rounded-xl text-brand-gold"><Download className="w-6 h-6" /></div>
                   <div><p className="font-bold text-brand-green text-sm flex-wrap">Term Planner Index</p><p className="text-brand-green/40 text-[10px] uppercase">Packaged Downloads</p></div>
                 </div>
-                <button className="p-2 rounded-full border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-colors"><Download className="w-4 h-4" /></button>
-              </div>
+                <span className="p-2 rounded-full border border-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white transition-colors"><Download className="w-4 h-4" /></span>
+              </a>
             </div>
 
             {/* Right Columns: Policies Accordion */}

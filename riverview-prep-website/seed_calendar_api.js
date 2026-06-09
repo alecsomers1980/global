@@ -1,8 +1,8 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
-  'https://kfkhkoeobxblhyygqwoh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtma2hrb2VvYnhibGh5eWdxd29oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzkzOTU4NCwiZXhwIjoyMDg5NTE1NTg0fQ.qQjk5pmX25MmOjGLuePIht_SCMBxGof_hyghoV1a00o'
+  'https://ctfwxbrjyxjcdsrbdxxz.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0Znd4YnJqeXhqY2RzcmJkeHh6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODAwNjk2NSwiZXhwIjoyMDkzNTgyOTY1fQ.4fL8QCtMUWElq0cgO6fkbNPwFmhzAndROuSFvAWTDYE'
 );
 
 const calendarEntries = [
@@ -32,6 +32,9 @@ const calendarEntries = [
   // ════════════════════ MAY 2026 ════════════════════
   { date: '2026-05-01', title: "Workers' Day", location: null, type: 'Holiday', description: 'Public Holiday' },
   { date: '2026-05-04', title: 'Gr 4-7 Standardised Test: English', location: 'Campus', type: 'Academic', description: 'Standardised testing' },
+  { date: '2026-05-05', title: 'u11/13 Rugby', location: 'RPS', type: 'Sports', description: 'v Uplands @ RPS — home fixture' },
+  { date: '2026-05-06', title: 'u9-Open Netball', location: 'Penryn', type: 'Sports', description: 'Away fixture @ Penryn' },
+  { date: '2026-05-06', title: 'u9-Open Rugby', location: 'RPS', type: 'Sports', description: 'v Penryn @ RPS — home fixture' },
   { date: '2026-05-07', title: 'u9-Open Netball League', location: 'Clivia', type: 'Sports', description: 'League fixture at Clivia' },
   { date: '2026-05-08', title: "JP & Preschool Mother's Morning", location: 'Campus', type: 'Community', description: 'A special morning celebrating mothers' },
   { date: '2026-05-08', title: 'u7-8 Netball & Tag-Rugby', location: 'Uplands', type: 'Sports', description: 'Away fixture at Uplands' },

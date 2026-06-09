@@ -1,0 +1,289 @@
+{
+  "version": "0.4",
+  "title": "Beyond — Media (Dynamic)",
+  "type": "page",
+  "page_settings": [],
+  "content": [
+    {
+      "id": "b39a990",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "right": "24",
+          "bottom": "30",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "ee872b9",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "f1803a9",
+              "elType": "widget",
+              "settings": {
+                "title": "Media & Press",
+                "header_size": "h1",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "559ead3",
+              "elType": "widget",
+              "settings": {
+                "align": "center",
+                "editor": "<p>Reviews, interviews, awards and news — a curated archive of press about Beyond at Buitenverwachting.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "30c4c27",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "10",
+          "right": "24",
+          "bottom": "10",
+          "left": "24",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        }
+      },
+      "elements": [
+        {
+          "id": "5a3a8d0",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "1e361d8",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "_css_classes": "bg-cat-pills"
+              },
+              "elements": [
+                {
+                  "id": "f4870cb",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 100,
+                    "_inline_size": 100
+                  },
+                  "elements": [
+                    {
+                      "id": "530c604",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "All",
+                        "link": {
+                          "url": "#filter-all",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill is-active"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "cf29674",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Press Features",
+                        "link": {
+                          "url": "#filter-press-features",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "0493d89",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Reviews",
+                        "link": {
+                          "url": "#filter-reviews",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "4104515",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Interviews",
+                        "link": {
+                          "url": "#filter-interviews",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "ba71acd",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Awards & Recognition",
+                        "link": {
+                          "url": "#filter-awards-recognition",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "8d41f25",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Events & Collaborations",
+                        "link": {
+                          "url": "#filter-events-collaborations",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "6a6f5de",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Behind the Scenes",
+                        "link": {
+                          "url": "#filter-behind-the-scenes",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    },
+                    {
+                      "id": "bbf051c",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "News",
+                        "link": {
+                          "url": "#filter-news",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "_css_classes": "bg-cat-pill"
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "50748a8",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "30",
+          "right": "24",
+          "bottom": "90",
+          "left": "24",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        }
+      },
+      "elements": [
+        {
+          "id": "30bf5fc",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "5e5f93e",
+              "elType": "widget",
+              "settings": {
+                "_skin": "classic",
+                "posts_post_type": "post",
+                "posts_posts_per_page": 50,
+                "classic_columns": 3,
+                "classic_columns_tablet": 2,
+                "classic_columns_mobile": 1,
+                "classic_row_gap": {
+                  "unit": "px",
+                  "size": 36
+                },
+                "classic_show_excerpt": "yes",
+                "classic_excerpt_length": 24,
+                "classic_meta_data": [
+                  "date"
+                ],
+                "classic_read_more_text": "Read article →",
+                "classic_show_read_more": "yes",
+                "pagination_type": "",
+                "_css_classes": "bg-media-grid"
+              },
+              "elements": [],
+              "widgetType": "posts"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

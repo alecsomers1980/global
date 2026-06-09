@@ -1,16 +1,13 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { requireAuth } from '@/lib/auth'
 import type { Branch, Section } from '@/lib/types'
 
 export default async function BranchPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { profile } = await requireAuth()
   const { slug } = await params
   const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    notFound()
-  }
 
   const { data: branch } = await supabase
     .from('branches')
@@ -22,42 +19,15 @@ export default async function BranchPage({ params }: { params: Promise<{ slug: s
     notFound()
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
   let sections: Section[] = []
 
-  if (profile?.role === 'super_admin') {
-    const { data } = await supabase
-      .from('sections')
-      .select('*')
-      .eq('branch_id', branch.id)
-      .is('parent_id', null)
-      .order('name')
-    sections = data ?? []
-  } else {
-    const { data: perms } = await supabase
-      .from('permissions')
-      .select('section_id')
-      .eq('user_id', user.id)
-      .eq('branch_id', branch.id)
-
-    const allowedSectionIds = (perms ?? []).map(p => p.section_id)
-
-    if (allowedSectionIds.length > 0) {
-      const { data } = await supabase
-        .from('sections')
-        .select('*')
-        .eq('branch_id', branch.id)
-        .is('parent_id', null)
-        .in('id', allowedSectionIds)
-        .order('name')
-      sections = data ?? []
-    }
-  }
+  const { data } = await supabase
+    .from('sections')
+    .select('*')
+    .eq('branch_id', branch.id)
+    .is('parent_id', null)
+    .order('name')
+  sections = data ?? []
 
   return (
     <div className="space-y-6 p-8">

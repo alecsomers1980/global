@@ -15,6 +15,9 @@ const navItems = [
   { name: 'Staff', href: '/admin/staff', icon: '👥' },
   { name: 'Admissions', href: '/admin/admissions', icon: '🎓' },
   { name: 'Alumni', href: '/admin/alumni', icon: '🎓' },
+  { name: 'Permission Slips', href: '/admin/permission-slips', icon: '✍️' },
+  { name: 'Enrolments', href: '/admin/enrolments', icon: '🎓' },
+  { name: 'Community Photos', href: '/admin/community-photos', icon: '📸' },
 ];
 
 const secondaryItems = [

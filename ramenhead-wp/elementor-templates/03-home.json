@@ -1,0 +1,452 @@
+{
+  "version": "0.4",
+  "title": "Home",
+  "type": "page",
+  "content": [
+    {
+      "id": "p1000001",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "24",
+          "right": "24",
+          "bottom": "24",
+          "left": "24",
+          "isLinked": true
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "12",
+          "right": "12",
+          "bottom": "12",
+          "left": "12",
+          "isLinked": true
+        }
+      },
+      "elements": [
+        {
+          "id": "p1000002",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "p1000003",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Ramenhead: Authentic Japanese Ramen in Cape Town",
+                "header_size": "h1",
+                "_css_classes": "rh-hidden-seo"
+              }
+            },
+            {
+              "id": "p1000004",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Ramenhead is a premium ramen restaurant at Speaker's Corner, 37 Parliament Street in Cape Town. We specialise in authentic freshly made noodles produced in-house on the only Yamato noodle machine in Africa, 48-hour simmered Tonkotsu broths, and high-quality Japanese ingredients. Our menu includes classic ramen, vegan options, Japanese street food and a curated selection of sake.</p>",
+                "_css_classes": "rh-hidden-seo"
+              }
+            },
+            {
+              "id": "p1000005",
+              "elType": "widget",
+              "widgetType": "gallery",
+              "settings": {
+                "gallery_type": "single",
+                "gallery": [
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-01.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-02.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-03.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-04.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-05.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-06.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-07.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-08.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-12.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-13.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-10.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-11.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-09.jpg"
+                  },
+                  {
+                    "id": 0,
+                    "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-14.jpg"
+                  }
+                ],
+                "gallery_layout": "masonry",
+                "gallery_columns": 3,
+                "gallery_columns_tablet": 2,
+                "gallery_columns_mobile": 1,
+                "image_size": "large",
+                "link_to": "file",
+                "open_lightbox": "yes",
+                "lightbox_all": "yes",
+                "image_spacing_custom": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "image_spacing_custom_tablet": {
+                  "unit": "px",
+                  "size": 10
+                },
+                "image_spacing_custom_mobile": {
+                  "unit": "px",
+                  "size": 8
+                },
+                "show_image_overlay": "no",
+                "lazy_load": "yes",
+                "_css_classes": "rh-home-gallery"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hms00010",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 820
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "100",
+          "right": "24",
+          "bottom": "100",
+          "left": "24",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "70",
+          "right": "20",
+          "bottom": "70",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "hms00011",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "hms00012",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Cape Town • Authentic Japanese Ramen",
+                "header_size": "div",
+                "align": "center",
+                "title_color": "#EE3526",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "hms00013",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Every noodle is made by hand.",
+                "header_size": "h2",
+                "align": "center",
+                "title_color": "#ebe3d7",
+                "_margin": {
+                  "unit": "px",
+                  "top": "14",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                },
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 38
+                },
+                "typography_font_size_mobile": {
+                  "unit": "px",
+                  "size": 28
+                },
+                "typography_font_weight": "700",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.2
+                },
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": -0.5
+                }
+              }
+            },
+            {
+              "id": "hms00014",
+              "elType": "widget",
+              "widgetType": "divider",
+              "settings": {
+                "color": "#EE3526",
+                "weight": {
+                  "unit": "px",
+                  "size": 2
+                },
+                "width": {
+                  "unit": "px",
+                  "size": 50
+                },
+                "align": "center",
+                "_margin": {
+                  "unit": "px",
+                  "top": "24",
+                  "right": "0",
+                  "bottom": "32",
+                  "left": "0",
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "hms00015",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Ramenhead is Cape Town's home of authentic Japanese ramen — a casual, walk-in ramen-ya in the heart of the city at Speaker's Corner, 37 Parliament Street. Every bowl begins with noodles made fresh in-house on the only Yamato noodle machine in Africa, paired with broths simmered for 48 hours until they carry real umami depth.</p><p>Behind the pass: Executive Chef Julia du Toit, with guidance from FYN Group's Peter Tempelhoff and Ashley Moss. The kitchen takes its cue from the ramen shops of Japan, building each bowl with authentic technique — and extending the same care to small plates, gyoza, and Japanese street food like okonomiyaki fries and chicken karaage. The bar pours sake from traditional masu cups, award-winning Japanese-inspired cocktails, and local and imported beers.</p><p>Open Tuesday through Saturday from 5 PM, with happy hour weekdays 5–7 PM (50% off all small plates and selected cocktails) and live music every Thursday. Walk-ins welcome; book a table via Dineplan. Outside seating available, weather dependent. No cash payments.</p>",
+                "text_color": "#a6a39f",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 16
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.8
+                }
+              }
+            },
+            {
+              "id": "hms00016",
+              "elType": "section",
+              "isInner": true,
+              "settings": {
+                "structure": "20",
+                "gap": "default",
+                "_margin": {
+                  "unit": "px",
+                  "top": "32",
+                  "right": "0",
+                  "bottom": "0",
+                  "left": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "hms00017",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 50,
+                    "_inline_size": 50,
+                    "align": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "hms00018",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "EXPLORE THE MENU",
+                        "link": {
+                          "url": "/menu/",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "align": "right",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "#ebe3d7",
+                        "border_radius": {
+                          "unit": "px",
+                          "top": "50",
+                          "right": "50",
+                          "bottom": "50",
+                          "left": "50",
+                          "isLinked": true
+                        },
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 2
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "12",
+                          "right": "26",
+                          "bottom": "12",
+                          "left": "26",
+                          "isLinked": false
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "hms00019",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 50,
+                    "_inline_size": 50,
+                    "align": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "hms00020",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "BOOK A TABLE",
+                        "link": {
+                          "url": "https://www.dineplan.com/restaurants/ramenhead",
+                          "is_external": "on",
+                          "nofollow": ""
+                        },
+                        "align": "left",
+                        "background_color": "#EE3526",
+                        "button_text_color": "#000000",
+                        "border_radius": {
+                          "unit": "px",
+                          "top": "50",
+                          "right": "50",
+                          "bottom": "50",
+                          "left": "50",
+                          "isLinked": true
+                        },
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#ebe3d7",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "700",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 2
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "12",
+                          "right": "26",
+                          "bottom": "12",
+                          "left": "26",
+                          "isLinked": false
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "background_background": "classic",
+    "background_color": "#000000",
+    "hide_title": "yes"
+  }
+}

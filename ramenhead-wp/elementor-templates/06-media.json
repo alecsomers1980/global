@@ -1,0 +1,827 @@
+{
+  "version": "0.4",
+  "title": "Media",
+  "type": "page",
+  "content": [
+    {
+      "id": "secmed01",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_image": {
+          "url": "https://www.ramenhead.co.za/wp-content/uploads/ramenhead/RAMENHEAD-WS-PIC-13.jpg"
+        },
+        "background_position": "center center",
+        "background_size": "cover",
+        "background_overlay_background": "classic",
+        "background_overlay_color": "#000000",
+        "background_overlay_opacity": {
+          "unit": "px",
+          "size": 0.62
+        },
+        "padding": {
+          "unit": "px",
+          "top": "150",
+          "right": "24",
+          "bottom": "110",
+          "left": "24",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "100",
+          "right": "20",
+          "bottom": "70",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "colmed01",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "widmed11",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "div",
+                "title": "Media & Press",
+                "title_color": "#EE3526",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "typography_font_weight": "500",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 5
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "widmed12",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "h1",
+                "title": "Ramenhead in the Press",
+                "title_color": "#ebe3d7",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 56
+                },
+                "typography_font_size_mobile": {
+                  "unit": "px",
+                  "size": 36
+                },
+                "typography_font_weight": "700",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.1
+                },
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": -1
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": 16,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "widmed13",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "align": "center",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 16
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.7
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": 14,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "isLinked": false
+                },
+                "editor": "<p>Reviews, interviews, awards and news — a curated archive of everything written about Cape Town's home of authentic ramen.</p>"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secmed02",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "right": "24",
+          "bottom": "10",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "colmed02",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "widmed21",
+              "elType": "widget",
+              "widgetType": "search-form",
+              "settings": {
+                "skin": "classic",
+                "placeholder": "Search articles…",
+                "button_type": "icon",
+                "_css_classes": "rh-media-search"
+              }
+            },
+            {
+              "id": "secmed22",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "_css_classes": "rh-cat-pills"
+              },
+              "elements": [
+                {
+                  "id": "colmed22",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 100,
+                    "_inline_size": 100
+                  },
+                  "elements": [
+                    {
+                      "id": "w22a0001",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "All Press",
+                        "link": {
+                          "url": "#filter-all",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill is-active"
+                      }
+                    },
+                    {
+                      "id": "w22b0002",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Reviews",
+                        "link": {
+                          "url": "#filter-reviews",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    },
+                    {
+                      "id": "w22c0003",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Interviews",
+                        "link": {
+                          "url": "#filter-interviews",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    },
+                    {
+                      "id": "w22d0004",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Awards",
+                        "link": {
+                          "url": "#filter-awards-recognition",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    },
+                    {
+                      "id": "w22e0005",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Events",
+                        "link": {
+                          "url": "#filter-events-collaborations",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    },
+                    {
+                      "id": "w22f0006",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Behind the Scenes",
+                        "link": {
+                          "url": "#filter-behind-the-scenes",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    },
+                    {
+                      "id": "w22g0007",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "News",
+                        "link": {
+                          "url": "#filter-news",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#ebe3d7",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(235,227,215,0.25)",
+                        "hover_color": "#000000",
+                        "button_background_hover_color": "#EE3526",
+                        "border_border_hover_color": "#EE3526",
+                        "typography_typography": "custom",
+                        "typography_font_family": "Poppins",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 12
+                        },
+                        "typography_font_weight": "500",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "16",
+                          "bottom": "8",
+                          "left": "16",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "6",
+                          "right": "5",
+                          "bottom": "6",
+                          "left": "5",
+                          "isLinked": false
+                        },
+                        "_css_classes": "rh-cat-pill"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "isInner": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secmed03",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {
+          "unit": "px",
+          "top": "40",
+          "right": "24",
+          "bottom": "100",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "colmed03",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "pstgrid1",
+              "elType": "widget",
+              "widgetType": "posts",
+              "settings": {
+                "_skin": "classic",
+                "posts_post_type": "post",
+                "posts_posts_per_page": 9,
+                "classic_columns": 3,
+                "classic_columns_tablet": 2,
+                "classic_columns_mobile": 1,
+                "classic_row_gap": {
+                  "unit": "px",
+                  "size": 40
+                },
+                "classic_image_size": "full",
+                "classic_show_excerpt": "yes",
+                "classic_excerpt_length": 18,
+                "classic_meta_data": [
+                  "date"
+                ],
+                "classic_read_more_text": "Read article →",
+                "pagination_type": "numbers_and_prev_next",
+                "title_color": "#ebe3d7",
+                "title_color_hover": "#EE3526",
+                "title_typography_typography": "custom",
+                "title_typography_font_family": "Poppins",
+                "title_typography_font_size": {
+                  "unit": "px",
+                  "size": 18
+                },
+                "title_typography_font_weight": "600",
+                "meta_color": "#a6a39f",
+                "excerpt_color": "#a6a39f",
+                "excerpt_typography_typography": "custom",
+                "excerpt_typography_font_family": "Poppins",
+                "excerpt_typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "excerpt_typography_font_weight": "300",
+                "read_more_color": "#EE3526",
+                "_css_classes": "rh-media-grid rh-overlay-grid",
+                "classic_show_read_more": ""
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secmed04",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 820
+        },
+        "background_background": "classic",
+        "background_color": "#0a0a0a",
+        "padding": {
+          "unit": "px",
+          "top": "60",
+          "right": "24",
+          "bottom": "60",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "colmed04",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "widmed41",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "h2",
+                "title": "Writing about Ramenhead?",
+                "title_color": "#ebe3d7",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 26
+                },
+                "typography_font_weight": "700"
+              }
+            },
+            {
+              "id": "widmed42",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "align": "center",
+                "text_color": "#a6a39f",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "typography_font_weight": "300",
+                "_margin": {
+                  "unit": "px",
+                  "top": 10,
+                  "right": 0,
+                  "bottom": 22,
+                  "left": 0,
+                  "isLinked": false
+                },
+                "editor": "<p>For press enquiries, images and interviews, get in touch with our team.</p>"
+              }
+            },
+            {
+              "id": "widmed43",
+              "elType": "widget",
+              "widgetType": "button",
+              "settings": {
+                "text": "EMAIL US",
+                "link": {
+                  "url": "mailto:info@ramenhead.co.za",
+                  "is_external": "",
+                  "nofollow": ""
+                },
+                "background_color": "#EE3526",
+                "button_text_color": "#000000",
+                "hover_color": "#000000",
+                "button_background_hover_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 13
+                },
+                "typography_font_weight": "700",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 3
+                },
+                "typography_text_transform": "uppercase",
+                "text_padding": {
+                  "unit": "px",
+                  "top": "14",
+                  "right": "32",
+                  "bottom": "14",
+                  "left": "32",
+                  "isLinked": false
+                },
+                "align": "center"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "background_background": "classic",
+    "background_color": "#000000",
+    "hide_title": "yes"
+  }
+}

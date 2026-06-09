@@ -1,0 +1,122 @@
+{
+  "version": "0.4",
+  "title": "Ramenhead Search Results",
+  "type": "search-results",
+  "content": [
+    {
+      "id": "se000001",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {"unit": "px", "size": 1100},
+        "background_background": "classic",
+        "background_color": "#000000",
+        "padding": {"unit": "px", "top": "140", "right": "24", "bottom": "100", "left": "24", "isLinked": false},
+        "padding_mobile": {"unit": "px", "top": "100", "right": "20", "bottom": "70", "left": "20", "isLinked": false}
+      },
+      "elements": [
+        {
+          "id": "se000002",
+          "elType": "column",
+          "settings": {"_column_size": 100, "_inline_size": 100},
+          "elements": [
+            {
+              "id": "se000003",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Search",
+                "header_size": "div",
+                "title_color": "#EE3526",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {"unit": "px", "size": 13},
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {"unit": "px", "size": 4},
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "se000004",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Search Results",
+                "header_size": "h1",
+                "title_color": "#ebe3d7",
+                "typography_typography": "custom",
+                "typography_font_family": "Poppins",
+                "typography_font_size": {"unit": "px", "size": 40},
+                "typography_font_weight": "700",
+                "typography_letter_spacing": {"unit": "px", "size": -0.5},
+                "_margin": {"unit": "px", "top": "8", "right": "0", "bottom": "0", "left": "0", "isLinked": false}
+              }
+            },
+            {
+              "id": "se000005",
+              "elType": "widget",
+              "widgetType": "search-form",
+              "settings": {
+                "skin": "classic",
+                "placeholder": "Search articles…",
+                "button_type": "icon",
+                "_margin": {"unit": "px", "top": "24", "right": "0", "bottom": "0", "left": "0", "isLinked": false},
+                "_css_classes": "rh-search-refine"
+              }
+            },
+            {
+              "id": "se000006",
+              "elType": "widget",
+              "widgetType": "divider",
+              "settings": {
+                "color": "#EE3526",
+                "weight": {"unit": "px", "size": 2},
+                "width": {"unit": "px", "size": 60},
+                "align": "left",
+                "_margin": {"unit": "px", "top": "24", "right": "0", "bottom": "40", "left": "0", "isLinked": false}
+              }
+            },
+            {
+              "id": "se000007",
+              "elType": "widget",
+              "widgetType": "archive-posts",
+              "settings": {
+                "_skin": "classic",
+                "classic_columns": 3,
+                "classic_columns_tablet": 2,
+                "classic_columns_mobile": 1,
+                "classic_row_gap": {"unit": "px", "size": 40},
+                "classic_image_size": "medium_large",
+                "classic_show_excerpt": "yes",
+                "classic_excerpt_length": 28,
+                "classic_meta_data": ["date"],
+                "classic_read_more_text": "Read article →",
+                "pagination_type": "numbers_and_prev_next",
+                "nothing_found_message": "No articles found. Try another search.",
+                "title_color": "#ebe3d7",
+                "title_color_hover": "#EE3526",
+                "title_typography_typography": "custom",
+                "title_typography_font_family": "Poppins",
+                "title_typography_font_size": {"unit": "px", "size": 18},
+                "title_typography_font_weight": "600",
+                "meta_color": "#a6a39f",
+                "excerpt_color": "#a6a39f",
+                "excerpt_typography_typography": "custom",
+                "excerpt_typography_font_family": "Poppins",
+                "excerpt_typography_font_size": {"unit": "px", "size": 13},
+                "excerpt_typography_font_weight": "300",
+                "read_more_color": "#EE3526",
+                "_css_classes": "rh-search-grid"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "background_background": "classic",
+    "background_color": "#000000"
+  }
+}

@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -107,16 +106,44 @@ export default async function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 text-white">
         {/* Optimized Background Image */}
         <div className="absolute inset-0 z-0">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/banner.webp"
             alt="Bushbuckridge Landscape"
-            fill
-            priority
-            quality={100}
-            className="object-cover object-center scale-105"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
+          {/* Dark overlay for text readability and to soften any upscaling artifacts */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
         </div>
 
+        {/* Hero Text Overlay */}
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <Badge className="bg-secondary/90 text-secondary-foreground font-black px-5 py-2 text-sm uppercase tracking-widest shadow-lg">
+              Bushbuckridge Community Directory
+            </Badge>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-tight">
+              Your Business,<br />
+              <span className="text-secondary">Your Community</span>
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-white/80 font-medium max-w-2xl mx-auto leading-relaxed">
+              Join hundreds of local businesses already connecting with customers across Bushbuckridge.
+              List your business today — it is quick, affordable, and puts you on the map.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button size="lg" className="h-14 px-10 text-lg font-extrabold bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-2xl shadow-xl transition-transform hover:scale-105 shadow-secondary/20" asChild>
+                <Link href="/list-your-business">
+                  <Zap className="mr-2 h-5 w-5" /> List Your Business
+                </Link>
+              </Button>
+              <Button size="lg" className="h-14 px-10 text-lg font-bold bg-white/10 backdrop-blur-md text-white border border-white/30 hover:bg-white/20 rounded-2xl shadow-xl transition-all" asChild>
+                <Link href="/find-a-service">
+                  <Search className="mr-2 h-5 w-5" /> Explore Services
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Search Bar Section - Floating Overlap */}

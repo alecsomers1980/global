@@ -1,7 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { createClient } from "@/lib/supabase-client";
 
 const footerLinks = [
   {
@@ -25,6 +28,20 @@ const footerLinks = [
 ];
 
 export default function Footer() {
+  const [socialUrls, setSocialUrls] = useState<Record<string, string>>({});
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.from('settings').select('key,value').then(({ data }) => {
+      if (data) {
+        const map: Record<string, string> = {};
+        data.forEach((s: { key: string; value: string }) => { map[s.key] = s.value; });
+        setSocialUrls(map);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <footer className="relative bg-brand-green text-white pt-24 pb-12 overflow-hidden rounded-t-[3rem] md:rounded-t-[5rem]">
       {/* Background Accent */}
@@ -54,10 +71,10 @@ export default function Footer() {
             </p>
 
             <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
+              <a href={socialUrls.facebook_url || '#'} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
+              <a href={socialUrls.instagram_url || '#'} target="_blank" rel="noopener noreferrer" className="p-2 bg-white/5 rounded-full hover:bg-brand-gold/20 transition-all hover:scale-110">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>

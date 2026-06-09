@@ -43,7 +43,11 @@
       "Bash(where.exe gh *)",
       "Bash(curl -s -X PATCH -H \"Authorization: Bearer vca_2p4oMP4NX7LzLNGhoAea23dk9oeKzgdSI02O74E9Cz3Qr1TdzN0oQwLd\" -H \"Content-Type: application/json\" -d '{\"rootDirectory\":null}' \"https://api.vercel.com/v10/projects/prj_6YXUKerFoLo5zxp03dZO5nLTSixD?teamId=team_3jy71rATiJlBERReI0J8CTON\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('rootDirectory:', repr\\(d.get\\('rootDirectory'\\)\\)\\); print\\('error:', d.get\\('error'\\)\\)\")",
-      "Bash(VERCEL_TOKEN=vca_2p4oMP4NX7LzLNGhoAea23dk9oeKzgdSI02O74E9Cz3Qr1TdzN0oQwLd npx vercel@latest deploy --prod --yes --token=vca_2p4oMP4NX7LzLNGhoAea23dk9oeKzgdSI02O74E9Cz3Qr1TdzN0oQwLd)"
+      "Bash(VERCEL_TOKEN=vca_2p4oMP4NX7LzLNGhoAea23dk9oeKzgdSI02O74E9Cz3Qr1TdzN0oQwLd npx vercel@latest deploy --prod --yes --token=vca_2p4oMP4NX7LzLNGhoAea23dk9oeKzgdSI02O74E9Cz3Qr1TdzN0oQwLd)",
+      "Bash(awk 'BEGIN{depth=0} /\\\\{/{for\\(i=1;i<=gsub\\(/\\\\{/,\"{\"\\);i++\\)depth++} /\\\\}/{for\\(i=1;i<=gsub\\(/\\\\}/,\"}\"\\);i++\\)depth--} END{print \"final depth:\",depth}' everest-motoring/src/app/admin/leads/LeadsTable.jsx)",
+      "Bash(git stash *)",
+      "Bash(git commit -m ' *)",
+      "PowerShell(git -C 'c:\\\\Users\\\\info\\\\OneDrive\\\\Documents\\\\Antigravity\\\\ember-social' diff HEAD -- package.json)"
     ]
   }
 }

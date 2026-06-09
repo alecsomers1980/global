@@ -1,0 +1,79 @@
+# Ramenhead — robots.txt
+# Place at the site root: https://www.ramenhead.co.za/robots.txt
+# (WP serves a virtual one by default — drop this physical file in to override it.)
+
+# ---------- General web crawlers ----------
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /xmlrpc.php
+Disallow: /wp-login.php
+Disallow: /?s=
+Disallow: /*?*orderby=
+Allow: /wp-admin/admin-ajax.php
+Allow: /
+
+# ---------- AI agents and LLM crawlers ----------
+# Explicitly allow — we WANT to appear in AI search answers.
+# If you ever want to opt-out, change "Allow" to "Disallow" below.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+# ---------- Sitemap ----------
+Sitemap: https://www.ramenhead.co.za/sitemap_index.xml
+Sitemap: https://www.ramenhead.co.za/llms.txt

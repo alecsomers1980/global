@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/adminServer' // service-role client
 import { createAuthClient } from '@/lib/supabase/adminServer' // auth client
+import { createServiceClient } from '@/lib/supabase/adminServer' // plain service-role client for writes
 
 interface StatusPayload {
   id?: number
@@ -48,15 +49,16 @@ export async function saveStatus(payload: StatusPayload) {
       client_message: payload.clientMessage,
     }
 
-    // 4. Insert or update
+    // 4. Insert or update (use service client for guaranteed RLS bypass on writes)
+    const serviceClient = createServiceClient()
     if (payload.id) {
-      const { error } = await supabase
+      const { error } = await serviceClient
         .from('case_statuses')
         .update(row)
         .eq('id', payload.id)
       if (error) return { error: error.message }
     } else {
-      const { error } = await supabase.from('case_statuses').insert(row)
+      const { error } = await serviceClient.from('case_statuses').insert(row)
       if (error) return { error: error.message }
     }
 
@@ -88,8 +90,9 @@ export async function deleteStatus(id: number) {
       .single()
     if (profile?.role !== 'admin') return { error: 'Admin access required' }
 
-    // 3. Delete
-    const { error } = await supabase.from('case_statuses').delete().eq('id', id)
+    // 3. Delete (use service client for guaranteed RLS bypass on writes)
+    const serviceClient = createServiceClient()
+    const { error } = await serviceClient.from('case_statuses').delete().eq('id', id)
     if (error) return { error: error.message }
 
     // 4. Revalidate

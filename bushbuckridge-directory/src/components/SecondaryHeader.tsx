@@ -24,7 +24,7 @@ export default function SecondaryHeader({
                     backgroundPosition: 'center',
                 }}
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-background" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/65 to-background backdrop-blur-[2px]" />
             </div>
 
             <div className="container relative z-10 mx-auto px-4 text-center">

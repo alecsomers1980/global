@@ -1,0 +1,212 @@
+import { NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/client'
+import { resolveWorkspaceId } from '@/lib/resolve-workspace'
+import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
+import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal } from '@/lib/templates'
+import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
+import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
+import crypto from 'crypto'
+
+const DOW: Record<string, number> = { mon: 1, wed: 3, fri: 5, sat: 6 }
+const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, fri: 9, sat: 8 }
+
+// Season for a given 0-indexed month (0=Jan) in the South African calendar.
+function seasonForMonth(m: number): string {
+    if (m >= 10 || m <= 1) return 'festive_summer'
+    if (m >= 2 && m <= 4) return 'autumn'
+    if (m >= 5 && m <= 7) return 'winter'
+    return 'spring'
+}
+
+function computeWeekday(monthStart: Date, weekOffset: number, dayName: string): Date {
+    const targetDow = DOW[dayName]
+    const hour = SAST_UTC[dayName] || 9
+    const d = new Date(monthStart)
+    // Start from day 1 of next month
+    d.setUTCDate(1)
+    // Advance to first occurrence of target weekday
+    while (d.getUTCDay() !== targetDow) d.setUTCDate(d.getUTCDate() + 1)
+    // Add week offset
+    d.setUTCDate(d.getUTCDate() + weekOffset * 7)
+    d.setUTCHours(hour, 0, 0, 0)
+    return d
+}
+
+interface PillarDef {
+    name: string
+    dayName: string
+    render: (car: VehicleInput, opts?: { targetDate?: Date; variantIndex?: number; headline?: HeadlineSpec | null; season?: string }) => Promise<{ image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }>
+    needsCar: boolean
+}
+
+const PILLARS: PillarDef[] = [
+    { name: 'showcase',    dayName: 'mon', render: renderShowcase as any,    needsCar: true },
+    { name: 'lifestyle',   dayName: 'wed', render: renderLifestyle as any,   needsCar: true },
+    { name: 'maintenance', dayName: 'fri', render: renderMaintenance as any, needsCar: false },
+    { name: 'seasonal',    dayName: 'sat', render: renderSeasonal as any,    needsCar: true },
+]
+
+export async function POST(req: Request) {
+    try {
+        const { workspaceId, days = 28, month } = await req.json()
+        if (!workspaceId) {
+            return NextResponse.json({ error: 'workspaceId required' }, { status: 400 })
+        }
+
+        const resolvedId = await resolveWorkspaceId(workspaceId)
+        const supabase = createAdminClient()
+
+        // Fetch workspace with all needed columns
+        const { data: workspace } = await supabase
+            .from('workspaces')
+            .select('*')
+            .eq('id', resolvedId)
+            .single()
+
+        if (!workspace) {
+            return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
+        }
+
+        const ws = workspace as any
+        const weeks = Math.round(days / 7)
+
+        // Fetch the FULL inventory (no recency filter) so we can spread distinct
+        // cars across the batch. With ~13 cars and 12 car-posts we want each car
+        // used at most once or twice — not the same handful repeated.
+        const vehicles = await fetchVehiclesForWorkspace({
+            clientSupabaseUrl: ws.client_supabase_url,
+            clientServiceKey: ws.client_supabase_service_key,
+            table: (ws.content_source as any)?.table || 'cars',
+            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url',
+            filter: (ws.content_source as any)?.filter || {},
+            limit: 60,
+            notSharedWithinDays: 0,
+        })
+
+        if (!vehicles.length) {
+            return NextResponse.json({ error: 'No vehicles in inventory' }, { status: 400 })
+        }
+
+        // Shuffle so different cars are featured each month (Fisher-Yates).
+        for (let i = vehicles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[vehicles[i], vehicles[j]] = [vehicles[j], vehicles[i]]
+        }
+
+        // Create campaign batch
+        const publicToken = crypto.randomUUID()
+        const batchId = crypto.randomUUID()
+
+        const { error: batchError } = await supabase
+            .from('campaign_batches')
+            .insert({
+                id: batchId,
+                workspace_id: resolvedId,
+                public_token: publicToken,
+                duration_days: days,
+                schedule_pattern: 'mon_wed_fri_sat',
+                strategy_rationale: '4-pillar weekly rotation: Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat). Posting at SA-audience peak engagement times.',
+            } as any)
+
+        if (batchError) {
+            console.error('[campaign/generate] batch insert failed:', batchError)
+            return NextResponse.json({ error: 'Failed to create batch' }, { status: 500 })
+        }
+
+        // Schedule into the chosen month ("YYYY-MM"), or default to next month.
+        let monthStart: Date
+        if (typeof month === 'string' && /^\d{4}-\d{2}$/.test(month)) {
+            const [y, mo] = month.split('-').map(Number)
+            monthStart = new Date(Date.UTC(y, mo - 1, 1, 0, 0, 0, 0))
+        } else {
+            const now = new Date()
+            monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0))
+        }
+        const planSeason = seasonForMonth(monthStart.getUTCMonth())
+
+        // Generate FRESH text overlays for this batch so headlines + tips never
+        // repeat month-to-month. Returns null on failure → templates use their
+        // curated pools as a fallback (batch still succeeds).
+        const fresh = await generateFreshHeadlines({ count: weeks, season: planSeason })
+
+        const tasks: Array<Promise<void>> = []
+        const errors: string[] = []
+        let vehicleIdx = 0
+        let inserted = 0
+
+        for (let week = 0; week < weeks; week++) {
+            for (const pillar of PILLARS) {
+                const car = vehicles[vehicleIdx % vehicles.length]
+                if (pillar.needsCar) vehicleIdx++
+
+                const headline = fresh
+                    ? (fresh as any)[pillar.name]?.[week] ?? null
+                    : null
+
+                tasks.push((async () => {
+                    try {
+                        const targetDate = computeWeekday(monthStart, week, pillar.dayName)
+                        const result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
+
+                        const postId = crypto.randomUUID()
+                        let mediaUrl: string | null = null
+
+                        const up = await uploadCampaignImage({
+                            workspaceId: resolvedId,
+                            postId,
+                            bytes: result.image,
+                        })
+                        if (up.ok) mediaUrl = up.publicUrl
+
+                        const approvalToken = crypto.randomUUID()
+
+                        const { error: insertError } = await supabase
+                            .from('posts')
+                            .insert({
+                                id: postId,
+                                workspace_id: resolvedId,
+                                campaign_batch_id: batchId,
+                                pillar: pillar.name,
+                                vehicle_id: pillar.needsCar ? (car as any)?.id || null : null,
+                                content: result.caption,
+                                variants: { facebook: { content: result.caption, hashtags: result.hashtags } },
+                                platforms: ['facebook'],
+                                media_urls: mediaUrl ? [mediaUrl] : null,
+                                scheduled_at: result.scheduledAt.toISOString(),
+                                status: 'pending_approval',
+                                client_status: 'pending',
+                                approval_token: approvalToken,
+                                cta_url: result.ctaUrl || null,
+                                image_status: mediaUrl ? 'ready' : 'failed',
+                            } as any)
+
+                        if (insertError) {
+                            errors.push(`${pillar.name} week ${week + 1}: ${insertError.message}`)
+                        } else {
+                            inserted++
+                        }
+                    } catch (e: any) {
+                        errors.push(`${pillar.name} week ${week + 1}: ${e?.message || e}`)
+                    }
+                })())
+            }
+        }
+
+        await Promise.all(tasks)
+
+        return NextResponse.json({
+            ok: true,
+            batchId,
+            public_token: publicToken,
+            count: inserted,
+            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times.`,
+            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal'],
+            totalExpected: weeks * PILLARS.length,
+            errors: errors.length > 0 ? errors : undefined,
+        })
+    } catch (error: any) {
+        console.error('Campaign generate error:', error)
+        return NextResponse.json({ ok: false, error: error.message || 'Generation failed' })
+    }
+}

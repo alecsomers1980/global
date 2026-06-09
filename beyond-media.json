@@ -1,0 +1,1903 @@
+{
+  "version": "0.4",
+  "title": "Beyond — Media",
+  "type": "page",
+  "page_settings": [],
+  "content": [
+    {
+      "id": "489d443",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "50",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "13da847",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "2c8d4be",
+              "elType": "widget",
+              "settings": {
+                "title": "Media",
+                "header_size": "h1",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "9aaf2e6",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Press features, reviews, interviews and recognition for Beyond at Buitenverwachting.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "566e875",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "9cf4d7a",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "b9b7313",
+              "elType": "widget",
+              "settings": {
+                "title": "Reviews",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "0983d26",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>What the critics and food writers are saying.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "ac14c42",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "df85875",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "21de870",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Beyond, Constantia — Winemag",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "1e1ccf5",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Winemag's Daisy Jones reviews Beyond in its opening months, praising the historic thatched setting on Buitenverwachting with floor-to-ceiling vineyard views, the commitment to affordability, and standout dishes such as ostrich tataki elevated by creative condiments and impeccable service.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "9b6dc91",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://winemag.co.za/food/restaurant-review/beyond-constantia/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "05fab06",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "f6c3930",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "A Place Where Local Produce Is Celebrated — Eat Out",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "f71a5c9",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Eat Out's review highlights how Beyond places provenance and seasonal local produce at the heart of every dish, celebrating the Western Cape's growers and producers in an elegant yet unpretentious setting.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "53f862a",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.eatout.co.za/article/review-beyond-place-local-produce-ingredients-celebrated/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "776a6f4",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "c529e08",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Review: Beyond at Buitenverwachting — Wanted",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "d79ee55",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Wanted explores how Peter Tempelhoff's team balances the estate's centuries of heritage with a fresh, ingredient-led menu and exceptional value, in a glass-clad room amid the vines.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "5310983",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.wantedonline.co.za/food-and-drink/2022-08-26-review-beyond-at-buitenverwachting/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "f07401a",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "37091b6",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "8ecca83",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Beyond at Buitenverwachting — Fodor's Travel",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "dd75b29",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Fodor's Travel features Beyond in its Cape Town dining guide, describing the glass-clad dining room amid the vineyards and the refined, produce-driven cooking that has made it a destination restaurant.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "eeb7be7",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.fodors.com/world/africa-and-middle-east/south-africa/cape-town-and-peninsula/restaurants/reviews/buitenverwachting-36135",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "fb1834e",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "dc803e0",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "It's Beyond Magnificent — Eating Covent Garden",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "f95a38f",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>A UK food writer's account of a meal at Beyond, calling the experience 'beyond magnificent' and detailing the standout courses, the vineyard setting and the warm, attentive service.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "518c92c",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://eatingcoventgarden.com/beyond-at-buitenverwachting/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "e4fa1d5",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "693f006",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Beyond Restaurant — Lavender and Lime",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "29a54b4",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>A detailed first-hand review from Tandy Sinclair documenting the tasting menu, the wine pairings and the relaxed-yet-refined atmosphere of the Beyond dining room.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "7c18e83",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://tandysinclair.com/beyond-restaurant/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a5bb98a",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "2f3a641",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "cbc18ad",
+              "elType": "widget",
+              "settings": {
+                "title": "Press Features",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "cdc090f",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Beyond in the headlines.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "7c2286b",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "b445949",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "e3ff088",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Buitenverwachting's New 'Beyond' Defines Its Name — Daily Maverick",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "3db8c62",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Daily Maverick covers the launch of Beyond, explaining how the restaurant takes its name from Buitenverwachting ('beyond expectations') and channels simplicity and provenance to let quality ingredients speak for themselves.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "940fa98",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.dailymaverick.co.za/article/2020-12-11-buitenverwachtings-new-beyond-defines-its-name/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "65e7bea",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "07812f2",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Chef Peter Tempelhoff Launches New Restaurant — IOL",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "721f5ef",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>IOL reports on Peter Tempelhoff's move to open Beyond on the historic Buitenverwachting estate, following the success of FYN and Greenhouse, with a hyper focus on the best local seasonal produce.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "3385aa2",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.iol.co.za/lifestyle/food-drink/restaurants/cape-town/chef-peter-tempelhoff-launches-new-restaurant-at-buitenverwachting-wine-farm-93f290b3-69a9-4924-8104-4223a32839b4",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "ef78ec9",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "7d7716b",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "New Restaurant Opens at Buitenverwachting — Inside Guide",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "873dce8",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Inside Guide introduces Beyond to Cape Town diners, outlining the concept, the team and what to expect from the menu and the storied estate setting.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "6120e91",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://insideguide.co.za/cape-town/restaurants/beyond-buitenverwachting/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "0d8e2f3",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "5638998",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "c8410ca",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Tempelhoff Goes Beyond FYN — Chris von Ulmenstein",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "fa6a574",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>A feature on how Peter Tempelhoff expanded beyond FYN to launch Beyond at Buitenverwachting, with background on the team and the culinary philosophy that drives the kitchen.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "2d017ea",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.chrisvonulmenstein.com/blog/cape-town/chef-peter-tempelhoff-goes-beyond-fyn-to-launch-beyond-restaurant-at-buitenverwachting/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2ec4edf",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "c6888d9",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "ac21558",
+              "elType": "widget",
+              "settings": {
+                "title": "Interviews",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "2c106f8",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>In conversation with the team behind Beyond.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "18c46e3",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "e9be315",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "cd7dc8b",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Peter Tempelhoff on The John Maytham Show — CapeTalk",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "0223286",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Peter Tempelhoff joins John Maytham on CapeTalk to talk through the vision for Beyond, the estate's history and his focus on the very best local, seasonal ingredients. (Audio interview.)</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "daec90c",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Listen",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.capetalk.co.za/podcasts/144/the-john-maytham-show/386615/peter-tempelhoffs-new-restaurant-beyond-at-buitenverwachting",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "42b3ac9",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "932ad1e",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "e8fa51a",
+              "elType": "widget",
+              "settings": {
+                "title": "Awards & Recognition",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "909bced",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Stars, plates and global listings.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "36f9be5",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "2e9f216",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "c71a753",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Two Eat Out Stars — 2025 Awards",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "86e7b33",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Beyond was awarded Two Stars at the 2025 Eat Out Woolworths Restaurant Awards, cementing its place among South Africa's very best restaurants.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "9e26ce1",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://winemag.co.za/food/news/eat-out-woolworths-restaurant-awards-2025/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "d4cf1b8",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "8867ceb",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "One Star — 2025 Luxe Restaurant Awards",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "372518a",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Beyond by Peter Tempelhoff was recognised as a One-Star restaurant at the 2025 Luxe Restaurant Awards.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "f768497",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.bizcommunity.com/article/all-the-2025-luxe-restaurant-awards-winners-921404a",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                },
+                {
+                  "id": "0485f1a",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "b799d60",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Listed on The World's 50 Best Discovery",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "bb900ba",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Beyond is featured on The World's 50 Best Discovery, the global directory curated by the academy behind The World's 50 Best Restaurants.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "53178e2",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.theworlds50best.com/discovery/Establishments/South-Africa/Cape-Town/Beyond.html",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ad7cb6b",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "7ac8e3c",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "f576e6f",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Creating 25 New Jobs at Buitenverwachting — Eat Out",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "71a6776",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Eat Out reports on the announcement of Beyond's opening at Buitenverwachting and the 25 new jobs the restaurant created in Constantia.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "e240df1",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.eatout.co.za/article/peter-tempelhoff-open-new-restaurant-buitenverwachting-creating-25-new-jobs/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f37c6ac",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "db204d0",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "0f43a5a",
+              "elType": "widget",
+              "settings": {
+                "title": "Events & Collaborations",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "d0b05c1",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Guest chefs, special dinners and partnerships.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "2c11a90",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "64187c6",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "db21330",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "A Memorable Night with Jameson Stocks — EatPlayDrink",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "ed854e0",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>EatPlayDrink recounts a memorable collaboration dinner at Beyond featuring guest chef Jameson Stocks alongside Peter Tempelhoff — a showcase of the restaurant's appetite for special one-night events.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "1daece1",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Read Article",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.eatplaydrink.capetown/eat/a-memorable-night-at-beyond-with-jameson-stocks-and-peter-tempelhoff/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "168f234",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "926906a",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "ad595f2",
+              "elType": "widget",
+              "settings": {
+                "title": "Behind the Scenes",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "8ea3a6d",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>The people, produce and process behind every plate.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "e100ddb",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "2792c80",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "6a8c64e",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Inside Beyond",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "d12123a",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Coming soon: a closer look at the Beyond kitchen, our indigenous garden, foraging along the coast, and the team who bring each plate to life. Follow along for the latest.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "494399b",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Follow on Instagram",
+                        "align": "left",
+                        "link": {
+                          "url": "https://www.instagram.com/restaurantbeyond/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6329da4",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "50",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 1140
+        }
+      },
+      "elements": [
+        {
+          "id": "0d0b870",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": null
+          },
+          "elements": [
+            {
+              "id": "dd18fc2",
+              "elType": "widget",
+              "settings": {
+                "title": "News",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "ce3872a",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Announcements and updates.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            },
+            {
+              "id": "3a5ff45",
+              "elType": "section",
+              "settings": {
+                "isInner": true,
+                "gap": "extended",
+                "margin": {
+                  "unit": "px",
+                  "top": "0",
+                  "bottom": "30",
+                  "left": "0",
+                  "right": "0",
+                  "isLinked": false
+                }
+              },
+              "elements": [
+                {
+                  "id": "76f776b",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 33,
+                    "_inline_size": null,
+                    "padding": {
+                      "unit": "px",
+                      "top": "28",
+                      "bottom": "28",
+                      "left": "28",
+                      "right": "28",
+                      "isLinked": false
+                    },
+                    "border_border": "solid",
+                    "border_width": {
+                      "unit": "px",
+                      "top": "1",
+                      "right": "1",
+                      "bottom": "1",
+                      "left": "1",
+                      "isLinked": true
+                    },
+                    "border_color": "#E6E0D6",
+                    "border_radius": {
+                      "unit": "px",
+                      "top": "4",
+                      "right": "4",
+                      "bottom": "4",
+                      "left": "4",
+                      "isLinked": true
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "47a438d",
+                      "elType": "widget",
+                      "settings": {
+                        "title": "Latest from Beyond",
+                        "header_size": "h3",
+                        "align": "left"
+                      },
+                      "elements": [],
+                      "widgetType": "heading"
+                    },
+                    {
+                      "id": "9d86b2e",
+                      "elType": "widget",
+                      "settings": {
+                        "editor": "<p>Stay tuned for the latest announcements from Beyond, including seasonal menu launches, special evenings and estate news. For current opening details, please get in touch.</p>"
+                      },
+                      "elements": [],
+                      "widgetType": "text-editor"
+                    },
+                    {
+                      "id": "8c0c01f",
+                      "elType": "widget",
+                      "settings": {
+                        "text": "Contact Us",
+                        "align": "left",
+                        "link": {
+                          "url": "https://beyondrestaurant.co.za/contact/",
+                          "is_external": "on",
+                          "nofollow": "nofollow",
+                          "custom_attributes": ""
+                        }
+                      },
+                      "elements": [],
+                      "widgetType": "button"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dcfdf38",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "0",
+          "bottom": "60",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "56df74f",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": []
+        }
+      ]
+    }
+  ]
+}

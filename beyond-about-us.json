@@ -1,0 +1,323 @@
+{
+  "version": "0.4",
+  "title": "Beyond — About Us",
+  "type": "page",
+  "page_settings": [],
+  "content": [
+    {
+      "id": "bb45000",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "40",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "c62b9e0",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "cbcfbfa",
+              "elType": "widget",
+              "settings": {
+                "title": "About Beyond",
+                "header_size": "h1",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "e55557c",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Provenance, seasonality and a deep connection to place — on Buitenverwachting Wine Estate, Constantia.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5bd674f",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "40",
+          "bottom": "20",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 900
+        }
+      },
+      "elements": [
+        {
+          "id": "cba1b27",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "f6e0cec",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p>Located on Buitenverwachting Wine Estate in Constantia, Beyond is a sophisticated restaurant where provenance, seasonality, and the origins of flavour are the foundation. The kitchen is led by Executive Chef Sebastian Stehr with guidance from FYN Group's chefs Peter Tempelhoff and Ashley Moss. The menu honours ingredients native to the Western Cape — sourced from the restaurant's indigenous garden, foraged from the nearby coast, and supplied by local producers — drawing on ancient ingredients, age-old traditions, and a deep connection to place and flavour.</p><p>The beverage programme follows the same philosophy. Wines from Buitenverwachting express the character of the estate's soils and vineyards, while the cocktail and non-alcoholic pairings incorporate indigenous ingredients alongside garden-grown herbs, house-made infusions, fermentations, and tinctures. The programme is led by FYN Group Sommelier and Beverage Director, Jennifer Hugé, recipient of the Eat Out Guide Patron Mixology Award.</p><p>The dining room looks out over the rolling vineyards through floor-to-ceiling windows, with the warmth of a fireplace lending an elegant yet relaxed atmosphere. Guests are also welcome to enjoy cocktails in the lounge area of the restaurant.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "9b2e7a8",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "bottom": "20",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 900
+        }
+      },
+      "elements": [
+        {
+          "id": "b8de767",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "a073bca",
+              "elType": "widget",
+              "settings": {
+                "title": "Recognition",
+                "header_size": "h2",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "b1642e3",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Beyond currently holds <strong>two Eat Out stars</strong>, <strong>two JHP Gourmet Guide plates</strong>, and is listed on <strong>The World's 50 Best Discovery</strong>.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ed088f6",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "30",
+          "bottom": "20",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 900
+        }
+      },
+      "elements": [
+        {
+          "id": "6f08386",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "padding": {
+              "unit": "px",
+              "top": "10",
+              "bottom": "10",
+              "left": "20",
+              "right": "20",
+              "isLinked": false
+            }
+          },
+          "elements": [
+            {
+              "id": "d1785b1",
+              "elType": "widget",
+              "settings": {
+                "title": "Hours",
+                "header_size": "h3",
+                "align": "left"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "986c52b",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p><strong>Lunch:</strong> 12:00 – 14:30 &nbsp;|&nbsp; Tuesday – Sunday<br><strong>Dinner:</strong> 18:00 – 20:30 &nbsp;|&nbsp; Tuesday – Saturday</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        },
+        {
+          "id": "f2e8839",
+          "elType": "column",
+          "settings": {
+            "_column_size": 50,
+            "padding": {
+              "unit": "px",
+              "top": "10",
+              "bottom": "10",
+              "left": "20",
+              "right": "20",
+              "isLinked": false
+            }
+          },
+          "elements": [
+            {
+              "id": "ac9bc30",
+              "elType": "widget",
+              "settings": {
+                "title": "Find Us",
+                "header_size": "h3",
+                "align": "left"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "0fbbf25",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p>37 Klein Constantia Rd, Nova Constantia, Cape Town, 7806<br>+27 (0)21 794 0306<br>+27 (0)72 103 3343<br><a href='mailto:info@beyondrestaurant.co.za'>info@beyondrestaurant.co.za</a></p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4e7edf3",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "10",
+          "bottom": "30",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "3c5fa49",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "6d62015",
+              "elType": "widget",
+              "settings": {
+                "text": "Make a Booking",
+                "align": "center",
+                "link": {
+                  "url": "https://beyondrestaurant.co.za/make-a-booking/",
+                  "is_external": "",
+                  "nofollow": ""
+                }
+              },
+              "elements": [],
+              "widgetType": "button"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1285bc6",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "20",
+          "bottom": "60",
+          "left": "0",
+          "right": "0",
+          "isLinked": false
+        },
+        "content_width": {
+          "unit": "px",
+          "size": 900
+        }
+      },
+      "elements": [
+        {
+          "id": "a994c99",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "da8e098",
+              "elType": "widget",
+              "settings": {
+                "title": "Good to Know",
+                "header_size": "h3",
+                "align": "center"
+              },
+              "elements": [],
+              "widgetType": "heading"
+            },
+            {
+              "id": "8a70dcd",
+              "elType": "widget",
+              "settings": {
+                "editor": "<p style='text-align:center'>Children aged 8 and older are welcome. We can accommodate most dietary needs or allergies with prior notice, unless severe or potentially fatal.</p>"
+              },
+              "elements": [],
+              "widgetType": "text-editor"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

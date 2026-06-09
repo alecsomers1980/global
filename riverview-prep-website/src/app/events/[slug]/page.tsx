@@ -280,17 +280,15 @@ export default function DynamicEventPage() {
                     ))}
                   </ul>
 
-                  <a
-                    href={bookingHref}
-                    target={booking.type === 'url' ? '_blank' : undefined}
-                    rel={booking.type === 'url' ? 'noopener noreferrer' : undefined}
+                  <Link
+                    href={`/events/${event.slug}/book`}
                     className={`inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold text-sm transition-all ${
                       ticket.highlight ? "bg-brand-gold text-white hover:bg-brand-gold/90" : "bg-brand-green text-white hover:bg-brand-green/90"
                     }`}
                   >
-                    <BookingIcon className="w-4 h-4" />
-                    {booking.type === 'url' ? 'Book Now' : bookingLabel}
-                  </a>
+                    <Ticket className="w-4 h-4" />
+                    Book Now
+                  </Link>
                 </div>
               ))}
             </div>

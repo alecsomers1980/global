@@ -1,0 +1,48 @@
+/* ============================================================
+   Beyond — Media page filter styles
+   Paste into: Appearance → Customize → Additional CSS
+   Brand-neutral: no hardcoded colours, so it adopts Beyond's
+   existing palette. Only layout + hide/active behaviour.
+   ============================================================ */
+
+/* Hide cards filtered out by the pill script */
+.bg-media-grid .elementor-post[data-bg-hidden] { display: none !important; }
+
+/* Pill row: one centred line on desktop, horizontal scroll on mobile */
+.bg-cat-pills,
+.bg-cat-pills > .elementor-container,
+.bg-cat-pills > .elementor-container > .elementor-column,
+.bg-cat-pills > .elementor-container > .elementor-column > .elementor-widget-wrap {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.bg-cat-pills .elementor-widget-button {
+    flex: 0 0 auto;
+    width: auto !important;
+    margin: 5px 4px;
+}
+
+@media (max-width: 1024px) {
+    .bg-cat-pills > .elementor-container,
+    .bg-cat-pills > .elementor-container > .elementor-column > .elementor-widget-wrap {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .bg-cat-pills > .elementor-container::-webkit-scrollbar { display: none; }
+}
+
+/* Active pill — emphasis without assuming a brand colour */
+.bg-cat-pill .elementor-button.is-active,
+.bg-cat-pill.is-active .elementor-button {
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
