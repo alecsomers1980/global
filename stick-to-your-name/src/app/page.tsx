@@ -210,18 +210,6 @@ export default function OrderPage() {
         </div>
       </section>
 
-      {/* Design Gallery */}
-      <section className="py-10 px-4 max-w-5xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            View our designs
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <img src="/catalog-1.png" alt="Design Catalog 1" className="w-full h-auto rounded-xl shadow-sm border border-gray-100" />
-            <img src="/catalog-2.png" alt="Design Catalog 2" className="w-full h-auto rounded-xl shadow-sm border border-gray-100" />
-          </div>
-        </div>
-      </section>
 
       {/* Order Form */}
       <section className="max-w-5xl mx-auto px-4 pb-20 lg:flex lg:gap-8 lg:items-start">
