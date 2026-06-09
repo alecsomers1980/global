@@ -110,6 +110,27 @@ export async function compositeLogo(baseBuf: Buffer, logoPath: string) {
  * One word can be rendered in accent yellow; the rest is white.
  * Sharp draws this AFTER the AI image, so spelling is always exact.
  */
+function wrapLine(line: string, maxChars: number): string[] {
+    const words = line.split(/\s+/).filter(Boolean)
+    if (words.length === 0) return ['']
+    const result: string[] = []
+    let currentLine = ''
+    for (const word of words) {
+        if (currentLine.length === 0) {
+            currentLine = word
+        } else if (currentLine.length + 1 + word.length <= maxChars) {
+            currentLine += ' ' + word
+        } else {
+            result.push(currentLine)
+            currentLine = word
+        }
+    }
+    if (currentLine.length > 0) {
+        result.push(currentLine)
+    }
+    return result
+}
+
 export function buildHeadlineSvg(args: {
     W: number; H: number
     lines: string[]
@@ -121,14 +142,17 @@ export function buildHeadlineSvg(args: {
     const { W, H, lines, accentWord, position = 'center', subhead = null, subheadAccent = null } = args
     const YELLOW = '#FFE600', WHITE = '#ffffff'
 
+    const MAX_CHARS_PER_LINE = 14
+    const processedLines = lines.flatMap(l => wrapLine(l, MAX_CHARS_PER_LINE))
+
     // Auto-fit: scale the headline font down so the longest line never exceeds the
-    // safe width (88% of canvas). Arial Black caps with letter-spacing -1 average
-    // ~0.60× the font size per glyph. Clamp to a sensible min/max.
-    const SAFE_W = W * 0.88
-    const HEAD_GLYPH = 0.60
-    const longestLineChars = Math.max(1, ...lines.map(l => l.length))
-    const maxFs = Math.round(W * 0.085)
-    const minFs = Math.round(W * 0.042)
+    // safe width (W - 100). Arial Black caps with letter-spacing -1 average
+    // ~0.72× the font size per glyph. Clamp to a sensible min/max.
+    const SAFE_W = W - 100
+    const HEAD_GLYPH = 0.72
+    const longestLineChars = Math.max(1, ...processedLines.map(l => l.length))
+    const maxFs = Math.round(W * 0.070)
+    const minFs = Math.round(W * 0.040)
     let fs = maxFs
     const estWidth = longestLineChars * fs * HEAD_GLYPH
     if (estWidth > SAFE_W) fs = Math.max(minFs, Math.floor(fs * (SAFE_W / estWidth)))
@@ -144,7 +168,7 @@ export function buildHeadlineSvg(args: {
         if (estSub > SAFE_W) subFs = Math.max(minSubFs, Math.floor(subFs * (SAFE_W / estSub)))
     }
 
-    const totalHeight = lines.length * fs + (lines.length - 1) * lineGap + (subhead ? (subFs + 16) : 0)
+    const totalHeight = processedLines.length * fs + (processedLines.length - 1) * lineGap + (subhead ? (subFs + 16) : 0)
 
     let cy: number
     if (position === 'top-right') cy = Math.round(H * 0.18) + fs
@@ -163,11 +187,11 @@ export function buildHeadlineSvg(args: {
         }).join('')
         return `<text x="${W / 2}" y="${y}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${fs}" letter-spacing="-1" xml:space="preserve">${segs}</text>`
     }
-    const lineEls = lines.map((l, i) => renderLine(l, cy + i * (fs + lineGap))).join('\n')
+    const lineEls = processedLines.map((l, i) => renderLine(l, cy + i * (fs + lineGap))).join('\n')
 
     let subEl = ''
     if (subhead) {
-        const subY = cy + (lines.length - 1) * (fs + lineGap) + subFs + 18
+        const subY = cy + (processedLines.length - 1) * (fs + lineGap) + subFs + 18
         const subAccent = (subheadAccent || '').toLowerCase()
         const subParts = subhead.split(/\s+/).filter(Boolean)
         const subSegs = subParts.map((p, idx) => {

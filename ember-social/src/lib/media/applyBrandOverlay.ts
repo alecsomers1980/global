@@ -14,12 +14,24 @@ function escapeRegExp(s: string): string {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/**
- * Renders an optional bold tagline in the upper area of the image. The
- * tagline may use ` | ` as a line break to render two lines; an accent
- * word (if present and matched in the tagline) is coloured in `accent`.
- * Returns a full-image-sized SVG overlay buffer, or null when nothing to draw.
- */
+function wrapLine(line: string, maxChars: number): string[] {
+    const words = line.split(/\s+/).filter(Boolean)
+    if (words.length === 0) return []
+    const lines: string[] = []
+    let currentLine = words[0]
+
+    for (let i = 1; i < words.length; i++) {
+        if (currentLine.length + 1 + words[i].length <= maxChars) {
+            currentLine += ' ' + words[i]
+        } else {
+            lines.push(currentLine)
+            currentLine = words[i]
+        }
+    }
+    lines.push(currentLine)
+    return lines
+}
+
 async function renderTaglineOverlay(args: {
     width: number
     height: number
@@ -35,8 +47,21 @@ async function renderTaglineOverlay(args: {
         .slice(0, 2)
     if (raw.length === 0) return null
 
-    // Font size scales with image width; tight letter-spacing for that designed look.
-    const fontSize = Math.max(40, Math.round(width * 0.095))
+    const MAX_CHARS_PER_LINE = 14
+    const processedLines = raw.flatMap(line => wrapLine(line, MAX_CHARS_PER_LINE))
+
+    const SAFE_W = width - 100
+    const HEAD_GLYPH = 0.72
+    const maxFs = Math.round(width * 0.070)
+    const minFs = Math.round(width * 0.040)
+
+    let fontSize = maxFs
+    const longestLineChars = Math.max(1, ...processedLines.map(l => l.length))
+    const estWidth = longestLineChars * fontSize * HEAD_GLYPH
+    if (estWidth > SAFE_W) {
+        fontSize = Math.max(minFs, Math.floor(fontSize * (SAFE_W / estWidth)))
+    }
+
     const lineGap = Math.round(fontSize * 0.12)
     const startY = Math.round(height * 0.27) + fontSize
 
@@ -46,8 +71,8 @@ async function renderTaglineOverlay(args: {
         : null
 
     const lineEls: string[] = []
-    for (let i = 0; i < raw.length; i++) {
-        const text = raw[i]
+    for (let i = 0; i < processedLines.length; i++) {
+        const text = processedLines[i]
         const y = startY + i * (fontSize + lineGap)
         let inner: string
         if (accentRe && accentRe.test(text)) {
