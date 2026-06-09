@@ -5,12 +5,13 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          pink: "#E91E63",
-          purple: "#7B1FA2",
-          teal: "#26A69A",
-          orange: "#FF9800",
-          yellow: "#FDD835",
-          green: "#7CB342",
+          pink: "#E92C8B",
+          purple: "#A3488C",
+          teal: "#00B5E2",   // light blue
+          orange: "#ED1C24", // red mapped to orange for class compatibility
+          yellow: "#FEDD00",
+          green: "#4BB648",
+          blue: "#00A4E4",
         },
       },
       fontFamily: {

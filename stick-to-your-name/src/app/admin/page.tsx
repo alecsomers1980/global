@@ -30,7 +30,7 @@ interface OrderRow {
   customer_phone: string;
   created_at: string;
   paid_at: string | null;
-  payfast_payment_id: string;
+  payfast_payment_id: string | null;
   notes: string | null;
 }
 
@@ -89,7 +89,7 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
-function DeliveryInfo(order: OrderRow) {
+function DeliveryInfo({ order }: { order: OrderRow }) {
   const option = (order.delivery_option ?? '').toLowerCase();
   let Icon = Truck;
   let label = 'Delivery';
@@ -118,7 +118,7 @@ function DeliveryInfo(order: OrderRow) {
 }
 
 function OrderCard({ order }: { order: OrderRow }) {
-  const isTagged = order.bag_tag && (order.bag_tag === true || order.bag_tag === 'yes');
+  const isTagged = Boolean(order.bag_tag === true || order.bag_tag === 'yes');
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 space-y-3">
       {/* top row */}

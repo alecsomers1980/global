@@ -35,24 +35,30 @@ const colorsForTitle = [
   'text-brand-orange',
   'text-brand-yellow',
   'text-brand-green',
+  'text-brand-blue',
 ] as const;
 
 function HeroTitle() {
-  const text = 'Stick to Your Name';
-  let letterIndex = 0;
+  const letters = [
+    { char: 'S', color: 'bg-brand-yellow' },
+    { char: 'T', color: 'bg-brand-orange' },
+    { char: 'I', color: 'bg-brand-blue' },
+    { char: 'C', color: 'bg-brand-green' },
+    { char: 'K', color: 'bg-brand-purple' },
+  ];
   return (
-    <h1 className="text-4xl md:text-6xl font-extrabold text-center leading-tight">
-      {text.split('').map((char, idx) => {
-        if (char === ' ') return <span key={idx}> </span>;
-        const color = colorsForTitle[letterIndex % colorsForTitle.length];
-        letterIndex++;
-        return (
-          <span key={idx} className={color}>
-            {char}
-          </span>
-        );
-      })}
-    </h1>
+    <div className="flex flex-col items-center gap-2">
+      <div className="flex items-center gap-1.5 md:gap-2">
+        {letters.map((l, i) => (
+          <div key={i} className={`w-12 h-14 md:w-20 md:h-24 ${l.color} flex items-center justify-center rounded shadow-sm`}>
+            <span className="text-3xl md:text-6xl font-black text-white">{l.char}</span>
+          </div>
+        ))}
+      </div>
+      <div className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight mt-1">
+        to your name
+      </div>
+    </div>
   );
 }
 
@@ -201,6 +207,19 @@ export default function OrderPage() {
             lunchboxes, water bottles, sports kit and anything else your child
             might lose.
           </p>
+        </div>
+      </section>
+
+      {/* Design Gallery */}
+      <section className="py-10 px-4 max-w-5xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            View our designs
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <img src="/catalog-1.png" alt="Design Catalog 1" className="w-full h-auto rounded-xl shadow-sm border border-gray-100" />
+            <img src="/catalog-2.png" alt="Design Catalog 2" className="w-full h-auto rounded-xl shadow-sm border border-gray-100" />
+          </div>
         </div>
       </section>
 
