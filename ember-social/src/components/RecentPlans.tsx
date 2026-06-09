@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Link2, Copy, ExternalLink, Check } from 'lucide-react'
+import { Link2, Copy, ExternalLink, Check, Trash2, Loader2 } from 'lucide-react'
 
 interface Batch {
     id: string
@@ -22,8 +22,31 @@ const PATTERN_LABELS: Record<string, string> = {
 
 export default function RecentPlans({ batches }: Props) {
     const [copiedToken, setCopiedToken] = useState<string | null>(null)
+    const [localBatches, setLocalBatches] = useState<Batch[]>(batches)
+    const [deleting, setDeleting] = useState<string | null>(null)
 
-    if (!batches || batches.length === 0) {
+    const handleDelete = async (batchId: string) => {
+        if (!confirm('Delete this plan? Posts will be kept but unlinked from the batch.')) return
+        setDeleting(batchId)
+        try {
+            const res = await fetch('/api/workspaces/campaign/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batchId }),
+            })
+            if (res.ok) {
+                setLocalBatches(prev => prev.filter(b => b.id !== batchId))
+            } else {
+                const data = await res.json()
+                alert(data.error || 'Delete failed')
+            }
+        } catch (err: any) {
+            alert(err.message || 'Delete failed')
+        }
+        setDeleting(null)
+    }
+
+    if (!localBatches || localBatches.length === 0) {
         return (
             <div className="glass-card p-5">
                 <h2 className="font-semibold text-white flex items-center gap-2 mb-2">
@@ -55,7 +78,7 @@ export default function RecentPlans({ batches }: Props) {
                 Client Review Links
             </h2>
             <div className="space-y-2">
-                {batches.map(batch => {
+                {localBatches.map(batch => {
                     const url = typeof window !== 'undefined'
                         ? `${window.location.origin}/plan/${batch.public_token}`
                         : `/plan/${batch.public_token}`
@@ -110,6 +133,14 @@ export default function RecentPlans({ batches }: Props) {
                                     style={{ border: '1px solid #2a2a3d', color: '#a0a0c0' }}>
                                     PDF
                                 </a>
+                                <button
+                                    onClick={() => handleDelete(batch.id)}
+                                    disabled={deleting !== null}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                                    style={{ border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                                    {deleting === batch.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     )

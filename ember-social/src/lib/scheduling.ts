@@ -4,26 +4,28 @@ export function isSunday(date: Date): boolean {
     return date.getUTCDay() === 0
 }
 
-// A/B schedule patterns — we alternate per campaign batch so we can compare
-// engagement between Tue/Thu/Sat and Mon/Wed/Fri cadences.
-export const SCHEDULE_PATTERNS = {
-    tue_thu_sat: [2, 4, 6],    // Tue, Thu, Sat (UTC day numbers; Sun=0)
-    mon_wed_fri: [1, 3, 5],
-} as const
+// 6-posts-per-week cadence (Mon–Sat). Sundays excluded.
+export const ALL_WEEKDAYS = [1, 2, 3, 4, 5, 6]
 
-export type SchedulePatternKey = keyof typeof SCHEDULE_PATTERNS
-
-export function weekdaysForPattern(pattern: SchedulePatternKey | string | null | undefined): number[] {
-    if (pattern && pattern in SCHEDULE_PATTERNS) {
-        return [...SCHEDULE_PATTERNS[pattern as SchedulePatternKey]]
-    }
-    return [1, 2, 3, 4, 5, 6] // Mon-Sat default
+// Engagement-optimised publish times per weekday (UTC hours = SAST-2).
+// Thursday 11:00 UTC (13:00 SAST) is the lunchtime peak.
+export const TIME_BY_WEEKDAY: Record<number, { hour: number; minute: number }> = {
+    1: { hour: 7,  minute: 0 },  // Monday    09:00 SAST
+    2: { hour: 9,  minute: 0 },  // Tuesday   11:00 SAST
+    3: { hour: 11, minute: 0 },  // Wednesday 13:00 SAST
+    4: { hour: 11, minute: 0 },  // Thursday  13:00 SAST
+    5: { hour: 13, minute: 0 },  // Friday    15:00 SAST
+    6: { hour: 8,  minute: 0 },  // Saturday  10:00 SAST
 }
 
-// Alternates from the workspace's most recent batch pattern. Defaults to
-// 'tue_thu_sat' if nothing has run before.
-export function nextSchedulePattern(previousPattern: string | null | undefined): SchedulePatternKey {
-    return previousPattern === 'tue_thu_sat' ? 'mon_wed_fri' : 'tue_thu_sat'
+export const SCHEDULE_PATTERN_KEY = 'all_weekdays'
+
+export function weekdaysForPattern(pattern: string | null | undefined): number[] {
+    return [...ALL_WEEKDAYS]
+}
+
+export function nextSchedulePattern(previousPattern: string | null | undefined): string {
+    return SCHEDULE_PATTERN_KEY
 }
 
 // SAST is UTC+2 year-round. The publish window 09:00–17:00 SAST maps to 07:00–15:00 UTC.
@@ -54,6 +56,7 @@ export async function getNextAvailableDate(
     opts?: {
         startFrom?: Date
         timeOfDay?: { hour: number; minute: number }
+        timeByWeekday?: Record<number, { hour: number; minute: number }>
         allowedWeekdays?: number[] // 0=Sun..6=Sat. Default Mon-Sat ([1..6]).
     }
 ): Promise<Date> {
@@ -62,6 +65,7 @@ export async function getNextAvailableDate(
     const allowed = (opts?.allowedWeekdays && opts.allowedWeekdays.length > 0)
         ? opts.allowedWeekdays
         : [1, 2, 3, 4, 5, 6]
+    const timeByWeekday = opts?.timeByWeekday
 
     for (let dayOffset = 0; dayOffset < 90; dayOffset++) {
         const checkDate = new Date(startFrom)
@@ -69,9 +73,12 @@ export async function getNextAvailableDate(
 
         if (!allowed.includes(checkDate.getUTCDay())) continue
 
-        if (opts?.timeOfDay) {
-            checkDate.setUTCHours(opts.timeOfDay.hour, opts.timeOfDay.minute, 0, 0)
-            // Skip past slots so cron never fires retroactively.
+        const time = timeByWeekday
+            ? timeByWeekday[checkDate.getUTCDay()]
+            : opts?.timeOfDay
+
+        if (time) {
+            checkDate.setUTCHours(time.hour, time.minute, 0, 0)
             if (checkDate.getTime() <= now.getTime()) continue
         }
 
@@ -93,8 +100,11 @@ export async function getNextAvailableDate(
     while (!allowed.includes(fallback.getUTCDay())) {
         fallback.setUTCDate(fallback.getUTCDate() + 1)
     }
-    if (opts?.timeOfDay) {
-        fallback.setUTCHours(opts.timeOfDay.hour, opts.timeOfDay.minute, 0, 0)
+    const time = timeByWeekday
+        ? timeByWeekday[fallback.getUTCDay()]
+        : opts?.timeOfDay
+    if (time) {
+        fallback.setUTCHours(time.hour, time.minute, 0, 0)
     }
     return fallback
 }

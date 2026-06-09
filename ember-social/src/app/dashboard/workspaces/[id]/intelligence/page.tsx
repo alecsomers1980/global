@@ -21,6 +21,15 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
     const [scanResults, setScanResults] = useState<any>(null)
     const [scanBanner, setScanBanner] = useState<string | null>(null)
     const [contentSource, setContentSource] = useState<any>(null)
+    const [businessArchetype, setBusinessArchetype] = useState<string>('product')
+    const [archetypeSaving, setArchetypeSaving] = useState(false)
+    const [contactPhone, setContactPhone] = useState('')
+    const [contactEmail, setContactEmail] = useState('')
+    const [contactWebsiteUrl, setContactWebsiteUrl] = useState('')
+    const [contactLocation, setContactLocation] = useState('')
+    const [defaultHashtags, setDefaultHashtags] = useState('')
+    const [sellYourCarUrl, setSellYourCarUrl] = useState('')
+    const [contactSaving, setContactSaving] = useState(false)
     const supabase = createClient()
 
     useEffect(() => {
@@ -36,6 +45,13 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
             const data = await res.json()
             if (data.intel) setIntel(data.intel)
             if (data.contentSource) setContentSource(data.contentSource)
+            if (data.businessArchetype) setBusinessArchetype(data.businessArchetype)
+            if (data.contactPhone) setContactPhone(data.contactPhone)
+            if (data.contactEmail) setContactEmail(data.contactEmail)
+            if (data.websiteUrl) setContactWebsiteUrl(data.websiteUrl)
+            if (data.location) setContactLocation(data.location)
+            if (data.defaultHashtags?.length) setDefaultHashtags(data.defaultHashtags.join(', '))
+            if (data.sellYourCarUrl) setSellYourCarUrl(data.sellYourCarUrl)
         } catch (err) {
             console.error('fetchIntel failed:', err)
         }
@@ -129,6 +145,46 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
         } finally {
             setScanning(false)
         }
+    }
+
+    const handleArchetypeChange = async (value: string) => {
+        setBusinessArchetype(value)
+        setArchetypeSaving(true)
+        try {
+            await fetch(`/api/workspaces/${id}/archetype`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ archetype: value })
+            })
+        } catch (err) {
+            console.error('archetype save failed:', err)
+        }
+        setArchetypeSaving(false)
+    }
+
+    const handleContactSave = async () => {
+        setContactSaving(true)
+        try {
+            const hashtags = defaultHashtags
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean)
+            await fetch(`/api/workspaces/intelligence?workspaceId=${encodeURIComponent(id)}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contactPhone: contactPhone || null,
+                    contactEmail: contactEmail || null,
+                    websiteUrl: contactWebsiteUrl || null,
+                    location: contactLocation || null,
+                    defaultHashtags: hashtags.length > 0 ? hashtags : null,
+                    sellYourCarUrl: sellYourCarUrl || null,
+                })
+            })
+        } catch (err) {
+            console.error('contact save failed:', err)
+        }
+        setContactSaving(false)
     }
 
     const handleSave = async (e: React.FormEvent) => {
@@ -340,6 +396,96 @@ export default function IntelligencePage({ params }: { params: Promise<{ id: str
                 <p className="text-[10px] mt-2" style={{ color: '#4a4a6a' }}>
                     This will automatically populate the Industry, Audience, and Brand Voice sections using Google Pomelli-inspired AI models.
                 </p>
+            </div>
+
+            {/* Business archetype */}
+            <div className="glass-card p-6" style={{ border: '1px solid #1a1a27' }}>
+                <div className="flex items-center gap-2 mb-3">
+                    <Box className="w-4 h-4 text-orange-400" />
+                    <h2 className="font-semibold text-white">Business archetype</h2>
+                    {archetypeSaving && <Loader2 className="w-3.5 h-3.5 animate-spin text-orange-400" />}
+                </div>
+                <select
+                    value={businessArchetype}
+                    onChange={e => handleArchetypeChange(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white outline-none focus:ring-2 focus:ring-orange-500/30 transition-all cursor-pointer"
+                    style={{ background: '#13131a', border: '1px solid #2a2a3d' }}>
+                    <option value="product">Product / Inventory</option>
+                    <option value="service">Service / Professional</option>
+                    <option value="hospitality">Hospitality / Lodge</option>
+                    <option value="education">Education / School</option>
+                    <option value="creator">Creator / Personal Brand</option>
+                </select>
+                <p className="text-[10px] mt-2" style={{ color: '#4a4a6a' }}>
+                    Determines the mix of content pillars the marketing-plan generator uses. Change this if the client's business doesn't fit Product/Inventory (e.g. a law firm should be Service, a lodge Hospitality).
+                </p>
+            </div>
+
+            {/* Contact details */}
+            <div className="glass-card p-6" style={{ border: '1px solid #1a1a27' }}>
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-orange-400" />
+                        <h2 className="font-semibold text-white">Contact details</h2>
+                    </div>
+                    <button
+                        onClick={handleContactSave}
+                        disabled={contactSaving}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                        {contactSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                        {contactSaving ? 'Saving...' : 'Save contact'}
+                    </button>
+                </div>
+                <p className="text-[10px] mb-4" style={{ color: '#4a4a6a' }}>
+                    Used to populate the contact strip in generated Facebook posts and spec-card images. Leave blank to omit.
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Phone</label>
+                        <input type="text" value={contactPhone} onChange={e => setContactPhone(e.target.value)}
+                            placeholder="e.g. 013 854 0600"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Email</label>
+                        <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)}
+                            placeholder="e.g. info@dealership.co.za"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Website URL</label>
+                        <input type="url" value={contactWebsiteUrl} onChange={e => setContactWebsiteUrl(e.target.value)}
+                            placeholder="e.g. https://everestmotoring.co.za"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Location</label>
+                        <input type="text" value={contactLocation} onChange={e => setContactLocation(e.target.value)}
+                            placeholder="e.g. White River, Mpumalanga"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Default Hashtags</label>
+                        <input type="text" value={defaultHashtags} onChange={e => setDefaultHashtags(e.target.value)}
+                            placeholder="e.g. #EverestMotoring, #WhiteRiver, #PreOwnedCars"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                        <p className="text-[10px]" style={{ color: '#5a5a7a' }}>Comma-separated. The generator picks 3-8 per post from this pool.</p>
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#9999bb' }}>Sell Your Car URL</label>
+                        <input type="url" value={sellYourCarUrl} onChange={e => setSellYourCarUrl(e.target.value)}
+                            placeholder="e.g. https://everestmotoring.co.za/value-my-car"
+                            className="w-full px-4 py-2.5 rounded-xl text-sm text-white placeholder-[#3d3d5a] outline-none focus:ring-2 focus:ring-orange-500/30 transition-all"
+                            style={{ background: '#13131a', border: '1px solid #2a2a3d' }} />
+                        <p className="text-[10px]" style={{ color: '#5a5a7a' }}>Used as the CTA link on "Sell your car" posts.</p>
+                    </div>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">

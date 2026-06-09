@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 
         const { data: posts, error } = await supabase
             .from('posts')
-            .select('id, content, media_urls, platforms, scheduled_at, status, approval_token, created_at, client_status, campaign_batch_id, variants, pillar, rationale, tagline, tagline_accent, image_prompt, image_status, vehicle_id')
+            .select('id, content, media_urls, platforms, scheduled_at, status, approval_token, created_at, client_status, campaign_batch_id, variants, pillar, rationale, psychology_note, style, vehicle_ids, tagline, tagline_accent, image_prompt, image_status, vehicle_id')
             .eq('workspace_id', workspaceId)
             .in('status', statusList)
             .order('created_at', { ascending: false })

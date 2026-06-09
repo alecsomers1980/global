@@ -1,276 +1,209 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/client'
 import { resolveWorkspaceId } from '@/lib/resolve-workspace'
-import { getNextAvailableDate, clampHourToSastWindow, firstOfNextMonthUtc, SAST_WINDOW_UTC, weekdaysForPattern, nextSchedulePattern } from '@/lib/scheduling'
-import { generateCampaign } from '@/lib/ai/campaignGenerator'
 import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
-import type { VehicleSummary } from '@/lib/inventory/fetchVehicles'
-import { computeVehicleSlug } from '@/lib/inventory/vehicleSlug'
-import { generateLifestyleImage } from '@/lib/media/generateLifestyleImage'
-import { applyBrandOverlay } from '@/lib/media/applyBrandOverlay'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal } from '@/lib/templates'
+import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
+import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
 import crypto from 'crypto'
+
+const DOW: Record<string, number> = { mon: 1, wed: 3, fri: 5, sat: 6 }
+const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, fri: 9, sat: 8 }
+
+// Season for a given 0-indexed month (0=Jan) in the South African calendar.
+function seasonForMonth(m: number): string {
+    if (m >= 10 || m <= 1) return 'festive_summer'
+    if (m >= 2 && m <= 4) return 'autumn'
+    if (m >= 5 && m <= 7) return 'winter'
+    return 'spring'
+}
+
+function computeWeekday(monthStart: Date, weekOffset: number, dayName: string): Date {
+    const targetDow = DOW[dayName]
+    const hour = SAST_UTC[dayName] || 9
+    const d = new Date(monthStart)
+    // Start from day 1 of next month
+    d.setUTCDate(1)
+    // Advance to first occurrence of target weekday
+    while (d.getUTCDay() !== targetDow) d.setUTCDate(d.getUTCDate() + 1)
+    // Add week offset
+    d.setUTCDate(d.getUTCDate() + weekOffset * 7)
+    d.setUTCHours(hour, 0, 0, 0)
+    return d
+}
+
+interface PillarDef {
+    name: string
+    dayName: string
+    render: (car: VehicleInput, opts?: { targetDate?: Date; variantIndex?: number; headline?: HeadlineSpec | null; season?: string }) => Promise<{ image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }>
+    needsCar: boolean
+}
+
+const PILLARS: PillarDef[] = [
+    { name: 'showcase',    dayName: 'mon', render: renderShowcase as any,    needsCar: true },
+    { name: 'lifestyle',   dayName: 'wed', render: renderLifestyle as any,   needsCar: true },
+    { name: 'maintenance', dayName: 'fri', render: renderMaintenance as any, needsCar: false },
+    { name: 'seasonal',    dayName: 'sat', render: renderSeasonal as any,    needsCar: true },
+]
 
 export async function POST(req: Request) {
     try {
-        const { workspaceId, durationDays } = await req.json()
+        const { workspaceId, days = 28, month } = await req.json()
         if (!workspaceId) {
             return NextResponse.json({ error: 'workspaceId required' }, { status: 400 })
         }
 
         const resolvedId = await resolveWorkspaceId(workspaceId)
-        const supabase = await createServerSupabaseClient()
+        const supabase = createAdminClient()
 
-        const [{ data: intel }, { data: socialAccounts }, { data: workspace }, { data: brandKit }, { data: wsName }] = await Promise.all([
-            supabase.from('client_intelligence').select('*').eq('workspace_id', resolvedId).single(),
-            supabase.from('social_accounts').select('platform').eq('workspace_id', resolvedId),
-            supabase.from('workspaces')
-                .select('content_source, client_supabase_url, client_supabase_service_key')
-                .eq('id', resolvedId)
-                .single(),
-            supabase.from('brand_kits').select('logo_url, accent_color, primary_color').eq('workspace_id', resolvedId).maybeSingle(),
-            supabase.from('workspaces').select('name').eq('id', resolvedId).single()
-        ])
+        // Fetch workspace with all needed columns
+        const { data: workspace } = await supabase
+            .from('workspaces')
+            .select('*')
+            .eq('id', resolvedId)
+            .single()
 
-        const connectedPlatforms = (socialAccounts || []).map((a: any) => a.platform)
-        const days = durationDays || 30
-        const ws = workspace as any
-        const logoUrl = (brandKit as any)?.logo_url || null
-        const accentColor = (brandKit as any)?.accent_color || (brandKit as any)?.primary_color || '#FFE600'
-        const workspaceName = (wsName as any)?.name || 'Ember Social'
-
-        // ── Inventory: fetch vehicles if content_source.type === 'vehicles' ──
-        const source = ws?.content_source || {}
-        let vehicles: VehicleSummary[] = []
-        if (source.type === 'vehicles' && ws?.client_supabase_url && ws?.client_supabase_service_key) {
-            vehicles = await fetchVehiclesForWorkspace({
-                clientSupabaseUrl: ws.client_supabase_url,
-                clientServiceKey: ws.client_supabase_service_key,
-                table: source.table || 'cars',
-                fields: source.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,description,main_image_url,gallery_urls,features,slug,social_shared_at',
-                filter: source.filter || {},
-                limit: 40,
-                notSharedWithinDays: source.vehicle_post_share_within_days || 30
-            })
+        if (!workspace) {
+            return NextResponse.json({ error: 'Workspace not found' }, { status: 404 })
         }
 
-        const result = await generateCampaign({
-            workspaceId: resolvedId,
-            durationDays: days,
-            connectedPlatforms,
-            intel,
-            vehicles,
-            siteBaseUrl: source.site_base_url,
-            vehiclePathTemplate: source.vehicle_path_template
+        const ws = workspace as any
+        const weeks = Math.round(days / 7)
+
+        // Fetch the FULL inventory (no recency filter) so we can spread distinct
+        // cars across the batch. With ~13 cars and 12 car-posts we want each car
+        // used at most once or twice — not the same handful repeated.
+        const vehicles = await fetchVehiclesForWorkspace({
+            clientSupabaseUrl: ws.client_supabase_url,
+            clientServiceKey: ws.client_supabase_service_key,
+            table: (ws.content_source as any)?.table || 'cars',
+            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url',
+            filter: (ws.content_source as any)?.filter || {},
+            limit: 60,
+            notSharedWithinDays: 0,
         })
 
-        // Hour pool clamped to SAST publish window (UTC 07:00–15:00)
-        const rawHours: number[] = Array.isArray((intel as any)?.best_performing_hours?.facebook)
-            ? (intel as any).best_performing_hours.facebook
-            : []
-        const seedHours = rawHours.map(clampHourToSastWindow)
-        const defaultPool = [7, 9, 11, 13, 15]
-        const goodHours: number[] = []
-        for (const h of [...seedHours, ...defaultPool]) {
-            if (h >= SAST_WINDOW_UTC.minHour && h <= SAST_WINDOW_UTC.maxHour && !goodHours.includes(h)) {
-                goodHours.push(h)
-            }
-        }
-        if (goodHours.length === 0) goodHours.push(7)
-
-        // Build vehicle lookup map
-        const vehicleById = new Map<string, VehicleSummary>()
-        for (const v of vehicles) {
-            vehicleById.set(v.id, v)
+        if (!vehicles.length) {
+            return NextResponse.json({ error: 'No vehicles in inventory' }, { status: 400 })
         }
 
-        const firstApprovalToken = crypto.randomUUID()
-        const batchId = crypto.randomUUID()
+        // Shuffle so different cars are featured each month (Fisher-Yates).
+        for (let i = vehicles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[vehicles[i], vehicles[j]] = [vehicles[j], vehicles[i]]
+        }
+
+        // Create campaign batch
         const publicToken = crypto.randomUUID()
+        const batchId = crypto.randomUUID()
 
-        // A/B schedule pattern: alternate Tue/Thu/Sat <-> Mon/Wed/Fri per batch
-        // so we can compare engagement and tune cadence over time.
-        const { data: lastBatch } = await supabase
-            .from('campaign_batches')
-            .select('schedule_pattern')
-            .eq('workspace_id', resolvedId)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle()
-        const schedulePattern = nextSchedulePattern((lastBatch as any)?.schedule_pattern)
-        const allowedWeekdays = weekdaysForPattern(schedulePattern)
-
-        // Insert campaign batch record
         const { error: batchError } = await supabase
             .from('campaign_batches')
             .insert({
                 id: batchId,
                 workspace_id: resolvedId,
                 public_token: publicToken,
-                strategy_rationale: result.strategy_rationale,
-                pillars: result.pillars,
                 duration_days: days,
-                schedule_pattern: schedulePattern,
+                schedule_pattern: 'mon_wed_fri_sat',
+                strategy_rationale: '4-pillar weekly rotation: Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat). Posting at SA-audience peak engagement times.',
             } as any)
 
         if (batchError) {
             console.error('[campaign/generate] batch insert failed:', batchError)
+            return NextResponse.json({ error: 'Failed to create batch' }, { status: 500 })
         }
 
-        // Start scheduling from the first allowed weekday of next calendar month
-        const startMonth = firstOfNextMonthUtc()
-        while (!allowedWeekdays.includes(startMonth.getUTCDay())) {
-            startMonth.setUTCDate(startMonth.getUTCDate() + 1)
+        // Schedule into the chosen month ("YYYY-MM"), or default to next month.
+        let monthStart: Date
+        if (typeof month === 'string' && /^\d{4}-\d{2}$/.test(month)) {
+            const [y, mo] = month.split('-').map(Number)
+            monthStart = new Date(Date.UTC(y, mo - 1, 1, 0, 0, 0, 0))
+        } else {
+            const now = new Date()
+            monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0))
         }
+        const planSeason = seasonForMonth(monthStart.getUTCMonth())
 
-        let inserted = 0
+        // Generate FRESH text overlays for this batch so headlines + tips never
+        // repeat month-to-month. Returns null on failure → templates use their
+        // curated pools as a fallback (batch still succeeds).
+        const fresh = await generateFreshHeadlines({ count: weeks, season: planSeason })
+
+        const tasks: Array<Promise<void>> = []
         const errors: string[] = []
+        let vehicleIdx = 0
+        let inserted = 0
 
-        for (let i = 0; i < result.posts.length; i++) {
-            const post = result.posts[i]
-            const approvalToken = i === 0 ? firstApprovalToken : crypto.randomUUID()
-            const newPostId = crypto.randomUUID()
-            try {
-                const targetDate = new Date(startMonth)
-                targetDate.setUTCDate(targetDate.getUTCDate() + (post.day_offset || 0))
+        for (let week = 0; week < weeks; week++) {
+            for (const pillar of PILLARS) {
+                const car = vehicles[vehicleIdx % vehicles.length]
+                if (pillar.needsCar) vehicleIdx++
 
-                const hour = goodHours[i % goodHours.length]
+                const headline = fresh
+                    ? (fresh as any)[pillar.name]?.[week] ?? null
+                    : null
 
-                const scheduledDate = await getNextAvailableDate(supabase, resolvedId, {
-                    startFrom: targetDate,
-                    timeOfDay: { hour, minute: 0 },
-                    allowedWeekdays,
-                })
+                tasks.push((async () => {
+                    try {
+                        const targetDate = computeWeekday(monthStart, week, pillar.dayName)
+                        const result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
 
-                const variants = post.variants || {}
+                        const postId = crypto.randomUUID()
+                        let mediaUrl: string | null = null
 
-                // Resolve vehicle data
-                let vehicleId: string | null = null
-                let vehicleAttachedUrls: string[] | null = null
-                let resolvedFbContent: string | null = null
-
-                if (post.vehicle_id && vehicleById.has(post.vehicle_id)) {
-                    const v = vehicleById.get(post.vehicle_id)!
-                    vehicleId = v.id
-
-                    const images: string[] = []
-                    if (v.main_image_url) images.push(v.main_image_url)
-                    if (v.gallery_urls?.length) {
-                        images.push(...v.gallery_urls.slice(0, 2))
-                    }
-                    vehicleAttachedUrls = images.length > 0 ? images : null
-
-                    const fbVariant = variants.facebook
-                    if (fbVariant?.content && fbVariant.content.includes('{slug}')) {
-                        const slug = computeVehicleSlug(v)
-                        resolvedFbContent = fbVariant.content.replace(/\{slug\}/g, slug)
-                    }
-                }
-
-                let content = resolvedFbContent ||
-                    variants.facebook?.content ||
-                    (variants as any).instagram?.content ||
-                    (variants as any).tiktok?.content ||
-                    ''
-
-                const resolvedVariants = resolvedFbContent && variants.facebook
-                    ? { ...variants, facebook: { ...variants.facebook, content: resolvedFbContent } }
-                    : variants
-
-                const platforms = Object.keys(resolvedVariants).filter(k =>
-                    ['facebook', 'instagram', 'tiktok'].includes(k) &&
-                    (resolvedVariants as any)[k]?.content
-                )
-
-                // ── Image generation pipeline (best-effort, never blocks the post) ──
-                let mediaUrls: string[] | null = null
-                let imageStatus: string = 'skipped'
-
-                if (post.image_prompt) {
-                    imageStatus = 'generating'
-                    const gen = await generateLifestyleImage({ prompt: post.image_prompt, aspectRatio: '4:5' })
-                    if (gen.ok) {
-                        const branded = await applyBrandOverlay({
-                            baseImage: gen.bytes,
-                            logoUrl,
-                            workspaceName,
-                            tagline: post.tagline || null,
-                            taglineAccent: post.tagline_accent || null,
-                            accentColor,
-                        })
                         const up = await uploadCampaignImage({
                             workspaceId: resolvedId,
-                            postId: newPostId,
-                            bytes: branded
+                            postId,
+                            bytes: result.image,
                         })
-                        if (up.ok) {
-                            mediaUrls = [up.publicUrl]
-                            imageStatus = 'ready'
+                        if (up.ok) mediaUrl = up.publicUrl
+
+                        const approvalToken = crypto.randomUUID()
+
+                        const { error: insertError } = await supabase
+                            .from('posts')
+                            .insert({
+                                id: postId,
+                                workspace_id: resolvedId,
+                                campaign_batch_id: batchId,
+                                pillar: pillar.name,
+                                vehicle_id: pillar.needsCar ? (car as any)?.id || null : null,
+                                content: result.caption,
+                                variants: { facebook: { content: result.caption, hashtags: result.hashtags } },
+                                platforms: ['facebook'],
+                                media_urls: mediaUrl ? [mediaUrl] : null,
+                                scheduled_at: result.scheduledAt.toISOString(),
+                                status: 'pending_approval',
+                                client_status: 'pending',
+                                approval_token: approvalToken,
+                                cta_url: result.ctaUrl || null,
+                                image_status: mediaUrl ? 'ready' : 'failed',
+                            } as any)
+
+                        if (insertError) {
+                            errors.push(`${pillar.name} week ${week + 1}: ${insertError.message}`)
                         } else {
-                            imageStatus = 'failed'
-                            console.error(`[campaign/generate] post ${i} upload failed:`, up.error)
-                            errors.push(`Post ${i} image upload failed: ${up.error}`)
+                            inserted++
                         }
-                    } else {
-                        imageStatus = 'failed'
-                        console.error(`[campaign/generate] post ${i} gen failed:`, gen.error)
-                        errors.push(`Post ${i} image gen failed: ${gen.error}`)
+                    } catch (e: any) {
+                        errors.push(`${pillar.name} week ${week + 1}: ${e?.message || e}`)
                     }
-                    // Polite delay between Gemini calls.
-                    await new Promise(r => setTimeout(r, 500))
-                }
-
-                // Fallback: use vehicle photos if image gen didn't produce media
-                if (!mediaUrls && vehicleAttachedUrls) {
-                    mediaUrls = vehicleAttachedUrls
-                }
-
-                const { error: insertError } = await supabase
-                    .from('posts')
-                    .insert({
-                        id: newPostId,
-                        workspace_id: resolvedId,
-                        content,
-                        variants: resolvedVariants,
-                        pillar: post.pillar,
-                        rationale: post.rationale,
-                        platforms,
-                        media_urls: mediaUrls,
-                        vehicle_id: vehicleId,
-                        image_prompt: post.image_prompt || null,
-                        image_status: imageStatus,
-                        tagline: post.tagline || null,
-                        tagline_accent: post.tagline_accent || null,
-                        scheduled_at: scheduledDate.toISOString(),
-                        status: 'pending_approval',
-                        approval_token: approvalToken,
-                        campaign_batch_id: batchId
-                    } as any)
-
-                if (insertError) {
-                    errors.push(`Post ${i}: ${insertError.message}`)
-                } else {
-                    inserted++
-                }
-
-                // Polite delay between Gemini calls
-                if (post.image_prompt && i < result.posts.length - 1) {
-                    await new Promise(r => setTimeout(r, 500))
-                }
-            } catch (e: any) {
-                errors.push(`Post ${i}: ${e.message}`)
+                })())
             }
         }
 
+        await Promise.all(tasks)
+
         return NextResponse.json({
             ok: true,
-            count: inserted,
-            approval_token: firstApprovalToken,
+            batchId,
             public_token: publicToken,
-            strategy_rationale: result.strategy_rationale,
-            pillars: result.pillars,
-            vehicles_available: vehicles.length,
-            errors: errors.length > 0 ? errors : undefined
+            count: inserted,
+            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times.`,
+            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal'],
+            totalExpected: weeks * PILLARS.length,
+            errors: errors.length > 0 ? errors : undefined,
         })
     } catch (error: any) {
         console.error('Campaign generate error:', error)

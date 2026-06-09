@@ -24,7 +24,7 @@ const PLATFORMS: { id: Platform; label: string; description: string }[] = [
 ]
 
 // Platforms with OAuth flows implemented
-const SUPPORTED_PLATFORMS: Platform[] = ['facebook', 'instagram', 'google_business', 'youtube']
+const SUPPORTED_PLATFORMS: Platform[] = ['facebook', 'instagram', 'google_business', 'youtube', 'tiktok']
 
 export default function PlatformsPage({ params }: { params: Promise<{ id: string }> }) {
     const [workspaceId, setWorkspaceId] = useState('')
@@ -63,6 +63,8 @@ export default function PlatformsPage({ params }: { params: Promise<{ id: string
             window.location.href = `/api/auth/gbp/init?workspaceId=${workspaceId}`
         } else if (platform === 'youtube') {
             window.location.href = `/api/auth/youtube/init?workspaceId=${workspaceId}`
+        } else if (platform === 'tiktok') {
+            window.location.href = `/api/auth/tiktok/init?workspaceId=${workspaceId}`
         } else {
             alert(`${PLATFORM_LABELS[platform]} connection coming soon.`)
         }
@@ -77,6 +79,8 @@ export default function PlatformsPage({ params }: { params: Promise<{ id: string
             window.location.href = `/api/auth/gbp/init?workspaceId=${workspaceId}&reauth=1`
         } else if (platform === 'youtube') {
             window.location.href = `/api/auth/youtube/init?workspaceId=${workspaceId}&reauth=1`
+        } else if (platform === 'tiktok') {
+            window.location.href = `/api/auth/tiktok/init?workspaceId=${workspaceId}`
         }
     }
 

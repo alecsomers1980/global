@@ -21,6 +21,7 @@ interface Post {
     campaign_batch_id?: string | null
     batch_token?: string | null
     feedback_count?: number
+    psychology_note?: string | null
 }
 
 type FilterTab = 'pending' | 'changes' | 'approved'

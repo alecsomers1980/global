@@ -1,20 +1,37 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/client'
-import { generateLifestyleImage } from '@/lib/media/generateLifestyleImage'
-import { applyBrandOverlay } from '@/lib/media/applyBrandOverlay'
+import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderSellYourCar } from '@/lib/templates'
+import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
+import type { VehicleInput } from '@/lib/templates'
 
 const MAX_AUTO_REGENERATIONS = 3
+
+const RENDERERS: Record<string, any> = {
+    showcase: renderShowcase,
+    lifestyle: renderLifestyle,
+    maintenance: renderMaintenance,
+    seasonal: renderSeasonal,
+    sellYourCar: renderSellYourCar,
+}
+const CAR_PILLARS = new Set(['showcase', 'lifestyle', 'seasonal'])
+
+function currentSASeason(): string {
+    const m = new Date().getUTCMonth()
+    if (m >= 10 || m <= 1) return 'festive_summer'
+    if (m >= 2 && m <= 4) return 'autumn'
+    if (m >= 5 && m <= 7) return 'winter'
+    return 'spring'
+}
 
 /**
  * Client-side "Request Changes" with a reason. Behaviour:
  * - Always logs the reason as a post_feedback row (author_role='client').
- * - If regeneration_count < 3: regenerates the image using the original prompt
- *   + the client's reason as a refinement hint. Bumps the count. The post
- *   stays pending_approval so the client can review the new image.
- * - If regeneration_count >= 3: marks the post as referred_to_agency, sets
- *   posts.status='draft' (cron won't publish), client_status='changes_requested'.
- *   No new image is generated — the agency handles it.
+ * - If regeneration_count < 3: re-renders the post via its PILLAR template with a
+ *   fresh headline overlay (so the text overlay changes). Bumps the count. The post
+ *   stays pending_approval. Only the image is swapped — the caption is preserved.
+ * - If regeneration_count >= 3: refers to the agency (status='draft'), no regen.
  */
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -34,7 +51,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
         const { data: post } = await supabase
             .from('posts')
-            .select('id, workspace_id, image_prompt, tagline, tagline_accent, campaign_batch_id, regeneration_count, referred_to_agency')
+            .select('id, workspace_id, pillar, vehicle_id, campaign_batch_id, regeneration_count, referred_to_agency')
             .eq('id', postId)
             .single()
         if (!post) {
@@ -86,54 +103,67 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             })
         }
 
-        if (!p.image_prompt) {
-            return NextResponse.json({ ok: false, error: 'Post has no image_prompt to regenerate from' }, { status: 400 })
+        const pillar = String(p.pillar || '')
+        const render = RENDERERS[pillar]
+        if (!render) {
+            return NextResponse.json({ ok: false, error: `Cannot regenerate: unknown pillar "${pillar}"` }, { status: 400 })
         }
 
-        const [{ data: brandKit }, { data: ws }] = await Promise.all([
-            supabase.from('brand_kits').select('logo_url, accent_color, primary_color').eq('workspace_id', p.workspace_id).maybeSingle(),
-            supabase.from('workspaces').select('name').eq('id', p.workspace_id).maybeSingle(),
-        ])
-        const logoUrl = (brandKit as any)?.logo_url || null
-        const accentColor = (brandKit as any)?.accent_color || (brandKit as any)?.primary_color || '#FFE600'
-        const workspaceName = (ws as any)?.name || 'Ember Social'
-
-        // Build a refined prompt: keep the original, append the feedback hint.
-        // gpt-image-1 generates from scratch each call, so we just pass an
-        // augmented prompt rather than try to "edit" the previous image.
-        const refinedPrompt = `${p.image_prompt}
-
-Client feedback on the previous attempt: "${cleanReason}". Address this feedback while keeping the overall South African setting and brand requirements (logo placement is handled by post-processing — no text overlay, no logos in the generated image).`
+        // Re-fetch the vehicle for car pillars (needed to re-render the image).
+        let car: VehicleInput = { id: p.vehicle_id || 'na', make: 'Everest', model: 'Vehicle', year: '' }
+        if (CAR_PILLARS.has(pillar) && p.vehicle_id) {
+            const { data: ws } = await supabase
+                .from('workspaces')
+                .select('client_supabase_url, client_supabase_service_key')
+                .eq('id', p.workspace_id)
+                .maybeSingle()
+            const w = ws as any
+            if (w?.client_supabase_url && w?.client_supabase_service_key) {
+                const found = await fetchVehiclesForWorkspace({
+                    clientSupabaseUrl: w.client_supabase_url,
+                    clientServiceKey: w.client_supabase_service_key,
+                    filter: { id: `eq.${p.vehicle_id}` },
+                    limit: 1,
+                    notSharedWithinDays: 0,
+                })
+                if (found[0]) car = found[0] as VehicleInput
+            }
+        }
 
         await supabase.from('posts').update({ image_status: 'generating' } as never).eq('id', postId)
 
-        const gen = await generateLifestyleImage({ prompt: refinedPrompt, aspectRatio: '4:5' })
-        if (!gen.ok) {
+        // Fresh headline for the new overlay. One AI headline keeps it on-brand and
+        // genuinely different; fall back to a bumped curated index if the AI is unavailable.
+        let headline: any = null
+        try {
+            const fresh = await generateFreshHeadlines({ count: 1, season: currentSASeason() })
+            const key = pillar === 'sellYourCar' ? 'showcase' : pillar // sellYourCar has no AI bucket; reuse showcase-style
+            headline = fresh ? (fresh as any)[key]?.[0] ?? null : null
+        } catch { /* fall back to curated pool via variantIndex */ }
+
+        let result
+        try {
+            result = await render(car, {
+                variantIndex: currentCount + 1,   // different curated headline if AI headline is null
+                headline,
+            })
+        } catch (e: any) {
             await supabase.from('posts').update({ image_status: 'failed' } as never).eq('id', postId)
-            return NextResponse.json({ ok: false, error: gen.error })
+            return NextResponse.json({ ok: false, error: e?.message || 'Re-render failed' }, { status: 500 })
         }
 
-        const branded = await applyBrandOverlay({
-            baseImage: gen.bytes,
-            logoUrl,
-            workspaceName,
-            tagline: p.tagline || null,
-            taglineAccent: p.tagline_accent || null,
-            accentColor,
-        })
-
-        const up = await uploadCampaignImage({ workspaceId: p.workspace_id, postId, bytes: branded })
+        const up = await uploadCampaignImage({ workspaceId: p.workspace_id, postId, bytes: result.image })
         if (!up.ok) {
             await supabase.from('posts').update({ image_status: 'failed' } as never).eq('id', postId)
             return NextResponse.json({ ok: false, error: up.error })
         }
 
+        // Swap only the image — keep the existing caption untouched.
         await supabase
             .from('posts')
             .update({
                 media_urls: [up.publicUrl],
                 image_status: 'ready',
-                image_prompt: refinedPrompt,
                 regeneration_count: currentCount + 1,
             } as never)
             .eq('id', postId)

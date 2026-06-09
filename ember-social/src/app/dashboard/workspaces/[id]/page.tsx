@@ -60,11 +60,6 @@ export default async function WorkspacePage({ params }: Props) {
 
     const connectedPlatforms = socialAccountsAny?.map((a: any) => a.platform) ?? []
 
-    // Suggested post count for the marketing plan button
-    const rawCadence = intelAny?.posting_cadence_observed?.facebook ?? 4
-    const clampedCadence = Math.max(3, Math.min(5, Math.round(rawCadence)))
-    const suggestedCount = Math.round(clampedCadence * 30 / 7) || 17
-
     const tabs = [
         { label: 'Compose', href: `/dashboard/workspaces/${slug}/compose`, icon: PenLine },
         { label: 'Approvals', href: `/dashboard/workspaces/${slug}/approvals`, icon: ShieldCheck, badge: pendingCount },
@@ -126,7 +121,7 @@ export default async function WorkspacePage({ params }: Props) {
             </div>
 
             {/* Generate Marketing Plan CTA */}
-            <GenerateMarketingPlanButton workspaceSlug={slug} suggestedCount={suggestedCount} />
+            <GenerateMarketingPlanButton workspaceSlug={slug} />
 
             {/* Recent client review links */}
             <RecentPlans batches={(recentBatches as any[]) || []} />

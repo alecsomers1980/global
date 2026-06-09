@@ -17,6 +17,7 @@ interface PostPreviewCardProps {
         status: string
         created_at?: string
         first_comment?: string | null
+        psychology_note?: string | null
     }
     brandKit?: BrandKit | null
     showActions?: boolean
@@ -333,6 +334,16 @@ export function PostPreviewCard({ post, brandKit, showActions, onApprove, onReje
                     <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: '#3a3a5a' }}>Post Content</p>
                     <p className="text-sm text-white whitespace-pre-wrap leading-relaxed">{post.content}</p>
                 </div>
+
+                {/* Psychology note */}
+                {post.psychology_note && (
+                    <details className="mb-5 cursor-pointer group">
+                        <summary className="text-xs font-semibold uppercase tracking-widest list-none" style={{ color: '#3a3a5a' }}>
+                            Why this works
+                        </summary>
+                        <p className="text-xs italic mt-1" style={{ color: '#5a5a7a' }}>{post.psychology_note}</p>
+                    </details>
+                )}
 
                 {/* Media gallery — always shown when onRegenerateImage is provided so the regenerate button has a home even when no image landed yet */}
                 {(onRegenerateImage || (post.media_urls && post.media_urls.length > 0)) && (

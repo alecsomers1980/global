@@ -5,7 +5,6 @@ import { Sparkles, Loader2, X, Copy, ExternalLink, Check } from 'lucide-react'
 
 interface Props {
     workspaceSlug: string
-    suggestedCount: number
 }
 
 interface GenerationResult {
@@ -15,17 +14,35 @@ interface GenerationResult {
     public_token: string | null
 }
 
-export default function GenerateMarketingPlanButton({ workspaceSlug, suggestedCount }: Props) {
+// Next 6 months (incl. current) as { value: "YYYY-MM", label: "June 2026" }.
+function buildMonthOptions(): { value: string; label: string }[] {
+    const opts: { value: string; label: string }[] = []
+    const base = new Date()
+    for (let i = 0; i < 6; i++) {
+        const d = new Date(base.getFullYear(), base.getMonth() + i, 1)
+        opts.push({
+            value: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+            label: d.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric' }),
+        })
+    }
+    return opts
+}
+
+export default function GenerateMarketingPlanButton({ workspaceSlug }: Props) {
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState<GenerationResult | null>(null)
     const [copied, setCopied] = useState(false)
+    const monthOptions = buildMonthOptions()
+    // Default to next month (index 1) — plans are usually made ahead.
+    const [targetMonth, setTargetMonth] = useState(monthOptions[1]?.value || monthOptions[0].value)
 
     const planUrl = result?.public_token && typeof window !== 'undefined'
         ? `${window.location.origin}/plan/${result.public_token}`
         : null
 
     const handleGenerate = async () => {
-        if (!window.confirm(`Generate a 30-day marketing plan? This creates ~${suggestedCount} draft posts for review.`)) return
+        const monthLabel = monthOptions.find(o => o.value === targetMonth)?.label || targetMonth
+        if (!window.confirm(`Generate the ${monthLabel} marketing plan? This creates 16 draft posts (4 pillars × 4 weeks) for your review.`)) return
 
         setLoading(true)
         setResult(null)
@@ -34,7 +51,7 @@ export default function GenerateMarketingPlanButton({ workspaceSlug, suggestedCo
             const res = await fetch('/api/workspaces/campaign/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ workspaceId: workspaceSlug, durationDays: 30 })
+                body: JSON.stringify({ workspaceId: workspaceSlug, durationDays: 28, month: targetMonth })
             })
             const data = await res.json()
             if (data.ok) {
@@ -68,14 +85,29 @@ export default function GenerateMarketingPlanButton({ workspaceSlug, suggestedCo
 
     return (
         <div className="space-y-4">
-            <button
-                onClick={handleGenerate}
-                disabled={loading}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
-                style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {loading ? 'Generating...' : 'Generate Marketing Plan'}
-            </button>
+            <div className="flex items-center gap-3 flex-wrap">
+                <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: '#9090b0' }}>
+                    Plan month
+                    <select
+                        value={targetMonth}
+                        onChange={(e) => setTargetMonth(e.target.value)}
+                        disabled={loading}
+                        className="px-3 py-2 rounded-lg text-sm font-medium text-white focus:outline-none disabled:opacity-50"
+                        style={{ background: '#13131a', border: '1px solid #2a2a3d' }}>
+                        {monthOptions.map(o => (
+                            <option key={o.value} value={o.value} style={{ background: '#13131a' }}>{o.label}</option>
+                        ))}
+                    </select>
+                </label>
+                <button
+                    onClick={handleGenerate}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 hover:shadow-lg hover:shadow-orange-500/20"
+                    style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    {loading ? 'Generating...' : 'Generate Marketing Plan'}
+                </button>
+            </div>
 
             {result && (
                 <div className="glass-card p-5 space-y-4"

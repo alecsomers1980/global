@@ -112,11 +112,25 @@ const styles = StyleSheet.create({
         gap: 4,
         marginTop: 4,
     },
+    psychNoteLabel: {
+        fontSize: 8,
+        fontFamily: 'Helvetica-Bold',
+        color: '#3a3a5a',
+        textTransform: 'uppercase',
+        marginTop: 12,
+        marginBottom: 2,
+    },
+    psychNote: {
+        fontSize: 8,
+        color: '#5a5a7a',
+        fontStyle: 'italic',
+        marginBottom: 4,
+    },
     rationale: {
         fontSize: 8,
         color: '#5a5a7a',
         fontStyle: 'italic',
-        marginTop: 12,
+        marginTop: 8,
     },
 })
 
@@ -251,6 +265,14 @@ export function SchedulePdf({ batch, posts, brandKit, workspaceName }: {
                                         ))}
                                     </View>
                                 )}
+                            </>
+                        )}
+
+                        {/* Psychology note */}
+                        {post.psychology_note && (
+                            <>
+                                <Text style={styles.psychNoteLabel}>Why this works</Text>
+                                <Text style={styles.psychNote}>{post.psychology_note}</Text>
                             </>
                         )}
 

@@ -15,6 +15,7 @@ interface PostData {
     variants?: any
     media_urls?: string[] | null
     rationale?: string | null
+    psychology_note?: string | null
     regeneration_count?: number
     referred_to_agency?: boolean
     first_comment?: string | null
@@ -253,11 +254,11 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
                 {post.tagline && renderTagline(post.tagline, post.tagline_accent)}
 
                 {mediaUrl ? (
-                    <div className="aspect-[2/3] rounded-xl overflow-hidden" style={{ background: '#13131a' }}>
-                        <img src={mediaUrl} alt="" className="w-full h-full object-cover" />
+                    <div className="rounded-xl overflow-hidden" style={{ background: '#13131a' }}>
+                        <img src={mediaUrl} alt="" className="w-full h-auto block" />
                     </div>
                 ) : (
-                    <div className="aspect-[2/3] rounded-xl flex items-center justify-center" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
+                    <div className="aspect-square rounded-xl flex items-center justify-center" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
                         <ImageOff className="w-8 h-8 text-white/10" />
                     </div>
                 )}
@@ -339,8 +340,16 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
                     )}
                 </div>
 
+                {post.psychology_note && (
+                    <details className="mt-3 cursor-pointer group">
+                        <summary className="text-xs font-semibold uppercase tracking-widest list-none" style={{ color: '#3a3a5a' }}>
+                            Why this works
+                        </summary>
+                        <p className="text-xs italic mt-1" style={{ color: '#5a5a7a' }}>{post.psychology_note}</p>
+                    </details>
+                )}
                 {post.rationale && (
-                    <p className="text-xs italic" style={{ color: '#5a5a7a' }}>{post.rationale}</p>
+                    <p className="text-xs italic mt-3" style={{ color: '#5a5a7a' }}>{post.rationale}</p>
                 )}
             </div>
 
