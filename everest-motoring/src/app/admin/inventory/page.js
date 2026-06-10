@@ -38,9 +38,25 @@ export default async function AdminDashboardPage() {
         // and clean up the Cloudflare Stream entry once the row is gone.
         const { data: car } = await supabaseAdmin
             .from("cars")
-            .select("id, make, model, year, video_url")
+            .select("id, make, model, year, price, video_url")
             .eq("id", carId)
             .single();
+
+        // Log the deletion event before the row is gone, so the monthly
+        // report can count deletions.  Wrap in its own try/catch so a
+        // logging failure never blocks the actual delete.
+        try {
+            await supabaseAdmin.from("car_events").insert({
+                event: "deleted",
+                car_id: car?.id || carId,
+                make: car?.make || null,
+                model: car?.model || null,
+                year: car?.year || null,
+                price: car?.price || null,
+            });
+        } catch (logErr) {
+            console.warn("car_events insert failed (non-fatal):", logErr);
+        }
 
         const { error } = await supabaseAdmin.from("cars").delete().eq("id", carId);
 
