@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase-client';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function BookingConfirmationPage() {
+function BookingConfirmationContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('booking');
   const payStatus = searchParams.get('status');
@@ -76,5 +76,13 @@ export default function BookingConfirmationPage() {
       </section>
       <Footer />
     </main>
+  );
+}
+
+export default function BookingConfirmationPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-neutral-50" />}>
+      <BookingConfirmationContent />
+    </Suspense>
   );
 }
