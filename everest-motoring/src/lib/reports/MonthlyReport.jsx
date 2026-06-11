@@ -283,7 +283,7 @@ function DataTable({ columns, rows, colWidths }) {
             key={i}
             style={[
               styles.tableHeaderText,
-              { width: widths?.[i] || "auto", flex: widths?.[i] ? 0 : 1 },
+              widths?.[i] ? { width: widths[i] } : { flex: 1 },
               col.align === "right" ? { textAlign: "right" } : {},
             ]}
           >
@@ -356,8 +356,7 @@ function TrafficSection({ ga }) {
       <View>
         <SectionTitle>Website Traffic</SectionTitle>
         <MutedPanel>
-          Google Analytics not connected yet. Configure GA4_PROPERTY_ID and
-          GOOGLE_APPLICATION_CREDENTIALS_JSON to enable traffic reporting.
+          Website traffic data is not yet available for this period.
         </MutedPanel>
       </View>
     );
@@ -516,7 +515,7 @@ function ActivitySection({ website, emails }) {
       )}
 
       {emails && emails.available === false && (
-        <MutedPanel>Email stats unavailable — RESEND_API_KEY not configured or API error.</MutedPanel>
+        <MutedPanel>Email data is not yet available for this period.</MutedPanel>
       )}
 
       {/* Leads breakdown */}
@@ -605,8 +604,7 @@ function SocialSection({ social }) {
       <View>
         <SectionTitle>Social Media</SectionTitle>
         <MutedPanel>
-          Social media not connected. Configure EMBER_SOCIAL_REPORT_URL and
-          EMBER_SOCIAL_REPORT_SECRET to enable social reporting.
+          Social media data is not yet available for this period.
         </MutedPanel>
       </View>
     );
