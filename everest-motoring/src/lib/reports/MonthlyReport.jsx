@@ -271,6 +271,9 @@ function SectionTitle({ children }) {
 }
 
 function DataTable({ columns, rows, colWidths }) {
+  // Callers pass colWidths as a space-separated string ("40% 20% 20% 20%");
+  // normalise to an array so indexing yields whole widths, not characters.
+  const widths = typeof colWidths === "string" ? colWidths.trim().split(/\s+/) : colWidths;
   return (
     <View style={styles.table}>
       {/* Header */}
@@ -280,7 +283,7 @@ function DataTable({ columns, rows, colWidths }) {
             key={i}
             style={[
               styles.tableHeaderText,
-              { width: colWidths?.[i] || "auto", flex: colWidths?.[i] ? 0 : 1 },
+              { width: widths?.[i] || "auto", flex: widths?.[i] ? 0 : 1 },
               col.align === "right" ? { textAlign: "right" } : {},
             ]}
           >
@@ -299,7 +302,7 @@ function DataTable({ columns, rows, colWidths }) {
         >
           {columns.map((col, ci) => {
             const value = col.render ? col.render(row, ri) : row[col.key];
-            const width = colWidths?.[ci];
+            const width = widths?.[ci];
             const isBold = typeof col.bold === "function" ? col.bold(row, ri) : col.bold;
             const cellColor = typeof col.color === "function" ? col.color(row, ri) : col.color;
             return (
