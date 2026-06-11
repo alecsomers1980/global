@@ -25,12 +25,13 @@ export default async function ReportsPage() {
 
   // Generate the last 12 months for the selector
   const monthOptions = [];
-  const formatter = new Intl.DateTimeFormat("en-US", {
+  const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: "Africa/Johannesburg",
     year: "numeric",
     month: "2-digit",
-  });
-  const [y, m] = formatter.format(new Date()).split("-").map(Number);
+  }).formatToParts(new Date());
+  const y = Number(parts.find((p) => p.type === "year").value);
+  const m = Number(parts.find((p) => p.type === "month").value);
 
   for (let i = 0; i < 12; i++) {
     const target = new Date(y, m - 1 - i, 1);
