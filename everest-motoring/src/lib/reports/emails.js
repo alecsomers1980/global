@@ -77,9 +77,9 @@ function categorise(subject) {
   return "Other";
 }
 
-function inWindow(ts, start, end) {
+function inWindow(ts, startISO, endExclusiveISO) {
   const d = new Date(ts);
-  return d >= new Date(start + "T00:00:00+02:00") && d < new Date(end + "T00:00:00+02:00");
+  return d >= new Date(startISO) && d < new Date(endExclusiveISO);
 }
 
 export async function fetchEmailStats({ curr, prev }) {
@@ -89,8 +89,8 @@ export async function fetchEmailStats({ curr, prev }) {
   }
 
   try {
-    // Need to cover both windows — fetch from curr.end back to prev.start
-    const since = prev.start + "T00:00:00+02:00";
+    // Need to cover both windows — fetch back to the start of the previous month
+    const since = prev.startISO;
     const allEmails = await fetchAllEmailsSince(resend, since);
 
     const results = { current: { total: 0, byCategory: {} }, previous: { total: 0, byCategory: {} } };
@@ -100,10 +100,10 @@ export async function fetchEmailStats({ curr, prev }) {
       const cat = categorise(subject);
       const ts = email.created_at;
 
-      if (ts && inWindow(ts, curr.start, curr.end)) {
+      if (ts && inWindow(ts, curr.startISO, curr.endExclusiveISO)) {
         results.current.total++;
         results.current.byCategory[cat] = (results.current.byCategory[cat] || 0) + 1;
-      } else if (ts && inWindow(ts, prev.start, prev.end)) {
+      } else if (ts && inWindow(ts, prev.startISO, prev.endExclusiveISO)) {
         results.previous.total++;
         results.previous.byCategory[cat] = (results.previous.byCategory[cat] || 0) + 1;
       }
