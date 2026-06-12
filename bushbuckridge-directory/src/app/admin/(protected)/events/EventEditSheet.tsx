@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createEvent, updateEvent } from './actions'
 import { toast } from 'sonner'
@@ -76,16 +76,16 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto rounded-l-[2rem]">
-        <SheetHeader className="mb-6">
-          <SheetTitle className="text-2xl font-black text-primary">
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent>
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Event' : 'Add Event'}
-          </SheetTitle>
-          <SheetDescription className="font-medium">
+          </DialogTitle>
+          <DialogDescription className="font-medium">
             {isEdit ? 'Update the event details below.' : 'Fill in the details for the new event.'}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="space-y-5">
           <div className="space-y-2">
@@ -96,7 +96,7 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
             <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Date *</Label>
             <Input type="date" value={form.date} onChange={(e) => update('date', e.target.value)} className="h-12 rounded-xl" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Time</Label>
               <Input value={form.time} onChange={(e) => update('time', e.target.value)} placeholder="e.g. 14:00" className="h-12 rounded-xl" />
@@ -128,7 +128,7 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
             {isEdit ? 'Save Changes' : 'Create Event'}
           </Button>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

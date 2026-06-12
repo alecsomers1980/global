@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import { createServiceClient } from '@/utils/pocketbase/service'
 import { NextRequest, NextResponse } from 'next/server'
 import { createYocoCheckout } from '@/lib/yoco'
 import { getYocoConfig } from '@/lib/settings'
@@ -40,16 +41,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Business not found or not authorized' }, { status: 403 })
     }
 
+    const svc = await createServiceClient()
+
     const amountCents = TIER_PRICES_CENTS[tier]
 
-    const subscription = await pb.collection('subscriptions').create({
+    const subscription = await svc.collection('subscriptions').create({
       business: business_id,
       tier,
       status: 'pending',
       amount_cents: amountCents,
     })
 
-    const payment = await pb.collection('payments').create({
+    const payment = await svc.collection('payments').create({
       business: business_id,
       subscription: subscription.id,
       amount_cents: amountCents,
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
     // Save the Yoco checkout id so the webhook can still locate this payment
     // even if Yoco's webhook payload omits metadata.
     try {
-      await pb.collection('payments').update(payment.id, {
+      await svc.collection('payments').update(payment.id, {
         provider_reference: checkout.id,
       })
     } catch {}

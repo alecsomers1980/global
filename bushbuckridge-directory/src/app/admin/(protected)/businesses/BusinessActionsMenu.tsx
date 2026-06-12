@@ -90,14 +90,14 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                         <span>Package Tier</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="rounded-2xl border-primary/10 shadow-xl p-1">
-                        {['standard', 'enhanced', 'premium'].map(tier => (
+                        {['basic', 'pro-lead', 'pro-business'].map(tier => (
                             <DropdownMenuItem
                                 key={tier}
                                 className="rounded-xl font-bold cursor-pointer capitalize focus:bg-primary/5"
                                 onClick={() => handleAction(() => updateBusinessTier(business.id, tier), `Tier upgraded to ${tier}`)}
                                 disabled={business.package_tier === tier}
                             >
-                                {tier}
+                                {tier.replace('-', ' ')}
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuSubContent>

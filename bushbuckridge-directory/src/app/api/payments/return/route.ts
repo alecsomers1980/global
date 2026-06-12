@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { createServiceClient } from '@/utils/pocketbase/service'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -12,8 +12,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
-    const pb = new PocketBase(pbUrl)
+    const pb = await createServiceClient()
 
     let payment: any = null
     try {

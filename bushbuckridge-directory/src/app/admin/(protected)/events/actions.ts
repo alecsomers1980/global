@@ -4,6 +4,10 @@ import { createClient } from '@/utils/pocketbase/server'
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import { revalidatePath } from 'next/cache'
 
+function slugify(s: string) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
 export async function createEvent(data: {
   title: string
   description?: string
@@ -16,7 +20,10 @@ export async function createEvent(data: {
 }) {
   await requireAdmin()
   const pb = await createClient()
-  await pb.collection('events').create(data)
+  await pb.collection('events').create({
+    ...data,
+    slug: slugify(data.title) + '-' + Math.random().toString(36).slice(2, 7)
+  })
   revalidatePath('/admin/events')
 }
 

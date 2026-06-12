@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import PocketBase from 'pocketbase'
+import { createServiceClient } from '@/utils/pocketbase/service'
 import { createYocoCheckout } from '@/lib/yoco'
 import { getYocoConfig } from '@/lib/settings'
 
@@ -89,11 +90,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Could not create business listing.' }, { status: 500 })
     }
 
+    const svc = await createServiceClient()
+
     const amountCents = TIER_PRICES_CENTS[tier]
 
     let subscription: any = null
     try {
-      subscription = await pb.collection('subscriptions').create({
+      subscription = await svc.collection('subscriptions').create({
         business: business.id,
         tier,
         status: 'pending',
@@ -105,7 +108,7 @@ export async function POST(request: NextRequest) {
 
     let payment: any = null
     try {
-      payment = await pb.collection('payments').create({
+      payment = await svc.collection('payments').create({
         business: business.id,
         subscription: subscription?.id || null,
         amount_cents: amountCents,
@@ -144,7 +147,7 @@ export async function POST(request: NextRequest) {
     })
 
     try {
-      await pb.collection('payments').update(payment.id, {
+      await svc.collection('payments').update(payment.id, {
         provider_reference: checkout.id,
       })
     } catch {}

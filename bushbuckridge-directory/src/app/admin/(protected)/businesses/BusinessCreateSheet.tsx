@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createBusiness } from './actions'
 import { toast } from 'sonner'
@@ -29,7 +29,7 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
     email: '',
     website: '',
     description: '',
-    package_tier: 'standard',
+    package_tier: 'basic',
     status: 'active',
   })
 
@@ -64,7 +64,7 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
       await createBusiness(form)
       toast.success('Business created')
       onClose()
-      setForm({ name: '', sector: '', area: '', phone: '', whatsapp: '', email: '', website: '', description: '', package_tier: 'standard', status: 'active' })
+      setForm({ name: '', sector: '', area: '', phone: '', whatsapp: '', email: '', website: '', description: '', package_tier: 'basic', status: 'active' })
     } catch (e: any) {
       toast.error(e.message || 'Failed to create business')
     } finally {
@@ -73,20 +73,20 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
   }
 
   return (
-    <Sheet open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto rounded-l-[2rem]">
-        <SheetHeader className="mb-6">
-          <SheetTitle className="text-2xl font-black text-primary">Add Business</SheetTitle>
-          <SheetDescription className="font-medium">
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent>
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-black text-primary">Add Business</DialogTitle>
+          <DialogDescription className="font-medium">
             Manually create a new business listing with all details.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <div className="space-y-5">
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Business Name *</Label>
             <Input value={form.name} onChange={(e) => update('name', e.target.value)} className="h-12 rounded-xl" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Sector</Label>
               <Select value={form.sector} onValueChange={(v) => update('sector', v)}>
@@ -106,7 +106,7 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Phone</Label>
               <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className="h-12 rounded-xl" />
@@ -116,7 +116,7 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
               <Input value={form.whatsapp} onChange={(e) => update('whatsapp', e.target.value)} className="h-12 rounded-xl" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Email</Label>
               <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className="h-12 rounded-xl" />
@@ -126,15 +126,15 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
               <Input value={form.website} onChange={(e) => update('website', e.target.value)} placeholder="https://" className="h-12 rounded-xl" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Package Tier</Label>
               <Select value={form.package_tier} onValueChange={(v) => update('package_tier', v)}>
                 <SelectTrigger className="h-12 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent className="rounded-xl">
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="enhanced">Enhanced</SelectItem>
-                  <SelectItem value="premium">Premium</SelectItem>
+                  <SelectItem value="basic">Basic</SelectItem>
+                  <SelectItem value="pro-lead">Pro Lead</SelectItem>
+                  <SelectItem value="pro-business">Pro Business</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -159,7 +159,7 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
             Create Business
           </Button>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

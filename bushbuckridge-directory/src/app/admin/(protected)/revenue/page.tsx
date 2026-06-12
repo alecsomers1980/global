@@ -25,7 +25,7 @@ export default async function AdminRevenuePage({
     payments = await pb.collection('payments').getFullList({
       expand: 'business',
     })
-    
+
     // Client-side array filtering for search
     if (q) {
       payments = payments.filter((p) => {
@@ -50,7 +50,10 @@ export default async function AdminRevenuePage({
   const monthStart = startOfMonth(now)
   const monthEnd = endOfMonth(now)
   const thisMonthPayments = successfulPayments.filter(p => {
-    const paidAt = new Date(p.paid_at || p.created)
+    const raw = p.paid_at || p.created
+    if (!raw) return false
+    const paidAt = new Date(raw)
+    if (isNaN(paidAt.getTime())) return false
     return paidAt >= monthStart && paidAt <= monthEnd
   })
   const thisMonthRevenueCents = thisMonthPayments.reduce((sum, p) => sum + p.amount_cents, 0)
@@ -59,7 +62,10 @@ export default async function AdminRevenuePage({
   const lastMonthStart = startOfMonth(subMonths(now, 1))
   const lastMonthEnd = endOfMonth(subMonths(now, 1))
   const lastMonthPayments = successfulPayments.filter(p => {
-    const paidAt = new Date(p.paid_at || p.created)
+    const raw = p.paid_at || p.created
+    if (!raw) return false
+    const paidAt = new Date(raw)
+    if (isNaN(paidAt.getTime())) return false
     return paidAt >= lastMonthStart && paidAt <= lastMonthEnd
   })
   const lastMonthRevenueCents = lastMonthPayments.reduce((sum, p) => sum + p.amount_cents, 0)
@@ -173,7 +179,7 @@ export default async function AdminRevenuePage({
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm text-gray-900 truncate">{p.description || 'Listing Payment'}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {p.expand?.business?.name || 'Unknown'} &middot; {format(new Date(p.paid_at || p.created), 'dd MMM yyyy, HH:mm')}
+                      {p.expand?.business?.name || 'Unknown'} &middot; {(p.paid_at || p.created) ? format(new Date(p.paid_at || p.created), 'dd MMM yyyy, HH:mm') : '—'}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 ml-4">

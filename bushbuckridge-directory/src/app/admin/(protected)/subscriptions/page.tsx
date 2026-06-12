@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
+import SubscriptionActionsMenu from './SubscriptionActionsMenu'
 
 export default async function AdminSubscriptionsPage({
     searchParams
@@ -21,7 +22,7 @@ export default async function AdminSubscriptionsPage({
         subscriptions = await pb.collection('subscriptions').getFullList({
             expand: 'business',
         })
-        
+
         if (q) {
             subscriptions = subscriptions.filter(sub => {
                 const bizName = (sub.expand?.business?.name || '').toLowerCase()
@@ -67,6 +68,7 @@ export default async function AdminSubscriptionsPage({
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Status</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Start Date</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Renewal</TableHead>
+                                <TableHead className="py-6 px-8 text-right font-black uppercase tracking-widest text-xs text-primary/40">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -87,11 +89,14 @@ export default async function AdminSubscriptionsPage({
                                     <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
                                         {sub.expires_at ? format(new Date(sub.expires_at), 'MMM d, yyyy') : 'No Expiry'}
                                     </TableCell>
+                                    <TableCell className="py-6 px-8 text-right">
+                                        <SubscriptionActionsMenu subscription={sub} />
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {(!subscriptions || subscriptions.length === 0) && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground font-medium">No subscriptions found.</TableCell>
+                                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground font-medium">No subscriptions found.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

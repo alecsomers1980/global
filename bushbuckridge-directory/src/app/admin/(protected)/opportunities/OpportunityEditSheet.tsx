@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createOpportunity, updateOpportunity } from './actions'
 import { toast } from 'sonner'
@@ -73,22 +73,22 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
   }
 
   return (
-    <Sheet open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto rounded-l-[2rem]">
-        <SheetHeader className="mb-6">
-          <SheetTitle className="text-2xl font-black text-primary">
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent>
+        <DialogHeader className="mb-6">
+          <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Opportunity' : 'Add Opportunity'}
-          </SheetTitle>
-          <SheetDescription className="font-medium">
+          </DialogTitle>
+          <DialogDescription className="font-medium">
             {isEdit ? 'Update the opportunity details below.' : 'Fill in the details for the new opportunity.'}
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <div className="space-y-5">
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Title *</Label>
             <Input value={form.title} onChange={(e) => update('title', e.target.value)} className="h-12 rounded-xl" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Category</Label>
               <Select value={form.category} onValueChange={(v) => update('category', v)}>
@@ -124,7 +124,7 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
             {isEdit ? 'Save Changes' : 'Create Opportunity'}
           </Button>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }

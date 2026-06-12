@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { createServiceClient } from '@/utils/pocketbase/service'
 import { verifyRenewalToken } from '@/lib/tokens'
 import { createYocoCheckout } from '@/lib/yoco'
 import { getYocoConfig } from '@/lib/settings'
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/?renew=invalid', request.url))
   }
 
-  const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL)
+  const pb = await createServiceClient()
 
   let subscription: any
   try {

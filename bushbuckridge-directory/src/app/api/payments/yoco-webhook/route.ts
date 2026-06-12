@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import PocketBase from 'pocketbase'
+import { createServiceClient } from '@/utils/pocketbase/service'
 import { verifyYocoWebhook } from '@/lib/yoco'
 import { getYocoConfig } from '@/lib/settings'
 import {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       return new NextResponse(null, { status: 200 })
     }
 
-    const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL)
+    const pb = await createServiceClient()
 
     let payment: any = null
     try {

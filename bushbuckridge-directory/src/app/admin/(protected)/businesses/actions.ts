@@ -56,7 +56,7 @@ export async function createBusiness(data: {
   const pb = await createClient()
   await pb.collection('businesses').create({
     ...data,
-    package_tier: data.package_tier || 'standard',
+    package_tier: data.package_tier || 'basic',
     status: data.status || 'active',
     is_featured: false,
     is_verified: false,
