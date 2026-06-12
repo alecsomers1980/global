@@ -23,7 +23,7 @@ export default async function AdminDashboardPage() {
         pendingCount = pending.totalItems
 
         const premium = await pb.collection('businesses').getList(1, 1, {
-            filter: 'package_tier = "premium"',
+            filter: 'package_tier = "pro-business"',
         })
         premiumCount = premium.totalItems
 

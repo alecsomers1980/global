@@ -15,13 +15,10 @@ export default async function SpotlightAdminPage() {
     let spotlights: Record<string, any> = {}
 
     try {
-        // Fetch all premium businesses
         businesses = await pb.collection('businesses').getFullList({
-            filter: 'package_tier = "premium"',
+            filter: 'package_tier = "pro-business"',
             sort: '-created'
         })
-
-        // Fetch all spotlight articles
         const articles = await pb.collection('spotlight_articles').getFullList()
         articles.forEach(article => {
             spotlights[article.business_id] = article
@@ -34,13 +31,13 @@ export default async function SpotlightAdminPage() {
         <div className="space-y-10">
             <div>
                 <h1 className="text-4xl font-black tracking-tight text-primary">Spotlight Articles</h1>
-                <p className="text-muted-foreground font-medium mt-2 text-lg">Manage full-page spotlight features for Premium partners.</p>
+                <p className="text-muted-foreground font-medium mt-2 text-lg">Manage full-page spotlight features for Pro Business partners.</p>
             </div>
 
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">
                 <CardHeader className="p-8 border-b border-primary/5 bg-white/50">
-                    <CardTitle className="text-2xl font-black">Premium Listings</CardTitle>
-                    <CardDescription className="text-base font-medium">Select a premium partner to write or edit their spotlight article.</CardDescription>
+                    <CardTitle className="text-2xl font-black">Pro Business Listings</CardTitle>
+                    <CardDescription className="text-base font-medium">Select a Pro Business partner to write or edit their spotlight article.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Table>
@@ -57,16 +54,11 @@ export default async function SpotlightAdminPage() {
                             {businesses?.map((biz) => {
                                 const article = spotlights[biz.id]
                                 const isPublished = article?.status === 'published'
-
                                 return (
                                 <TableRow key={biz.id} className="hover:bg-primary/5 transition-colors border-primary/5">
-                                    <TableCell className="py-6 px-8 font-bold text-primary text-base">
-                                        {biz.name}
-                                    </TableCell>
+                                    <TableCell className="py-6 px-8 font-bold text-primary text-base">{biz.name}</TableCell>
                                     <TableCell className="py-6 px-4">
-                                        <Badge variant="outline" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
-                                            {biz.status}
-                                        </Badge>
+                                        <Badge variant="outline" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`}>{biz.status}</Badge>
                                     </TableCell>
                                     <TableCell className="py-6 px-4">
                                         {!article ? (
@@ -77,21 +69,17 @@ export default async function SpotlightAdminPage() {
                                             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 font-bold">Draft / Pending</Badge>
                                         )}
                                     </TableCell>
-                                    <TableCell className="py-6 px-4 font-medium text-muted-foreground uppercase text-xs tracking-widest">
-                                        {article?.layout ? article.layout.replace('_', ' ') : 'None'}
-                                    </TableCell>
+                                    <TableCell className="py-6 px-4 font-medium text-muted-foreground uppercase text-xs tracking-widest">{article?.layout ? article.layout.replace('_', ' ') : 'None'}</TableCell>
                                     <TableCell className="py-6 px-8 text-right">
                                         <Button size="sm" className="font-bold rounded-xl" asChild>
-                                            <Link href={`/admin/spotlight/${biz.id}`}>
-                                                <Edit className="h-4 w-4 mr-2" /> {article ? 'Edit Article' : 'Write Article'}
-                                            </Link>
+                                            <Link href={`/admin/spotlight/${biz.id}`}><Edit className="h-4 w-4 mr-2" /> {article ? 'Edit Article' : 'Write Article'}</Link>
                                         </Button>
                                     </TableCell>
                                 </TableRow>
                             )})}
                             {businesses.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="py-12 text-center text-muted-foreground font-bold">No Premium Businesses found.</TableCell>
+                                    <TableCell colSpan={5} className="py-12 text-center text-muted-foreground font-bold">No Pro Business listings found.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

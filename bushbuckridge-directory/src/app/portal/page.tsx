@@ -28,8 +28,8 @@ export default async function ClientPortalPage({
     redirect('/')
   }
 
-  const isPremium = business.package_tier === 'premium'
-  const isEnhanced = business.package_tier === 'enhanced'
+  const isPremium = business.package_tier === 'pro-business'
+  const isEnhanced = business.package_tier === 'pro-lead'
   const hasAnalyticsAccess = isPremium || isEnhanced
 
   // Fetch Analytics if allowed

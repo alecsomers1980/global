@@ -47,8 +47,8 @@ export default async function BusinessProfilePage({
     // Record Profile View (fire and forget)
     trackAnalyticsEvent(business.id, 'profile_view')
 
-    const isEnhancedOrPremium = business.package_tier === 'enhanced' || business.package_tier === 'premium';
-    const isPremium = business.package_tier === 'premium';
+    const isEnhancedOrPremium = business.package_tier === 'pro-lead' || business.package_tier === 'pro-business';
+    const isPremium = business.package_tier === 'pro-business';
     const galleryArray = Array.isArray(business.gallery) 
         ? business.gallery 
         : (typeof business.gallery === 'string' && business.gallery ? [business.gallery] : []);

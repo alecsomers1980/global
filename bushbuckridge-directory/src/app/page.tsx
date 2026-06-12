@@ -50,7 +50,7 @@ export default async function Home() {
     featuredList = records.items
 
     const premiumRecords = await pb.collection('businesses').getList(1, 5, {
-      filter: 'package_tier = "premium" && status = "active"',
+      filter: 'package_tier = "pro-business" && status = "active"',
       expand: 'sector,area',
     })
     premiumPartners = premiumRecords.items

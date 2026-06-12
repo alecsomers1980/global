@@ -100,8 +100,8 @@ export default async function AdminBusinessesPage({
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="py-6 px-4">
-                                        <Badge variant="secondary" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.package_tier === 'premium' ? 'bg-secondary/20 text-secondary-foreground' :
-                                                biz.package_tier === 'enhanced' ? 'bg-blue-50 text-blue-700' :
+                                        <Badge variant="secondary" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.package_tier === 'pro-business' ? 'bg-secondary/20 text-secondary-foreground' :
+                                                biz.package_tier === 'pro-lead' ? 'bg-blue-50 text-blue-700' :
                                                     'bg-muted text-muted-foreground'
                                             }`}>
                                             {biz.package_tier}

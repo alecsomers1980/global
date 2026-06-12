@@ -21,9 +21,9 @@ export default async function ClientSettingsPage() {
         redirect('/')
     }
 
-    const tier = business.package_tier || 'standard'
-    const isEnhanced = tier === 'enhanced' || tier === 'premium'
-    const isPremium = tier === 'premium'
+    const tier = business.package_tier || 'basic'
+    const isEnhanced = tier === 'pro-lead' || tier === 'pro-business'
+    const isPremium = tier === 'pro-business'
 
     return (
         <div className="space-y-10 pb-20">

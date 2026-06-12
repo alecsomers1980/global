@@ -81,13 +81,13 @@ export default async function FindServicePage({
         }
     }
 
-    const tierWeight: Record<string, number> = { premium: 3, enhanced: 2, standard: 1 }
+    const tierWeight: Record<string, number> = { 'pro-business': 3, 'pro-lead': 2, basic: 1 }
     const businesses = fetchedBusinesses?.sort((a, b) => {
         if (a.is_featured && !b.is_featured) return -1
         if (!a.is_featured && b.is_featured) return 1
 
-        const weightA = tierWeight[a.package_tier || 'standard'] || 1
-        const weightB = tierWeight[b.package_tier || 'standard'] || 1
+        const weightA = tierWeight[a.package_tier || 'basic'] || 1
+        const weightB = tierWeight[b.package_tier || 'basic'] || 1
 
         if (weightA !== weightB) return weightB - weightA
 
