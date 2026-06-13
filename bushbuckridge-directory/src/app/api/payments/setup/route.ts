@@ -2,13 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import PocketBase from 'pocketbase'
 import { createServiceClient } from '@/utils/pocketbase/service'
 import { createYocoCheckout } from '@/lib/yoco'
-import { getYocoConfig } from '@/lib/settings'
-
-const TIER_PRICES_CENTS: Record<string, number> = {
-  basic: 19900,
-  'pro-lead': 79900,
-  'pro-business': 1050000,
-}
+import { getYocoConfig, getPricing } from '@/lib/settings'
 
 const TIER_LABELS: Record<string, string> = {
   basic: 'Basic Listing (Annual)',
@@ -34,7 +28,7 @@ export async function POST(request: NextRequest) {
       tier,
     } = body
 
-    if (!email || !password || !business_name || !tier || !TIER_PRICES_CENTS[tier]) {
+    if (!email || !password || !business_name || !tier) {
       return NextResponse.json(
         { error: 'Missing required fields: email, password, business_name, tier' },
         { status: 400 }
@@ -92,7 +86,11 @@ export async function POST(request: NextRequest) {
 
     const svc = await createServiceClient()
 
-    const amountCents = TIER_PRICES_CENTS[tier]
+    const pricing = await getPricing()
+    const amountCents = pricing[tier]
+    if (!amountCents) {
+      return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
+    }
 
     let subscription: any = null
     try {

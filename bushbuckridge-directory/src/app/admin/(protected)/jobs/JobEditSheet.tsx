@@ -1,17 +1,30 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createJob, updateJob } from './actions'
 import { toast } from 'sonner'
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship']
+const EXPERIENCE_LEVELS = ['Entry-level', 'Mid-level', 'Senior', 'Executive']
+const SALARY_PERIODS = ['Monthly', 'Annual', 'Hourly', 'Negotiable']
 
 interface Props {
   open: boolean
@@ -19,17 +32,29 @@ interface Props {
   job?: any
 }
 
+const initialForm = {
+  title: '',
+  description: '',
+  company: '',
+  location: '',
+  type: 'Full-time',
+  salary: '',
+  salary_period: '',
+  experience_level: '',
+  positions: '',
+  closing_date: '',
+  responsibilities: '',
+  requirements: '',
+  how_to_apply: '',
+  contact_name: '',
+  contact_number: '',
+  contact_email: '',
+}
+
 export default function JobEditSheet({ open, onClose, job }: Props) {
   const isEdit = !!job
   const [saving, setSaving] = useState(false)
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    company: '',
-    location: '',
-    type: 'Full-time',
-    contact_info: '',
-  })
+  const [form, setForm] = useState(initialForm)
 
   useEffect(() => {
     if (job) {
@@ -39,10 +64,20 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
         company: job.company || '',
         location: job.location || '',
         type: job.type || 'Full-time',
-        contact_info: job.contact_info || '',
+        salary: job.salary || '',
+        salary_period: job.salary_period || '',
+        experience_level: job.experience_level || '',
+        positions: job.positions != null ? String(job.positions) : '',
+        closing_date: job.closing_date || '',
+        responsibilities: job.responsibilities || '',
+        requirements: job.requirements || '',
+        how_to_apply: job.how_to_apply || '',
+        contact_name: job.contact_name || '',
+        contact_number: job.contact_number || '',
+        contact_email: job.contact_email || '',
       })
     } else {
-      setForm({ title: '', description: '', company: '', location: '', type: 'Full-time', contact_info: '' })
+      setForm(initialForm)
     }
   }, [job, open])
 
@@ -51,17 +86,19 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
   }
 
   async function handleSave() {
-    if (!form.title) {
+    if (!form.title.trim()) {
       toast.error('Job title is required.')
       return
     }
+
     setSaving(true)
     try {
+      const data = { ...form }
       if (isEdit) {
-        await updateJob(job.id, form)
+        await updateJob(job.id, data)
         toast.success('Job updated')
       } else {
-        await createJob(form)
+        await createJob(data as any)
         toast.success('Job created')
       }
       onClose()
@@ -74,7 +111,7 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Job' : 'Add Job'}
@@ -83,45 +120,219 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
             {isEdit ? 'Update the job details below.' : 'Fill in the details for the new job listing.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Job Title *</Label>
-            <Input value={form.title} onChange={(e) => update('title', e.target.value)} className="h-12 rounded-xl" />
+
+        <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
+          {/* Job Title */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">
+              Job Title *
+            </Label>
+            <Input
+              className="h-12 rounded-xl"
+              value={form.title}
+              onChange={(e) => update('title', e.target.value)}
+              placeholder="e.g. Senior Frontend Developer"
+            />
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Company</Label>
-              <Input value={form.company} onChange={(e) => update('company', e.target.value)} className="h-12 rounded-xl" />
+
+          {/* Company | Location */}
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Company</Label>
+              <Input
+                className="h-12 rounded-xl"
+                value={form.company}
+                onChange={(e) => update('company', e.target.value)}
+                placeholder="Company name"
+              />
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Location</Label>
-              <Input value={form.location} onChange={(e) => update('location', e.target.value)} className="h-12 rounded-xl" />
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Location</Label>
+              <Input
+                className="h-12 rounded-xl"
+                value={form.location}
+                onChange={(e) => update('location', e.target.value)}
+                placeholder="e.g. Remote / Johannesburg"
+              />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Type</Label>
-            <Select value={form.type} onValueChange={(v) => update('type', v)}>
-              <SelectTrigger className="h-12 rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {JOB_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          {/* Type | Experience Level */}
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Type</Label>
+              <Select value={form.type} onValueChange={(v) => update('type', v)}>
+                <SelectTrigger className="h-12 rounded-xl">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {JOB_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Experience Level</Label>
+              <Select value={form.experience_level} onValueChange={(v) => update('experience_level', v)}>
+                <SelectTrigger className="h-12 rounded-xl">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPERIENCE_LEVELS.map((lvl) => (
+                    <SelectItem key={lvl} value={lvl}>{lvl}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Contact Info</Label>
-            <Input value={form.contact_info} onChange={(e) => update('contact_info', e.target.value)} className="h-12 rounded-xl" />
+
+          {/* Salary | Salary Period */}
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Salary</Label>
+              <Input
+                className="h-12 rounded-xl"
+                value={form.salary}
+                onChange={(e) => update('salary', e.target.value)}
+                placeholder="e.g. R15,000 - R20,000"
+              />
+            </div>
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Salary Period</Label>
+              <Select value={form.salary_period} onValueChange={(v) => update('salary_period', v)}>
+                <SelectTrigger className="h-12 rounded-xl">
+                  <SelectValue placeholder="Select period" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SALARY_PERIODS.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Description</Label>
-            <Textarea value={form.description} onChange={(e) => update('description', e.target.value)} rows={4} className="rounded-xl" />
+
+          {/* Positions Available | Closing Date */}
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Positions Available</Label>
+              <Input
+                type="number"
+                min={1}
+                className="h-12 rounded-xl"
+                value={form.positions}
+                onChange={(e) => update('positions', e.target.value)}
+                placeholder="e.g. 2"
+              />
+            </div>
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Closing Date</Label>
+              <Input
+                type="date"
+                className="h-12 rounded-xl"
+                value={form.closing_date}
+                onChange={(e) => update('closing_date', e.target.value)}
+              />
+            </div>
           </div>
-          <Button onClick={handleSave} disabled={saving} className="w-full h-12 rounded-xl font-bold text-base">
-            {saving ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-            {isEdit ? 'Save Changes' : 'Create Job'}
+
+          {/* Contact Name | Contact Number */}
+          <div className="md:grid grid-cols-2 gap-4 space-y-4 md:space-y-0">
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Contact Name (optional)</Label>
+              <Input
+                className="h-12 rounded-xl"
+                value={form.contact_name}
+                onChange={(e) => update('contact_name', e.target.value)}
+                placeholder="Optional name"
+              />
+            </div>
+            <div>
+              <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Contact Number</Label>
+              <Input
+                className="h-12 rounded-xl"
+                value={form.contact_number}
+                onChange={(e) => update('contact_number', e.target.value)}
+                placeholder="e.g. +27 11 123 4567"
+              />
+            </div>
+          </div>
+
+          {/* Contact Email (full width) */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Contact Email</Label>
+            <Input
+              type="email"
+              className="h-12 rounded-xl"
+              value={form.contact_email}
+              onChange={(e) => update('contact_email', e.target.value)}
+              placeholder="email@example.com"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Description</Label>
+            <Textarea
+              className="rounded-xl"
+              rows={4}
+              value={form.description}
+              onChange={(e) => update('description', e.target.value)}
+              placeholder="Job overview / description"
+            />
+          </div>
+
+          {/* Key Responsibilities */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Key Responsibilities</Label>
+            <Textarea
+              className="rounded-xl"
+              rows={3}
+              value={form.responsibilities}
+              onChange={(e) => update('responsibilities', e.target.value)}
+              placeholder="List key responsibilities"
+            />
+          </div>
+
+          {/* Requirements / Qualifications */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Requirements / Qualifications</Label>
+            <Textarea
+              className="rounded-xl"
+              rows={3}
+              value={form.requirements}
+              onChange={(e) => update('requirements', e.target.value)}
+              placeholder="List required skills and qualifications"
+            />
+          </div>
+
+          {/* How to Apply */}
+          <div>
+            <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">How to Apply</Label>
+            <Textarea
+              className="rounded-xl"
+              rows={3}
+              value={form.how_to_apply}
+              onChange={(e) => update('how_to_apply', e.target.value)}
+              placeholder="Instructions for applicants"
+            />
+          </div>
+
+          {/* Submit */}
+          <Button
+            className="w-full h-12 rounded-xl font-bold"
+            disabled={saving}
+            onClick={handleSave}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Job'
+            )}
           </Button>
         </div>
       </DialogContent>

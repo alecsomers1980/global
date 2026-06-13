@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,38 +10,63 @@ import { Loader2 } from 'lucide-react'
 import { createOpportunity, updateOpportunity } from './actions'
 import { toast } from 'sonner'
 
-const CATEGORIES = ['Tender', 'Funding', 'Training', 'Grant', 'Business Support', 'Other']
+const CATEGORIES = ['Funding', 'Tenders', 'Grants', 'Training', 'Business Support', 'Other']
 
-interface Props {
-  open: boolean
-  onClose: () => void
-  opportunity?: any
-}
+interface Props { open: boolean; onClose: () => void; opportunity?: any }
 
 export default function OpportunityEditSheet({ open, onClose, opportunity }: Props) {
   const isEdit = !!opportunity
   const [saving, setSaving] = useState(false)
+
   const [form, setForm] = useState({
     title: '',
+    category: 'Funding',
     description: '',
-    category: 'Tender',
     deadline: '',
     contact_info: '',
     link: '',
+    organization: '',
+    value: '',
+    eligibility: '',
+    reference_number: '',
+    location: '',
+    how_to_apply: '',
+    required_documents: ''
   })
 
   useEffect(() => {
     if (opportunity) {
       setForm({
         title: opportunity.title || '',
+        category: opportunity.category || 'Funding',
         description: opportunity.description || '',
-        category: opportunity.category || 'Tender',
         deadline: opportunity.deadline ? opportunity.deadline.slice(0, 10) : '',
         contact_info: opportunity.contact_info || '',
         link: opportunity.link || '',
+        organization: opportunity.organization || '',
+        value: opportunity.value || '',
+        eligibility: opportunity.eligibility || '',
+        reference_number: opportunity.reference_number || '',
+        location: opportunity.location || '',
+        how_to_apply: opportunity.how_to_apply || '',
+        required_documents: opportunity.required_documents || ''
       })
     } else {
-      setForm({ title: '', description: '', category: 'Tender', deadline: '', contact_info: '', link: '' })
+      setForm({
+        title: '',
+        category: 'Funding',
+        description: '',
+        deadline: '',
+        contact_info: '',
+        link: '',
+        organization: '',
+        value: '',
+        eligibility: '',
+        reference_number: '',
+        location: '',
+        how_to_apply: '',
+        required_documents: ''
+      })
     }
   }, [opportunity, open])
 
@@ -74,7 +98,7 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Opportunity' : 'Add Opportunity'}
@@ -84,45 +108,100 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Title *</Label>
-            <Input value={form.title} onChange={(e) => update('title', e.target.value)} className="h-12 rounded-xl" />
+          {/* Title (full width) */}
+          <div>
+            <Label htmlFor="title" className="font-semibold">Title *</Label>
+            <Input id="title" value={form.title} onChange={(e) => update('title', e.target.value)} placeholder="Opportunity title" />
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Category</Label>
+
+          {/* Category | Organization */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="category" className="font-semibold">Category</Label>
               <Select value={form.category} onValueChange={(v) => update('category', v)}>
-                <SelectTrigger className="h-12 rounded-xl">
-                  <SelectValue />
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl">
+                <SelectContent>
                   {CATEGORIES.map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Deadline</Label>
-              <Input type="date" value={form.deadline} onChange={(e) => update('deadline', e.target.value)} className="h-12 rounded-xl" />
+            <div>
+              <Label htmlFor="organization" className="font-semibold">Organization / Issuer</Label>
+              <Input id="organization" value={form.organization} onChange={(e) => update('organization', e.target.value)} placeholder="Issuing organization" />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Link (URL)</Label>
-            <Input value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://" className="h-12 rounded-xl" />
+
+          {/* Value | Reference Number */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="value" className="font-semibold">Value / Amount</Label>
+              <Input id="value" value={form.value} onChange={(e) => update('value', e.target.value)} placeholder="e.g. R500,000" />
+            </div>
+            <div>
+              <Label htmlFor="reference_number" className="font-semibold">Reference Number</Label>
+              <Input id="reference_number" value={form.reference_number} onChange={(e) => update('reference_number', e.target.value)} placeholder="Tender/Ref no." />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Contact Info</Label>
-            <Input value={form.contact_info} onChange={(e) => update('contact_info', e.target.value)} className="h-12 rounded-xl" />
+
+          {/* Deadline | Location */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="deadline" className="font-semibold">Deadline</Label>
+              <Input id="deadline" type="date" value={form.deadline} onChange={(e) => update('deadline', e.target.value)} />
+            </div>
+            <div>
+              <Label htmlFor="location" className="font-semibold">Location / Region</Label>
+              <Input id="location" value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="e.g. Gauteng" />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Description</Label>
-            <Textarea value={form.description} onChange={(e) => update('description', e.target.value)} rows={4} className="rounded-xl" />
+
+          {/* Link (full width) */}
+          <div>
+            <Label htmlFor="link" className="font-semibold">Link</Label>
+            <Input id="link" type="url" value={form.link} onChange={(e) => update('link', e.target.value)} placeholder="https://..." />
           </div>
-          <Button onClick={handleSave} disabled={saving} className="w-full h-12 rounded-xl font-bold text-base">
-            {saving ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-            {isEdit ? 'Save Changes' : 'Create Opportunity'}
-          </Button>
+
+          {/* Description */}
+          <div>
+            <Label htmlFor="description" className="font-semibold">Description</Label>
+            <Textarea id="description" rows={4} value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Brief description of the opportunity" />
+          </div>
+
+          {/* Eligibility */}
+          <div>
+            <Label htmlFor="eligibility" className="font-semibold">Eligibility / Who can apply</Label>
+            <Textarea id="eligibility" rows={3} value={form.eligibility} onChange={(e) => update('eligibility', e.target.value)} placeholder="Eligibility criteria" />
+          </div>
+
+          {/* Required Documents */}
+          <div>
+            <Label htmlFor="required_documents" className="font-semibold">Required Documents</Label>
+            <Textarea id="required_documents" rows={3} value={form.required_documents} onChange={(e) => update('required_documents', e.target.value)} placeholder="Documents needed for application" />
+          </div>
+
+          {/* How to Apply */}
+          <div>
+            <Label htmlFor="how_to_apply" className="font-semibold">How to Apply</Label>
+            <Textarea id="how_to_apply" rows={3} value={form.how_to_apply} onChange={(e) => update('how_to_apply', e.target.value)} placeholder="Instructions for applying" />
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <Label htmlFor="contact_info" className="font-semibold">Contact Info</Label>
+            <Input id="contact_info" value={form.contact_info} onChange={(e) => update('contact_info', e.target.value)} placeholder="Email / phone number" />
+          </div>
+
+          {/* Submit */}
+          <div className="pt-2">
+            <Button onClick={handleSave} disabled={saving} className="w-full">
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isEdit ? 'Update Opportunity' : 'Create Opportunity'}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

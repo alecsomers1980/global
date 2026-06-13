@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
@@ -17,9 +16,20 @@ const layoutDescriptions: Record<string, string> = {
     gallery_grid: 'Image-led grid up top, story below.',
 }
 
-export default function SpotlightEditor({ businessId, initialArticle }: { businessId: string, initialArticle?: any }) {
+export default function SpotlightEditor({
+    businessId,
+    initialArticle,
+    quarter,
+    year,
+}: {
+    businessId: string
+    initialArticle?: any
+    quarter: string
+    year: number
+}) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+    const [title, setTitle] = useState(initialArticle?.title || '')
     const [status, setStatus] = useState(initialArticle?.status || 'pending')
     const [layout, setLayout] = useState(initialArticle?.layout || 'default')
     const [content, setContent] = useState(initialArticle?.content || '')
@@ -30,13 +40,14 @@ export default function SpotlightEditor({ businessId, initialArticle }: { busine
         try {
             const formData = new FormData(e.currentTarget)
             formData.append('business_id', businessId)
-            if (initialArticle?.id) {
-                formData.append('article_id', initialArticle.id)
-            }
+            if (initialArticle?.id) formData.append('article_id', initialArticle.id)
+            formData.append('title', title)
+            formData.append('quarter', quarter)
+            formData.append('year', String(year))
             formData.append('content', content)
             const res = await saveSpotlightArticle(formData)
             if (res.success) {
-                router.push('/admin/spotlight')
+                router.push(`/admin/spotlight/${businessId}?year=${year}`)
                 router.refresh()
             } else {
                 alert('Failed to save: ' + res.error)
@@ -47,86 +58,137 @@ export default function SpotlightEditor({ businessId, initialArticle }: { busine
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8">
-            <Card className="border-0 shadow-2xl bg-card rounded-[2rem] overflow-hidden">
-                <CardHeader className="bg-primary/5 p-8 border-b border-primary/5">
-                    <CardTitle className="text-2xl font-black">Article Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                            <Label className="font-bold text-muted-foreground uppercase tracking-widest text-xs">Publication Status</Label>
-                            <Select name="status" value={status} onValueChange={setStatus}>
-                                <SelectTrigger className="h-12 rounded-xl font-bold"><SelectValue placeholder="Select status" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="pending">Draft / Pending</SelectItem>
-                                    <SelectItem value="published">Published Live</SelectItem>
-                                </SelectContent>
-                            </Select>
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-2xl font-bold">
+                    Editing {quarter} · {year}
+                </h1>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Article Settings card */}
+                <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem]">
+                    <CardHeader>
+                        <CardTitle>Article Settings</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {/* Title – full width, first */}
+                        <div className="space-y-2">
+                            <Label htmlFor="title">Title</Label>
+                            <Input
+                                id="title"
+                                name="title"
+                                placeholder="Optional headline (defaults to business name)"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                            />
                         </div>
-                        <div className="space-y-3">
-                            <Label className="font-bold text-muted-foreground uppercase tracking-widest text-xs">Layout Style</Label>
-                            <Select name="layout" value={layout} onValueChange={setLayout}>
-                                <SelectTrigger className="h-12 rounded-xl font-bold"><SelectValue placeholder="Select Layout" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="default">Standard Narrative</SelectItem>
-                                    <SelectItem value="hero_top">Hero Image Focus</SelectItem>
-                                    <SelectItem value="gallery_grid">Gallery Showcase</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <p className="text-xs text-muted-foreground mt-1">{layoutDescriptions[layout] || ''}</p>
+
+                        {/* Status & Layout grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor="status">Status</Label>
+                                <Select name="status" value={status} onValueChange={setStatus}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="pending">Draft</SelectItem>
+                                        <SelectItem value="published">Published</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <Label htmlFor="layout">Layout</Label>
+                                <Select name="layout" value={layout} onValueChange={setLayout}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="default">Default</SelectItem>
+                                        <SelectItem value="hero_top">Hero Top</SelectItem>
+                                        <SelectItem value="gallery_grid">Gallery Grid</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
+                        {layoutDescriptions[layout] && (
+                            <p className="text-sm text-muted-foreground pt-1">
+                                {layoutDescriptions[layout]}
+                            </p>
+                        )}
+                    </CardContent>
+                </Card>
 
-            <Card className="border-0 shadow-2xl bg-card rounded-[2rem] overflow-hidden">
-                <CardHeader className="bg-primary/5 p-8 border-b border-primary/5">
-                    <CardTitle className="text-2xl font-black">Content Editor</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                    <div className="space-y-3">
-                        <Label className="font-bold text-muted-foreground uppercase tracking-widest text-xs">Article Content (HTML / Text)</Label>
-                        <Textarea value={content} onChange={(e) => setContent(e.target.value)} className="min-h-[300px] p-6 rounded-2xl resize-y font-medium text-base leading-relaxed" placeholder="Write the spotlight story here..." />
-                    </div>
-                </CardContent>
-            </Card>
+                {/* Content Editor card */}
+                <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem]">
+                    <CardHeader>
+                        <CardTitle>Content</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Textarea
+                            name="content"
+                            className="min-h-[300px]"
+                            placeholder="Write your article content..."
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                        />
+                    </CardContent>
+                </Card>
 
-            <Card className="border-0 shadow-2xl bg-card rounded-[2rem] overflow-hidden">
-                <CardHeader className="bg-primary/5 p-8 border-b border-primary/5 flex flex-row items-center justify-between">
-                    <CardTitle className="text-2xl font-black flex items-center gap-2"><ImageIcon className="h-6 w-6 text-primary" /> Gallery Images</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                    <div className="space-y-3">
-                        <Label className="font-bold text-muted-foreground uppercase tracking-widest text-xs">Upload Images (Max 10)</Label>
-                        <Input type="file" name="images" multiple accept="image/*" className="h-12 pt-3 rounded-xl file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-white" />
-                        <p className="text-xs text-muted-foreground">The first image is used as the hero/banner; the rest form the gallery.</p>
-
+                {/* Gallery Images card */}
+                <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem]">
+                    <CardHeader>
+                        <CardTitle>Gallery Images</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div>
+                            <Label htmlFor="images">
+                                Upload images for the gallery. The first image is used as the hero.
+                            </Label>
+                            <Input
+                                id="images"
+                                name="images"
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                className="mt-2"
+                            />
+                        </div>
                         {initialArticle?.images?.length > 0 && (
-                            <div className="mt-4">
-                                <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground mb-2">Current images</p>
+                            <div>
+                                <p className="text-sm font-medium mb-2">Current images</p>
                                 <div className="flex flex-wrap gap-2">
                                     {initialArticle.images.map((img: string) => (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
+                                        <div
                                             key={img}
-                                            src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${initialArticle.collectionId}/${initialArticle.id}/${img}`}
-                                            alt=""
-                                            className="h-20 w-auto rounded-lg object-cover border"
-                                        />
+                                            className="relative h-20 w-20 overflow-hidden rounded-xl border"
+                                        >
+                                            <img
+                                                src={`${process.env.NEXT_PUBLIC_PB_URL}/api/files/spotlight_articles/${initialArticle.id}/${img}`}
+                                                alt=""
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
                         )}
-                    </div>
-                </CardContent>
-                <CardFooter className="p-8 bg-muted/20 border-t flex justify-end">
-                    <Button type="submit" disabled={isLoading} size="lg" className="h-14 px-8 rounded-2xl font-black shadow-lg">
-                        {isLoading ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Save className="h-5 w-5 mr-2" />}
-                        {initialArticle ? 'Update Article' : 'Create Article'}
+                    </CardContent>
+                </Card>
+
+                {/* Save button */}
+                <CardFooter className="px-0">
+                    <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                        {isLoading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Save className="mr-2 h-4 w-4" />
+                        )}
+                        Save Article
                     </Button>
                 </CardFooter>
-            </Card>
-        </form>
+            </form>
+        </div>
     )
 }

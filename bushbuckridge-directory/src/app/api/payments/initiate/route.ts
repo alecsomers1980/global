@@ -2,13 +2,7 @@ import { createClient } from '@/utils/pocketbase/server'
 import { createServiceClient } from '@/utils/pocketbase/service'
 import { NextRequest, NextResponse } from 'next/server'
 import { createYocoCheckout } from '@/lib/yoco'
-import { getYocoConfig } from '@/lib/settings'
-
-const TIER_PRICES_CENTS: Record<string, number> = {
-  basic: 19900,
-  'pro-lead': 79900,
-  'pro-business': 1050000,
-}
+import { getYocoConfig, getPricing } from '@/lib/settings'
 
 const TIER_LABELS: Record<string, string> = {
   basic: 'Basic Listing (Annual)',
@@ -28,7 +22,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { business_id, tier } = body
 
-    if (!business_id || !tier || !TIER_PRICES_CENTS[tier]) {
+    if (!business_id || !tier) {
       return NextResponse.json({ error: 'Invalid business_id or tier' }, { status: 400 })
     }
 
@@ -41,9 +35,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Business not found or not authorized' }, { status: 403 })
     }
 
-    const svc = await createServiceClient()
+    const pricing = await getPricing()
+    const amountCents = pricing[tier]
+    if (!amountCents) {
+      return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
+    }
 
-    const amountCents = TIER_PRICES_CENTS[tier]
+    const svc = await createServiceClient()
 
     const subscription = await svc.collection('subscriptions').create({
       business: business_id,
