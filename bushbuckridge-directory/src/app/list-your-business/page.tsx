@@ -109,23 +109,49 @@ export default async function ListYourBusinessPage({
 
     async function submitLead(formData: FormData) {
         'use server'
-        const pb = await createClient()
+        const businessName = String(formData.get('businessName') || '')
+        const contactName = String(formData.get('contactName') || '')
+        const phone = String(formData.get('phone') || '')
+        const email = String(formData.get('email') || '')
+        const packageTier = String(formData.get('package') || '')
+        const notes = String(formData.get('notes') || '')
 
+        let ok = false
         try {
-            await pb.collection('enquiries').create({
-                type: 'buy_spot',
-                business_name: String(formData.get('businessName')),
-                contact_person: String(formData.get('contactName')),
-                phone: String(formData.get('phone')),
-                email: String(formData.get('email')),
-                details: `Package: ${formData.get('package')}\nNotes: ${formData.get('notes')}`,
-                status: 'new',
-            })
-            redirect('/list-your-business/success')
+          const pb = await createClient()
+          await pb.collection('enquiries').create({
+            type: 'buy_spot',
+            business_name: businessName,
+            contact_person: contactName,
+            phone,
+            email,
+            details: `Package: ${packageTier}\nNotes: ${notes}`,
+            status: 'new',
+          })
+
+          const { sendEnquiryNotification, sendEnquiryConfirmation } = await import('@/lib/email')
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dbib.co.za'
+          await sendEnquiryNotification({
+            type: 'Listing Enquiry',
+            businessName,
+            contactPerson: contactName,
+            email,
+            phone,
+            details: `Package: ${packageTier}\nNotes: ${notes}`,
+          }).catch((e) => console.error('Admin notification failed:', e))
+          if (email) {
+            await sendEnquiryConfirmation({
+              to: email,
+              contactPerson: contactName,
+              businessName,
+              siteUrl,
+            }).catch((e) => console.error('Confirmation email failed:', e))
+          }
+          ok = true
         } catch (e) {
-            console.error('Lead submission error:', e)
-            redirect('/list-your-business?error=true')
+          console.error('Lead submission error:', e)
         }
+        redirect(ok ? '/list-your-business/success' : '/list-your-business?error=true')
     }
 
     return (

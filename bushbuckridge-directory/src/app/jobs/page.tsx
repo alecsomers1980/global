@@ -66,7 +66,9 @@ export default async function JobsPage() {
                           </span>
                         </div>
                         <h3 className="text-3xl font-black tracking-tight group-hover:text-primary transition-colors">
-                          {job.title}
+                          <Link href={`/jobs/${job.slug || job.id}`} className="hover:text-primary transition-colors">
+                            {job.title}
+                          </Link>
                         </h3>
                         <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-bold text-muted-foreground">
                           <span className="flex items-center">
@@ -92,7 +94,7 @@ export default async function JobsPage() {
                           </p>
                         )}
                       </div>
-                      <div className="w-full md:w-auto pt-6 md:pt-0">
+                      <div className="w-full md:w-auto pt-6 md:pt-0 flex flex-col gap-3">
                         <Button
                           size="lg"
                           className="h-16 px-10 rounded-2xl bg-primary hover:bg-primary/90 font-black shadow-lg shadow-primary/10 w-full md:w-auto transition-all active:scale-95"
@@ -109,6 +111,16 @@ export default async function JobsPage() {
                           >
                             Apply Now <ArrowRight className="ml-2 h-5 w-5" />
                           </a>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          className="h-14 px-8 rounded-2xl font-black border-primary/10 w-full md:w-auto"
+                          asChild
+                        >
+                          <Link href={`/jobs/${job.slug || job.id}`}>
+                            View Details <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
                         </Button>
                       </div>
                     </div>

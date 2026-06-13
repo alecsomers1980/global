@@ -11,13 +11,14 @@ import { Phone, Mail, MessageCircle } from 'lucide-react'
 export default function EnquiriesPage() {
     async function submitEnquiry(formData: FormData) {
         'use server'
-        const pb = await createClient()
-        try {
-          const contactPerson = String(formData.get('name'))
-          const phone = String(formData.get('phone') || '')
-          const email = String(formData.get('email') || '')
-          const message = String(formData.get('message'))
+        const contactPerson = String(formData.get('name') || '')
+        const phone = String(formData.get('phone') || '')
+        const email = String(formData.get('email') || '')
+        const message = String(formData.get('message') || '')
 
+        let ok = false
+        try {
+          const pb = await createClient()
           await pb.collection('enquiries').create({
             type: 'general',
             contact_person: contactPerson,
@@ -27,9 +28,9 @@ export default function EnquiriesPage() {
             status: 'new',
           })
 
-          // Send admin notification email (fire-and-forget)
-          const { sendEnquiryNotification } = await import('@/lib/email')
-          sendEnquiryNotification({
+          const { sendEnquiryNotification, sendEnquiryConfirmation } = await import('@/lib/email')
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dbib.co.za'
+          await sendEnquiryNotification({
             type: 'General Enquiry',
             businessName: '',
             contactPerson,
@@ -37,12 +38,18 @@ export default function EnquiriesPage() {
             phone,
             details: message,
           }).catch((e) => console.error('Enquiry notification failed:', e))
-
-          redirect('/enquiries/success')
+          if (email) {
+            await sendEnquiryConfirmation({
+              to: email,
+              contactPerson,
+              siteUrl,
+            }).catch((e) => console.error('Confirmation email failed:', e))
+          }
+          ok = true
         } catch (e) {
           console.error('Enquiry submission error:', e)
-          redirect('/enquiries?error=true')
         }
+        redirect(ok ? '/enquiries/success' : '/enquiries?error=true')
     }
 
     return (

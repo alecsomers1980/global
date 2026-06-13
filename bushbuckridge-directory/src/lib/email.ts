@@ -9,31 +9,41 @@ function getResend(): Resend | null {
 const FROM = process.env.EMAIL_FROM || 'Bushbuckridge Directory <noreply@dbib.co.za>'
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || ''
 
+const LOGO_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://dbib.co.za') + '/logo.png'
+
 function brandHeader(): string {
   return `
-    <div style="background:#1B4332;padding:32px;text-align:center;border-radius:16px 16px 0 0">
-      <h1 style="color:#FFD700;font-family:Arial,sans-serif;margin:0;font-size:24px">Bushbuckridge Community Directory</h1>
+    <div style="background:#FFFFFF;padding:28px;text-align:center;border-bottom:4px solid #FFD700;border-radius:16px 16px 0 0">
+      <img src="${LOGO_URL}" alt="Doing Business in Bushbuckridge" width="220" style="display:inline-block;max-width:220px;height:auto" />
     </div>
   `
 }
 
 function brandFooter(): string {
   return `
-    <div style="padding:24px;text-align:center;color:#6B7280;font-size:12px;font-family:Arial,sans-serif">
-      <p>Ember Automations — Clean, Functional, Local.</p>
-      <p>This email was sent by the Bushbuckridge Community Directory system.</p>
+    <div style="background:#1B4332;padding:32px;text-align:center;font-family:Arial,Helvetica,sans-serif">
+      <p style="color:#FFD700;font-weight:bold;font-size:13px;letter-spacing:1px;margin:0 0 6px">DOING BUSINESS IN BUSHBUCKRIDGE</p>
+      <p style="color:#A7BBB1;font-size:13px;margin:0 0 4px">Bushbuckridge, Mpumalanga</p>
+      <p style="color:#A7BBB1;font-size:13px;margin:0">info@dbib.co.za • dbib.co.za</p>
+      <p style="color:#7d978c;font-size:11px;margin-top:14px;margin-bottom:0">This is an automated message from the Doing Business in Bushbuckridge directory.</p>
     </div>
   `
 }
 
 function wrap(content: string): string {
   return `
-    <div style="max-width:560px;margin:0 auto;font-family:Arial,sans-serif;background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
-      ${brandHeader()}
-      <div style="padding:32px;color:#2D3436;line-height:1.6">${content}</div>
-      ${brandFooter()}
+    <div style="background:#f3f4f6;padding:24px;font-family:Arial,Helvetica,sans-serif">
+      <div style="max-width:600px;margin:0 auto;background:#FFFFFF;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;font-family:Arial,Helvetica,sans-serif">
+        ${brandHeader()}
+        <div style="padding:32px 40px;color:#2D3436;line-height:1.6;font-size:15px">${content}</div>
+        ${brandFooter()}
+      </div>
     </div>
   `
+}
+
+function ctaButton(href: string, label: string): string {
+  return `<a href="${href}" style="display:inline-block;background:#FFD700;color:#1B4332;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">${label}</a>`
 }
 
 export interface PaymentReceiptData {
@@ -68,13 +78,13 @@ export async function sendPaymentReceipt(data: PaymentReceiptData): Promise<bool
         <h2 style="color:#1B4332;margin-top:0">Payment Confirmed</h2>
         <p>Thank you for listing <strong>${data.businessName}</strong> on the Bushbuckridge Community Directory.</p>
         <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;width:40%">Package</td><td style="padding:12px 16px">${tierLabel}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Amount Paid</td><td style="padding:12px 16px">${data.amount}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Reference</td><td style="padding:12px 16px">${data.paymentRef}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Package</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${tierLabel}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Amount Paid</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.amount}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Reference</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.paymentRef}</td></tr>
         </table>
         <p>Your listing is now active. Visit your portal to manage your business profile and track performance.</p>
         <div style="text-align:center;margin:32px 0">
-          <a href="${data.portalUrl}" style="display:inline-block;background:#1B4332;color:#FFD700;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">Go to Your Portal</a>
+          ${ctaButton(data.portalUrl, 'Go to Your Portal')}
         </div>
       `),
     })
@@ -116,7 +126,7 @@ export async function sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean>
           <li style="margin-bottom:8px"><strong>Upgrade anytime</strong> — unlock spotlight features and premium placement</li>
         </ul>
         <div style="text-align:center;margin:32px 0">
-          <a href="${data.portalUrl}" style="display:inline-block;background:#1B4332;color:#FFD700;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">Access Your Portal</a>
+          ${ctaButton(data.portalUrl, 'Access Your Portal')}
         </div>
         <p style="font-size:14px;color:#6B7280">Log in at <a href="${data.loginUrl}" style="color:#1B4332">${data.loginUrl}</a> with the email address and password you chose during signup.</p>
       `),
@@ -163,16 +173,16 @@ export async function sendAdminSignupAlert(data: AdminSignupAlertData): Promise<
         <h2 style="color:#1B4332;margin-top:0">New Business Signup</h2>
         <p>A new business has signed up on the Bushbuckridge Community Directory.</p>
         <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;width:40%">Business</td><td style="padding:12px 16px">${data.businessName}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Contact</td><td style="padding:12px 16px">${data.contactName}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Email</td><td style="padding:12px 16px">${data.email}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Phone</td><td style="padding:12px 16px">${data.phone || '—'}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Package</td><td style="padding:12px 16px">${tierLabel}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Sector</td><td style="padding:12px 16px">${data.sector || '—'}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Area</td><td style="padding:12px 16px">${data.area || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Business</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.businessName}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Contact</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.contactName}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Email</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.email}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Phone</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.phone || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Package</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${tierLabel}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Sector</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.sector || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Area</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.area || '—'}</td></tr>
         </table>
         <div style="text-align:center;margin:32px 0">
-          <a href="${data.adminUrl}" style="display:inline-block;background:#1B4332;color:#FFD700;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">View in Admin Panel</a>
+          ${ctaButton(data.adminUrl, 'View in Admin Panel')}
         </div>
       `),
     })
@@ -209,12 +219,12 @@ export async function sendEnquiryNotification(data: EnquiryNotificationData): Pr
         <h2 style="color:#1B4332;margin-top:0">New Enquiry Received</h2>
         <p>A new enquiry has been submitted through the Bushbuckridge Community Directory.</p>
         <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;width:40%">Type</td><td style="padding:12px 16px">${data.type}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Contact Person</td><td style="padding:12px 16px">${data.contactPerson}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Business</td><td style="padding:12px 16px">${data.businessName || '—'}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Email</td><td style="padding:12px 16px">${data.email}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Phone</td><td style="padding:12px 16px">${data.phone || '—'}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Details</td><td style="padding:12px 16px">${data.details || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Type</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.type}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Contact Person</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.contactPerson}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Business</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.businessName || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Email</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.email}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Phone</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.phone || '—'}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Details</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.details || '—'}</td></tr>
         </table>
       `),
     })
@@ -299,13 +309,13 @@ export async function sendRenewalReminder(data: RenewalReminderData): Promise<bo
         <h2 style="color:#1B4332;margin-top:0">${copy.heading}</h2>
         <p>${copy.urgency}</p>
         <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;width:40%">Business</td><td style="padding:12px 16px">${data.businessName}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Package</td><td style="padding:12px 16px">${tierLabel}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Renewal Amount</td><td style="padding:12px 16px">${data.amount}</td></tr>
-          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280">Expires</td><td style="padding:12px 16px">${expiryStr}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Business</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.businessName}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Package</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${tierLabel}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Renewal Amount</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${data.amount}</td></tr>
+          <tr><td style="padding:12px 16px;font-weight:bold;color:#6B7280;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;width:40%;vertical-align:top">Expires</td><td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${expiryStr}</td></tr>
         </table>
         <div style="text-align:center;margin:32px 0">
-          <a href="${data.renewUrl}" style="display:inline-block;background:#1B4332;color:#FFD700;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:16px">${copy.cta}</a>
+          ${ctaButton(data.renewUrl, copy.cta)}
         </div>
         <p style="font-size:13px;color:#6B7280">Clicking the button above will take you to Yoco's secure checkout to complete payment for another year.</p>
       `),
@@ -314,6 +324,44 @@ export async function sendRenewalReminder(data: RenewalReminderData): Promise<bo
     return true
   } catch (e) {
     console.error('[email] Failed to send renewal reminder:', e)
+    return false
+  }
+}
+
+export interface EnquiryConfirmationData {
+  to: string
+  contactPerson: string
+  businessName?: string
+  siteUrl: string
+}
+
+export async function sendEnquiryConfirmation(data: EnquiryConfirmationData): Promise<boolean> {
+  const resend = getResend()
+  if (!resend) {
+    console.log('[email] Enquiry confirmation skipped (not configured):', data.to)
+    return false
+  }
+
+  const firstName = data.contactPerson.split(' ')[0] || 'there'
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: [data.to],
+      subject: `We've received your message — Doing Business in Bushbuckridge`,
+      html: wrap(`
+        <h2 style="color:#1B4332;margin-top:0">Thank you, ${firstName}!</h2>
+        <p>We've received your enquiry${data.businessName ? ' regarding ' + data.businessName : ''} and a member of our team will respond within 1–2 business days.</p>
+        <p>In the meantime, feel free to explore the directory to discover more local businesses, jobs, and events in Bushbuckridge.</p>
+        <div style="text-align:center;margin:32px 0">
+          ${ctaButton(data.siteUrl, 'Visit the Directory')}
+        </div>
+      `),
+    })
+    console.log('[email] Enquiry confirmation sent to:', data.to)
+    return true
+  } catch (e) {
+    console.error('[email] Failed to send enquiry confirmation:', e)
     return false
   }
 }
