@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -21,6 +20,7 @@ import {
 import { Loader2 } from 'lucide-react'
 import { createJob, updateJob } from './actions'
 import { toast } from 'sonner'
+import RichTextEditor from '@/components/RichTextEditor'
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship']
 const EXPERIENCE_LEVELS = ['Entry-level', 'Mid-level', 'Senior', 'Executive']
@@ -111,7 +111,7 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-4xl max-h-[92vh] overflow-y-auto px-8">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Job' : 'Add Job'}
@@ -121,7 +121,7 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
+        <div className="space-y-5">
           {/* Job Title */}
           <div>
             <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">
@@ -274,48 +274,44 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
           {/* Description */}
           <div>
             <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Description</Label>
-            <Textarea
-              className="rounded-xl"
-              rows={4}
+            <RichTextEditor
               value={form.description}
-              onChange={(e) => update('description', e.target.value)}
+              onChange={(v) => update('description', v)}
               placeholder="Job overview / description"
+              minRows={5}
             />
           </div>
 
           {/* Key Responsibilities */}
           <div>
             <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Key Responsibilities</Label>
-            <Textarea
-              className="rounded-xl"
-              rows={3}
+            <RichTextEditor
               value={form.responsibilities}
-              onChange={(e) => update('responsibilities', e.target.value)}
+              onChange={(v) => update('responsibilities', v)}
               placeholder="List key responsibilities"
+              minRows={4}
             />
           </div>
 
           {/* Requirements / Qualifications */}
           <div>
             <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">Requirements / Qualifications</Label>
-            <Textarea
-              className="rounded-xl"
-              rows={3}
+            <RichTextEditor
               value={form.requirements}
-              onChange={(e) => update('requirements', e.target.value)}
+              onChange={(v) => update('requirements', v)}
               placeholder="List required skills and qualifications"
+              minRows={4}
             />
           </div>
 
           {/* How to Apply */}
           <div>
             <Label className="uppercase tracking-widest text-sm font-bold text-primary/60">How to Apply</Label>
-            <Textarea
-              className="rounded-xl"
-              rows={3}
+            <RichTextEditor
               value={form.how_to_apply}
-              onChange={(e) => update('how_to_apply', e.target.value)}
+              onChange={(v) => update('how_to_apply', v)}
               placeholder="Instructions for applicants"
+              minRows={4}
             />
           </div>
 

@@ -123,7 +123,10 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary/40" /> Overview
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{opp.description}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: opp.description }}
+                />
               </div>
             )}
 
@@ -133,7 +136,10 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-primary/40" /> Eligibility
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{opp.eligibility}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: opp.eligibility }}
+                />
               </div>
             )}
 
@@ -143,7 +149,10 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary/40" /> Required Documents
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{opp.required_documents}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: opp.required_documents }}
+                />
               </div>
             )}
 
@@ -153,7 +162,10 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Info className="h-5 w-5 text-primary/40" /> How to Apply
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{opp.how_to_apply}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: opp.how_to_apply }}
+                />
               </div>
             )}
 
@@ -163,7 +175,10 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
                 <h2 className="text-lg font-black tracking-tight flex items-center gap-2">
                   <Phone className="h-5 w-5 text-primary/40" /> Contact
                 </h2>
-                <p className="text-muted-foreground text-sm font-bold whitespace-pre-line">{opp.contact_info}</p>
+                <div
+                  className="text-muted-foreground text-sm font-bold [&_strong]:font-bold [&_a]:text-primary [&_a]:underline"
+                  dangerouslySetInnerHTML={{ __html: opp.contact_info }}
+                />
               </div>
             )}
 

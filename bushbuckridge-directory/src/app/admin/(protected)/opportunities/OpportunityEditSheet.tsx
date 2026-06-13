@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createOpportunity, updateOpportunity } from './actions'
 import { toast } from 'sonner'
+import RichTextEditor from '@/components/RichTextEditor'
 
 const CATEGORIES = ['Funding', 'Tenders', 'Grants', 'Training', 'Business Support', 'Other']
 
@@ -98,7 +98,7 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl max-h-[92vh] overflow-y-auto px-8">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Opportunity' : 'Add Opportunity'}
@@ -168,25 +168,45 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
           {/* Description */}
           <div>
             <Label htmlFor="description" className="font-semibold">Description</Label>
-            <Textarea id="description" rows={4} value={form.description} onChange={(e) => update('description', e.target.value)} placeholder="Brief description of the opportunity" />
+            <RichTextEditor
+              value={form.description}
+              onChange={(v) => update('description', v)}
+              placeholder="Brief description of the opportunity"
+              minRows={5}
+            />
           </div>
 
           {/* Eligibility */}
           <div>
             <Label htmlFor="eligibility" className="font-semibold">Eligibility / Who can apply</Label>
-            <Textarea id="eligibility" rows={3} value={form.eligibility} onChange={(e) => update('eligibility', e.target.value)} placeholder="Eligibility criteria" />
+            <RichTextEditor
+              value={form.eligibility}
+              onChange={(v) => update('eligibility', v)}
+              placeholder="Eligibility criteria"
+              minRows={4}
+            />
           </div>
 
           {/* Required Documents */}
           <div>
             <Label htmlFor="required_documents" className="font-semibold">Required Documents</Label>
-            <Textarea id="required_documents" rows={3} value={form.required_documents} onChange={(e) => update('required_documents', e.target.value)} placeholder="Documents needed for application" />
+            <RichTextEditor
+              value={form.required_documents}
+              onChange={(v) => update('required_documents', v)}
+              placeholder="Documents needed for application"
+              minRows={4}
+            />
           </div>
 
           {/* How to Apply */}
           <div>
             <Label htmlFor="how_to_apply" className="font-semibold">How to Apply</Label>
-            <Textarea id="how_to_apply" rows={3} value={form.how_to_apply} onChange={(e) => update('how_to_apply', e.target.value)} placeholder="Instructions for applying" />
+            <RichTextEditor
+              value={form.how_to_apply}
+              onChange={(v) => update('how_to_apply', v)}
+              placeholder="Instructions for applying"
+              minRows={4}
+            />
           </div>
 
           {/* Contact Info */}

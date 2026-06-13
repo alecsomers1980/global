@@ -75,3 +75,21 @@ export async function deleteBusiness(businessId: string) {
         throw new Error(e.message || 'Failed to delete business')
     }
 }
+
+export async function updateBusiness(businessId: string, data: {
+  name?: string
+  sector?: string
+  area?: string
+  phone?: string
+  whatsapp?: string
+  email?: string
+  website?: string
+  description?: string
+  package_tier?: string
+  status?: string
+}) {
+  await requireAdmin()
+  const pb = await createClient()
+  await pb.collection('businesses').update(businessId, data)
+  revalidatePath('/admin/businesses')
+}

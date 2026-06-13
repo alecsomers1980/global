@@ -66,6 +66,7 @@ export default async function AdminSubscriptionsPage({
                                 <TableHead className="py-6 px-8 font-black uppercase tracking-widest text-xs text-primary/40">Business</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Tier</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Status</TableHead>
+                                <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Amount</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Start Date</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Renewal</TableHead>
                                 <TableHead className="py-6 px-8 text-right font-black uppercase tracking-widest text-xs text-primary/40">Actions</TableHead>
@@ -82,6 +83,9 @@ export default async function AdminSubscriptionsPage({
                                         <Badge variant="secondary" className={`capitalize rounded-xl ${sub.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
                                             {sub.status}
                                         </Badge>
+                                    </TableCell>
+                                    <TableCell className="py-6 px-4 text-sm font-bold text-primary">
+                                        {sub.amount_cents ? `R ${(sub.amount_cents / 100).toFixed(2)}` : '—'}
                                     </TableCell>
                                     <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
                                         {sub.created ? format(new Date(sub.created), 'MMM d, yyyy') : '-'}

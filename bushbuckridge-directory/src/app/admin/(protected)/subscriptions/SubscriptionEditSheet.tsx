@@ -54,7 +54,7 @@ export default function SubscriptionEditSheet({
 
     return (
         <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-black tracking-tight text-primary">
                         Edit Subscription
@@ -64,6 +64,14 @@ export default function SubscriptionEditSheet({
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSave} className="space-y-5">
+                    {subscription?.expand?.business?.name && (
+                        <div className="space-y-2">
+                            <Label className="text-sm font-bold uppercase tracking-widest text-primary/60">Business</Label>
+                            <div className="h-12 rounded-xl border bg-muted/30 flex items-center px-4 text-sm font-bold text-primary">
+                                {subscription.expand.business.name}
+                            </div>
+                        </div>
+                    )}
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-bold uppercase tracking-widest text-primary/60">Tier</Label>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MoreHorizontal, CheckCircle2, XCircle, Star, ShieldAlert, Sparkles, Building, Trash2 } from 'lucide-react'
+import { MoreHorizontal, CheckCircle2, XCircle, Star, ShieldAlert, Sparkles, Building, Trash2, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -22,9 +22,11 @@ import {
 } from './actions'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import BusinessEditSheet from './BusinessEditSheet'
 
 export default function BusinessActionsMenu({ business }: { business: any }) {
     const [isLoading, setIsLoading] = useState(false)
+    const [editOpen, setEditOpen] = useState(false)
 
     const handleAction = async (action: () => Promise<void>, successMessage: string) => {
         setIsLoading(true)
@@ -39,6 +41,7 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
     }
 
     return (
+        <>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-10 w-10 p-0 rounded-xl hover:bg-primary/5" disabled={isLoading}>
@@ -53,6 +56,13 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                     <Link href={`/business/${business.id}`} target="_blank">
                         <Building className="mr-2 h-4 w-4" /> View Live Profile
                     </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                    className="rounded-xl mx-1 cursor-pointer font-bold focus:bg-primary/5"
+                    onClick={() => setEditOpen(true)}
+                >
+                    <Pencil className="mr-2 h-4 w-4" /> Edit Business
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator className="bg-primary/5" />
@@ -70,7 +80,7 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                         <ShieldAlert className="mr-2 h-4 w-4 text-primary/60" />
                         <span>Status</span>
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="rounded-2xl border-primary/10 shadow-xl p-1">
+                    <DropdownMenuSubContent sideOffset={6} className="rounded-2xl border-primary/10 shadow-xl p-1 z-[200]">
                         {['pending', 'active', 'rejected'].map(status => (
                             <DropdownMenuItem
                                 key={status}
@@ -89,7 +99,7 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                         <Sparkles className="mr-2 h-4 w-4 text-secondary/80" />
                         <span>Package Tier</span>
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="rounded-2xl border-primary/10 shadow-xl p-1">
+                    <DropdownMenuSubContent sideOffset={6} className="rounded-2xl border-primary/10 shadow-xl p-1 z-[200]">
                         {['basic', 'pro-lead', 'pro-business'].map(tier => (
                             <DropdownMenuItem
                                 key={tier}
@@ -117,5 +127,7 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
+        <BusinessEditSheet open={editOpen} onClose={() => setEditOpen(false)} business={business} />
+        </>
     )
 }

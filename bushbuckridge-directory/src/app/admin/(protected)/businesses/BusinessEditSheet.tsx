@@ -7,16 +7,17 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
-import { createBusiness } from './actions'
+import { updateBusiness } from './actions'
 import { toast } from 'sonner'
 import RichTextEditor from '@/components/RichTextEditor'
 
 interface Props {
   open: boolean
   onClose: () => void
+  business: any | null
 }
 
-export default function BusinessCreateSheet({ open, onClose }: Props) {
+export default function BusinessEditSheet({ open, onClose, business }: Props) {
   const [saving, setSaving] = useState(false)
   const [sectors, setSectors] = useState<any[]>([])
   const [areas, setAreas] = useState<any[]>([])
@@ -32,6 +33,23 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
     package_tier: 'basic',
     status: 'active',
   })
+
+  useEffect(() => {
+    if (business && open) {
+      setForm({
+        name: business.name || '',
+        sector: business.sector || '',
+        area: business.area || '',
+        phone: business.phone || '',
+        whatsapp: business.whatsapp || '',
+        email: business.email || '',
+        website: business.website || '',
+        description: business.description || '',
+        package_tier: business.package_tier || 'basic',
+        status: business.status || 'active',
+      })
+    }
+  }, [business, open])
 
   useEffect(() => {
     async function load() {
@@ -61,12 +79,11 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
     }
     setSaving(true)
     try {
-      await createBusiness(form)
-      toast.success('Business created')
+      await updateBusiness(business.id, form)
+      toast.success('Business updated')
       onClose()
-      setForm({ name: '', sector: '', area: '', phone: '', whatsapp: '', email: '', website: '', description: '', package_tier: 'basic', status: 'active' })
     } catch (e: any) {
-      toast.error(e.message || 'Failed to create business')
+      toast.error(e.message || 'Failed to update business')
     } finally {
       setSaving(false)
     }
@@ -76,9 +93,9 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
       <DialogContent className="sm:max-w-3xl max-h-[92vh] overflow-y-auto px-8">
         <DialogHeader className="mb-6">
-          <DialogTitle className="text-2xl font-black text-primary">Add Business</DialogTitle>
+          <DialogTitle className="text-2xl font-black text-primary">Edit Business</DialogTitle>
           <DialogDescription className="font-medium">
-            Manually create a new business listing with all details.
+            Update the details for this business listing.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
@@ -154,14 +171,14 @@ export default function BusinessCreateSheet({ open, onClose }: Props) {
             <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Description</Label>
             <RichTextEditor
               value={form.description}
-              onChange={(e) => update('description', e)}
+              onChange={(v) => update('description', v)}
               minRows={5}
               placeholder="Describe the business..."
             />
           </div>
           <Button onClick={handleSave} disabled={saving} className="w-full h-12 rounded-xl font-bold text-base">
             {saving ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-            Create Business
+            Save Changes
           </Button>
         </div>
       </DialogContent>

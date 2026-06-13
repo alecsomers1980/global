@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
 import { createEvent, updateEvent } from './actions'
 import { toast } from 'sonner'
+import RichTextEditor from '@/components/RichTextEditor'
 
 interface Props {
   open: boolean
@@ -77,7 +77,7 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-3xl max-h-[92vh] overflow-y-auto px-8">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-2xl font-black text-primary">
             {isEdit ? 'Edit Event' : 'Add Event'}
@@ -116,7 +116,12 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
           </div>
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-widest text-primary/60">Description</Label>
-            <Textarea value={form.description} onChange={(e) => update('description', e.target.value)} rows={4} className="rounded-xl" />
+            <RichTextEditor
+              value={form.description}
+              onChange={(v) => update('description', v)}
+              placeholder="Event description..."
+              minRows={5}
+            />
           </div>
           <div className="flex items-center justify-between py-2">
             <Label className="text-sm font-bold text-primary">Featured Event</Label>

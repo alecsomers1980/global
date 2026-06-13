@@ -129,7 +129,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary/40" /> Overview
                 </h2>
-                <p className="text-muted-foreground leading-relaxed text-base prose-lg">{job.description}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-base [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: job.description }}
+                />
               </div>
             )}
 
@@ -139,7 +142,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-primary/40" /> Responsibilities
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{job.responsibilities}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: job.responsibilities }}
+                />
               </div>
             )}
 
@@ -149,7 +155,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <UserCheck className="h-5 w-5 text-primary/40" /> Requirements
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{job.requirements}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: job.requirements }}
+                />
               </div>
             )}
 
@@ -159,7 +168,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
                 <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                   <Briefcase className="h-5 w-5 text-primary/40" /> How to Apply
                 </h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">{job.how_to_apply}</p>
+                <div
+                  className="text-muted-foreground leading-relaxed text-sm [&_strong]:font-bold [&_b]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{ __html: job.how_to_apply }}
+                />
               </div>
             )}
 
