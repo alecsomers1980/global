@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/renewal-reminders",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/spotlight-reminder",
+      "schedule": "0 8 1 * *"
     }
   ]
 }

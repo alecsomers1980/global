@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { Save, Loader2, ImageIcon } from 'lucide-react'
+import { Save, Loader2 } from 'lucide-react'
 import { saveSpotlightArticle } from '../spotlightActions'
+import RichTextEditor from '@/components/RichTextEditor'
 
 const layoutDescriptions: Record<string, string> = {
     default: 'Classic article: hero banner, text, gallery at the end.',
@@ -126,12 +126,11 @@ export default function SpotlightEditor({
                         <CardTitle>Content</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Textarea
-                            name="content"
-                            className="min-h-[300px]"
-                            placeholder="Write your article content..."
+                        <RichTextEditor
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                            onChange={(v) => setContent(v)}
+                            placeholder="Write your article content..."
+                            minRows={15}
                         />
                     </CardContent>
                 </Card>

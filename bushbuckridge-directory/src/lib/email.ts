@@ -365,3 +365,68 @@ export async function sendEnquiryConfirmation(data: EnquiryConfirmationData): Pr
     return false
   }
 }
+
+export interface SpotlightReminderData {
+  quarter: string
+  year: number
+  businesses: Array<{
+    name: string
+    articlesThisQuarter: number
+    status: string
+  }>
+  adminUrl: string
+}
+
+export async function sendSpotlightReminderEmail(data: SpotlightReminderData): Promise<boolean> {
+  const resend = getResend()
+  if (!resend || !ADMIN_EMAIL) {
+    console.log('[email] Spotlight reminder skipped (not configured)')
+    return false
+  }
+
+  const rows = data.businesses.map(b => `
+    <tr>
+      <td style="padding:12px 16px;color:#1B4332;font-weight:600;vertical-align:top">${b.name}</td>
+      <td style="padding:12px 16px;vertical-align:top">
+        <span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;background:${b.articlesThisQuarter > 0 ? '#DCFCE7' : '#FEE2E2'};color:${b.articlesThisQuarter > 0 ? '#166534' : '#991B1B'}">
+          ${b.articlesThisQuarter > 0 ? `${b.articlesThisQuarter} article${b.articlesThisQuarter > 1 ? 's' : ''} written` : 'No article yet'}
+        </span>
+      </td>
+      <td style="padding:12px 16px;color:#6B7280;font-size:13px;vertical-align:top;text-transform:capitalize">${b.status}</td>
+    </tr>
+  `).join('')
+
+  const missing = data.businesses.filter(b => b.articlesThisQuarter === 0).length
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: [ADMIN_EMAIL],
+      subject: `Spotlight Articles — ${data.quarter} ${data.year} status (${missing} pending)`,
+      html: wrap(`
+        <h2 style="color:#1B4332;margin-top:0">Spotlight Articles — ${data.quarter} ${data.year}</h2>
+        <p>Monthly reminder: <strong>${missing} of ${data.businesses.length}</strong> Pro Business listing${missing !== 1 ? 's' : ''} still need${missing === 1 ? 's' : ''} a spotlight article this quarter.</p>
+        <table style="width:100%;border-collapse:collapse;margin:24px 0;border-radius:12px;overflow:hidden">
+          <thead>
+            <tr style="background:#1B4332">
+              <th style="padding:12px 16px;text-align:left;color:#FFD700;font-size:12px;letter-spacing:1px;text-transform:uppercase">Business</th>
+              <th style="padding:12px 16px;text-align:left;color:#FFD700;font-size:12px;letter-spacing:1px;text-transform:uppercase">Articles</th>
+              <th style="padding:12px 16px;text-align:left;color:#FFD700;font-size:12px;letter-spacing:1px;text-transform:uppercase">Status</th>
+            </tr>
+          </thead>
+          <tbody style="background:#FAFAFA">
+            ${rows}
+          </tbody>
+        </table>
+        <div style="text-align:center;margin:32px 0">
+          ${ctaButton(data.adminUrl, 'Manage Spotlight Articles')}
+        </div>
+      `),
+    })
+    console.log('[email] Spotlight reminder sent:', data.businesses.length, 'businesses')
+    return true
+  } catch (e) {
+    console.error('[email] Failed to send spotlight reminder:', e)
+    return false
+  }
+}

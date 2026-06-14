@@ -7,10 +7,17 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Edit } from 'lucide-react'
 
-export default async function SpotlightAdminPage() {
+export default async function SpotlightAdminPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     await requireAdmin()
     const pb = await createClient()
     const currentYear = new Date().getFullYear()
+
+    const resolvedParams = await searchParams
+    const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
 
     let businesses: any[] = []
     let spotlights: Record<string, any[]> = {}
@@ -20,8 +27,13 @@ export default async function SpotlightAdminPage() {
             .collection('businesses')
             .getFullList({ filter: 'package_tier = "pro-business"', sort: '-created' })
 
+        if (q) {
+            businesses = businesses.filter((b) =>
+                (b.name || '').toLowerCase().includes(q)
+            )
+        }
+
         const articles = await pb.collection('spotlight_articles').getFullList()
-        // Group articles by business_id
         spotlights = {}
         articles.forEach((article) => {
             const bid = article.business_id
@@ -38,15 +50,40 @@ export default async function SpotlightAdminPage() {
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-24">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-primary">Spotlight Articles</h1>
+                    <p className="text-muted-foreground font-medium mt-2 text-lg">
+                        Manage quarterly articles for Pro Business listings.
+                    </p>
+                </div>
+                <form method="get" className="flex items-center gap-2">
+                    <input
+                        name="q"
+                        defaultValue={q}
+                        placeholder="Search businesses..."
+                        className="flex h-12 w-full md:w-64 rounded-xl border border-input bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    />
+                    <button
+                        type="submit"
+                        className="h-12 px-6 rounded-xl bg-primary text-white font-bold text-sm shadow-md hover:bg-primary/90 transition-colors"
+                    >
+                        Search
+                    </button>
+                </form>
+            </div>
+
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem]">
                 <CardHeader>
-                    <CardTitle className="text-2xl">Spotlight Articles</CardTitle>
-                    <CardDescription>Pro Business Listings</CardDescription>
+                    <CardTitle className="text-2xl font-black">Pro Business Listings</CardTitle>
+                    <CardDescription className="text-base font-medium">
+                        Each listing is entitled to one spotlight article per quarter (4 per year).
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {businesses.length === 0 ? (
                         <div className="text-center py-12 text-muted-foreground">
-                            No Pro Business listings found.
+                            {q ? `No Pro Business listings match "${q}".` : 'No Pro Business listings found.'}
                         </div>
                     ) : (
                         <Table>

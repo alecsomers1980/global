@@ -19,13 +19,15 @@ export default async function AdminBusinessesPage({
     const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
 
     let businesses: any[] = []
+    let subMap: Record<string, any> = {}
+
     try {
         businesses = await pb.collection('businesses').getFullList({
             expand: 'sector,area',
         })
-        
+
         if (q) {
-            businesses = businesses.filter(biz => 
+            businesses = businesses.filter(biz =>
                 (biz.name || '').toLowerCase().includes(q) ||
                 (biz.expand?.sector?.name || '').toLowerCase().includes(q) ||
                 (biz.expand?.area?.name || '').toLowerCase().includes(q) ||
@@ -35,6 +37,13 @@ export default async function AdminBusinessesPage({
     } catch (e) {
         return <div className="p-8 text-red-500 bg-red-50 rounded-xl">Error loading businesses: {String(e)}</div>
     }
+
+    try {
+        const allSubs = await pb.collection('subscriptions').getFullList({ sort: '-created' })
+        allSubs.forEach(s => {
+            if (!subMap[s.business]) subMap[s.business] = s
+        })
+    } catch {}
 
     return (
         <div className="space-y-10">
@@ -72,49 +81,73 @@ export default async function AdminBusinessesPage({
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Sector & Area</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Status</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Tier</TableHead>
+                                <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Subscription</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Joined</TableHead>
                                 <TableHead className="py-6 px-8 text-right font-black uppercase tracking-widest text-xs text-primary/40">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {businesses?.map((biz) => (
-                                <TableRow key={biz.id} className="hover:bg-primary/5 transition-colors border-primary/5">
-                                    <TableCell className="py-6 px-8">
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-primary text-base">{biz.name}</span>
-                                            {biz.is_verified && <span className="text-[10px] text-emerald-600 font-extrabold uppercase mt-1 tracking-widest">Verified Partner</span>}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4">
-                                        <div className="flex flex-col gap-1">
-                                            <span className="text-sm font-bold text-muted-foreground">{biz.expand?.sector?.name || 'N/A'}</span>
-                                            <span className="text-xs text-muted-foreground/60 font-medium">{biz.expand?.area?.name || 'N/A'}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4">
-                                        <Badge variant="outline" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                                                biz.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                                    'bg-red-50 text-red-700 border-red-200'
-                                            }`}>
-                                            {biz.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4">
-                                        <Badge variant="secondary" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.package_tier === 'pro-business' ? 'bg-secondary/20 text-secondary-foreground' :
-                                                biz.package_tier === 'pro-lead' ? 'bg-blue-50 text-blue-700' :
-                                                    'bg-muted text-muted-foreground'
-                                            }`}>
-                                            {biz.package_tier}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
-                                        {biz.created ? format(new Date(biz.created), 'MMM d, yyyy') : '-'}
-                                    </TableCell>
-                                    <TableCell className="py-6 px-8 text-right">
-                                        <BusinessActionsMenu business={biz} />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {businesses?.map((biz) => {
+                                const sub = subMap[biz.id]
+                                return (
+                                    <TableRow key={biz.id} className="hover:bg-primary/5 transition-colors border-primary/5">
+                                        <TableCell className="py-6 px-8">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-primary text-base">{biz.name}</span>
+                                                {biz.is_verified && <span className="text-[10px] text-emerald-600 font-extrabold uppercase mt-1 tracking-widest">Verified Partner</span>}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-6 px-4">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-sm font-bold text-muted-foreground">{biz.expand?.sector?.name || 'N/A'}</span>
+                                                <span className="text-xs text-muted-foreground/60 font-medium">{biz.expand?.area?.name || 'N/A'}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="py-6 px-4">
+                                            <Badge variant="outline" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                    biz.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                        'bg-red-50 text-red-700 border-red-200'
+                                                }`}>
+                                                {biz.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-6 px-4">
+                                            <Badge variant="secondary" className={`rounded-xl px-3 py-1 font-bold capitalize ${biz.package_tier === 'pro-business' ? 'bg-secondary/20 text-secondary-foreground' :
+                                                    biz.package_tier === 'pro-lead' ? 'bg-blue-50 text-blue-700' :
+                                                        'bg-muted text-muted-foreground'
+                                                }`}>
+                                                {biz.package_tier}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-6 px-4">
+                                            {sub ? (
+                                                <div className="flex flex-col gap-1">
+                                                    <Badge variant="outline" className={`rounded-xl px-3 py-1 text-xs font-bold capitalize w-fit ${
+                                                        sub.status === 'active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                                        sub.status === 'expired' ? 'bg-red-50 text-red-700 border-red-200' :
+                                                        'bg-amber-50 text-amber-700 border-amber-200'
+                                                    }`}>
+                                                        {sub.status}
+                                                    </Badge>
+                                                    {sub.expires_at && (
+                                                        <span className="text-xs text-muted-foreground font-medium">
+                                                            {format(new Date(sub.expires_at), 'MMM d, yyyy')}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground font-medium">None</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
+                                            {biz.created ? format(new Date(biz.created), 'MMM d, yyyy') : '-'}
+                                        </TableCell>
+                                        <TableCell className="py-6 px-8 text-right">
+                                            <BusinessActionsMenu business={biz} />
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            })}
                         </TableBody>
                     </Table>
                 </CardContent>
