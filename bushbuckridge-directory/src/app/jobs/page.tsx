@@ -90,7 +90,7 @@ export default async function JobsPage() {
                         </div>
                         {job.description && (
                           <p className="line-clamp-2 text-sm text-muted-foreground mt-2">
-                            {job.description}
+                            {job.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')}
                           </p>
                         )}
                       </div>

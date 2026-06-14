@@ -101,11 +101,10 @@ export default async function BusinessProfilePage({
                                 </div>
                             </CardHeader>
                             <CardContent className="p-10 pt-6">
-                                <div className="prose prose-xl max-w-none">
-                                    <p className="text-muted-foreground/90 leading-relaxed font-medium text-lg whitespace-pre-wrap">
-                                        {business.description || "Information about this business is coming soon. We are currently verifying the full details to provide you with the most accurate experience."}
-                                    </p>
-                                </div>
+                                <div
+                                    className="text-muted-foreground/90 leading-relaxed font-medium text-lg [&_b]:font-bold [&_strong]:font-bold [&_em]:italic [&_i]:italic [&_u]:underline [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2"
+                                    dangerouslySetInnerHTML={{ __html: business.description || '<p>Information about this business is coming soon. We are currently verifying the full details to provide you with the most accurate experience.</p>' }}
+                                />
 
                                 {business.services_tags && business.services_tags.length > 0 && (
                                     <div className="mt-12">

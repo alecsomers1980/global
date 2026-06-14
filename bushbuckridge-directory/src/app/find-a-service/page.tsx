@@ -223,7 +223,7 @@ export default async function FindServicePage({
                                                 </div>
 
                                                 {biz.description && (
-                                                    <p className="text-muted-foreground line-clamp-2 mt-2 mb-6 text-lg font-medium leading-relaxed italic">{biz.description}</p>
+                                                    <p className="text-muted-foreground line-clamp-2 mt-2 mb-6 text-lg font-medium leading-relaxed italic">{biz.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')}</p>
                                                 )}
 
                                                 <div className="mt-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4 pt-6 border-t border-primary/5">
