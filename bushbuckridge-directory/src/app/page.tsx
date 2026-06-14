@@ -191,11 +191,11 @@ export default async function Home() {
             <div className="text-sm text-muted-foreground font-bold mt-1 uppercase tracking-widest">Businesses Listed</div>
           </div>
           <div className="text-center px-4">
-            <div className="text-4xl sm:text-5xl font-extrabold text-primary">{jobCount || 28}</div>
+            <div className="text-4xl sm:text-5xl font-extrabold text-primary">{jobCount}</div>
             <div className="text-sm text-muted-foreground font-bold mt-1 uppercase tracking-widest">Active Jobs</div>
           </div>
           <div className="text-center px-4">
-            <div className="text-4xl sm:text-5xl font-extrabold text-primary">{eventCount || 15}</div>
+            <div className="text-4xl sm:text-5xl font-extrabold text-primary">{eventCount}</div>
             <div className="text-sm text-muted-foreground font-bold mt-1 uppercase tracking-widest">Upcoming Events</div>
           </div>
         </div>

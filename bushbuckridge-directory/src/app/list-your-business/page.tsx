@@ -1,14 +1,8 @@
-import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { redirect } from 'next/navigation'
 import SecondaryHeader from '@/components/SecondaryHeader'
-import { Sparkles, Send, ShieldCheck, ArrowRight, Check, TrendingUp, Zap, Star } from 'lucide-react'
+import { Sparkles, ShieldCheck, ArrowRight, Check, TrendingUp, Zap, Star } from 'lucide-react'
 
 const PACKAGES = [
     {
@@ -90,70 +84,7 @@ const NOTES = [
     'Prices exclude VAT, where applicable.',
 ]
 
-export default async function ListYourBusinessPage({
-    searchParams,
-}: {
-    searchParams: Promise<{ package?: string }>
-}) {
-    const pb = await createClient()
-    const resolvedParams = await searchParams
-
-    let sectors: any[] = []
-    let areas: any[] = []
-    try {
-        sectors = await pb.collection('sectors').getFullList({ sort: 'name' })
-        areas = await pb.collection('areas').getFullList({ sort: 'name' })
-    } catch (e) {
-        console.error('Failed to fetch taxonomies', e)
-    }
-
-    async function submitLead(formData: FormData) {
-        'use server'
-        const businessName = String(formData.get('businessName') || '')
-        const contactName = String(formData.get('contactName') || '')
-        const phone = String(formData.get('phone') || '')
-        const email = String(formData.get('email') || '')
-        const packageTier = String(formData.get('package') || '')
-        const notes = String(formData.get('notes') || '')
-
-        let ok = false
-        try {
-          const pb = await createClient()
-          await pb.collection('enquiries').create({
-            type: 'buy_spot',
-            business_name: businessName,
-            contact_person: contactName,
-            phone,
-            email,
-            details: `Package: ${packageTier}\nNotes: ${notes}`,
-            status: 'new',
-          })
-
-          const { sendEnquiryNotification, sendEnquiryConfirmation } = await import('@/lib/email')
-          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dbib.co.za'
-          await sendEnquiryNotification({
-            type: 'Listing Enquiry',
-            businessName,
-            contactPerson: contactName,
-            email,
-            phone,
-            details: `Package: ${packageTier}\nNotes: ${notes}`,
-          }).catch((e) => console.error('Admin notification failed:', e))
-          if (email) {
-            await sendEnquiryConfirmation({
-              to: email,
-              contactPerson: contactName,
-              businessName,
-              siteUrl,
-            }).catch((e) => console.error('Confirmation email failed:', e))
-          }
-          ok = true
-        } catch (e) {
-          console.error('Lead submission error:', e)
-        }
-        redirect(ok ? '/list-your-business/success' : '/list-your-business?error=true')
-    }
-
+export default function ListYourBusinessPage() {
     return (
         <div className="flex flex-col pb-24">
             <SecondaryHeader
@@ -221,8 +152,8 @@ export default async function ListYourBusinessPage({
                                 </CardContent>
 
                                 <CardFooter className="p-10 pt-6">
-                                    <Button className={`w-full h-14 text-base font-black rounded-2xl shadow-xl transition-all active:scale-[0.98] gap-3 ${pkg.featured ? 'bg-primary hover:bg-primary/90 shadow-primary/20' : 'bg-secondary hover:bg-secondary/90 shadow-secondary/20'}`} asChild>
-                                        <a href={`#apply-form`}>
+                                    <Button className={`w-full h-14 text-base font-black rounded-2xl shadow-xl transition-all active:scale-[0.98] gap-3 ${pkg.featured ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/20' : 'bg-secondary text-primary hover:bg-secondary/90 shadow-secondary/20'}`} asChild>
+                                        <a href={`/buy-your-spot?tier=${pkg.key}`}>
                                             Select {pkg.name} <ArrowRight className="h-5 w-5" />
                                         </a>
                                     </Button>
@@ -268,93 +199,12 @@ export default async function ListYourBusinessPage({
                 </div>
             </div>
 
-            {/* Application Form */}
-            <div id="apply-form" className="container max-w-4xl mx-auto px-4">
-                <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
-                    <CardHeader className="p-10 pb-2">
-                        <CardTitle className="text-3xl font-black tracking-tight text-primary">Onboarding Form</CardTitle>
-                        <CardDescription className="text-lg font-medium tracking-tight">Tell us about your business and we'll handle the rest.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-10 pt-6">
-                        <form action={submitLead} className="space-y-8">
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                <div className="space-y-3">
-                                    <Label htmlFor="businessName" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Business Name *</Label>
-                                    <Input id="businessName" name="businessName" required className="h-14 rounded-2xl bg-white/50 border-primary/10 transition-all focus:ring-primary/20 font-medium" />
-                                </div>
-                                <div className="space-y-3">
-                                    <Label htmlFor="contactName" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Contact Person *</Label>
-                                    <Input id="contactName" name="contactName" required className="h-14 rounded-2xl bg-white/50 border-primary/10 transition-all focus:ring-primary/20 font-medium" />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                <div className="space-y-3">
-                                    <Label htmlFor="phone" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Phone / WhatsApp *</Label>
-                                    <Input id="phone" name="phone" type="tel" required className="h-14 rounded-2xl bg-white/50 border-primary/10 transition-all focus:ring-primary/20 font-medium" />
-                                </div>
-                                <div className="space-y-3">
-                                    <Label htmlFor="email" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Email Address</Label>
-                                    <Input id="email" name="email" type="email" className="h-14 rounded-2xl bg-white/50 border-primary/10 transition-all focus:ring-primary/20 font-medium" />
-                                </div>
-                            </div>
-
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                <div className="space-y-3">
-                                    <Label htmlFor="sector" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Primary Sector</Label>
-                                    <Select name="sector">
-                                        <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10 font-medium">
-                                            <SelectValue placeholder="Select a sector" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            {sectors?.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-3">
-                                    <Label htmlFor="area" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Location / Area</Label>
-                                    <Select name="area">
-                                        <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10 font-medium">
-                                            <SelectValue placeholder="Select an area" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl">
-                                            {areas?.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <Label htmlFor="package" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Requested Package *</Label>
-                                <Select name="package" defaultValue={resolvedParams.package || 'pro-lead'}>
-                                    <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10 font-medium">
-                                        <SelectValue placeholder="Select a package" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl">
-                                        <SelectItem value="basic" className="rounded-lg">Basic Listing — R199 / annum (excl. VAT)</SelectItem>
-                                        <SelectItem value="pro-lead" className="rounded-lg">Pro Lead Package — R799 / annum (excl. VAT)</SelectItem>
-                                        <SelectItem value="pro-business" className="rounded-lg">Pro Business Listing — R10 500 / annum (excl. VAT)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-3">
-                                <Label htmlFor="notes" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Additional Notes</Label>
-                                <Textarea
-                                    id="notes"
-                                    name="notes"
-                                    placeholder="Tell us a bit about your services..."
-                                    className="resize-none rounded-[2rem] bg-white/50 border-primary/10 p-6 focus:ring-primary/20 font-medium min-h-[150px]"
-                                    rows={4}
-                                />
-                            </div>
-
-                            <Button type="submit" className="w-full h-20 text-2xl font-black rounded-3xl bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-[0.98] gap-4">
-                                Submit Listing <Send className="h-7 w-7" />
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
+            {/* CTA to wizard */}
+            <div className="container max-w-4xl mx-auto px-4 text-center">
+                <p className="text-muted-foreground font-medium mb-6">Ready to get listed? Select a package above to get started — you'll create your account and pay in just a few steps.</p>
+                <a href="/buy-your-spot" className="inline-flex items-center gap-3 h-16 px-10 text-lg font-black bg-primary text-white rounded-2xl shadow-xl hover:bg-primary/90 transition-all">
+                    Get Started <ArrowRight className="h-5 w-5" />
+                </a>
             </div>
         </div>
     )

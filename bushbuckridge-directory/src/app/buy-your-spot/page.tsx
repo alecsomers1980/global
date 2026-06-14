@@ -1,105 +1,169 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import SecondaryHeader from '@/components/SecondaryHeader'
-import { Sparkles, Send, ShieldCheck, Loader2, Eye, EyeOff } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { Loader2, Eye, EyeOff, Check, TrendingUp, Zap, Star, ChevronRight, ChevronLeft, Lock } from 'lucide-react'
+
+const PACKAGES = [
+  {
+    key: 'basic',
+    name: 'Basic Listing',
+    price: 'R199',
+    period: 'per annum (excl. VAT)',
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-50',
+    icon: TrendingUp,
+    featured: false,
+    features: ['Business name', 'Business description', 'Contact details', 'Business logo*'],
+  },
+  {
+    key: 'pro-lead',
+    name: 'Pro Lead Package',
+    price: 'R799',
+    period: 'per annum (excl. VAT)',
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    icon: Zap,
+    featured: true,
+    features: ['Everything in Basic', '3 Photos*', 'WhatsApp link', 'Social media links'],
+  },
+  {
+    key: 'pro-business',
+    name: 'Pro Business Listing',
+    price: 'R10 500',
+    period: 'per annum (excl. VAT)',
+    color: 'text-rose-600',
+    bgColor: 'bg-rose-50',
+    icon: Star,
+    featured: false,
+    features: ['Everything in Pro Lead', 'Up to 10 photos*', 'Website link', '4 quarterly news updates', 'CSI publications'],
+  },
+]
+
+const TIER_FIELDS: Record<string, string[]> = {
+  basic: ['businessName', 'sector', 'area', 'phone', 'description'],
+  'pro-lead': ['businessName', 'sector', 'area', 'phone', 'description', 'whatsapp', 'facebook', 'instagram', 'linkedin'],
+  'pro-business': ['businessName', 'sector', 'area', 'phone', 'description', 'whatsapp', 'website', 'facebook', 'instagram', 'linkedin'],
+}
+
+const STEPS = ['Account', 'Package', 'Details', 'Review']
 
 export default function BuyYourSpotPage() {
+  const searchParams = useSearchParams()
+  const initialTier = searchParams.get('tier') || 'pro-lead'
+
+  const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [sectors, setSectors] = useState<any[]>([])
   const [areas, setAreas] = useState<any[]>([])
-  const [showPassword, setShowPassword] = useState(false)
-  const formRef = useRef<HTMLFormElement>(null)
 
-  // Form state
-  const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    businessName: '',
-    sector: '',
-    area: '',
-    phone: '',
-    whatsapp: '',
-    website: '',
-    description: '',
-    tier: 'pro-lead',
+  const [account, setAccount] = useState({ firstName: '', lastName: '', email: '', password: '' })
+  const [tier, setTier] = useState(initialTier)
+  const [biz, setBiz] = useState({
+    businessName: '', sector: '', area: '', phone: '', description: '',
+    whatsapp: '', website: '', facebook: '', instagram: '', linkedin: '',
   })
 
   useEffect(() => {
-    async function fetchTaxonomies() {
-      try {
-        const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
-        const [sectorsRes, areasRes] = await Promise.all([
-          fetch(`${pbUrl}/api/collections/sectors/records?sort=name&perPage=100`),
-          fetch(`${pbUrl}/api/collections/areas/records?sort=name&perPage=100`),
-        ])
-        const sectorsData = await sectorsRes.json()
-        const areasData = await areasRes.json()
-        setSectors(sectorsData.items || [])
-        setAreas(areasData.items || [])
-      } catch (e) {
-        console.error('Failed to load form data', e)
-      }
-    }
-    fetchTaxonomies()
+    const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
+    Promise.all([
+      fetch(`${pbUrl}/api/collections/sectors/records?sort=name&perPage=100`).then(r => r.json()),
+      fetch(`${pbUrl}/api/collections/areas/records?sort=name&perPage=100`).then(r => r.json()),
+    ]).then(([s, a]) => {
+      setSectors(s.items || [])
+      setAreas(a.items || [])
+    }).catch(() => {})
   }, [])
 
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }))
+  function updateAccount(field: string, value: string) {
+    setAccount(prev => ({ ...prev, [field]: value }))
+  }
+  function updateBiz(field: string, value: string) {
+    setBiz(prev => ({ ...prev, [field]: value }))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
+  function validateStep(): boolean {
+    if (step === 0) {
+      if (!account.firstName || !account.lastName || !account.email || !account.password) {
+        toast.error('Please fill in all required fields.')
+        return false
+      }
+      if (account.password.length < 8) {
+        toast.error('Password must be at least 8 characters.')
+        return false
+      }
+    }
+    if (step === 2) {
+      if (!biz.businessName) {
+        toast.error('Business name is required.')
+        return false
+      }
+    }
+    return true
+  }
 
+  async function handlePay() {
+    setLoading(true)
     try {
       const res = await fetch('/api/payments/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-          first_name: form.firstName,
-          last_name: form.lastName,
-          business_name: form.businessName,
-          sector: form.sector || null,
-          area: form.area || null,
-          phone: form.phone || null,
-          whatsapp: form.whatsapp || null,
-          website: form.website || null,
-          description: form.description || null,
-          tier: form.tier,
+          email: account.email,
+          password: account.password,
+          first_name: account.firstName,
+          last_name: account.lastName,
+          business_name: biz.businessName,
+          sector: biz.sector || null,
+          area: biz.area || null,
+          phone: biz.phone || null,
+          whatsapp: biz.whatsapp || null,
+          website: biz.website || null,
+          description: biz.description || null,
+          tier,
         }),
       })
-
       const data = await res.json()
-
       if (!res.ok) {
         toast.error(data.error || 'Something went wrong. Please try again.')
         setLoading(false)
         return
       }
-
-      if (!data.redirect_url) {
-        toast.error('Payment provider did not return a redirect URL.')
-        setLoading(false)
-        return
-      }
       window.location.href = data.redirect_url
-    } catch (err) {
-      console.error('Setup payment error:', err)
+    } catch {
       toast.error('Connection error. Please check your internet and try again.')
       setLoading(false)
     }
+  }
+
+  const selectedPkg = PACKAGES.find(p => p.key === tier)!
+  const allowedFields = TIER_FIELDS[tier] || []
+  const isAllowed = (field: string) => allowedFields.includes(field)
+
+  function LockedField({ field, lockLabel, children }: { field: string; lockLabel: string; children: React.ReactNode }) {
+    const allowed = isAllowed(field)
+    return (
+      <div className="relative">
+        {children}
+        {!allowed && (
+          <div className="absolute inset-0 rounded-2xl bg-muted/60 flex items-center justify-center pointer-events-none">
+            <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full">
+              <Lock className="h-3 w-3" /> {lockLabel}
+            </span>
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -111,265 +175,230 @@ export default function BuyYourSpotPage() {
         backgroundImage="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2000&auto=format&fit=crop"
       />
 
-      <div className="container max-w-4xl mx-auto px-4 -mt-8 relative z-20">
-        <div className="grid lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
-            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
-              <CardHeader className="p-10 pb-2">
-                <CardTitle className="text-3xl font-black tracking-tight text-primary">
-                  Create Your Listing
-                </CardTitle>
-                <CardDescription className="text-lg font-medium">
-                  Fill in your details below. You&apos;ll be redirected to Yoco to complete payment.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-10 pt-6">
-                <form onSubmit={handleSubmit} className="space-y-8" ref={formRef}>
-                  {/* Account section */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-primary/40">
-                      Account Details
-                    </h3>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-3">
-                        <Label htmlFor="firstName" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          First Name *
-                        </Label>
-                        <Input
-                          id="firstName"
-                          required
-                          value={form.firstName}
-                          onChange={(e) => update('firstName', e.target.value)}
-                          className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        />
+      <div className="container max-w-3xl mx-auto px-4 -mt-8 relative z-20">
+        {/* Step indicator */}
+        <div className="flex items-center justify-between mb-10 px-2">
+          {STEPS.map((label, i) => (
+            <div key={i} className="flex items-center gap-2 flex-1">
+              <div className={`h-9 w-9 rounded-full flex items-center justify-center shrink-0 text-sm font-black transition-all
+                ${i < step ? 'bg-primary text-white' : i === step ? 'bg-primary text-white ring-4 ring-primary/20' : 'bg-muted text-muted-foreground'}`}>
+                {i < step ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
+              </div>
+              <span className={`text-xs font-bold uppercase tracking-widest hidden sm:block ${i === step ? 'text-primary' : 'text-muted-foreground'}`}>{label}</span>
+              {i < STEPS.length - 1 && (
+                <div className={`flex-1 h-0.5 mx-2 rounded-full ${i < step ? 'bg-primary' : 'bg-muted'}`} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
+          <CardHeader className="p-10 pb-4">
+            <CardTitle className="text-2xl font-black tracking-tight text-primary">
+              {step === 0 && 'Create Your Account'}
+              {step === 1 && 'Choose Your Package'}
+              {step === 2 && 'Business Details'}
+              {step === 3 && 'Review & Pay'}
+            </CardTitle>
+            <CardDescription className="font-medium text-base">
+              {step === 0 && 'Your account gives you access to manage your listing.'}
+              {step === 1 && 'Select the package that best fits your business.'}
+              {step === 2 && 'Tell us about your business. Greyed fields unlock with a higher tier.'}
+              {step === 3 && 'Review your details and complete payment via Yoco.'}
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="p-10 pt-4 space-y-6">
+            {/* Step 0: Account */}
+            {step === 0 && (
+              <div className="space-y-5">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">First Name *</Label>
+                    <Input value={account.firstName} onChange={e => updateAccount('firstName', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Last Name *</Label>
+                    <Input value={account.lastName} onChange={e => updateAccount('lastName', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Email Address *</Label>
+                  <Input type="email" value={account.email} onChange={e => updateAccount('email', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Password *</Label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      value={account.password}
+                      onChange={e => updateAccount('password', e.target.value)}
+                      minLength={8}
+                      placeholder="Min. 8 characters"
+                      className="h-14 rounded-2xl bg-white/50 border-primary/10 pr-12"
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary">
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 1: Package */}
+            {step === 1 && (
+              <div className="grid gap-4">
+                {PACKAGES.map(pkg => {
+                  const Icon = pkg.icon
+                  const selected = tier === pkg.key
+                  return (
+                    <button
+                      key={pkg.key}
+                      type="button"
+                      onClick={() => setTier(pkg.key)}
+                      className={`text-left w-full rounded-[2rem] border-2 p-6 transition-all flex gap-5 items-start ${selected ? 'border-primary ring-4 ring-primary/10 bg-primary/5' : 'border-border/40 bg-card/40 hover:border-primary/30'}`}
+                    >
+                      <div className={`h-14 w-14 ${pkg.bgColor} rounded-2xl flex items-center justify-center shrink-0`}>
+                        <Icon className={`h-7 w-7 ${pkg.color}`} />
                       </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="lastName" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Last Name *
-                        </Label>
-                        <Input
-                          id="lastName"
-                          required
-                          value={form.lastName}
-                          onChange={(e) => update('lastName', e.target.value)}
-                          className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-3">
-                        <Label htmlFor="email" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Email Address *
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          required
-                          value={form.email}
-                          onChange={(e) => update('email', e.target.value)}
-                          className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="password" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Password *
-                        </Label>
-                        <div className="relative">
-                          <Input
-                            id="password"
-                            type={showPassword ? 'text' : 'password'}
-                            required
-                            minLength={8}
-                            value={form.password}
-                            onChange={(e) => update('password', e.target.value)}
-                            className="h-14 rounded-2xl bg-white/50 border-primary/10 pr-12"
-                            placeholder="Min. 8 characters"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
-                          >
-                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                          </button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-black text-lg text-primary">{pkg.name}</span>
+                          {pkg.featured && <Badge className="bg-primary text-primary-foreground text-[10px] font-black px-2 py-0.5">POPULAR</Badge>}
                         </div>
+                        <div className="flex items-baseline gap-2 mb-3">
+                          <span className="text-2xl font-black text-foreground">{pkg.price}</span>
+                          <span className="text-sm text-muted-foreground font-medium">{pkg.period}</span>
+                        </div>
+                        <ul className="space-y-1">
+                          {pkg.features.map((f, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                              <Check className="h-3.5 w-3.5 text-primary shrink-0" strokeWidth={3} /> {f}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </div>
-                  </div>
+                      <div className={`h-6 w-6 rounded-full border-2 shrink-0 mt-1 flex items-center justify-center ${selected ? 'border-primary bg-primary' : 'border-muted-foreground/30'}`}>
+                        {selected && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
 
-                  {/* Business section */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-primary/40">
-                      Business Details
-                    </h3>
-                    <div className="space-y-3">
-                      <Label htmlFor="businessName" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                        Business Name *
-                      </Label>
-                      <Input
-                        id="businessName"
-                        required
-                        value={form.businessName}
-                        onChange={(e) => update('businessName', e.target.value)}
-                        className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                      />
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-3">
-                        <Label htmlFor="sector" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Primary Sector
-                        </Label>
-                        <Select value={form.sector} onValueChange={(v) => update('sector', v)}>
-                          <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10">
-                            <SelectValue placeholder="Select a sector" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-2xl">
-                            {sectors.map((s) => (
-                              <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="area" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Location / Area
-                        </Label>
-                        <Select value={form.area} onValueChange={(v) => update('area', v)}>
-                          <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10">
-                            <SelectValue placeholder="Select an area" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-2xl">
-                            {areas.map((a) => (
-                              <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-3">
-                        <Label htmlFor="phone" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          Phone Number
-                        </Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={form.phone}
-                          onChange={(e) => update('phone', e.target.value)}
-                          className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="whatsapp" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                          WhatsApp Number
-                        </Label>
-                        <Input
-                          id="whatsapp"
-                          type="tel"
-                          value={form.whatsapp}
-                          onChange={(e) => update('whatsapp', e.target.value)}
-                          className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <Label htmlFor="website" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                        Website (optional)
-                      </Label>
-                      <Input
-                        id="website"
-                        type="url"
-                        value={form.website}
-                        onChange={(e) => update('website', e.target.value)}
-                        className="h-14 rounded-2xl bg-white/50 border-primary/10"
-                        placeholder="https://"
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <Label htmlFor="description" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                        About Your Business
-                      </Label>
-                      <Textarea
-                        id="description"
-                        value={form.description}
-                        onChange={(e) => update('description', e.target.value)}
-                        placeholder="Tell us a bit about your services..."
-                        className="resize-none rounded-[2rem] bg-white/50 border-primary/10 p-6"
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Package selection */}
-                  <div className="space-y-3">
-                    <Label htmlFor="tier" className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">
-                      Package *
-                    </Label>
-                    <Select value={form.tier} onValueChange={(v) => update('tier', v)}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10">
-                        <SelectValue placeholder="Select a package" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl">
-                        <SelectItem value="basic">Basic Listing — R199/yr</SelectItem>
-                        <SelectItem value="pro-lead">Pro Lead Package — R799/yr</SelectItem>
-                        <SelectItem value="pro-business">Pro Business Listing — R10 500/yr</SelectItem>
-                      </SelectContent>
+            {/* Step 2: Business Details */}
+            {step === 2 && (
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Business Name *</Label>
+                  <Input value={biz.businessName} onChange={e => updateBiz('businessName', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                </div>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Sector</Label>
+                    <Select value={biz.sector} onValueChange={v => updateBiz('sector', v)}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10"><SelectValue placeholder="Select sector" /></SelectTrigger>
+                      <SelectContent className="rounded-2xl">{sectors.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Area</Label>
+                    <Select value={biz.area} onValueChange={v => updateBiz('area', v)}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-white/50 border-primary/10"><SelectValue placeholder="Select area" /></SelectTrigger>
+                      <SelectContent className="rounded-2xl">{areas.map(a => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Phone Number</Label>
+                  <Input type="tel" value={biz.phone} onChange={e => updateBiz('phone', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">About Your Business</Label>
+                  <Textarea value={biz.description} onChange={e => updateBiz('description', e.target.value)} rows={4} placeholder="Tell us a bit about your services..." className="resize-none rounded-[1.5rem] bg-white/50 border-primary/10 p-5" />
+                </div>
 
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full h-20 text-xl font-black rounded-3xl bg-primary hover:bg-primary/90 shadow-2xl shadow-primary/20 transition-all active:scale-[0.98]"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                        Redirecting to Yoco...
-                      </>
-                    ) : (
-                      <>
-                        Pay with Yoco <Send className="ml-3 h-6 w-6" />
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-8">
-            <div className="bg-secondary/10 backdrop-blur-xl border border-secondary/20 p-10 rounded-[2.5rem] shadow-xl">
-              <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-6">
-                <Sparkles className="h-8 w-8 text-secondary" />
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">WhatsApp Number</Label>
+                  <LockedField field="whatsapp" lockLabel="Pro Lead+">
+                    <Input type="tel" disabled={!isAllowed('whatsapp')} value={biz.whatsapp} onChange={e => updateBiz('whatsapp', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                  </LockedField>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Website</Label>
+                  <LockedField field="website" lockLabel="Pro Business">
+                    <Input type="url" disabled={!isAllowed('website')} value={biz.website} onChange={e => updateBiz('website', e.target.value)} placeholder="https://" className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                  </LockedField>
+                </div>
+                <div className="grid gap-5 sm:grid-cols-3">
+                  {(['facebook', 'instagram', 'linkedin'] as const).map(field => (
+                    <div key={field} className="space-y-2">
+                      <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
+                      <LockedField field={field} lockLabel="Pro Lead+">
+                        <Input type="url" disabled={!isAllowed(field)} value={biz[field]} onChange={e => updateBiz(field, e.target.value)} placeholder="https://" className="h-14 rounded-2xl bg-white/50 border-primary/10" />
+                      </LockedField>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground italic pt-2">* Logo and photo gallery can be added after sign-up through your client portal.</p>
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-primary mb-4">Why List With Us?</h3>
-              <ul className="space-y-4">
-                {[
-                  'Reach over 10,000 monthly visitors',
-                  'Improve your local SEO visibility',
-                  'Connect with corporate partners',
-                  'Digital presence for your brand',
-                  'Premium business spotlight opportunities',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 font-bold text-muted-foreground">
-                    <div className="h-2 w-2 rounded-full bg-secondary" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
 
-            <div className="bg-primary/5 border border-primary/5 p-10 rounded-[2.5rem]">
-              <h3 className="text-xl font-black tracking-tight text-primary mb-4 flex items-center">
-                <ShieldCheck className="mr-2 h-6 w-6 text-primary" /> Secure Payment
-              </h3>
-              <p className="text-muted-foreground font-medium leading-relaxed">
-                Payments are processed securely through Yoco. Your card details are never stored on our servers.
-              </p>
+            {/* Step 3: Review */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <div className="bg-muted/30 rounded-[2rem] p-6 space-y-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-primary/40 mb-1">Account</p>
+                    <p className="font-bold text-foreground">{account.firstName} {account.lastName}</p>
+                    <p className="text-sm text-muted-foreground">{account.email}</p>
+                  </div>
+                  <div className="border-t border-primary/5 pt-4">
+                    <p className="text-xs font-black uppercase tracking-widest text-primary/40 mb-1">Package</p>
+                    <p className="font-bold text-foreground">{selectedPkg.name}</p>
+                    <p className="text-sm text-muted-foreground">{selectedPkg.price} {selectedPkg.period}</p>
+                  </div>
+                  <div className="border-t border-primary/5 pt-4">
+                    <p className="text-xs font-black uppercase tracking-widest text-primary/40 mb-1">Business</p>
+                    <p className="font-bold text-foreground">{biz.businessName}</p>
+                    {biz.sector && <p className="text-sm text-muted-foreground">{sectors.find(s => s.id === biz.sector)?.name}</p>}
+                    {biz.area && <p className="text-sm text-muted-foreground">{areas.find(a => a.id === biz.area)?.name}</p>}
+                  </div>
+                </div>
+                <Button
+                  onClick={handlePay}
+                  disabled={loading}
+                  className="w-full h-16 text-xl font-black rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-2xl shadow-primary/20 transition-all active:scale-[0.98]"
+                >
+                  {loading ? (
+                    <><Loader2 className="mr-3 h-6 w-6 animate-spin" /> Redirecting to Yoco...</>
+                  ) : (
+                    <>Pay with Yoco — {selectedPkg.price}</>
+                  )}
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">Payments are processed securely through Yoco. Your card details are never stored on our servers.</p>
+              </div>
+            )}
+
+            {/* Navigation */}
+            <div className={`flex gap-4 pt-4 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+              {step > 0 && (
+                <Button variant="ghost" onClick={() => setStep(s => s - 1)} className="h-12 px-6 font-bold rounded-2xl gap-2">
+                  <ChevronLeft className="h-4 w-4" /> Back
+                </Button>
+              )}
+              {step < 3 && (
+                <Button
+                  onClick={() => { if (validateStep()) setStep(s => s + 1) }}
+                  className="h-12 px-8 font-black rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-lg gap-2"
+                >
+                  Continue <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
