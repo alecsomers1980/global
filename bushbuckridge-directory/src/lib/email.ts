@@ -430,3 +430,57 @@ export async function sendSpotlightReminderEmail(data: SpotlightReminderData): P
     return false
   }
 }
+
+export interface MonthlyInsightsData {
+  to: string
+  businessName: string
+  monthLabel: string
+  stats: { views: number; website: number; whatsapp: number; phone: number }
+  portalUrl: string
+}
+
+export async function sendMonthlyInsightsEmail(data: MonthlyInsightsData): Promise<boolean> {
+  const resend = getResend()
+  if (!resend || !data.to) {
+    console.log('[email] Monthly insights skipped (not configured)')
+    return false
+  }
+
+  const stat = (label: string, value: number) => `
+    <td style="padding:18px;text-align:center;vertical-align:top">
+      <div style="font-size:32px;font-weight:bold;color:#1B4332">${value}</div>
+      <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#6B7280;margin-top:4px">${label}</div>
+    </td>
+  `
+
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: [data.to],
+      subject: `Your ${data.monthLabel} listing performance — ${data.businessName}`,
+      html: wrap(`
+        <h2 style="color:#1B4332;margin-top:0">${data.monthLabel} performance</h2>
+        <p>Here is how <strong>${data.businessName}</strong> performed on the directory over the last 30 days.</p>
+        <table style="width:100%;border-collapse:collapse;margin:24px 0;background:#FAFAFA;border-radius:12px;overflow:hidden">
+          <tr>
+            ${stat('Profile views', data.stats.views)}
+            ${stat('Website clicks', data.stats.website)}
+          </tr>
+          <tr>
+            ${stat('WhatsApp clicks', data.stats.whatsapp)}
+            ${stat('Phone clicks', data.stats.phone)}
+          </tr>
+        </table>
+        <p style="color:#6B7280;font-size:14px">Keep your listing fresh — updated photos, services and special offers attract more views.</p>
+        <div style="text-align:center;margin:32px 0">
+          ${ctaButton(data.portalUrl, 'View Your Portal')}
+        </div>
+      `),
+    })
+    console.log('[email] Monthly insights sent to', data.to)
+    return true
+  } catch (e) {
+    console.error('[email] Failed to send monthly insights:', e)
+    return false
+  }
+}

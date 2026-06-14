@@ -12,6 +12,10 @@
     {
       "path": "/api/cron/spotlight-reminder",
       "schedule": "0 8 1 * *"
+    },
+    {
+      "path": "/api/cron/monthly-insights",
+      "schedule": "0 7 1 * *"
     }
   ]
 }
