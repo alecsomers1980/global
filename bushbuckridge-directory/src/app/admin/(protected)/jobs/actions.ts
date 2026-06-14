@@ -86,3 +86,18 @@ export async function deleteJob(id: string) {
   await pb.collection('jobs').delete(id)
   revalidatePath('/admin/jobs')
 }
+
+/** FormData-aware save (create or update) that supports image + gallery uploads. */
+export async function saveJob(id: string | null, formData: FormData) {
+  await requireAdmin()
+  const pb = await createClient()
+  if (!formData.get('positions')) formData.delete('positions')
+  if (id) {
+    await pb.collection('jobs').update(id, formData)
+  } else {
+    const title = String(formData.get('title') || '')
+    formData.set('slug', `${slugify(title)}-${Math.random().toString(36).slice(2, 7)}`)
+    await pb.collection('jobs').create(formData)
+  }
+  revalidatePath('/admin/jobs')
+}

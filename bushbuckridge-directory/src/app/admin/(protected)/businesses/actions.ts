@@ -93,3 +93,17 @@ export async function updateBusiness(businessId: string, data: {
   await pb.collection('businesses').update(businessId, data)
   revalidatePath('/admin/businesses')
 }
+
+/**
+ * Full business update accepting FormData (handles file uploads + JSON fields).
+ * The client assembles a FormData with scalar fields, JSON-stringified fields
+ * (business_hours, services, faqs, certifications), new File objects under
+ * logo/cover_image/gallery, and `gallery-` keys for removed gallery files.
+ */
+export async function updateBusinessFull(businessId: string, formData: FormData) {
+  await requireAdmin()
+  const pb = await createClient()
+  await pb.collection('businesses').update(businessId, formData)
+  revalidatePath('/admin/businesses')
+  revalidatePath(`/business/${businessId}`)
+}

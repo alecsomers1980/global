@@ -18,9 +18,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
-import { createJob, updateJob } from './actions'
+import { saveJob } from './actions'
 import { toast } from 'sonner'
 import RichTextEditor from '@/components/RichTextEditor'
+import ImageUploadField from '@/components/ImageUploadField'
 
 const JOB_TYPES = ['Full-time', 'Part-time', 'Contract', 'Temporary', 'Internship']
 const EXPERIENCE_LEVELS = ['Entry-level', 'Mid-level', 'Senior', 'Executive']
@@ -55,6 +56,13 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
   const isEdit = !!job
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState(initialForm)
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([])
+  const [keptImage, setKeptImage] = useState<string | null>(null)
+  const [keptGallery, setKeptGallery] = useState<string[]>([])
+
+  const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
+  const fileUrl = (f: string) => job ? `${pbUrl}/api/files/${job.collectionId}/${job.id}/${f}` : ''
 
   useEffect(() => {
     if (job) {
@@ -76,9 +84,15 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
         contact_number: job.contact_number || '',
         contact_email: job.contact_email || '',
       })
+      setKeptImage(job.image || null)
+      setKeptGallery(Array.isArray(job.gallery) ? job.gallery : job.gallery ? [job.gallery] : [])
     } else {
       setForm(initialForm)
+      setKeptImage(null)
+      setKeptGallery([])
     }
+    setImageFiles([])
+    setGalleryFiles([])
   }, [job, open])
 
   function update(field: string, value: string) {
@@ -93,14 +107,18 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
 
     setSaving(true)
     try {
-      const data = { ...form }
-      if (isEdit) {
-        await updateJob(job.id, data)
-        toast.success('Job updated')
-      } else {
-        await createJob(data as any)
-        toast.success('Job created')
-      }
+      const fd = new FormData()
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ''))
+      if (imageFiles[0]) fd.append('image', imageFiles[0])
+      else if (!keptImage && job?.image) fd.append('image', '')
+      galleryFiles.forEach((f) => fd.append('gallery', f))
+      const originalGallery: string[] = job
+        ? (Array.isArray(job.gallery) ? job.gallery : job.gallery ? [job.gallery] : [])
+        : []
+      originalGallery.filter((f) => !keptGallery.includes(f)).forEach((f) => fd.append('gallery-', f))
+
+      await saveJob(isEdit ? job.id : null, fd)
+      toast.success(isEdit ? 'Job updated' : 'Job created')
       onClose()
     } catch (e: any) {
       toast.error(e.message || 'Failed to save')
@@ -312,6 +330,30 @@ export default function JobEditSheet({ open, onClose, job }: Props) {
               onChange={(v) => update('how_to_apply', v)}
               placeholder="Instructions for applicants"
               minRows={4}
+            />
+          </div>
+
+          {/* Main Photo + Gallery */}
+          <div className="grid md:grid-cols-2 gap-6 pt-2 border-t border-primary/5">
+            <ImageUploadField
+              label="Main Photo"
+              files={imageFiles}
+              onFilesChange={setImageFiles}
+              existing={keptImage ? [fileUrl(keptImage)] : []}
+              onRemoveExisting={() => setKeptImage(null)}
+            />
+            <ImageUploadField
+              label="Gallery"
+              multiple
+              maxFiles={10}
+              hint="Up to 10 images."
+              files={galleryFiles}
+              onFilesChange={setGalleryFiles}
+              existing={keptGallery.map((f) => fileUrl(f))}
+              onRemoveExisting={(url) => {
+                const fname = keptGallery.find((f) => fileUrl(f) === url)
+                if (fname) setKeptGallery((prev) => prev.filter((x) => x !== fname))
+              }}
             />
           </div>
 

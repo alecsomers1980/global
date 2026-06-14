@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
-import { createEvent, updateEvent } from './actions'
+import { saveEvent } from './actions'
 import { toast } from 'sonner'
 import RichTextEditor from '@/components/RichTextEditor'
+import ImageUploadField from '@/components/ImageUploadField'
 
 interface Props {
   open: boolean
@@ -20,6 +21,13 @@ interface Props {
 export default function EventEditSheet({ open, onClose, event }: Props) {
   const isEdit = !!event
   const [saving, setSaving] = useState(false)
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([])
+  const [keptImage, setKeptImage] = useState<string | null>(null)
+  const [keptGallery, setKeptGallery] = useState<string[]>([])
+
+  const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
+  const fileUrl = (f: string) => event ? `${pbUrl}/api/files/${event.collectionId}/${event.id}/${f}` : ''
 
   const [form, setForm] = useState({
     title: '',
@@ -44,9 +52,15 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
         contact_info: event.contact_info || '',
         is_featured: event.is_featured || false,
       })
+      setKeptImage(event.image || null)
+      setKeptGallery(Array.isArray(event.gallery) ? event.gallery : event.gallery ? [event.gallery] : [])
     } else {
       setForm({ title: '', description: '', date: '', time: '', venue: '', cost: '', contact_info: '', is_featured: false })
+      setKeptImage(null)
+      setKeptGallery([])
     }
+    setImageFiles([])
+    setGalleryFiles([])
   }, [event, open])
 
   function update(field: string, value: string | boolean) {
@@ -60,13 +74,18 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
     }
     setSaving(true)
     try {
-      if (isEdit) {
-        await updateEvent(event.id, form)
-        toast.success('Event updated')
-      } else {
-        await createEvent(form)
-        toast.success('Event created')
-      }
+      const fd = new FormData()
+      Object.entries(form).forEach(([k, v]) => fd.append(k, typeof v === 'boolean' ? (v ? 'true' : 'false') : (v ?? '')))
+      if (imageFiles[0]) fd.append('image', imageFiles[0])
+      else if (!keptImage && event?.image) fd.append('image', '')
+      galleryFiles.forEach((f) => fd.append('gallery', f))
+      const originalGallery: string[] = event
+        ? (Array.isArray(event.gallery) ? event.gallery : event.gallery ? [event.gallery] : [])
+        : []
+      originalGallery.filter((f) => !keptGallery.includes(f)).forEach((f) => fd.append('gallery-', f))
+
+      await saveEvent(isEdit ? event.id : null, fd)
+      toast.success(isEdit ? 'Event updated' : 'Event created')
       onClose()
     } catch (e: any) {
       toast.error(e.message || 'Failed to save')
@@ -126,6 +145,30 @@ export default function EventEditSheet({ open, onClose, event }: Props) {
           <div className="flex items-center justify-between py-2">
             <Label className="text-sm font-bold text-primary">Featured Event</Label>
             <Switch checked={form.is_featured} onCheckedChange={(v) => update('is_featured', v)} />
+          </div>
+
+          {/* Main Photo + Gallery */}
+          <div className="grid md:grid-cols-2 gap-6 pt-2 border-t border-primary/5">
+            <ImageUploadField
+              label="Main Photo"
+              files={imageFiles}
+              onFilesChange={setImageFiles}
+              existing={keptImage ? [fileUrl(keptImage)] : []}
+              onRemoveExisting={() => setKeptImage(null)}
+            />
+            <ImageUploadField
+              label="Gallery"
+              multiple
+              maxFiles={10}
+              hint="Up to 10 images."
+              files={galleryFiles}
+              onFilesChange={setGalleryFiles}
+              existing={keptGallery.map((f) => fileUrl(f))}
+              onRemoveExisting={(url) => {
+                const fname = keptGallery.find((f) => fileUrl(f) === url)
+                if (fname) setKeptGallery((prev) => prev.filter((x) => x !== fname))
+              }}
+            />
           </div>
 
           <Button onClick={handleSave} disabled={saving} className="w-full h-12 rounded-xl font-bold text-base">

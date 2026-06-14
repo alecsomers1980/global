@@ -52,3 +52,17 @@ export async function deleteEvent(id: string) {
   await pb.collection('events').delete(id)
   revalidatePath('/admin/events')
 }
+
+/** FormData-aware save (create or update) that supports image + gallery uploads. */
+export async function saveEvent(id: string | null, formData: FormData) {
+  await requireAdmin()
+  const pb = await createClient()
+  if (id) {
+    await pb.collection('events').update(id, formData)
+  } else {
+    const title = String(formData.get('title') || '')
+    formData.set('slug', `${slugify(title)}-${Math.random().toString(36).slice(2, 7)}`)
+    await pb.collection('events').create(formData)
+  }
+  revalidatePath('/admin/events')
+}

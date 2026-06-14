@@ -51,3 +51,15 @@ export async function deleteOpportunity(id: string) {
   await pb.collection('opportunities').delete(id)
   revalidatePath('/admin/opportunities')
 }
+
+/** FormData-aware save (create or update) that supports image + gallery uploads. */
+export async function saveOpportunity(id: string | null, formData: FormData) {
+  await requireAdmin()
+  const pb = await createClient()
+  if (id) {
+    await pb.collection('opportunities').update(id, formData)
+  } else {
+    await pb.collection('opportunities').create(formData)
+  }
+  revalidatePath('/admin/opportunities')
+}

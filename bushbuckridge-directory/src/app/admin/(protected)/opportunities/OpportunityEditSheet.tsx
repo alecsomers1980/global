@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Loader2 } from 'lucide-react'
-import { createOpportunity, updateOpportunity } from './actions'
+import { saveOpportunity } from './actions'
 import { toast } from 'sonner'
 import RichTextEditor from '@/components/RichTextEditor'
+import ImageUploadField from '@/components/ImageUploadField'
 
 const CATEGORIES = ['Funding', 'Tenders', 'Grants', 'Training', 'Business Support', 'Other']
 
@@ -17,6 +18,13 @@ interface Props { open: boolean; onClose: () => void; opportunity?: any }
 export default function OpportunityEditSheet({ open, onClose, opportunity }: Props) {
   const isEdit = !!opportunity
   const [saving, setSaving] = useState(false)
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([])
+  const [keptImage, setKeptImage] = useState<string | null>(null)
+  const [keptGallery, setKeptGallery] = useState<string[]>([])
+
+  const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
+  const fileUrl = (f: string) => opportunity ? `${pbUrl}/api/files/${opportunity.collectionId}/${opportunity.id}/${f}` : ''
 
   const [form, setForm] = useState({
     title: '',
@@ -51,6 +59,8 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
         how_to_apply: opportunity.how_to_apply || '',
         required_documents: opportunity.required_documents || ''
       })
+      setKeptImage(opportunity.image || null)
+      setKeptGallery(Array.isArray(opportunity.gallery) ? opportunity.gallery : opportunity.gallery ? [opportunity.gallery] : [])
     } else {
       setForm({
         title: '',
@@ -67,7 +77,11 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
         how_to_apply: '',
         required_documents: ''
       })
+      setKeptImage(null)
+      setKeptGallery([])
     }
+    setImageFiles([])
+    setGalleryFiles([])
   }, [opportunity, open])
 
   function update(field: string, value: string) {
@@ -81,13 +95,18 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
     }
     setSaving(true)
     try {
-      if (isEdit) {
-        await updateOpportunity(opportunity.id, form)
-        toast.success('Opportunity updated')
-      } else {
-        await createOpportunity(form)
-        toast.success('Opportunity created')
-      }
+      const fd = new FormData()
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ''))
+      if (imageFiles[0]) fd.append('image', imageFiles[0])
+      else if (!keptImage && opportunity?.image) fd.append('image', '')
+      galleryFiles.forEach((f) => fd.append('gallery', f))
+      const originalGallery: string[] = opportunity
+        ? (Array.isArray(opportunity.gallery) ? opportunity.gallery : opportunity.gallery ? [opportunity.gallery] : [])
+        : []
+      originalGallery.filter((f) => !keptGallery.includes(f)).forEach((f) => fd.append('gallery-', f))
+
+      await saveOpportunity(isEdit ? opportunity.id : null, fd)
+      toast.success(isEdit ? 'Opportunity updated' : 'Opportunity created')
       onClose()
     } catch (e: any) {
       toast.error(e.message || 'Failed to save')
@@ -213,6 +232,30 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
           <div>
             <Label htmlFor="contact_info" className="font-semibold">Contact Info</Label>
             <Input id="contact_info" value={form.contact_info} onChange={(e) => update('contact_info', e.target.value)} placeholder="Email / phone number" />
+          </div>
+
+          {/* Main Photo + Gallery */}
+          <div className="grid md:grid-cols-2 gap-6 pt-2 border-t border-primary/5">
+            <ImageUploadField
+              label="Main Photo"
+              files={imageFiles}
+              onFilesChange={setImageFiles}
+              existing={keptImage ? [fileUrl(keptImage)] : []}
+              onRemoveExisting={() => setKeptImage(null)}
+            />
+            <ImageUploadField
+              label="Gallery"
+              multiple
+              maxFiles={10}
+              hint="Up to 10 images."
+              files={galleryFiles}
+              onFilesChange={setGalleryFiles}
+              existing={keptGallery.map((f) => fileUrl(f))}
+              onRemoveExisting={(url) => {
+                const fname = keptGallery.find((f) => fileUrl(f) === url)
+                if (fname) setKeptGallery((prev) => prev.filter((x) => x !== fname))
+              }}
+            />
           </div>
 
           {/* Submit */}
