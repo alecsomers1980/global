@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -23,7 +23,7 @@ const PACKAGES = [
     bgColor: 'bg-slate-50',
     icon: TrendingUp,
     featured: false,
-    features: ['Business name', 'Business description', 'Contact details', 'Business logo*'],
+    features: ['Business name & description', 'Address & contact details', 'Business logo*', 'Business hours', 'Services list'],
   },
   {
     key: 'pro-lead',
@@ -34,7 +34,7 @@ const PACKAGES = [
     bgColor: 'bg-amber-50',
     icon: Zap,
     featured: true,
-    features: ['Everything in Basic', '3 Photos*', 'WhatsApp link', 'Social media links'],
+    features: ['Everything in Basic', 'Cover image + 3 photos*', 'WhatsApp & social links', 'Customer reviews & ratings', 'Quote / enquiry button'],
   },
   {
     key: 'pro-business',
@@ -45,7 +45,7 @@ const PACKAGES = [
     bgColor: 'bg-rose-50',
     icon: Star,
     featured: false,
-    features: ['Everything in Pro Lead', 'Up to 10 photos*', 'Website link', '4 quarterly news updates', 'CSI publications'],
+    features: ['Everything in Pro Lead', 'Up to 10 photos*', 'Website, video & FAQ', 'Certifications, offers & map', 'Monthly performance email', '4 quarterly news updates', 'CSI publications'],
   },
 ]
 
@@ -57,7 +57,7 @@ const TIER_FIELDS: Record<string, string[]> = {
 
 const STEPS = ['Account', 'Package', 'Details', 'Review']
 
-export default function BuyYourSpotPage() {
+function BuyYourSpotWizard() {
   const searchParams = useSearchParams()
   const initialTier = searchParams.get('tier') || 'pro-lead'
 
@@ -401,5 +401,13 @@ export default function BuyYourSpotPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function BuyYourSpotPage() {
+  return (
+    <Suspense fallback={null}>
+      <BuyYourSpotWizard />
+    </Suspense>
   )
 }
