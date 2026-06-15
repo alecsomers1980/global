@@ -22,6 +22,10 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 import { trackAnalyticsEvent } from '@/app/actions/analytics'
 import { TrackLink } from '@/components/TrackLink'
 import GalleryLightbox from '@/components/GalleryLightbox'
+import BusinessHoursDisplay from '@/components/BusinessHoursDisplay'
+import BusinessFaqs from '@/components/BusinessFaqs'
+import ReviewsSection from '@/components/ReviewsSection'
+import { Clock, Tag, PlayCircle, Award, Calendar, UsersRound } from 'lucide-react'
 
 export default async function BusinessProfilePage({
     params,
@@ -65,19 +69,65 @@ export default async function BusinessProfilePage({
         }
     }
 
+    // Reviews enabled for Pro Lead and Pro Business
+    let reviews: any[] = []
+    if (isEnhancedOrPremium) {
+        try {
+            reviews = await pb.collection('reviews').getFullList({
+                filter: `business = "${business.id}" && status = "approved"`,
+                sort: '-created',
+            })
+        } catch (e) {
+            // none
+        }
+    }
+
+    const coverUrl = business.cover_image
+        ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${business.collectionId}/${business.id}/${business.cover_image}`
+        : null
+
+    // Build a YouTube/Vimeo embed URL from a watch link
+    function toEmbed(url: string): string | null {
+        if (!url) return null
+        const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
+        if (yt) return `https://www.youtube.com/embed/${yt[1]}`
+        const vimeo = url.match(/vimeo\.com\/(\d+)/)
+        if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`
+        return null
+    }
+    const videoEmbed = isPremium && business.video_url ? toEmbed(business.video_url) : null
+
+    const offerActive = isPremium && business.special_offer &&
+        (!business.special_offer_expires || new Date(business.special_offer_expires) >= new Date())
+
+    const certs: string[] = isPremium && Array.isArray(business.certifications) ? business.certifications : []
+    const services: any[] = Array.isArray(business.services) ? business.services.filter((s: any) => s && (s.name || s.price)) : []
+
     return (
         <div className="flex flex-col pb-24">
             <SecondaryHeader
                 title={business.name}
                 subtitle={business.description?.substring(0, 150) + (business.description?.length > 150 ? '...' : '')}
                 badge={business.expand?.sector?.name || 'BUSINESS PROFILE'}
-                backgroundImage={logoUrl}
+                backgroundImage={coverUrl || logoUrl}
             />
 
             <div className="container mx-auto px-4 -mt-12 relative z-20">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-12">
+                        {offerActive && (
+                            <div className="flex items-center gap-4 rounded-[2rem] bg-secondary/15 border border-secondary/30 p-6">
+                                <div className="h-12 w-12 rounded-2xl bg-secondary flex items-center justify-center shrink-0">
+                                    <Tag className="h-6 w-6 text-secondary-foreground" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary/50">Special Offer</p>
+                                    <p className="font-black text-primary text-lg leading-tight">{business.special_offer}</p>
+                                </div>
+                            </div>
+                        )}
+
                         <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
                             <CardHeader className="p-10 pb-2">
                                 <div className="flex justify-between items-center mb-6">
@@ -134,6 +184,78 @@ export default async function BusinessProfilePage({
                                 )}
                             </CardContent>
                         </Card>
+
+                        {/* Services */}
+                        {services.length > 0 && (
+                            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-xl rounded-[2.5rem] overflow-hidden">
+                                <CardContent className="p-8">
+                                    <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5">Services</h3>
+                                    <div className="divide-y divide-primary/5">
+                                        {services.map((s: any, i: number) => (
+                                            <div key={i} className="flex items-center justify-between py-3">
+                                                <span className="font-bold text-primary">{s.name}</span>
+                                                {s.price && <span className="font-black text-muted-foreground">{s.price}</span>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Video (Premium) */}
+                        {videoEmbed && (
+                            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-xl rounded-[2.5rem] overflow-hidden">
+                                <CardContent className="p-8">
+                                    <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                                        <PlayCircle className="h-4 w-4" /> Video
+                                    </h3>
+                                    <div className="relative w-full overflow-hidden rounded-2xl" style={{ paddingTop: '56.25%' }}>
+                                        <iframe
+                                            src={videoEmbed}
+                                            className="absolute inset-0 h-full w-full"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            title="Business video"
+                                        />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* FAQ (Premium) */}
+                        {isPremium && Array.isArray(business.faqs) && business.faqs.length > 0 && (
+                            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-xl rounded-[2.5rem] overflow-hidden">
+                                <CardContent className="p-8">
+                                    <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5">Frequently Asked Questions</h3>
+                                    <BusinessFaqs faqs={business.faqs} />
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Certifications (Premium) */}
+                        {certs.length > 0 && (
+                            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-xl rounded-[2.5rem] overflow-hidden">
+                                <CardContent className="p-8">
+                                    <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                                        <Award className="h-4 w-4" /> Certifications & Accreditations
+                                    </h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {certs.map((c, i) => (
+                                            <Badge key={i} variant="secondary" className="px-5 py-2 rounded-xl bg-primary/5 text-primary font-bold border-0">{c}</Badge>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Reviews (Pro Lead+) */}
+                        {isEnhancedOrPremium && (
+                            <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-xl rounded-[2.5rem] overflow-hidden">
+                                <CardContent className="p-8">
+                                    <ReviewsSection businessId={business.id} reviews={reviews} />
+                                </CardContent>
+                            </Card>
+                        )}
 
                         {/* Spotlight Article Cross-Link */}
                         {isPremium && spotlightArticle && (
@@ -236,6 +358,53 @@ export default async function BusinessProfilePage({
                                 </div>
                             </div>
                         </div>
+
+                        {/* Business Hours */}
+                        {business.business_hours && (
+                            <div className="bg-card/60 backdrop-blur-md border rounded-[3rem] p-8 shadow-xl">
+                                <h3 className="font-black text-lg mb-5 tracking-tight text-primary flex items-center gap-2">
+                                    <Clock className="h-5 w-5 text-primary" /> Business Hours
+                                </h3>
+                                <BusinessHoursDisplay hours={business.business_hours} />
+                            </div>
+                        )}
+
+                        {/* Years / Team (Premium) */}
+                        {isPremium && (business.years_in_business || business.team_size) && (
+                            <div className="grid grid-cols-2 gap-4">
+                                {business.years_in_business ? (
+                                    <div className="bg-card/60 backdrop-blur-md border rounded-3xl p-6 text-center">
+                                        <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
+                                        <p className="text-2xl font-black text-primary">{business.years_in_business}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Years in business</p>
+                                    </div>
+                                ) : null}
+                                {business.team_size ? (
+                                    <div className="bg-card/60 backdrop-blur-md border rounded-3xl p-6 text-center">
+                                        <UsersRound className="h-6 w-6 text-primary mx-auto mb-2" />
+                                        <p className="text-2xl font-black text-primary">{business.team_size}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Team size</p>
+                                    </div>
+                                ) : null}
+                            </div>
+                        )}
+
+                        {/* Map (Premium) */}
+                        {isPremium && business.map_lat && business.map_lng && (
+                            <div className="bg-card/60 backdrop-blur-md border rounded-[3rem] p-4 shadow-xl overflow-hidden">
+                                <iframe
+                                    title="Location map"
+                                    className="w-full h-56 rounded-[2rem] border-0"
+                                    loading="lazy"
+                                    src={`https://maps.google.com/maps?q=${business.map_lat},${business.map_lng}&z=15&output=embed`}
+                                />
+                                {business.address && (
+                                    <p className="text-sm font-bold text-muted-foreground mt-3 px-2 flex items-center gap-2">
+                                        <MapPin className="h-4 w-4 text-primary" /> {business.address}
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         {/* Quick Action */}
                         <div className="bg-secondary p-10 rounded-[3rem] shadow-2xl shadow-secondary/20 relative overflow-hidden group">

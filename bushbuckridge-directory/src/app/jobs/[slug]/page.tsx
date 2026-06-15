@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
+import GalleryLightbox from '@/components/GalleryLightbox'
 import { formatDistanceToNow } from 'date-fns'
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -19,6 +20,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
   } catch {
     notFound()
   }
+
+  const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL
+  const fileUrl = (f: string) => `${pbUrl}/api/files/${job.collectionId}/${job.id}/${f}`
+  const mainImage = job.image ? fileUrl(job.image) : null
+  const galleryImages: string[] = (Array.isArray(job.gallery) ? job.gallery : job.gallery ? [job.gallery] : []).map(fileUrl)
 
   const closingDate = job.closing_date ? new Date(job.closing_date) : null
   const isClosed = closingDate ? isPast(closingDate) : false
@@ -39,7 +45,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
         title={job.title}
         subtitle={`${job.company || 'Local Business'} · ${job.location || 'Bushbuckridge Area'}`}
         badge="JOB LISTING"
-        backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=2000&auto=format&fit=crop"
+        backgroundImage={mainImage || "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=2000&auto=format&fit=crop"}
       />
 
       <div className="container mx-auto px-4 -mt-8 relative z-20 max-w-4xl">
@@ -68,6 +74,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
         <Card className="border-0 bg-card/80 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
           <CardContent className="p-10 space-y-10">
+
+            {galleryImages.length > 0 && (
+              <div>
+                <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5">Gallery</h3>
+                <GalleryLightbox images={galleryImages} businessName={job.title} />
+              </div>
+            )}
 
             {/* Metadata row */}
             <div className="flex flex-wrap gap-3 items-center">

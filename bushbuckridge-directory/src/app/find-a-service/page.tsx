@@ -29,6 +29,8 @@ import {
     UtensilsCrossed,
     Users,
     ArrowRight,
+    Star,
+    Tag,
 } from 'lucide-react'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
@@ -95,6 +97,29 @@ export default async function FindServicePage({
     })
 
     const bizList = businesses ?? []
+
+    // Aggregate approved review ratings per business
+    const ratingMap: Record<string, { avg: number; count: number }> = {}
+    if (bizList.length > 0) {
+        try {
+            const allReviews = await pb.collection('reviews').getFullList({ filter: 'status = "approved"' })
+            const acc: Record<string, { sum: number; count: number }> = {}
+            allReviews.forEach((r: any) => {
+                if (!acc[r.business]) acc[r.business] = { sum: 0, count: 0 }
+                acc[r.business].sum += r.rating || 0
+                acc[r.business].count++
+            })
+            Object.entries(acc).forEach(([id, v]) => {
+                ratingMap[id] = { avg: v.count ? v.sum / v.count : 0, count: v.count }
+            })
+        } catch (e) {
+            // no reviews
+        }
+    }
+
+    const offerActiveFor = (biz: any) =>
+        biz.package_tier === 'pro-business' && biz.special_offer &&
+        (!biz.special_offer_expires || new Date(biz.special_offer_expires) >= new Date())
 
     return (
         <div className="flex flex-col gap-12 pb-24">
@@ -216,9 +241,21 @@ export default async function FindServicePage({
                                                             )}
                                                         </div>
                                                         <h3 className="text-3xl font-black tracking-tight text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-1">{biz.name}</h3>
-                                                        <div className="flex items-center text-sm font-bold text-muted-foreground mt-1">
-                                                            <MapPin className="h-4 w-4 mr-1 text-primary" />{biz.expand?.area?.name || 'Bushbuckridge'}
+                                                        <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-muted-foreground mt-1">
+                                                            <span className="flex items-center"><MapPin className="h-4 w-4 mr-1 text-primary" />{biz.expand?.area?.name || 'Bushbuckridge'}</span>
+                                                            {ratingMap[biz.id]?.count > 0 && (
+                                                                <span className="flex items-center gap-1 text-amber-600">
+                                                                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                                                                    {ratingMap[biz.id].avg.toFixed(1)}
+                                                                    <span className="text-muted-foreground/70 font-medium">({ratingMap[biz.id].count})</span>
+                                                                </span>
+                                                            )}
                                                         </div>
+                                                        {offerActiveFor(biz) && (
+                                                            <span className="inline-flex items-center gap-1.5 mt-2 rounded-full bg-secondary/15 text-primary text-xs font-black uppercase tracking-wide px-3 py-1">
+                                                                <Tag className="h-3.5 w-3.5" /> {biz.special_offer}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
 

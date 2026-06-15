@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
+import GalleryLightbox from '@/components/GalleryLightbox'
 
 const getCategoryColor = (cat: string) => {
   switch (cat) {
@@ -40,6 +41,9 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
   const attachmentUrl = opp.attachment
     ? `${pbUrl}/api/files/${opp.collectionId}/${opp.id}/${opp.attachment}`
     : null
+  const fileUrl = (f: string) => `${pbUrl}/api/files/${opp.collectionId}/${opp.id}/${f}`
+  const mainImage = opp.image ? fileUrl(opp.image) : null
+  const galleryImages: string[] = (Array.isArray(opp.gallery) ? opp.gallery : opp.gallery ? [opp.gallery] : []).map(fileUrl)
 
   return (
     <div className="flex flex-col gap-12 pb-24">
@@ -47,7 +51,7 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
         title={opp.title}
         subtitle={opp.organization || 'Available Opportunity'}
         badge="OPPORTUNITY"
-        backgroundImage="https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2000&auto=format&fit=crop"
+        backgroundImage={mainImage || "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2000&auto=format&fit=crop"}
       />
 
       <div className="container mx-auto px-4 -mt-8 relative z-20 max-w-4xl">
@@ -76,6 +80,13 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
 
         <Card className="border-0 bg-card/80 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
           <CardContent className="p-10 space-y-10">
+
+            {galleryImages.length > 0 && (
+              <div>
+                <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-5">Gallery</h3>
+                <GalleryLightbox images={galleryImages} businessName={opp.title} />
+              </div>
+            )}
 
             {/* Top metadata */}
             <div className="flex flex-wrap gap-3 items-center">
