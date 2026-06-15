@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon, MapPin, Ticket, Sparkles, ArrowRight, Flame, Star } from 'lucide-react'
 import SecondaryHeader from '@/components/SecondaryHeader'
+import Link from 'next/link'
 
 export default async function EventsPage() {
     const pb = await createClient()
@@ -203,9 +204,9 @@ export default async function EventsPage() {
 
                                                     <CardFooter className="p-8 pt-4">
                                                         <Button className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 transition-all active:scale-[0.98] gap-3" asChild>
-                                                            <a href={`mailto:${event.contact_info}`}>
-                                                                Secure Your Spot <ArrowRight className="h-6 w-6" />
-                                                            </a>
+                                                            <Link href={`/events/${event.slug || event.id}`}>
+                                                                View Details <ArrowRight className="h-6 w-6" />
+                                                            </Link>
                                                         </Button>
                                                     </CardFooter>
                                                 </Card>
