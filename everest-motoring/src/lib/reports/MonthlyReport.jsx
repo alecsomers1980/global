@@ -640,7 +640,16 @@ function SocialSection({ social }) {
               { header: "Platform", key: "name" },
               { header: "Reach", key: "reach", align: "right" },
               { header: "Engagement", key: "engagement", align: "right" },
-              { header: "Δ", key: "delta", align: "right" },
+              {
+                header: "Δ",
+                key: "delta",
+                align: "right",
+                render: (row) => {
+                  if (!row.pEng) return row.cEng > 0 ? "NEW" : "—";
+                  const pct = ((row.cEng - row.pEng) / row.pEng) * 100;
+                  return `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`;
+                },
+              },
             ]}
             colWidths="30% 25% 25% 20%"
             rows={platforms}
@@ -665,9 +674,8 @@ function buildPlatformRows(current, previous) {
       name: name.charAt(0).toUpperCase() + name.slice(1),
       reach: formatNumber(cc.reach),
       engagement: formatNumber(cEng),
-      cReach: cc.reach || 0,
-      pReach: pp.reach || 0,
-      deltaNum: pReach > 0 ? ((cc.reach - pp.reach) / pp.reach) * 100 : null,
+      cEng,
+      pEng,
     };
   });
 }
