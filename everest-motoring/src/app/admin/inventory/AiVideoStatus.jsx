@@ -49,6 +49,18 @@ export default function AiVideoStatus({ carId, videoUrl }) {
         }
     };
 
+    const handleGenerate = async () => {
+        if (!window.confirm("Generate the AI walkaround video for this vehicle?\n\nThe render runs in the background — you can close this tab and come back later. A Vercel cron job advances the pipeline one step per minute (4 × 8-second clips, then stitch + Cloudflare ingest); full successful renders take ~10–15 minutes and cost roughly $5.60 (Seedance 2 + ElevenLabs voiceover). If a step fails the pipeline aborts immediately, capping the cost at the per-scene spend.")) return;
+        setIsChecking(true);
+        try {
+            await queueAiWalkaround(carId);
+            window.location.reload();
+        } catch (error) {
+            alert("Failed to queue generation: " + error.message);
+            setIsChecking(false);
+        }
+    };
+
     const handleRegenerate = async () => {
         if (!window.confirm("Regenerate the AI walkaround video for this vehicle?\n\nThe render runs in the background — you can close this tab and come back later. A Vercel cron job advances the pipeline one step per minute (4 × 8-second clips, then stitch + Cloudflare ingest); full successful renders take ~10–15 minutes and cost roughly $5.60 (Seedance 2 Fast 720p + ElevenLabs voiceover). If a step fails the pipeline aborts immediately, capping the cost at the per-scene spend.\n\nThe current video will be replaced once the new one finishes.")) return;
         setIsChecking(true);
@@ -174,6 +186,23 @@ export default function AiVideoStatus({ carId, videoUrl }) {
                 >
                     <span className="material-symbols-outlined text-[14px]">{isChecking ? 'sync' : 'refresh'}</span>
                     {isChecking ? "Queuing..." : "Retry Genesis"}
+                </button>
+            </div>
+        );
+    }
+
+    // No video yet (never generated) — offer to kick off the AI walkaround.
+    if (!videoUrl) {
+        return (
+            <div className="mt-2">
+                <button
+                    onClick={handleGenerate}
+                    disabled={isChecking}
+                    className="text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1.5 rounded-md flex items-center justify-center gap-1.5 border border-indigo-200 transition-colors shadow-sm w-full disabled:opacity-70"
+                    title="Generate the AI walkaround video for this vehicle"
+                >
+                    <span className="material-symbols-outlined text-[14px]">smart_display</span>
+                    {isChecking ? "Queuing..." : "Generate AI Video"}
                 </button>
             </div>
         );
