@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --mv-navy: #060A3C;
+  --mv-blue: #0F3193;
+  --mv-mint: #62DAA9;
+  --mv-cream: #FFFADB;
+  --mv-navy-muted: #3D4067;
+}
+
+body {
+  background-color: white;
+  color: var(--mv-navy);
+}
