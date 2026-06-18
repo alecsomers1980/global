@@ -1,5 +1,6 @@
 // Prescription deadline tracking for RAF claims
 // The Road Accident Fund has a 3-year prescription period from the accident date
+import { getStatusPhase } from "./statusConfig";
 
 const PRESCRIPTION_YEARS = 3;
 const CRITICAL_DAYS = 30;
@@ -25,6 +26,16 @@ export function getPrescriptionInfo(accidentDate: string | null | undefined, cas
 
     // Don't show alerts for closed or settled cases
     if (caseStatus === "closed") return null;
+
+    // The 3-year prescription only applies BEFORE the claim is lodged.
+    // Once lodged (phase 'claim' or any subsequent phase like 'litigation', 'court', etc.),
+    // the 3-year prescription is interrupted.
+    if (caseStatus) {
+        const phase = getStatusPhase(caseStatus);
+        if (phase && phase !== 'intake') {
+            return null;
+        }
+    }
 
     const accident = new Date(accidentDate);
     if (isNaN(accident.getTime())) return null;

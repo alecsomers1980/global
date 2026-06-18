@@ -40,6 +40,7 @@ export const PHASE_CONFIG: Record<StatusPhase, { label: string; color: string; b
 
 export const RAF_STATUSES: StatusConfig[] = [
     // INTAKE
+    { slug: 'matter_not_yet_updated', label: 'Matter not yet updated', phase: 'intake', sortOrder: 0, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Matter not yet updated' },
     { slug: 'consultation_complete', label: 'Consultation complete', phase: 'intake', sortOrder: 1, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Consultation complete' },
     { slug: 'consultation_letter_sent', label: 'Confirmation of consultation letter sent to client', phase: 'intake', sortOrder: 2, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Confirmation of consultation letter sent to client' },
     { slug: 'requested_records', label: 'Requested Hospital records & Accident report', phase: 'intake', sortOrder: 3, requiresNote: false, requiresDate: false, requiresClientAction: false, clientMessage: 'Requested Hospital records & Accident report' },

@@ -50,10 +50,10 @@ async function renderTaglineOverlay(args: {
     const MAX_CHARS_PER_LINE = 14
     const processedLines = raw.flatMap(line => wrapLine(line, MAX_CHARS_PER_LINE))
 
-    const SAFE_W = width - 100
-    const HEAD_GLYPH = 0.72
-    const maxFs = Math.round(width * 0.070)
-    const minFs = Math.round(width * 0.040)
+    const SAFE_W = width - 200
+    const HEAD_GLYPH = 0.85
+    const maxFs = Math.round(width * 0.055)
+    const minFs = Math.round(width * 0.035)
 
     let fontSize = maxFs
     const longestLineChars = Math.max(1, ...processedLines.map(l => l.length))
@@ -506,7 +506,9 @@ export async function applyTipCardOverlay(args: {
   </defs>
   <rect x="0" y="${Math.round(h * 0.30)}" width="${w}" height="${Math.round(h * 0.70)}" fill="url(#bg)"/>
   <text x="${w / 2}" y="${headerY}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${headerFontSize}" fill="${escapeXml(accent)}" text-anchor="middle">${escapeXml(headerText)}</text>
-  <text x="${w / 2}" y="${headlineY}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${headlineFontSize}" fill="white" text-anchor="middle">${escapeXml(headline.toUpperCase())}</text>
+  <text x="${w / 2}" y="${headlineY}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${Math.round(headlineFontSize * 0.85)}" fill="white" text-anchor="middle">
+    ${wrapLine(headline.toUpperCase(), 20).map((line, i) => `<tspan x="${w / 2}" dy="${i === 0 ? 0 : Math.round(headlineFontSize * 0.85 * 1.2)}">${escapeXml(line)}</tspan>`).join('\n    ')}
+  </text>
   ${subhead ? `<text x="${w / 2}" y="${subheadY}" font-family="Arial, sans-serif" font-weight="400" font-size="${subheadFontSize}" fill="${escapeXml(accent)}" text-anchor="middle">${escapeXml(subhead)}</text>` : ''}
   ${contactLine ? `<text x="${w / 2}" y="${contactY}" font-family="Arial, sans-serif" font-size="${contactFontSize}" fill="white" opacity="0.7" text-anchor="middle">${escapeXml(contactLine)}</text>` : ''}
 </svg>`
@@ -593,7 +595,7 @@ export async function applySellYoursOverlay(args: {
     </linearGradient>
   </defs>
   <rect x="0" y="${Math.round(h * 0.25)}" width="${w}" height="${Math.round(h * 0.75)}" fill="url(#bg)"/>
-  <text x="${w / 2}" y="${headlineY}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${headlineFontSize}" fill="white" text-anchor="middle">WE BUY YOUR CAR</text>
+  <text x="${w / 2}" y="${headlineY}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${Math.round(headlineFontSize * 0.85)}" fill="white" text-anchor="middle">WE BUY YOUR CAR</text>
   <text x="${w / 2}" y="${subheadY}" font-family="Arial, sans-serif" font-weight="700" font-size="${subheadFontSize}" fill="${escapeXml(accent)}" text-anchor="middle">FREE VALUATION IN 60 SECONDS</text>
   <rect x="${ctaX}" y="${ctaTop}" width="${ctaW}" height="${ctaH}" rx="${Math.round(ctaH / 2)}" fill="${escapeXml(accent)}"/>
   <text x="${w / 2}" y="${ctaY + Math.round(ctaFontSize * 0.35)}" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${ctaFontSize}" fill="#0a0a0f" text-anchor="middle">${escapeXml(ctaText)}</text>

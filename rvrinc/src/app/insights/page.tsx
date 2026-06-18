@@ -1,45 +1,101 @@
+import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Construction } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 
-export default function InsightsPage() {
-    return (
-        <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">
-                {/* Hero */}
-                <section className="bg-brand-navy py-20 text-center text-white relative overflow-hidden">
-                    <div className="absolute inset-0 z-0">
-                        <Image src="/images/header3.jpg" alt="Law Office" fill className="object-cover object-right opacity-15 mix-blend-overlay" priority />
-                        <div className="absolute inset-0 bg-brand-navy/70 mix-blend-multiply" />
-                    </div>
-                    <div className="container relative z-10">
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Insights</h1>
-                        <p className="text-gray-300 max-w-2xl mx-auto text-lg">Stay informed with the latest legal insights.</p>
-                    </div>
-                </section>
+export const revalidate = 3600;
 
-                {/* Under Construction */}
-                <section className="py-32 text-center">
-                    <div className="container max-w-lg mx-auto space-y-6">
-                        <div className="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mx-auto">
-                            <Construction className="w-10 h-10 text-brand-gold" />
-                        </div>
-                        <h2 className="text-2xl font-serif font-bold text-brand-navy">Coming Soon</h2>
-                        <p className="text-gray-500 leading-relaxed">
-                            We are currently building our Insights section where we will share expert commentary on RAF legislation, case studies, and legal updates. Check back soon.
+export const metadata: Metadata = {
+    title: "Insights",
+    description: "Legal insights and updates from Roets & Van Rensburg Inc. — Road Accident Fund claims, litigation, and South African law.",
+    alternates: { canonical: "/insights" },
+};
+
+export default async function InsightsPage() {
+  const supabase = createClient();
+
+  const { data: posts, error } = await supabase
+    .from("insights_posts")
+    .select("*")
+    .eq("status", "PUBLISHED")
+    .order("published_at", { ascending: false });
+
+  return (
+    <>
+      <Header />
+      <main>
+        {/* Hero Section */}
+        <section className="bg-slate-900 text-white py-20 px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              Insights
+            </h1>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              Stay informed with the latest legal insights.
+            </p>
+          </div>
+        </section>
+
+        {/* Posts Grid */}
+        <section className="py-16 px-6 bg-gray-50 min-h-screen">
+          <div className="max-w-6xl mx-auto">
+            {posts && posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/insights/${post.slug}`}
+                    className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                  >
+                    {post.image_url && (
+                      <div className="aspect-video overflow-hidden bg-gray-100 relative">
+                        <Image
+                          src={post.image_url}
+                          alt={post.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      {post.category && (
+                        <span className="inline-block text-xs font-semibold text-brand-navy uppercase tracking-wider mb-2">
+                          {post.category}
+                        </span>
+                      )}
+                      <h2 className="text-lg font-semibold text-gray-900 group-hover:text-brand-gold transition-colors mb-2">
+                        {post.title}
+                      </h2>
+                      {post.excerpt && (
+                        <p className="text-sm text-gray-600 line-clamp-3 mb-3">
+                          {post.excerpt}
                         </p>
-                        <div className="flex items-center justify-center gap-3 pt-4">
-                            <div className="h-px w-12 bg-brand-gold/30" />
-                            <span className="text-brand-gold text-xs font-semibold tracking-[0.3em] uppercase">Under Construction</span>
-                            <div className="h-px w-12 bg-brand-gold/30" />
-                        </div>
+                      )}
+                      {post.published_at && (
+                        <time className="text-xs text-gray-400">
+                          {new Date(post.published_at).toLocaleDateString("en-ZA", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </time>
+                      )}
                     </div>
-                </section>
-
-            </main>
-            <Footer />
-        </div>
-    );
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                No insights published yet. Check back soon.
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
 }

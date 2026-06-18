@@ -1,4 +1,4 @@
-﻿import { createClient } from '@/utils/pocketbase/server'
+import { createClient } from '@/utils/pocketbase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -88,8 +88,23 @@ export default async function FindServicePage({
                 filter: 'status = "active" && (package_tier = "pro-business" || package_tier = "pro-lead")',
                 expand: 'sector,area',
             })
-            // Shuffle array and take first 12
-            featuredProBusinesses = records.sort(() => 0.5 - Math.random()).slice(0, 12)
+            
+            const hourSeed = Math.floor(Date.now() / 3600000)
+            
+            const deterministicHash = (str: string) => {
+                let hash = 0
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i)
+                    hash |= 0
+                }
+                return hash
+            }
+
+            featuredProBusinesses = records
+                .map(biz => ({ biz, sortKey: deterministicHash(`${hourSeed}-${biz.id}`) }))
+                .sort((a, b) => a.sortKey - b.sortKey)
+                .map(({ biz }) => biz)
+                .slice(0, 12)
         } catch (e) {
             console.error('Featured businesses fetch error', e)
         }

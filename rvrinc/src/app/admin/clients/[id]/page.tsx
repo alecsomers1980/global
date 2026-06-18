@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/adminServer";
+import { createAdminClient } from "@/lib/supabase/adminServer";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, User, Mail, Calendar, Briefcase, FileText } from "lucide-react";
 
 export default async function ClientProfilePage({ params }: { params: { id: string } }) {
-    const supabase = createClient();
+    const supabase = createAdminClient();
 
     // Fetch client profile
     const { data: client } = await supabase

@@ -61,17 +61,17 @@ function ApprovalCard({
   };
 
   return (
-    <div className="rounded-[3px] border border-[#3D4067] bg-[#060A3C] p-4 space-y-3 shadow-md">
+    <div className="rounded-[3px] border border-mv-line bg-white p-4 space-y-3 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="font-heading font-semibold text-lg">
+          <h3 className="font-heading font-semibold text-lg text-mv-navy">
             {row.guestName} {row.guestSurname}
           </h3>
-          <p className="text-sm text-[#FFFADB]/70">{row.performance}</p>
+          <p className="text-sm text-mv-navy-muted">{row.performance}</p>
         </div>
         <StatusBadge status={row.status} />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-[#FFFADB]/80">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-mv-navy-muted">
         <p>
           <span className="font-medium">Category:</span> {row.category}
         </p>
@@ -81,7 +81,7 @@ function ApprovalCard({
         <p>
           <span className="font-medium">Seats:</span> {row.totalSeats}
           {row.houseSeats && (
-            <span className="ml-2 inline-block bg-[#62DAA9] text-[#060A3C] rounded-[3px] px-1.5 py-0.5 text-xs font-bold">
+            <span className="ml-2 inline-block bg-mv-mint text-mv-navy rounded-[3px] px-1.5 py-0.5 text-xs font-bold">
               HOUSE SEATS
             </span>
           )}
@@ -91,13 +91,13 @@ function ApprovalCard({
             <span className="font-medium">Notes:</span> {row.notes}
           </p>
         )}
-        <p className="col-span-full text-xs text-[#FFFADB]/50">
+        <p className="col-span-full text-xs text-mv-navy-muted">
           Submitted: {new Date(row.submittedAt).toLocaleString()}
         </p>
       </div>
 
       {error && (
-        <div className="text-red-400 text-sm bg-red-900/30 rounded-[3px] px-3 py-1">
+        <div className="text-red-700 text-sm bg-red-50 border border-red-200 rounded-[3px] px-3 py-1">
           {error}
         </div>
       )}
@@ -106,7 +106,7 @@ function ApprovalCard({
         <button
           onClick={handleApprove}
           disabled={loading}
-          className="px-4 py-2 rounded-[3px] bg-[#0F3193] text-white font-medium hover:bg-[#0F3193]/90 disabled:opacity-60 inline-flex items-center gap-1"
+          className="px-4 py-2 rounded-[3px] bg-mv-blue text-white font-medium hover:bg-mv-navy disabled:opacity-60 inline-flex items-center gap-1"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Processing..." : "Approve"}
@@ -116,7 +116,7 @@ function ApprovalCard({
           <button
             onClick={() => setDeclineOpen(true)}
             disabled={loading}
-            className="px-4 py-2 rounded-[3px] border border-red-500 text-red-400 font-medium hover:bg-red-500/10 disabled:opacity-60"
+            className="px-4 py-2 rounded-[3px] border border-red-500 text-red-600 font-medium hover:bg-red-50 disabled:opacity-60"
           >
             Decline
           </button>
@@ -127,7 +127,7 @@ function ApprovalCard({
               placeholder="Reason for decline"
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
-              className="rounded-[3px] border border-[#3D4067] bg-[#060A3C] text-[#FFFADB] px-3 py-1.5 text-sm w-64"
+              className="rounded-[3px] border border-mv-line bg-white text-mv-navy placeholder:text-mv-navy-muted px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-mv-blue/40 focus:border-mv-blue"
               disabled={loading}
             />
             <button
@@ -144,7 +144,7 @@ function ApprovalCard({
                 setDeclineReason("");
               }}
               disabled={loading}
-              className="text-sm underline text-[#FFFADB]/70 hover:text-[#FFFADB]"
+              className="text-sm underline text-mv-navy-muted hover:text-mv-navy"
             >
               Cancel
             </button>
@@ -169,15 +169,15 @@ export default function ApprovalQueue({ rows: initialRows }: { rows: CompRequest
     return (
       <div className="text-center py-16 space-y-4">
         {successMessage && (
-          <div className="bg-[#62DAA9] text-[#060A3C] px-4 py-2 rounded-[3px] inline-block text-sm font-medium">
+          <div className="bg-mv-mint text-mv-navy px-4 py-2 rounded-[3px] inline-block text-sm font-medium">
             {successMessage}
           </div>
         )}
-        <div className="rounded-[3px] bg-[#0F3193]/10 border border-[#0F3193] p-6 max-w-md mx-auto">
-          <p className="text-lg font-heading font-semibold text-[#62DAA9]">
+        <div className="rounded-[3px] bg-white border border-mv-line shadow-card p-6 max-w-md mx-auto">
+          <p className="text-lg font-heading font-semibold text-mv-navy">
             All requests processed
           </p>
-          <p className="text-sm text-[#FFFADB]/70 mt-1">
+          <p className="text-sm text-mv-navy-muted mt-1">
             There are no pending comp requests at the moment.
           </p>
         </div>
@@ -188,7 +188,7 @@ export default function ApprovalQueue({ rows: initialRows }: { rows: CompRequest
   return (
     <div className="space-y-4">
       {successMessage && (
-        <div className="bg-[#62DAA9] text-[#060A3C] px-4 py-2 rounded-[3px] text-sm font-medium mb-2">
+        <div className="bg-mv-mint text-mv-navy px-4 py-2 rounded-[3px] text-sm font-medium mb-2">
           {successMessage}
         </div>
       )}

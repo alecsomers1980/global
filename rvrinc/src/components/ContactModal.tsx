@@ -37,7 +37,8 @@ export function ContactModal({ isOpen, onClose, office }: ContactModalProps) {
                     email,
                     phone,
                     practiceArea: inquiryType,
-                    message: `[Office: ${office || "General"}]\n${message}`,
+                    office,
+                    message,
                 }),
             });
 

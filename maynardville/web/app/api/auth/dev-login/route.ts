@@ -4,7 +4,8 @@ import type { StaffSession } from "@/lib/types";
 
 // This is a temporary local-testing shortcut
 export async function GET(req: Request) {
-  if (process.env.NODE_ENV === "production") {
+  // Disabled in production UNLESS ALLOW_DEV_LOGIN=1 (used for the client demo deploy).
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEV_LOGIN !== "1") {
     return NextResponse.redirect(new URL("/staff-login", req.url));
   }
 
@@ -25,7 +26,7 @@ export async function GET(req: Request) {
     httpOnly: true,
     path: "/",
     sameSite: "lax",
-    secure: false, // dev-login only runs in non-production (guarded above), so local http is fine
+    secure: process.env.NODE_ENV === "production", // Secure flag on the deployed (https) demo
     maxAge: 60 * 60 * 12,
   });
 

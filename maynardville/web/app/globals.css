@@ -2,15 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --mv-navy: #060A3C;
-  --mv-blue: #0F3193;
-  --mv-mint: #62DAA9;
-  --mv-cream: #FFFADB;
-  --mv-navy-muted: #3D4067;
-}
+@layer base {
+  :root {
+    --color-mv-navy: #060A3C;
+    --color-mv-royal-blue: #0F3193;
+    --color-mv-mint: #62DAA9;
+    --color-mv-cream: #FFFADB;
+    --color-mv-navy-muted: #3D4067;
+    --color-mv-canvas: #F4F4F1;
+    --color-mv-line: #E6E6E1;
+  }
 
-body {
-  background-color: white;
-  color: var(--mv-navy);
+  body {
+    @apply bg-mv-canvas text-mv-navy font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading tracking-tightish font-semibold;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-mv-blue/50 ring-offset-1;
+  }
+
+  ::selection {
+    background: #62DAA9;
+    color: #060A3C;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: theme("colors.mv.navy-muted");
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

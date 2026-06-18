@@ -4,28 +4,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Shield, Zap, Heart, TrendingUp, Award, MapPin, Users, Scale, Clock, CheckCircle2 } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "About Us",
+    description: "Roets & Van Rensburg Inc. — over 25 years of Road Accident Fund litigation expertise across our Pretoria and Marble Hall offices. Meet our team and our story.",
+    alternates: { canonical: "/about" },
+};
 
 const pretoriaTeam = [
-    { name: "Tanya Zandberg", role: "Director & Sole Owner", image: "/images/Pretoria/Tanya.jpg" },
-    { name: "Karmi", role: "Legal Professional", image: "/images/Pretoria/Karmi.jpg" },
-    { name: "Karyn", role: "Legal Professional", image: "/images/Pretoria/Karyn.jpg" },
-    { name: "Roxanne", role: "Legal Professional", image: "/images/Pretoria/Roxanne.jpg" },
-    { name: "Sara", role: "Legal Professional", image: "/images/Pretoria/Sara.jpg" },
-    { name: "Tricia", role: "Legal Professional", image: "/images/Pretoria/Tricia.jpg" },
-    { name: "Werner", role: "Legal Professional", image: "/images/Pretoria/Werner.jpg" },
-    { name: "Nieuwoudt", role: "Legal Professional", image: "/images/Pretoria/Nieuwoudt.jpg" },
-    { name: "George", role: "Legal Professional", image: "/images/Pretoria/George.jpg" },
-    { name: "Lizzy", role: "Legal Professional", image: "/images/Pretoria/Lizzy.jpg" },
-    { name: "Minah", role: "Legal Professional", image: "/images/Pretoria/Minah.jpg" },
+    { name: "Tanya Louise Zandberg", role: "Director", image: "/images/Pretoria/Tanya.webp" },
+    { name: "Karmi du Plessis", role: "Senior Associate", image: "/images/Pretoria/Karmi.webp" },
+    { name: "Werner Jacobs", role: "Head of Legal Assistance", image: "/images/Pretoria/Werner.webp" },
+    { name: "Nieuwoudt du Plessis", role: "Professional Assistant", image: "/images/Pretoria/Nieuwoudt.webp" },
+    { name: "Karyn Ebersohn", role: "Candidate Attorney", image: "/images/Pretoria/Karyn.webp" },
+    { name: "Roxanne Allan", role: "Candidate Attorney", image: "/images/Pretoria/Roxanne.webp" },
+    { name: "Sara Nkwinika", role: "Receptionist & Legal Assistant", image: "/images/Pretoria/Sara.webp" },
+    { name: "Lizzy Nkwinika", role: "Legal Assistant", image: "/images/Pretoria/Lizzy.webp" },
+    { name: "Minah Lekokoane", role: "Legal Assistant", image: "/images/Pretoria/Minah.webp" },
+    { name: "George Nkwinika", role: "Messenger & Driver", image: "/images/Pretoria/George.webp" },
 ];
 
 const marbleHallTeam = [
-    { name: "Martie", role: "Office Manager", image: "/images/Marble Hall/Martie.jpg" },
-    { name: "Alwyn", role: "Legal Professional", image: "/images/Marble Hall/Alwyn.jpg" },
-    { name: "Joel", role: "Legal Professional", image: "/images/Marble Hall/Joel.jpg" },
-    { name: "Lineque", role: "Legal Professional", image: "/images/Marble Hall/Lineque.jpg" },
-    { name: "Olgah", role: "Legal Professional", image: "/images/Marble Hall/Olgah.jpg" },
-    { name: "Yolande", role: "Legal Professional", image: "/images/Marble Hall/Yolande.jpg" },
+    { name: "Alwyn Burger", role: "Senior Associate", image: "/images/Marble Hall/Alwyn.webp" },
+    { name: "Martie Pienaar", role: "Legal Secretary", image: "/images/Marble Hall/Martie.webp" },
+    { name: "Yolande Klopper", role: "Bookkeeper & HR", image: "/images/Marble Hall/Yolande.webp" },
+    { name: "Lineque Schoeman", role: "Receptionist & Legal Assistant", image: "/images/Marble Hall/Lineque.webp" },
+    { name: "Olgah Malefo", role: "Legal Assistant", image: "/images/Marble Hall/Olgah.webp" },
+    { name: "Joel Raborifi", role: "Messenger & Driver", image: "/images/Marble Hall/Joel.webp" },
 ];
 
 export default function AboutPage() {
@@ -157,17 +163,17 @@ export default function AboutPage() {
                         <div className="grid md:grid-cols-5 gap-12 items-start">
                             {/* Photo */}
                             <div className="md:col-span-2 flex flex-col items-center">
-                                <div className="relative w-64 h-80 rounded-xl overflow-hidden shadow-xl border-4 border-white">
+                                <div className="relative w-64 aspect-[3/4] rounded-xl overflow-hidden shadow-xl border-4 border-white bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
                                     <Image
-                                        src="/images/Pretoria/Tanya.jpg"
+                                        src="/images/Pretoria/Tanya.webp"
                                         alt="Tanya Louise Zandberg"
                                         fill
-                                        className="object-cover object-top"
+                                        className="object-cover object-center"
                                     />
                                 </div>
                                 <div className="mt-4 text-center">
                                     <h3 className="text-xl font-serif font-bold text-brand-navy">Tanya Louise Zandberg</h3>
-                                    <p className="text-brand-gold font-medium text-sm">Director & Sole Owner</p>
+                                    <p className="text-brand-gold font-medium text-sm">Director</p>
                                 </div>
                             </div>
 
@@ -212,18 +218,20 @@ export default function AboutPage() {
                                 <div className="grid grid-cols-3 gap-4">
                                     {pretoriaTeam.map((member) => (
                                         <div key={member.name} className="text-center group">
-                                            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md mb-2 bg-gray-100">
+                                            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md mb-2 bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
                                                 <Image
                                                     src={member.image}
                                                     alt={member.name}
                                                     fill
-                                                    className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                                                    sizes="(max-width: 768px) 33vw, 20vw"
+                                                    className="object-cover object-top transition-transform duration-300"
                                                 />
                                             </div>
-                                            <p className="font-semibold text-brand-navy text-xs">{member.name}</p>
+                                            <p className="font-semibold text-brand-navy text-xs leading-tight">{member.name}</p>
                                             <p className="text-gray-400 text-[10px]">{member.role}</p>
                                         </div>
                                     ))}
+
                                 </div>
                             </div>
 
@@ -236,15 +244,16 @@ export default function AboutPage() {
                                 <div className="grid grid-cols-3 gap-4">
                                     {marbleHallTeam.map((member) => (
                                         <div key={member.name} className="text-center group">
-                                            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md mb-2 bg-gray-100">
+                                            <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-md mb-2 bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
                                                 <Image
                                                     src={member.image}
                                                     alt={member.name}
                                                     fill
-                                                    className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                                                    sizes="(max-width: 768px) 33vw, 20vw"
+                                                    className="object-cover object-top transition-transform duration-300"
                                                 />
                                             </div>
-                                            <p className="font-semibold text-brand-navy text-xs">{member.name}</p>
+                                            <p className="font-semibold text-brand-navy text-xs leading-tight">{member.name}</p>
                                             <p className="text-gray-400 text-[10px]">{member.role}</p>
                                         </div>
                                     ))}
@@ -253,16 +262,16 @@ export default function AboutPage() {
                         </div>
 
                         {/* Group Photos */}
-                        <div className="grid md:grid-cols-2 gap-8 mt-16">
-                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-lg">
-                                <Image src="/images/Ptagroup.png" alt="Pretoria Office Team" fill className="object-cover" />
+                        <div className="grid md:grid-cols-2 gap-8 mt-16 items-start">
+                            <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
+                                <Image src="/images/Ptagroup.webp" alt="Pretoria Office Team" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover object-center" />
                                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-4">
                                     <p className="text-white font-semibold text-sm">Pretoria Team</p>
                                 </div>
                             </div>
-                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-lg">
-                                <Image src="/images/Marble Hall/Mhgroup.jpg" alt="Marble Hall Office Team" fill className="object-cover" />
-                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-4">
+                            <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
+                                <Image src="/images/Marble Hall/Mhgroup.webp" alt="Marble Hall Office Team" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-contain scale-[1.45] -translate-y-6" />
+                                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-4 z-10">
                                     <p className="text-white font-semibold text-sm">Marble Hall Team</p>
                                 </div>
                             </div>

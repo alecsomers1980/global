@@ -2,14 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getStatusLabel, getStatusColor, getPhaseProgress, getClientMessage, PHASE_CONFIG, type StatusPhase } from "@/lib/statusConfig";
 import { getCaseStatuses } from "@/lib/statuses";
+import { isRateLimited, getClientIp } from "@/lib/rateLimit";
+import { z } from "zod";
+
+const caseStatusSchema = z.object({
+    idNumber: z.string().trim().min(2, "Please enter a valid ID number, passport number, or file reference (e.g. KC001, KCS250)."),
+});
 
 export async function POST(req: NextRequest) {
     try {
-        const { idNumber } = await req.json();
-
-        if (!idNumber || typeof idNumber !== "string" || idNumber.trim().length < 2) {
+        if (isRateLimited(`case-status:${getClientIp(req)}`, 10, 60_000)) {
             return NextResponse.json(
-                { error: "Please enter a valid ID number, passport number, or file reference (e.g. KC001, KCS250)." },
+                { error: "Too many requests. Please try again in a minute." },
+                { status: 429 }
+            );
+        }
+
+        const body = await req.json();
+        const parsed = caseStatusSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: parsed.error.errors[0].message },
                 { status: 400 }
             );
         }
@@ -20,7 +34,7 @@ export async function POST(req: NextRequest) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!,
             { auth: { autoRefreshToken: false, persistSession: false } }
         );
-        const cleanId = idNumber.trim().toUpperCase();
+        const cleanId = parsed.data.idNumber.toUpperCase();
         const isFileRef = /^(KC|KCS|KCR|KCM|KCK|KCL|L-|BL-)/i.test(cleanId);
 
         let caseData: any = null;
@@ -70,20 +84,33 @@ export async function POST(req: NextRequest) {
                 const { data: exactMatch } = await supabase
                     .from("cases")
                     .select("*")
-                    .eq("id_number", idNumber.trim())
+                    .eq("id_number", parsed.data.idNumber)
                     .order("updated_at", { ascending: false })
                     .limit(1);
 
                 if (exactMatch && exactMatch.length > 0) {
                     caseData = exactMatch[0];
                 } else {
-                    // Final fallback: ilike on case_number or title
-                    const { data: byRef } = await supabase
+                    // Final fallback: ilike on case_number, then title — two parameterized
+                    // calls instead of a single raw .or() filter string to avoid letting
+                    // user input (which could contain "," or other PostgREST filter syntax) alter the query.
+                    const { data: byCaseNumber } = await supabase
                         .from("cases")
                         .select("*")
-                        .or(`case_number.ilike.%${cleanId}%,title.ilike.%${cleanId}%`)
+                        .ilike("case_number", `%${cleanId}%`)
                         .order("updated_at", { ascending: false })
                         .limit(1);
+
+                    const { data: byTitle } = !byCaseNumber?.length
+                        ? await supabase
+                            .from("cases")
+                            .select("*")
+                            .ilike("title", `%${cleanId}%`)
+                            .order("updated_at", { ascending: false })
+                            .limit(1)
+                        : { data: null };
+
+                    const byRef = byCaseNumber?.length ? byCaseNumber : byTitle;
 
                     if (byRef && byRef.length > 0) {
                         caseData = byRef[0];

@@ -1,19 +1,20 @@
-"use client";
+import type { CompRequestRow } from "@/lib/types";
 
-import { CompRequestRow } from "@/lib/types";
-
-const statusStyles: Record<string, string> = {
-  REQUEST: "bg-[#3D4067] text-[#FFFADB]",
-  "TO ISSUE": "bg-[#0F3193] text-[#FFFADB]",
-  ISSUED: "bg-[#62DAA9] text-[#060A3C]",
-  DECLINED: "bg-red-600 text-white",
+const statusStyles: Record<CompRequestRow["status"], string> = {
+  REQUEST: "bg-mv-navy-muted text-mv-cream",
+  "TO ISSUE": "bg-mv-blue text-mv-cream",
+  ISSUED: "bg-mv-mint text-mv-navy",
+  DECLINED: "bg-red-500 text-white",
+  CANCELLED: "bg-gray-300 text-mv-navy",
+  "DUPLICATE/ERROR": "bg-amber-400 text-mv-navy",
 };
 
 export default function StatusBadge({ status }: { status: CompRequestRow["status"] }) {
-  const colors = statusStyles[status] || "bg-gray-200 text-gray-700";
+  const classes = statusStyles[status] ?? "bg-mv-line text-mv-navy";
+
   return (
     <span
-      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-[3px] ${colors}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold tracking-wide uppercase ${classes}`}
     >
       {status}
     </span>

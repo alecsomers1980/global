@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/adminServer'
+import { createAdminClient } from '@/lib/supabase/adminServer'
 import StatusManager from '@/components/admin/StatusManager'
 
 export default async function StatusesPage() {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { data: rows } = await supabase
     .from('case_statuses')
     .select('*')

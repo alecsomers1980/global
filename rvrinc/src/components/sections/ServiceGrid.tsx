@@ -1,42 +1,42 @@
 import Link from "next/link";
-import { ArrowRight, Scale, Briefcase, Heart, Home, AlertCircle, Gavel } from "lucide-react";
+import { ArrowRight, Car, UserRound, Users, Stethoscope, TrendingUp, Clock } from "lucide-react";
 
 const services = [
     {
-        icon: Scale,
-        title: "Civil Litigation",
-        description: "Expert representation in complex disputes, ensuring your rights are defended in and out of court.",
-        slug: "litigation",
+        icon: Car,
+        title: "Pedestrian & Passenger Claims",
+        description: "Whether you were struck as a pedestrian or injured as a passenger, you have a right to claim from the Road Accident Fund. We handle the full process — from lodgement to payment.",
+        slug: "pedestrian-passenger",
     },
     {
-        icon: Heart,
-        title: "Family Law",
-        description: "Compassionate guidance through divorce, custody, and matrimonial property matters.",
-        slug: "family",
+        icon: UserRound,
+        title: "Serious Injury Assessment",
+        description: "If your injuries qualify under the serious injury threshold, you may claim general damages. We guide you through the HPCSA assessment and fight for the compensation you deserve.",
+        slug: "serious-injury",
     },
     {
-        icon: Briefcase,
-        title: "Commercial Law",
-        description: "Strategic legal solutions for businesses, contracts, and corporate governance.",
-        slug: "commercial",
+        icon: TrendingUp,
+        title: "Loss of Earnings & Support",
+        description: "An accident that prevents you from working — or that took your breadwinner — carries a quantifiable financial loss. We build a proper actuarial claim to recover past and future income.",
+        slug: "loss-of-earnings",
     },
     {
-        icon: Home,
-        title: "Property & Estates",
-        description: "Assistance with transfers, evictions, wills, and deceased estate administration.",
-        slug: "property",
+        icon: Stethoscope,
+        title: "Medical Expenses",
+        description: "Past hospital bills, specialist visits, rehabilitation, and future medical costs can all form part of your RAF claim. We ensure nothing is left out of your schedule of damages.",
+        slug: "medical-expenses",
     },
     {
-        icon: AlertCircle,
-        title: "Personal Injury",
-        description: "Fighting for fair compensation in RAF and medical negligence claims.",
-        slug: "personal-injury",
+        icon: Users,
+        title: "Dependants & Wrongful Death",
+        description: "If a family member was killed in a road accident, dependants may claim for loss of support. We handle funeral costs, dependency calculations, and the full RAF process on your behalf.",
+        slug: "wrongful-death",
     },
     {
-        icon: Gavel,
-        title: "Criminal Law",
-        description: "Strong defense representation for bail applications and criminal trials.",
-        slug: "criminal",
+        icon: Clock,
+        title: "Prescription & Late Claims",
+        description: "RAF claims prescribe three years from the accident date — missing this deadline can bar your claim entirely. Contact us immediately; in some circumstances late claims can still be saved.",
+        slug: "prescription",
     },
 ];
 
@@ -46,10 +46,10 @@ export function ServiceGrid() {
             <div className="container">
                 <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
                     <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-navy">
-                        Our Practice Areas
+                        Road Accident Fund Claims
                     </h2>
                     <p className="text-muted-foreground text-lg">
-                        We surpass expectations in Road Accident Fund matters and assist correspondents in all kinds of legal matters.
+                        We specialise exclusively in RAF matters. From first consultation to final payment, our attorneys manage every step of your Road Accident Fund claim — at no upfront cost to you.
                     </p>
                 </div>
 
@@ -66,12 +66,9 @@ export function ServiceGrid() {
                             <h3 className="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-gold transition-colors">
                                 {service.title}
                             </h3>
-                            <p className="text-muted-foreground mb-6 line-clamp-3">
+                            <p className="text-muted-foreground mb-6">
                                 {service.description}
                             </p>
-                            <div className="flex items-center text-sm font-semibold text-brand-navy group-hover:underline">
-                                Learn More <ArrowRight className="w-4 h-4 ml-1" />
-                            </div>
                         </Link>
                     ))}
                 </div>

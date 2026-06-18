@@ -1,4 +1,5 @@
-import { verifyAdminPassword, createSessionCookie } from '@/lib/admin';
+import { verifyAdminLogin, createSessionCookie } from '@/lib/admin';
+import { ensureSchema } from '@/lib/db';
 
 export const runtime = 'nodejs';
 
@@ -18,18 +19,30 @@ export async function POST(req: Request) {
   attempts.set(ip, recent);
 
   // --- Parse body ---
+  let email: string;
   let password: string;
+  let remember: boolean;
   try {
     const body = await req.json();
+    email = body.email;
     password = body.password;
+    remember = !!body.remember;
   } catch {
     return Response.json({ error: 'Invalid request' }, { status: 400 });
   }
 
-  if (await verifyAdminPassword(password)) {
-    await createSessionCookie();
+  if (!email || !password) {
+    return Response.json({ error: 'Email and password are required.' }, { status: 400 });
+  }
+
+  // Ensure the admin row exists (seeds from env on first run).
+  await ensureSchema();
+
+  const admin = await verifyAdminLogin(email, password);
+  if (admin) {
+    await createSessionCookie(admin.id, remember);
     return Response.json({ ok: true });
   }
 
-  return Response.json({ error: 'Invalid password' }, { status: 401 });
+  return Response.json({ error: 'Invalid email or password' }, { status: 401 });
 }

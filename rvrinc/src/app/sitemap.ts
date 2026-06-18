@@ -1,9 +1,17 @@
 import { MetadataRoute } from 'next'
+import { practiceAreas } from '@/lib/data'
+import { createClient } from '@/lib/supabase/server'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rvrinc.co.za'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
+  const supabase = createClient()
+
+  const { data: posts } = await supabase
+    .from('insights_posts')
+    .select('slug, published_at')
+    .eq('status', 'PUBLISHED')
 
   const staticRoutes = [
     { url: SITE_URL, priority: 1 },
@@ -19,14 +27,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/paia-manual`, priority: 0.3 },
   ]
 
-  const practiceAreas = [
-    'litigation', 'family', 'commercial', 'property', 'personal-injury', 'criminal',
-  ]
-
-  const teamSlugs = [
-    'marius-roets', 'johan-van-rensburg', 'sarah-nkosi',
-  ]
-
   return [
     ...staticRoutes.map((r) => ({
       url: r.url,
@@ -34,17 +34,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly' as const,
       priority: r.priority,
     })),
-    ...practiceAreas.map((slug) => ({
-      url: `${SITE_URL}/practice-areas/${slug}`,
+    ...practiceAreas.map((area) => ({
+      url: `${SITE_URL}/practice-areas/${area.slug}`,
       lastModified,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
-    ...teamSlugs.map((slug) => ({
-      url: `${SITE_URL}/team/${slug}`,
-      lastModified,
+    ...(posts ?? []).map((post) => ({
+      url: `${SITE_URL}/insights/${post.slug}`,
+      lastModified: post.published_at ? new Date(post.published_at) : lastModified,
       changeFrequency: 'monthly' as const,
-      priority: 0.5,
+      priority: 0.6,
     })),
   ]
 }

@@ -7,8 +7,28 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { PracticeArea } from "@/types";
+import type { Metadata } from "next";
 
+export const revalidate = 3600;
 
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const supabase = createClient();
+    const { data: area } = await supabase
+        .from("practice_areas")
+        .select("title, description")
+        .eq("slug", params.slug)
+        .single();
+
+    if (!area) {
+        return { title: "Practice Area Not Found" };
+    }
+
+    return {
+        title: area.title,
+        description: area.description,
+        alternates: { canonical: `/practice-areas/${params.slug}` },
+    };
+}
 
 export default async function PracticeAreaDetail({ params }: { params: { slug: string } }) {
     const supabase = createClient();

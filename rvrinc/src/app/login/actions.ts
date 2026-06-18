@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/adminServer";
+import { createAdminClient } from "@/lib/supabase/adminServer";
 
 export async function resolveEmail(username: string) {
-    const supabase = createClient();
+    const supabase = createAdminClient();
 
     // If it looks like an email, return as-is
     if (username.includes("@")) return { email: username };

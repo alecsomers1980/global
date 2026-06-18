@@ -209,7 +209,7 @@ function ramenhead_skip_elementor_google_fonts( $print ) {
  */
 add_action( 'wp_footer', 'ramenhead_media_filter_script' );
 function ramenhead_media_filter_script() {
-    if ( ! is_page( 'media' ) ) {
+    if ( ! is_page( array( 'media', 'media-and-press' ) ) ) {
         return;
     }
     ?>

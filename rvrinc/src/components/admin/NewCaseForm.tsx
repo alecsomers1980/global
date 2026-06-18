@@ -17,7 +17,7 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
     const [attorneyId, setAttorneyId] = useState("");
     const [branch, setBranch] = useState(userBranch || "pretoria");
     const [description, setDescription] = useState("");
-    const [status, setStatus] = useState("consultation_complete");
+    const [status, setStatus] = useState("matter_not_yet_updated");
     const [accidentDate, setAccidentDate] = useState("");
     const [idNumber, setIdNumber] = useState("");
     const [rafRef, setRafRef] = useState("");

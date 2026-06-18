@@ -1,9 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { isRateLimited, getClientIp } from "@/lib/rateLimit";
 
 // This endpoint runs the RAF status migration.
 // It creates the necessary tables and columns using individual Supabase operations.
 // Access: POST /api/setup-raf-statuses
-export async function POST() {
+export async function POST(req: NextRequest) {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (!profile || !["admin", "attorney", "staff"].includes(profile.role)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (isRateLimited(`setup-raf:${getClientIp(req)}`, 3, 60_000)) {
+        return NextResponse.json(
+            { error: "Too many requests. Please try again in a minute." },
+            { status: 429 }
+        );
+    }
+
     // Use the Supabase REST API directly for DDL operations
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;

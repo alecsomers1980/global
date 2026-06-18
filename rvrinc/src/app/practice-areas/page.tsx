@@ -6,6 +6,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Scale, Briefcase, Heart, Home, AlertCircle, Gavel } from "lucide-react";
 import { PracticeArea } from "@/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Practice Areas",
+    description: "Comprehensive legal services including Road Accident Fund claims, civil litigation, family law, commercial law, property law and criminal law in Pretoria and Marble Hall.",
+    alternates: { canonical: "/practice-areas" },
+};
 
 // Icon mapping helper
 const IconMap: Record<string, any> = {

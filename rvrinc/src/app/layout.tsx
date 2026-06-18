@@ -34,6 +34,23 @@ export const metadata: Metadata = {
     },
 };
 
+const legalServiceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LegalService",
+    name: "Roets & Van Rensburg Inc.",
+    url: SITE_URL,
+    telephone: "+27871505683",
+    email: "info@rvrinc.co.za",
+    address: {
+        "@type": "PostalAddress",
+        streetAddress: "40 Van Ryneveld Avenue, Pierre van Ryneveld",
+        addressLocality: "Pretoria",
+        addressCountry: "ZA",
+    },
+    areaServed: ["Pretoria", "Marble Hall", "Gauteng", "Limpopo", "South Africa"],
+    priceRange: "$$",
+};
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -42,6 +59,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={cn(inter.variable, playfair.variable, "min-h-screen bg-background font-sans antialiased")}>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(legalServiceJsonLd) }}
+                />
                 {children}
             </body>
         </html>

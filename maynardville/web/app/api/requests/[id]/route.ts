@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStaffFromRequest } from "@/lib/session";
 import { approveRequest, declineRequest, issueRequest } from "@/lib/comps";
+import { notifyApproved, notifyDeclined, notifyIssued } from "@/lib/notifications";
 
 export async function PATCH(
   req: Request,
@@ -22,6 +23,7 @@ export async function PATCH(
         );
       }
       await approveRequest(params.id, staff.name);
+      await notifyApproved(params.id);
       return NextResponse.json({ ok: true });
     }
 
@@ -39,6 +41,7 @@ export async function PATCH(
         );
       }
       await declineRequest(params.id, staff.name, reason.trim());
+      await notifyDeclined(params.id, reason.trim());
       return NextResponse.json({ ok: true });
     }
 
@@ -66,6 +69,7 @@ export async function PATCH(
         seatNumbers.trim(),
         ticketReference.trim()
       );
+      await notifyIssued(params.id);
       return NextResponse.json({ ok: true });
     }
 

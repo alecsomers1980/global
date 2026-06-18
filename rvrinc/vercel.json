@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/check-prescriptions",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/generate-insights",
+      "schedule": "0 0 1 * *"
+    },
+    {
+      "path": "/api/cron/publish-insights",
+      "schedule": "0 0 * * *"
     }
   ]
 }

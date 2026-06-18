@@ -1,17 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendContactEmail } from "@/lib/email";
 import { z } from "zod";
+import { isRateLimited, getClientIp } from "@/lib/rateLimit";
 
 const contactSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Valid email is required"),
+    phone: z.string().optional(),
     practiceArea: z.string().min(1, "Practice area is required"),
+    office: z.string().optional(),
     message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 export async function POST(req: NextRequest) {
     try {
+        if (isRateLimited(`contact:${getClientIp(req)}`, 5, 60_000)) {
+            return NextResponse.json(
+                { error: "Too many requests. Please try again in a minute." },
+                { status: 429 }
+            );
+        }
+
         const body = await req.json();
         const parsed = contactSchema.safeParse(body);
 

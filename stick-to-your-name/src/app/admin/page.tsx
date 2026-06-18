@@ -1,7 +1,8 @@
 import { isAdmin } from '@/lib/admin';
-import { listOrders } from '@/lib/db';
+import { ensureSchema, listOrders } from '@/lib/db';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import AdminNav from './AdminNav';
+import OrderStatusControl from './OrderStatusControl';
 import {
   Package,
   CheckCircle,
@@ -173,6 +174,12 @@ function OrderCard({ order }: { order: OrderRow }) {
           <Tag className="w-3 h-3" /> Bag Tag
         </span>
       )}
+
+      {/* status control */}
+      <div className="flex items-center gap-2 border-t pt-3">
+        <span className="text-xs text-gray-500">Update status:</span>
+        <OrderStatusControl orderId={order.id} current={order.status} />
+      </div>
     </div>
   );
 }
@@ -181,7 +188,8 @@ function OrderCard({ order }: { order: OrderRow }) {
 export default async function AdminPage() {
   if (!(await isAdmin())) redirect('/admin/login');
 
-  const orders: OrderRow[] = await listOrders(200);
+  await ensureSchema();
+  const orders: OrderRow[] = await listOrders();
 
   const totalOrders = orders.length;
   const paidOrders = orders.filter((o) => o.status === 'paid');
@@ -191,16 +199,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* top bar */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Stick to Your Name &middot; Admin</h1>
-        <Link
-          href="/api/admin/logout"
-          className="text-sm text-gray-600 hover:text-brand-pink underline underline-offset-2"
-        >
-          Sign out
-        </Link>
-      </header>
+      <AdminNav />
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-8">
         {/* stats */}

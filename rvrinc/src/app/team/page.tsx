@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Linkedin } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Our Team",
+    description: "Meet the dedicated legal professionals of Roets & Van Rensburg Inc. across our Pretoria and Marble Hall branches.",
+    alternates: { canonical: "/team" },
+};
 
 interface TeamMember {
     name: string;
@@ -14,26 +21,26 @@ interface TeamMember {
 }
 
 const pretoriaStaff: TeamMember[] = [
-    { name: "Tanya Kehrhahn", role: "Director", image: "/images/Pretoria/Tanya.jpg" },
-    { name: "Karmi du Plessis", role: "Associate Attorney", image: "/images/Pretoria/Karmi.jpg" },
-    { name: "Nieuwoudt du Plessis", role: "Professional Assistant (Attorney)", image: "/images/Pretoria/Nieuwoudt.jpg" },
-    { name: "Karyn Ebersohn", role: "Candidate Attorney", image: "/images/Pretoria/Karyn.jpg" },
-    { name: "Minah Lekokoane", role: "Candidate Attorney", image: "/images/Pretoria/Minah.jpg" },
-    { name: "Roxanne Allan", role: "Candidate Attorney", image: "/images/Pretoria/Roxanne.jpg" },
-    { name: "Lizzy Nkwinika", role: "Legal Assistant", image: "/images/Pretoria/Lizzy.jpg" },
-    { name: "Sara Nkwinika", role: "Receptionist & Legal Assistant", image: "/images/Pretoria/Sara.jpg" },
-    { name: "Tricia Lombard", role: "Legal Secretary", image: "/images/Pretoria/Tricia.jpg" },
-    { name: "Werner Jacobs", role: "Legal Assistant", image: "/images/Pretoria/Werner.jpg" },
-    { name: "George Nkwinika", role: "Messenger and Driver", image: "/images/Pretoria/George.jpg" },
+    { name: "Tanya Kehrhahn", role: "Director", image: "/images/Pretoria/Tanya.webp" },
+    { name: "Karmi du Plessis", role: "Associate Attorney", image: "/images/Pretoria/Karmi.webp" },
+    { name: "Nieuwoudt du Plessis", role: "Professional Assistant (Attorney)", image: "/images/Pretoria/Nieuwoudt.webp" },
+    { name: "Karyn Ebersohn", role: "Candidate Attorney", image: "/images/Pretoria/Karyn.webp" },
+    { name: "Minah Lekokoane", role: "Candidate Attorney", image: "/images/Pretoria/Minah.webp" },
+    { name: "Roxanne Allan", role: "Candidate Attorney", image: "/images/Pretoria/Roxanne.webp" },
+    { name: "Lizzy Nkwinika", role: "Legal Assistant", image: "/images/Pretoria/Lizzy.webp" },
+    { name: "Sara Nkwinika", role: "Receptionist & Legal Assistant", image: "/images/Pretoria/Sara.webp" },
+    { name: "Tricia Lombard", role: "Legal Secretary", image: "/images/Pretoria/Tricia.webp" },
+    { name: "Werner Jacobs", role: "Legal Assistant", image: "/images/Pretoria/Werner.webp" },
+    { name: "George Nkwinika", role: "Messenger and Driver", image: "/images/Pretoria/George.webp" },
 ];
 
 const marbleHallStaff: TeamMember[] = [
-    { name: "Alwyn Burger", role: "Attorney", image: "/images/Marble Hall/Alwyn.jpg" },
-    { name: "Yolandé Klopper", role: "Accountant & HR", image: "/images/Marble Hall/Yolande.jpg" },
-    { name: "Martie Pienaar", role: "Legal Secretary", image: "/images/Marble Hall/Martie.jpg" },
-    { name: "Olgah Malefo", role: "Legal Assistant", image: "/images/Marble Hall/Olgah.jpg" },
-    { name: "Lineque Schoeman", role: "Receptionist & Legal Assistant", image: "/images/Marble Hall/Lineque.jpg" },
-    { name: "Joel Raborifi", role: "Messenger and Driver", image: "/images/Marble Hall/Joel.jpg" },
+    { name: "Alwyn Burger", role: "Attorney", image: "/images/Marble Hall/Alwyn.webp" },
+    { name: "Yolandé Klopper", role: "Accountant & HR", image: "/images/Marble Hall/Yolande.webp" },
+    { name: "Martie Pienaar", role: "Legal Secretary", image: "/images/Marble Hall/Martie.webp" },
+    { name: "Olgah Malefo", role: "Legal Assistant", image: "/images/Marble Hall/Olgah.webp" },
+    { name: "Lineque Schoeman", role: "Receptionist & Legal Assistant", image: "/images/Marble Hall/Lineque.webp" },
+    { name: "Joel Raborifi", role: "Messenger and Driver", image: "/images/Marble Hall/Joel.webp" },
 ];
 
 function TeamGrid({ title, members }: { title: string, members: TeamMember[] }) {
@@ -46,7 +53,7 @@ function TeamGrid({ title, members }: { title: string, members: TeamMember[] }) 
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 justify-center">
                     {members.map((member) => (
                         <div key={member.name} className="flex flex-col items-center text-center group w-full max-w-xs mx-auto">
-                            <div className="w-full aspect-[3/4] relative bg-gray-200 rounded-xl mb-6 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300">
+                            <div className="w-full aspect-[3/4] relative bg-[url('/images/staff-bg.jpg')] bg-cover bg-center rounded-xl mb-6 overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-300">
                                 <Image
                                     src={member.image}
                                     alt={member.name}
@@ -105,24 +112,24 @@ export default function TeamPage() {
                         </h2>
                         <div className="grid md:grid-cols-2 gap-12">
                             <div className="space-y-4 text-center">
-                                <div className="relative aspect-[3/2] rounded-xl overflow-hidden shadow-2xl skew-y-1 transform transition-transform hover:skew-y-0 duration-500">
+                                <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl skew-y-1 transform transition-transform hover:skew-y-0 duration-500 bg-[url('/images/staff-bg.jpg')] bg-cover bg-center">
                                     <Image
-                                        src="/images/Ptagroup.png"
+                                        src="/images/Ptagroup.webp"
                                         alt="Pretoria Team"
                                         fill
-                                        className="object-cover"
+                                        className="object-cover object-center"
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                     />
                                 </div>
                                 <h3 className="text-xl font-bold text-brand-navy pt-4">Pretoria Team</h3>
                             </div>
                             <div className="space-y-4 text-center">
-                                <div className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-2xl -skew-y-1 transform transition-transform hover:skew-y-0 duration-500 max-w-sm mx-auto">
+                                <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl -skew-y-1 transform transition-transform hover:skew-y-0 duration-500 bg-[url('/images/staff-bg.jpg')] bg-cover bg-center z-0">
                                     <Image
-                                        src="/images/Mhgroup.jpg"
+                                        src="/images/Marble Hall/Mhgroup.webp"
                                         alt="Marble Hall Team"
                                         fill
-                                        className="object-cover"
+                                        className="object-contain scale-[1.45] -translate-y-6"
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                     />
                                 </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createCompRequest, getRequesterById } from "@/lib/airtable";
+import { notifySubmitted } from "@/lib/notifications";
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,6 +54,8 @@ export async function POST(request: NextRequest) {
       houseSeats: Boolean(houseSeats),
       notes: notes?.trim() ?? "",
     });
+
+    await notifySubmitted(id);
 
     return NextResponse.json({ ok: true, id });
 

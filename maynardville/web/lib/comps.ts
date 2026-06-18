@@ -1,4 +1,5 @@
 import type { CompRequestRow } from "./types";
+import { isPreview, mockCompRequestRows } from "./mock-data";
 
 function getAirtableEnv() {
   const apiKey = process.env.AIRTABLE_API_KEY;
@@ -44,6 +45,9 @@ function orFormula(field: string, values: string[]): string {
 }
 
 export async function listCompRequestRows(statuses: string[]): Promise<CompRequestRow[]> {
+  if (isPreview()) {
+    return mockCompRequestRows.filter((r) => statuses.includes(r.status));
+  }
   // 1. Fetch all Comp Requests filtered by Ticket Status
   const filter = orFormula("Ticket Status", statuses);
   const query = `Comp Requests?filterByFormula=${encodeURIComponent(filter)}`;
@@ -108,6 +112,7 @@ export async function listCompRequestRows(statuses: string[]): Promise<CompReque
 }
 
 export async function approveRequest(id: string, staffName: string): Promise<void> {
+  if (isPreview()) return;
   await cFetch(`Comp Requests/${id}`, {
     method: "PATCH",
     body: JSON.stringify({
@@ -129,6 +134,7 @@ export async function approveRequest(id: string, staffName: string): Promise<voi
 }
 
 export async function declineRequest(id: string, staffName: string, reason: string): Promise<void> {
+  if (isPreview()) return;
   await cFetch(`Comp Requests/${id}`, {
     method: "PATCH",
     body: JSON.stringify({
@@ -157,6 +163,8 @@ export async function issueRequest(
   if (!seatNumbers || !ticketReference) {
     throw new Error("Seat numbers and ticket reference are required to issue tickets.");
   }
+
+  if (isPreview()) return;
 
   await cFetch(`Comp Requests/${id}`, {
     method: "PATCH",

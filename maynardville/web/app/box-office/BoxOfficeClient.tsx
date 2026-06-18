@@ -46,17 +46,17 @@ function ToIssueCard({
   };
 
   return (
-    <div className="rounded-[3px] border border-[#3D4067] bg-[#060A3C] p-4 space-y-3">
+    <div className="rounded-[3px] border border-mv-line bg-white p-4 space-y-3 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="font-heading font-semibold text-lg">
+          <h3 className="font-heading font-semibold text-lg text-mv-navy">
             {row.guestName} {row.guestSurname}
           </h3>
-          <p className="text-sm text-[#FFFADB]/70">{row.performance}</p>
+          <p className="text-sm text-mv-navy-muted">{row.performance}</p>
         </div>
         <StatusBadge status={row.status} />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-[#FFFADB]/80">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-mv-navy-muted">
         <p>
           <span className="font-medium">Category:</span> {row.category}
         </p>
@@ -66,7 +66,7 @@ function ToIssueCard({
         <p>
           <span className="font-medium">Seats:</span> {row.totalSeats}
           {row.houseSeats && (
-            <span className="ml-2 inline-block bg-[#62DAA9] text-[#060A3C] rounded-[3px] px-1.5 py-0.5 text-xs font-bold">
+            <span className="ml-2 inline-block bg-mv-mint text-mv-navy rounded-[3px] px-1.5 py-0.5 text-xs font-bold">
               HOUSE SEATS
             </span>
           )}
@@ -80,39 +80,39 @@ function ToIssueCard({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium mb-1">Seat Numbers</label>
+          <label className="block text-xs font-medium mb-1 text-mv-navy-muted">Seat Numbers</label>
           <input
             type="text"
             value={seatNumbers}
             onChange={(e) => setSeatNumbers(e.target.value)}
             placeholder="e.g. A12-14"
-            className="w-full rounded-[3px] border border-[#62DAA9] bg-[#060A3C] text-[#FFFADB] px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#62DAA9]"
+            className="w-full rounded-[3px] border border-mv-line bg-white text-mv-navy placeholder:text-mv-navy-muted px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mv-blue/40 focus:border-mv-blue"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium mb-1">Ticket Reference</label>
+          <label className="block text-xs font-medium mb-1 text-mv-navy-muted">Ticket Reference</label>
           <input
             type="text"
             value={ticketReference}
             onChange={(e) => setTicketReference(e.target.value)}
             placeholder="REF-1234"
-            className="w-full rounded-[3px] border border-[#62DAA9] bg-[#060A3C] text-[#FFFADB] px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#62DAA9]"
+            className="w-full rounded-[3px] border border-mv-line bg-white text-mv-navy placeholder:text-mv-navy-muted px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mv-blue/40 focus:border-mv-blue"
           />
         </div>
       </div>
 
       {!canIssue && seatNumbers === "" && ticketReference === "" && (
-        <p className="text-xs text-[#FFFADB]/50">
+        <p className="text-xs text-mv-navy-muted">
           Enter both seat numbers and ticket reference to issue.
         </p>
       )}
       {!canIssue && (seatNumbers === "" || ticketReference === "") && (
-        <p className="text-xs text-[#FFFADB]/50">
+        <p className="text-xs text-mv-navy-muted">
           Both fields are required.
         </p>
       )}
       {error && (
-        <div className="text-red-400 text-sm bg-red-900/30 rounded-[3px] px-3 py-1">
+        <div className="text-red-700 text-sm bg-red-50 border border-red-200 rounded-[3px] px-3 py-1">
           {error}
         </div>
       )}
@@ -120,7 +120,7 @@ function ToIssueCard({
       <button
         onClick={handleIssue}
         disabled={!canIssue || loading}
-        className="w-full sm:w-auto px-5 py-2 rounded-[3px] bg-[#62DAA9] text-[#060A3C] font-semibold hover:bg-[#62DAA9]/90 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1"
+        className="w-full sm:w-auto px-5 py-2 rounded-[3px] bg-mv-mint text-mv-navy font-semibold hover:brightness-105 disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         Issue Tickets
@@ -156,13 +156,13 @@ export default function BoxOfficeClient({
 
   return (
     <div>
-      <div className="flex border-b border-[#3D4067] mb-6">
+      <div className="flex border-b border-mv-line mb-6">
         <button
           onClick={() => setTab("toissue")}
           className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
             tab === "toissue"
-              ? "border-[#62DAA9] text-[#62DAA9]"
-              : "border-transparent text-[#FFFADB]/70 hover:text-white"
+              ? "border-mv-mint text-mv-navy"
+              : "border-transparent text-mv-navy-muted hover:text-mv-navy"
           }`}
         >
           To Issue ({toIssueList.length})
@@ -171,8 +171,8 @@ export default function BoxOfficeClient({
           onClick={() => setTab("issued")}
           className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
             tab === "issued"
-              ? "border-[#62DAA9] text-[#62DAA9]"
-              : "border-transparent text-[#FFFADB]/70 hover:text-white"
+              ? "border-mv-mint text-mv-navy"
+              : "border-transparent text-mv-navy-muted hover:text-mv-navy"
           }`}
         >
           Full Comps List ({issuedList.length})
@@ -180,7 +180,7 @@ export default function BoxOfficeClient({
       </div>
 
       {successMessage && (
-        <div className="bg-[#62DAA9] text-[#060A3C] px-4 py-2 rounded-[3px] text-sm font-medium mb-4">
+        <div className="bg-mv-mint text-mv-navy px-4 py-2 rounded-[3px] text-sm font-medium mb-4">
           {successMessage}
         </div>
       )}
@@ -188,7 +188,7 @@ export default function BoxOfficeClient({
       {tab === "toissue" && (
         <div>
           {toIssueList.length === 0 ? (
-            <p className="text-center py-12 text-[#FFFADB]/60">
+            <p className="text-center py-12 text-mv-navy-muted">
               No tickets waiting to be issued.
             </p>
           ) : (
@@ -204,18 +204,18 @@ export default function BoxOfficeClient({
       {tab === "issued" && (
         <div>
           {issuedList.length === 0 ? (
-            <p className="text-center py-12 text-[#FFFADB]/60">
+            <p className="text-center py-12 text-mv-navy-muted">
               No issued comps yet.
             </p>
           ) : (
             <>
-              <p className="text-xs text-[#FFFADB]/50 mb-3">
+              <p className="text-xs text-mv-navy-muted mb-3">
                 Editing locked to Jaco & Wessel
               </p>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto border border-mv-line rounded shadow-card bg-white">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="border-b border-[#3D4067] text-left text-[#FFFADB]/70">
+                    <tr className="border-b border-mv-line text-left text-mv-navy-muted bg-mv-canvas">
                       <th className="py-2 px-3 font-medium">Guest</th>
                       <th className="py-2 px-3 font-medium">Performance</th>
                       <th className="py-2 px-3 font-medium">Category</th>
@@ -227,16 +227,16 @@ export default function BoxOfficeClient({
                   </thead>
                   <tbody>
                     {issuedList.map((row) => (
-                      <tr key={row.id} className="border-b border-[#3D4067]/50">
-                        <td className="py-2 px-3">
+                      <tr key={row.id} className="border-b border-mv-line">
+                        <td className="py-2 px-3 text-mv-navy">
                           {row.guestName} {row.guestSurname}
                         </td>
-                        <td className="py-2 px-3">{row.performance}</td>
-                        <td className="py-2 px-3">{row.category}</td>
-                        <td className="py-2 px-3">{row.requester}</td>
-                        <td className="py-2 px-3">{row.totalSeats}</td>
-                        <td className="py-2 px-3">{row.seatNumbers || "—"}</td>
-                        <td className="py-2 px-3">{row.ticketReference || "—"}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.performance}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.category}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.requester}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.totalSeats}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.seatNumbers || "—"}</td>
+                        <td className="py-2 px-3 text-mv-navy">{row.ticketReference || "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -246,13 +246,13 @@ export default function BoxOfficeClient({
                 {issuedList.map((row) => (
                   <div
                     key={row.id}
-                    className="border border-[#3D4067] rounded-[3px] p-3 bg-[#060A3C]"
+                    className="border border-mv-line rounded-[3px] p-3 bg-white shadow-card"
                   >
                     <div className="flex justify-between">
                       <span className="font-medium">
                         {row.guestName} {row.guestSurname}
                       </span>
-                      <span className="text-xs text-[#62DAA9]">
+                      <span className="text-xs text-mv-blue">
                         {row.performance}
                       </span>
                     </div>
@@ -266,7 +266,7 @@ export default function BoxOfficeClient({
                   </div>
                 ))}
               </div>
-              <p className="sm:hidden text-xs text-[#FFFADB]/50 mt-3">
+              <p className="sm:hidden text-xs text-mv-navy-muted mt-3">
                 Editing locked to Jaco & Wessel
               </p>
             </>

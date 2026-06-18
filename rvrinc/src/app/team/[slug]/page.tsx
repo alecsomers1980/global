@@ -6,8 +6,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail, Award, BookOpen, ArrowLeft } from "lucide-react";
 import { Attorney } from "@/types";
+import type { Metadata } from "next";
 
+export const revalidate = 3600;
 
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const supabase = createClient();
+    const { data: attorney } = await supabase
+        .from("attorneys")
+        .select("name, role, bio")
+        .eq("slug", params.slug)
+        .single();
+
+    if (!attorney) {
+        return { title: "Attorney Not Found" };
+    }
+
+    return {
+        title: `${attorney.name} — ${attorney.role}`,
+        description: attorney.bio,
+        alternates: { canonical: `/team/${params.slug}` },
+    };
+}
 
 export default async function AttorneyProfile({ params }: { params: { slug: string } }) {
     const supabase = createClient();

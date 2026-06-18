@@ -1,81 +1,94 @@
-export default function StaffLoginPage({
+import Logo from "@/components/brand/Logo";
+import { ChevronRight } from "lucide-react";
+
+export default async function StaffLoginPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: { sent?: string; error?: string };
 }) {
-  const sent = searchParams.sent;
+  const isDev =
+    process.env.NODE_ENV !== "production" ||
+    process.env.ALLOW_DEV_LOGIN === "1";
+  const sent = searchParams.sent === "1";
   const error = searchParams.error;
-  const isDev = process.env.NODE_ENV !== "production";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-mv-navy font-body">
-      <div className="w-full max-w-md px-6 py-12 rounded-[3px] bg-mv-navy border border-mv-blue/30 shadow-2xl">
-        <h1 className="text-3xl font-heading text-mv-cream mb-8 text-center">
-          Staff Sign-in
+    <div className="min-h-screen bg-mv-navy flex items-center justify-center px-4 font-sans">
+      <div className="w-full max-w-md bg-mv-navy border border-mv-cream/15 shadow-2xl rounded p-8">
+        <Logo className="h-10 w-auto mx-auto mb-6" href="/" />
+        <h1 className="text-2xl font-heading text-mv-cream text-center mb-6">
+          Staff sign-in
         </h1>
 
         {sent && (
-          <div className="mb-6 rounded-[3px] bg-mv-mint/20 p-4 text-mv-cream">
-            Check your email for a sign-in link (valid 15 minutes).
+          <div className="mb-6 bg-mv-mint/20 text-mv-cream p-4 rounded">
+            Magic link sent! Check your email.
           </div>
         )}
-
         {error === "expired" && (
-          <div className="mb-6 rounded-[3px] bg-red-100/20 p-4 text-mv-cream">
-            That link has expired, please request a new one.
+          <div className="mb-6 bg-red-400/20 text-mv-cream p-4 rounded">
+            Your magic link has expired. Please request a new one.
           </div>
         )}
-
         {error === "denied" && (
-          <div className="mb-6 rounded-[3px] bg-red-100/20 p-4 text-mv-cream">
-            That email isn’t authorised. Contact the festival office.
+          <div className="mb-6 bg-red-400/20 text-mv-cream p-4 rounded">
+            Access denied. You are not authorised.
+          </div>
+        )}
+        {error && error !== "expired" && error !== "denied" && (
+          <div className="mb-6 bg-red-400/20 text-mv-cream p-4 rounded">
+            An error occurred. Please try again.
           </div>
         )}
 
         <form action="/api/auth/request-link" method="post" className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-mv-cream mb-1">
-              Email address
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              required
-              className="w-full rounded-[3px] border border-mv-blue/50 bg-white/10 px-3 py-2 text-mv-cream placeholder-mv-cream/50 focus:border-mv-mint focus:outline-none focus:ring-1 focus:ring-mv-mint"
-              placeholder="you@maynardville.org"
-            />
-          </div>
+          <label className="block text-mv-cream text-sm font-medium">
+            Email address
+          </label>
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="you@maynardville.co.za"
+            className="w-full px-4 py-3 bg-white/5 border border-mv-cream/20 rounded text-mv-cream placeholder:text-mv-cream/40 focus:outline-none focus:ring-2 focus:ring-mv-mint focus:border-transparent"
+          />
           <button
             type="submit"
-            className="w-full rounded-[3px] bg-mv-blue px-4 py-2 font-semibold text-white hover:bg-mv-blue/90 transition-colors"
+            className="w-full py-3 px-4 bg-mv-mint text-mv-navy font-semibold rounded hover:brightness-110 transition"
           >
-            Email me a sign-in link
+            Send magic link
           </button>
         </form>
 
-        <hr className="my-8 border-t border-mv-blue/40" />
-
         {isDev && (
-          <div className="mt-4">
-            <p className="text-xs uppercase tracking-wider text-mv-cream/60 mb-3">
-              Dev quick-login
-            </p>
+          <>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-mv-cream/15" />
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-2 bg-mv-navy text-mv-cream/50 text-xs uppercase tracking-wider">
+                  Dev quick-login
+                </span>
+              </div>
+            </div>
             <div className="space-y-2">
               <a
                 href="/api/auth/dev-login?role=Admin&name=Jaco"
-                className="block rounded-[3px] border border-mv-mint/40 px-3 py-2 text-sm text-mv-cream hover:bg-mv-mint/10"
+                className="flex items-center justify-between px-4 py-3 border border-mv-cream/20 rounded text-mv-cream hover:bg-mv-cream/10 transition"
               >
-                Continue as Jaco — Admin
+                <span>Sign in as Jaco (Admin)</span>
+                <ChevronRight className="w-4 h-4 text-mv-cream/50" />
               </a>
               <a
                 href="/api/auth/dev-login?role=Box%20Office&name=Jeff"
-                className="block rounded-[3px] border border-mv-mint/40 px-3 py-2 text-sm text-mv-cream hover:bg-mv-mint/10"
+                className="flex items-center justify-between px-4 py-3 border border-mv-cream/20 rounded text-mv-cream hover:bg-mv-cream/10 transition"
               >
-                Continue as Jeff — Box Office
+                <span>Sign in as Jeff (Box Office)</span>
+                <ChevronRight className="w-4 h-4 text-mv-cream/50" />
               </a>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>

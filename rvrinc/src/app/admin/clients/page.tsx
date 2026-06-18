@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/adminServer";
+import { createAdminClient } from "@/lib/supabase/adminServer";
 import { Users, Mail, Phone, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 export default async function AdminClientsPage() {
-    const supabase = createClient();
+    const supabase = createAdminClient();
 
     // Fetch only clients
     const { data: clients } = await supabase

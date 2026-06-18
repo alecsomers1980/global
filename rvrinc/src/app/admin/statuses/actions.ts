@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/adminServer' // service-role client
+import { createAdminClient } from '@/lib/supabase/adminServer' // service-role client
 import { createAuthClient } from '@/lib/supabase/adminServer' // auth client
 import { createServiceClient } from '@/lib/supabase/adminServer' // plain service-role client for writes
 
@@ -28,7 +28,7 @@ export async function saveStatus(payload: StatusPayload) {
     if (!user) return { error: 'Not authenticated' }
 
     // 2. Authorize (admin only)
-    const supabase = createClient()
+    const supabase = createAdminClient()
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -82,7 +82,7 @@ export async function deleteStatus(id: number) {
     if (!user) return { error: 'Not authenticated' }
 
     // 2. Authorize (admin only)
-    const supabase = createClient()
+    const supabase = createAdminClient()
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')

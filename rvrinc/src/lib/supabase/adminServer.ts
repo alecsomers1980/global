@@ -26,7 +26,7 @@ function cookieHandlers(cookieStore: ReturnType<typeof cookies>) {
 
 // Admin DB client — uses service_role key to bypass RLS for all DB operations.
 // Do NOT use this for auth.getUser() — Supabase Auth rejects the service_role key.
-export const createClient = () => {
+export const createAdminClient = () => {
     const cookieStore = cookies()
     return createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,

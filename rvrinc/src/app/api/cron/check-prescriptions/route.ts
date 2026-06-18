@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { getPrescriptionInfo } from "@/lib/prescription";
 import { sendPrescriptionAlertEmail } from "@/lib/email";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Runs daily via Vercel cron. Uses service_role key to bypass RLS
 // since there is no user session in a cron context.
@@ -9,7 +9,12 @@ import { NextResponse } from "next/server";
 
 const ALERT_WINDOWS = [90, 60, 30, 0];
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}` && process.env.NODE_ENV === 'production') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!serviceRoleKey) {
         console.error("SUPABASE_SERVICE_ROLE_KEY not set — prescription cron cannot run");

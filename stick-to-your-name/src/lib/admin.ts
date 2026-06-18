@@ -1,50 +1,61 @@
-import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
-import bcrypt from "bcryptjs";
+import { SignJWT, jwtVerify } from 'jose';
+import { cookies } from 'next/headers';
+import bcrypt from 'bcryptjs';
+import { getAdminByEmail, type AdminRow } from './db';
 
-const COOKIE = "stick_admin";
-const ALG = "HS256";
+const COOKIE_NAME = 'stick_admin';
+const JWT_ALG = 'HS256';
 
 function secret() {
-  const s = process.env.ADMIN_SESSION_SECRET || "dev-secret-change-me";
-  return new TextEncoder().encode(s);
+  const token = process.env.ADMIN_SESSION_SECRET || 'dev-secret-change-me';
+  return new TextEncoder().encode(token);
 }
 
-export async function verifyAdminPassword(plain: string): Promise<boolean> {
-  const hash = process.env.ADMIN_PASSWORD_HASH;
-  if (!hash) return false;
-  return bcrypt.compare(plain, hash);
-}
-
-export async function createSessionCookie() {
-  const jwt = await new SignJWT({ role: "admin" })
-    .setProtectedHeader({ alg: ALG })
+export async function createSessionCookie(adminId: string, remember: boolean) {
+  const jwt = await new SignJWT({ role: 'admin', sub: adminId })
+    .setProtectedHeader({ alg: JWT_ALG })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(remember ? '30d' : '7d')
     .sign(secret());
+
   const c = await cookies();
-  c.set(COOKIE, jwt, {
+  c.set(COOKIE_NAME, jwt, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    ...(remember ? { maxAge: 60 * 60 * 24 * 30 } : {}),
   });
+}
+
+export async function verifyAdminLogin(email: string, password: string): Promise<AdminRow | null> {
+  const admin = await getAdminByEmail(email);
+  if (!admin) return null;
+  const match = await bcrypt.compare(password, admin.password_hash);
+  return match ? admin : null;
+}
+
+export async function getSessionAdminId(): Promise<string | null> {
+  const c = await cookies();
+  const cookie = c.get(COOKIE_NAME);
+  if (!cookie) return null;
+  try {
+    const { payload } = await jwtVerify(cookie.value, secret());
+    return payload.sub as string;
+  } catch {
+    return null;
+  }
+}
+
+export async function isAdmin(): Promise<boolean> {
+  return (await getSessionAdminId()) !== null;
+}
+
+export async function requireAdmin(): Promise<string | null> {
+  return getSessionAdminId();
 }
 
 export async function clearSessionCookie() {
   const c = await cookies();
-  c.delete(COOKIE);
-}
-
-export async function isAdmin(): Promise<boolean> {
-  const c = await cookies();
-  const token = c.get(COOKIE)?.value;
-  if (!token) return false;
-  try {
-    await jwtVerify(token, secret());
-    return true;
-  } catch {
-    return false;
-  }
+  c.delete(COOKIE_NAME);
 }

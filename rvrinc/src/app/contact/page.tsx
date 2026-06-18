@@ -146,6 +146,10 @@ export default function ContactPage() {
                                             <MessageCircle className="w-4 h-4 text-brand-gold flex-shrink-0" />
                                             <a href="https://wa.me/27827640218" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-brand-navy transition-colors">WhatsApp: 082 764 0218</a>
                                         </div>
+                                        <div className="flex items-center gap-3">
+                                            <Clock className="w-4 h-4 text-brand-gold flex-shrink-0" />
+                                            <span className="text-gray-600">Mon – Fri: 08:00 – 16:00</span>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={() => openModal("Marble Hall Office")}

@@ -1,8 +1,16 @@
-import { DESIGNS, DESIGN_IDS, DELIVERY, PRICE_SET_CENTS, PRICE_BAGTAG_CENTS } from '@/lib/designs';
 import type { DeliveryOption } from '@/lib/designs';
-import { ensureSchema, insertPendingOrder } from '@/lib/db';
+import { ensureSchema, insertPendingOrder, getSettings, getDesign } from '@/lib/db';
 import { payfast } from '@/lib/payfast';
 import crypto from 'crypto';
+
+function deliveryPriceCents(
+  option: DeliveryOption,
+  s: { collect_price_cents: number; pudo_price_cents: number; courier_price_cents: number }
+): number {
+  if (option === 'collect') return s.collect_price_cents;
+  if (option === 'pudo') return s.pudo_price_cents;
+  return s.courier_price_cents;
+}
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,7 +32,10 @@ export async function POST(req: Request) {
     } = body;
 
     // --- Validation ---
-    if (!DESIGN_IDS.has(designId)) {
+    await ensureSchema();
+
+    const design = typeof designId === 'string' ? await getDesign(designId) : null;
+    if (!design || !design.active) {
       return Response.json({ error: "Invalid design selection." }, { status: 400 });
     }
 
@@ -62,20 +73,19 @@ export async function POST(req: Request) {
       return Response.json({ error: "Phone number must be 10 digits." }, { status: 400 });
     }
 
-    // --- Amount ---
-    let amountCents = PRICE_SET_CENTS;
-    if (bagTag) amountCents += PRICE_BAGTAG_CENTS;
-    amountCents += DELIVERY[deliveryOption as DeliveryOption].priceCents;
+    // --- Amount (prices sourced from admin-editable settings) ---
+    const settings = await getSettings();
+    let amountCents = settings.set_price_cents;
+    if (bagTag) amountCents += settings.bagtag_price_cents;
+    amountCents += deliveryPriceCents(deliveryOption as DeliveryOption, settings);
 
     // --- Order ID ---
     const orderId = crypto.randomUUID();
 
     // --- Design Name ---
-    const design = DESIGNS.find(d => d.id === designId)!;
     const designName = design.name;
 
     // --- Insert pending order ---
-    await ensureSchema();
     await insertPendingOrder({
       id: orderId,
       amountCents,
