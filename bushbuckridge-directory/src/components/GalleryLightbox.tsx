@@ -77,7 +77,7 @@ export default function GalleryLightbox({ images, businessName }: GalleryLightbo
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+        <div className="mt-4 flex gap-3 overflow-x-auto p-2">
           {images.map((src, index) => (
             <button
               key={`thumb-${index}`}

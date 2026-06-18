@@ -57,6 +57,21 @@ const TIER_FIELDS: Record<string, string[]> = {
 
 const STEPS = ['Account', 'Package', 'Details', 'Review']
 
+function LockedField({ allowed, lockLabel, children }: { allowed: boolean; lockLabel: string; children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      {children}
+      {!allowed && (
+        <div className="absolute inset-0 rounded-2xl bg-muted/60 flex items-center justify-center pointer-events-none">
+          <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full">
+            <Lock className="h-3 w-3" /> {lockLabel}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function BuyYourSpotWizard() {
   const searchParams = useSearchParams()
   const initialTier = searchParams.get('tier') || 'pro-lead'
@@ -149,22 +164,6 @@ function BuyYourSpotWizard() {
   const selectedPkg = PACKAGES.find(p => p.key === tier)!
   const allowedFields = TIER_FIELDS[tier] || []
   const isAllowed = (field: string) => allowedFields.includes(field)
-
-  function LockedField({ field, lockLabel, children }: { field: string; lockLabel: string; children: React.ReactNode }) {
-    const allowed = isAllowed(field)
-    return (
-      <div className="relative">
-        {children}
-        {!allowed && (
-          <div className="absolute inset-0 rounded-2xl bg-muted/60 flex items-center justify-center pointer-events-none">
-            <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full">
-              <Lock className="h-3 w-3" /> {lockLabel}
-            </span>
-          </div>
-        )}
-      </div>
-    )
-  }
 
   return (
     <div className="flex flex-col pb-24">
@@ -316,18 +315,18 @@ function BuyYourSpotWizard() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">About Your Business</Label>
-                  <Textarea value={biz.description} onChange={e => updateBiz('description', e.target.value)} rows={4} placeholder="Tell us a bit about your services..." className="resize-none rounded-[1.5rem] bg-white/50 border-primary/10 p-5" />
+                  <Textarea value={biz.description} onChange={e => updateBiz('description', e.target.value)} rows={7} placeholder="Tell us a bit about your services..." className="resize-none rounded-[1.5rem] bg-white/50 border-primary/10 p-5" />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">WhatsApp Number</Label>
-                  <LockedField field="whatsapp" lockLabel="Pro Lead+">
+                  <LockedField allowed={isAllowed('whatsapp')} lockLabel="Pro Lead+">
                     <Input type="tel" disabled={!isAllowed('whatsapp')} value={biz.whatsapp} onChange={e => updateBiz('whatsapp', e.target.value)} className="h-14 rounded-2xl bg-white/50 border-primary/10" />
                   </LockedField>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">Website</Label>
-                  <LockedField field="website" lockLabel="Pro Business">
+                  <LockedField allowed={isAllowed('website')} lockLabel="Pro Business">
                     <Input type="url" disabled={!isAllowed('website')} value={biz.website} onChange={e => updateBiz('website', e.target.value)} placeholder="https://" className="h-14 rounded-2xl bg-white/50 border-primary/10" />
                   </LockedField>
                 </div>
@@ -335,7 +334,7 @@ function BuyYourSpotWizard() {
                   {(['facebook', 'instagram', 'linkedin'] as const).map(field => (
                     <div key={field} className="space-y-2">
                       <Label className="text-sm font-bold uppercase tracking-widest text-primary/60 ml-1">{field.charAt(0).toUpperCase() + field.slice(1)}</Label>
-                      <LockedField field={field} lockLabel="Pro Lead+">
+                      <LockedField allowed={isAllowed(field)} lockLabel="Pro Lead+">
                         <Input type="url" disabled={!isAllowed(field)} value={biz[field]} onChange={e => updateBiz(field, e.target.value)} placeholder="https://" className="h-14 rounded-2xl bg-white/50 border-primary/10" />
                       </LockedField>
                     </div>

@@ -107,7 +107,7 @@ export default async function BusinessProfilePage({
         <div className="flex flex-col pb-24">
             <SecondaryHeader
                 title={business.name}
-                subtitle={business.description?.substring(0, 150) + (business.description?.length > 150 ? '...' : '')}
+                subtitle={(() => { const plain = (business.description || '').replace(/<[^>]*>/g, '').trim(); return plain.length > 150 ? plain.substring(0, 150) + '...' : plain; })()}
                 badge={business.expand?.sector?.name || 'BUSINESS PROFILE'}
                 backgroundImage={coverUrl || logoUrl}
             />

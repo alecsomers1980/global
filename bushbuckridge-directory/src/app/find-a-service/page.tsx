@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/pocketbase/server'
+﻿import { createClient } from '@/utils/pocketbase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,6 +62,7 @@ export default async function FindServicePage({
     const hasFilter = Boolean(resolvedParams.q || resolvedParams.category)
 
     let fetchedBusinesses: any[] = []
+    let featuredProBusinesses: any[] = []
 
     if (hasFilter) {
         try {
@@ -81,6 +82,17 @@ export default async function FindServicePage({
         } catch (e) {
             console.error('Data fetch error', e)
         }
+    } else {
+        try {
+            const records = await pb.collection('businesses').getFullList({
+                filter: 'status = "active" && (package_tier = "pro-business" || package_tier = "pro-lead")',
+                expand: 'sector,area',
+            })
+            // Shuffle array and take first 12
+            featuredProBusinesses = records.sort(() => 0.5 - Math.random()).slice(0, 12)
+        } catch (e) {
+            console.error('Featured businesses fetch error', e)
+        }
     }
 
     const tierWeight: Record<string, number> = { 'pro-business': 3, 'pro-lead': 2, basic: 1 }
@@ -98,9 +110,12 @@ export default async function FindServicePage({
 
     const bizList = businesses ?? []
 
+    // Combine both lists for rating aggregation
+    const allBusinessesForRating = [...bizList, ...featuredProBusinesses]
+
     // Aggregate approved review ratings per business
     const ratingMap: Record<string, { avg: number; count: number }> = {}
-    if (bizList.length > 0) {
+    if (allBusinessesForRating.length > 0) {
         try {
             const allReviews = await pb.collection('reviews').getFullList({ filter: 'status = "approved"' })
             const acc: Record<string, { sum: number; count: number }> = {}
@@ -178,6 +193,131 @@ export default async function FindServicePage({
                         })}
                     </div>
                 </section>
+
+                {/* Featured Pro Services (when no filters) */}
+                {!hasFilter && featuredProBusinesses.length > 0 && (
+                    <section className="max-w-6xl mx-auto mb-16">
+                        <div className="text-center mb-10">
+                            <Badge variant="outline" className="mb-4 px-4 py-1 text-xs font-black uppercase tracking-widest">
+                                Premium Services
+                            </Badge>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Featured Pro Services</h2>
+                            <p className="text-muted-foreground mt-3 font-medium italic">Top-rated professional services in your area.</p>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {featuredProBusinesses.map((biz) => (
+                                <Card key={biz.id} className="group flex flex-col lg:flex-row gap-0 overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-primary/20 rounded-[2.5rem]">
+                                    <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={biz.logo
+                                                ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
+                                                : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
+                                            alt={biz.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                        {biz.is_featured && (
+                                            <Badge className="absolute top-6 left-6 bg-secondary text-secondary-foreground font-bold px-4 py-1 rounded-full shadow-lg">
+                                                Featured
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    <div className="flex-1 p-8 flex flex-col">
+                                        <div className="flex flex-col md:flex-row items-start justify-between gap-4 mb-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Badge variant="secondary" className="px-3 py-0.5 rounded-full font-bold text-xs">
+                                                        {biz.expand?.sector?.name || 'Service'}
+                                                    </Badge>
+                                                    {biz.is_verified && (
+                                                        <span className="flex items-center py-1 px-3 bg-green-50 text-green-700 text-[10px] uppercase tracking-wider font-black rounded-full border border-green-100 italic">
+                                                            <CheckCircle2 className="h-3 w-3 mr-1" />Verified
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <h3 className="text-3xl font-black tracking-tight text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-1">{biz.name}</h3>
+                                                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-muted-foreground mt-1">
+                                                    <span className="flex items-center"><MapPin className="h-4 w-4 mr-1 text-primary" />{biz.expand?.area?.name || 'Bushbuckridge'}</span>
+                                                    {ratingMap[biz.id]?.count > 0 && (
+                                                        <span className="flex items-center gap-1 text-amber-600">
+                                                            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                                                            {ratingMap[biz.id].avg.toFixed(1)}
+                                                            <span className="text-muted-foreground/70 font-medium">({ratingMap[biz.id].count})</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {offerActiveFor(biz) && (
+                                                    <span className="inline-flex items-center gap-1.5 mt-2 rounded-full bg-secondary/15 text-primary text-xs font-black uppercase tracking-wide px-3 py-1">
+                                                        <Tag className="h-3.5 w-3.5" /> {biz.special_offer}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {biz.description && (
+                                            <p className="text-muted-foreground line-clamp-2 mt-2 mb-6 text-lg font-medium leading-relaxed italic">{biz.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')}</p>
+                                        )}
+
+                                        <div className="mt-auto grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4 pt-6 border-t border-primary/5">
+                                            {biz.email && (
+                                                <a href={`mailto:${biz.email}`} className="flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+                                                    <Mail className="h-4 w-4 mr-2 text-primary/40" /> {biz.email}
+                                                </a>
+                                            )}
+                                            {biz.website && (
+                                                <a href={biz.website} target="_blank" rel="noopener noreferrer" className="flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-colors">
+                                                    <Globe className="h-4 w-4 mr-2 text-primary/40" /> Website
+                                                </a>
+                                            )}
+                                            <div className="flex items-center gap-3">
+                                                {(biz as any).facebook && (
+                                                    <a href={(biz as any).facebook} target="_blank" rel="noopener noreferrer" className="p-2 bg-muted rounded-xl text-muted-foreground hover:text-primary hover:bg-muted/80 transition-all">
+                                                        <Facebook className="h-4 w-4" />
+                                                    </a>
+                                                )}
+                                                {(biz as any).instagram && (
+                                                    <a href={(biz as any).instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-muted rounded-xl text-muted-foreground hover:text-primary hover:bg-muted/80 transition-all">
+                                                        <Instagram className="h-4 w-4" />
+                                                    </a>
+                                                )}
+                                                {(biz as any).linkedin && (
+                                                    <a href={(biz as any).linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-muted rounded-xl text-muted-foreground hover:text-primary hover:bg-muted/80 transition-all">
+                                                        <Linkedin className="h-4 w-4" />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex sm:flex-row lg:flex-col justify-center gap-4 p-8 lg:border-l bg-primary/5 min-w-[220px]">
+                                        {biz.whatsapp && (
+                                            <Button className="flex-1 h-14 bg-[#25D366] hover:bg-[#1ea855] text-white font-bold rounded-2xl shadow-lg shadow-green-600/20" asChild>
+                                                <a href={`https://wa.me/${biz.whatsapp.replace(/\D/g, '').replace(/^0/, '27')}`} target="_blank" rel="noopener noreferrer">
+                                                    <MessageCircle className="h-5 w-5 mr-2" /> WhatsApp
+                                                </a>
+                                            </Button>
+                                        )}
+                                        {biz.phone && (
+                                            <Button variant="outline" className="flex-1 h-14 font-bold rounded-2xl border-primary/20 bg-background/50 backdrop-blur-sm" asChild>
+                                                <a href={`tel:${biz.phone}`}>
+                                                    <Phone className="h-5 w-5 mr-2 text-primary" /> Call Now
+                                                </a>
+                                            </Button>
+                                        )}
+                                        <Button variant="ghost" className="flex-1 h-12 text-xs font-bold text-muted-foreground hover:text-primary rounded-xl" asChild>
+                                            <Link href={`/business/${biz.id}`}>
+                                                View Full Profile &rarr;
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* Results */}
                 {hasFilter && (
