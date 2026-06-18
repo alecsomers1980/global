@@ -12,7 +12,7 @@ const FROM_EMAIL = process.env.SMTP_FROM || "noreply@rvrinc.co.za";
 const FROM_NAME = process.env.SMTP_FROM_NAME || "RVR Inc. Attorneys";
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "info@rvrinc.co.za";
 const FROM = `${FROM_NAME} <${FROM_EMAIL}>`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://rvrinc.co.za";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.roetsvanrensburg.co.za";
 
 const PRETORIA_EMAIL = "info@rvrinc.co.za";
 const MARBLE_HALL_EMAIL = "martie@rvrinc.co.za";

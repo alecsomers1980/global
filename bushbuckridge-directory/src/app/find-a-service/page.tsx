@@ -227,7 +227,7 @@ export default async function FindServicePage({
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img
                                             src={biz.logo
-                                                ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
+                                                ? `${(process.env.NEXT_PUBLIC_POCKETBASE_URL || '').trim().replace(/\/+$/, '')}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
                                                 : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
                                             alt={biz.name}
                                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -369,7 +369,7 @@ export default async function FindServicePage({
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img
                                                     src={biz.logo
-                                                        ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
+                                                        ? `${(process.env.NEXT_PUBLIC_POCKETBASE_URL || '').trim().replace(/\/+$/, '')}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
                                                         : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
                                                     alt={biz.name}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

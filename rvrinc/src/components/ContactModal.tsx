@@ -152,9 +152,6 @@ export function ContactModal({ isOpen, onClose, office }: ContactModalProps) {
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-gold/50 focus:border-brand-gold outline-none bg-white"
                             >
                                 <option>RAF Claim Inquiry</option>
-                                <option>Personal Injury Claim</option>
-                                <option>Loss of Support Claim</option>
-                                <option>General Litigation</option>
                                 <option>General Inquiry</option>
                             </select>
                         </div>

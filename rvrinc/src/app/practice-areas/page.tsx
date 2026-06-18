@@ -4,19 +4,19 @@ import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Scale, Briefcase, Heart, Home, AlertCircle, Gavel } from "lucide-react";
+import { Car, UserRound, TrendingUp, Stethoscope, Users, Clock, Scale } from "lucide-react";
 import { PracticeArea } from "@/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Practice Areas",
-    description: "Comprehensive legal services including Road Accident Fund claims, civil litigation, family law, commercial law, property law and criminal law in Pretoria and Marble Hall.",
+    description: "Road Accident Fund (RAF) claims in Pretoria and Marble Hall — pedestrian and passenger claims, serious injury assessments, loss of earnings and support, medical expenses, and wrongful death claims.",
     alternates: { canonical: "/practice-areas" },
 };
 
 // Icon mapping helper
 const IconMap: Record<string, any> = {
-    Scale, Briefcase, Heart, Home, AlertCircle, Gavel
+    Car, UserRound, TrendingUp, Stethoscope, Users, Clock
 };
 
 export default function PracticeAreasPage() {
@@ -41,7 +41,7 @@ export default function PracticeAreasPage() {
                     <div className="container relative z-10">
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Our Practice Areas</h1>
                         <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-                            Comprehensive legal expertise tailored to your personal and business needs.
+                            We specialise exclusively in Road Accident Fund claims.
                         </p>
                     </div>
                 </section>

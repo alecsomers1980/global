@@ -19,9 +19,6 @@ export function Footer() {
                     <h4 className="text-sm font-bold uppercase tracking-wider text-brand-gold">Our Expertise</h4>
                     <ul className="space-y-2 text-sm text-gray-300">
                         <li><Link href="/about#expertise" className="hover:text-white transition-colors">RAF Claims</Link></li>
-                        <li><Link href="/about#expertise" className="hover:text-white transition-colors">Personal Injury</Link></li>
-                        <li><Link href="/about#expertise" className="hover:text-white transition-colors">Loss of Support</Link></li>
-                        <li><Link href="/about#expertise" className="hover:text-white transition-colors">General Litigation</Link></li>
                     </ul>
                 </div>
 

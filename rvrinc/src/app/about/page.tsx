@@ -344,9 +344,6 @@ export default function AboutPage() {
                             <p>
                                 The Road Accident Fund landscape is constantly evolving. By specializing almost exclusively in RAF matters, Roets & Van Rensburg remains at the cutting edge of legislative changes and judicial precedents. Our deep-rooted expertise means we don&apos;t just process claims — we build bulletproof cases designed to withstand the scrutiny of the Fund, ensuring our clients receive the maximum compensation they are legally entitled to.
                             </p>
-                            <p>
-                                While our core strength lies in the Road Accident Fund, our team&apos;s formidable litigation experience extends to general litigation, providing our clients with a robust defense in some other legal disputes.
-                            </p>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4 mt-8">
                             {[
@@ -354,7 +351,6 @@ export default function AboutPage() {
                                 "Loss of Support Claims",
                                 "Under Settlements",
                                 "Direct Claims",
-                                "General Litigation",
                                 "Road Accident Fund Matters"
                             ].map((item) => (
                                 <div key={item} className="flex items-center gap-3 p-4 bg-brand-cream rounded-lg border border-gray-100">

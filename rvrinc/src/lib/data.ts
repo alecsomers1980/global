@@ -3,80 +3,80 @@ import { PracticeArea, Attorney } from "@/types";
 export const practiceAreas: PracticeArea[] = [
     {
         id: "1",
-        title: "Civil Litigation",
-        slug: "litigation",
-        description: "Expert representation in High Court and Magistrate's Court disputes. We handle complex commercial litigation, contractual disputes, and delictual claims with precision and aggression when necessary.",
-        icon: "Scale",
+        title: "Pedestrian & Passenger Claims",
+        slug: "pedestrian-passenger",
+        description: "Whether you were struck as a pedestrian or injured as a passenger, you have a right to claim from the Road Accident Fund. We handle the full process — from lodgement to payment.",
+        icon: "Car",
         features: [
-            "High Court & Magistrate's Court Litigation",
-            "Contractual Disputes",
-            "Debt Collection",
-            "Interdicts & Urgent Applications"
+            "Pedestrian Accident Claims",
+            "Passenger Injury Claims",
+            "Full RAF Lodgement Process",
+            "No Upfront Cost"
         ]
     },
     {
         id: "2",
-        title: "Family Law",
-        slug: "family",
-        description: "Compassionate and discreet legal support for sensitive family matters. We prioritize the best interests of children and fair financial settlements in divorce proceedings.",
-        icon: "Heart",
+        title: "Serious Injury Assessment",
+        slug: "serious-injury",
+        description: "If your injuries qualify under the serious injury threshold, you may claim general damages. We guide you through the HPCSA assessment and fight for the compensation you deserve.",
+        icon: "UserRound",
         features: [
-            "Divorce Proceedings (Contested & Uncontested)",
-            "Child Custody & Maintenance",
-            "Antinuptial Contracts",
-            "Protection Orders"
+            "HPCSA Serious Injury Assessment",
+            "General Damages Claims",
+            "Independent Medical Evaluations",
+            "Maximum Compensation Strategy"
         ]
     },
     {
         id: "3",
-        title: "Commercial Law",
-        slug: "commercial",
-        description: "Strategic legal advice for South African businesses. From company registration to complex mergers and compliance, we ensure your business is legally sound.",
-        icon: "Briefcase",
+        title: "Loss of Earnings & Support",
+        slug: "loss-of-earnings",
+        description: "An accident that prevents you from working — or that took your breadwinner — carries a quantifiable financial loss. We build a proper actuarial claim to recover past and future income.",
+        icon: "TrendingUp",
         features: [
-            "Company Registration & Structuring",
-            "Shareholders Agreements",
-            "Commercial Contracts",
-            "Business Rescue & Insolvency"
+            "Past & Future Loss of Earnings",
+            "Actuarial Calculations",
+            "Loss of Support Claims",
+            "Breadwinner Dependency Claims"
         ]
     },
     {
         id: "4",
-        title: "Property Law",
-        slug: "property",
-        description: "Comprehensive conveyancing and property law services. We assist with residential and commercial transfers, lease agreements, and eviction proceedings.",
-        icon: "Home",
+        title: "Medical Expenses",
+        slug: "medical-expenses",
+        description: "Past hospital bills, specialist visits, rehabilitation, and future medical costs can all form part of your RAF claim. We ensure nothing is left out of your schedule of damages.",
+        icon: "Stethoscope",
         features: [
-            "Property Transfers (Conveyancing)",
-            "Lease Agreements",
-            "Eviction Orders (PIE Act)",
-            "Sectional Title Disputes"
+            "Past Medical Expenses",
+            "Future Medical Costs",
+            "Rehabilitation Costs",
+            "Schedule of Damages Preparation"
         ]
     },
     {
         id: "5",
-        title: "Personal Injury",
-        slug: "personal-injury",
-        description: "Dedicated support for victims of negligence. We fight for maximum compensation in Road Accident Fund (RAF) claims and medical malpractice cases.",
-        icon: "AlertCircle",
+        title: "Dependants & Wrongful Death",
+        slug: "wrongful-death",
+        description: "If a family member was killed in a road accident, dependants may claim for loss of support. We handle funeral costs, dependency calculations, and the full RAF process on your behalf.",
+        icon: "Users",
         features: [
-            "Road Accident Fund (RAF) Claims",
-            "Medical Negligence",
-            "Public Liability Claims",
-            "Dog Bite Claims"
+            "Loss of Support Claims",
+            "Funeral Cost Claims",
+            "Dependency Calculations",
+            "Full RAF Claim Management"
         ]
     },
     {
         id: "6",
-        title: "Criminal Law",
-        slug: "criminal",
-        description: "Defending your rights in criminal proceedings. Our experienced attorneys provide 24/7 bail support and expert trial defense.",
-        icon: "Gavel",
+        title: "Prescription & Late Claims",
+        slug: "prescription",
+        description: "RAF claims prescribe three years from the accident date — missing this deadline can bar your claim entirely. Contact us immediately; in some circumstances late claims can still be saved.",
+        icon: "Clock",
         features: [
-            "24/7 Bail Applications",
-            "Criminal Trials",
-            "Diversion Representations",
-            "Expungement of Criminal Records"
+            "3-Year Prescription Deadlines",
+            "Late Claim Assessments",
+            "Urgent Deadline Reviews",
+            "Settlement Negotiation"
         ]
     }
 ];

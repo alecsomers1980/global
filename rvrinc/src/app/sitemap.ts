@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { practiceAreas } from '@/lib/data'
 import { createClient } from '@/lib/supabase/server'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://rvrinc.co.za'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.roetsvanrensburg.co.za'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()

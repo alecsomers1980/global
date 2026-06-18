@@ -373,6 +373,138 @@ async function publishToYouTube(
     return { id: uploadData.id }
 }
 
+// TikTok caption ("title") caps at 2,200 chars, same as Instagram.
+const TT_MAX_TITLE_CHARS = 2200
+
+function trimForTikTok(content: string): string {
+    if (!content || content.length <= TT_MAX_TITLE_CHARS) return content
+    return content.slice(0, TT_MAX_TITLE_CHARS - 1).trimEnd() + '…'
+}
+
+// TikTok access tokens expire after ~24h. Scheduled posts will almost always
+// run with a stale token, so we refresh from the stored refresh_token first.
+async function refreshTikTokAccessToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresAt: string }> {
+    const res = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            client_key: process.env.TIKTOK_CLIENT_KEY || '',
+            client_secret: process.env.TIKTOK_CLIENT_SECRET || '',
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token',
+        }).toString(),
+    })
+    const data = await res.json()
+    if (!res.ok || data.error) {
+        throw new Error(data.error_description || data.error || 'Failed to refresh TikTok token')
+    }
+    const expiresIn: number = data.expires_in || 86400
+    return {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token || refreshToken,
+        expiresAt: new Date(Date.now() + expiresIn * 1000).toISOString(),
+    }
+}
+
+async function waitForTikTokPublish(publishId: string, accessToken: string, maxWaitMs = 180000): Promise<void> {
+    const start = Date.now()
+    while (Date.now() - start < maxWaitMs) {
+        const res = await fetch('https://open.tiktokapis.com/v2/post/publish/status/fetch/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ publish_id: publishId }),
+        })
+        const data = await res.json()
+        const status = data?.data?.status
+        if (status === 'PUBLISH_COMPLETE') return
+        if (status === 'FAILED') {
+            throw new Error(data?.data?.fail_reason || 'TikTok publish failed')
+        }
+        await new Promise(r => setTimeout(r, 5000))
+    }
+    throw new Error('TikTok publish processing timeout')
+}
+
+async function publishToTikTok(
+    accessToken: string,
+    rawContent: string,
+    mediaUrls: string[] | null
+): Promise<{ id: string }> {
+    if (!mediaUrls || mediaUrls.length === 0) {
+        throw new Error('TikTok requires a video to upload')
+    }
+
+    let videoUrl = mediaUrls[0]
+    const isVideo = /\.(mp4|mov|m3u8)(\?|$)/i.test(videoUrl) || videoUrl.includes('stream.mux.com')
+    if (!isVideo) {
+        throw new Error('TikTok requires a video file (mp4/mov); images are not supported')
+    }
+
+    if (videoUrl.includes('stream.mux.com') && videoUrl.endsWith('.m3u8')) {
+        const playbackId = videoUrl.split('/').pop()!.replace('.m3u8', '')
+        videoUrl = `https://stream.mux.com/${playbackId}/capped-1080p.mp4`
+    }
+
+    // TikTok's Content Posting API has no fetch-by-URL upload for our use
+    // case — download the bytes, then upload them directly to TikTok.
+    const videoRes = await fetch(videoUrl)
+    if (!videoRes.ok) throw new Error(`Failed to download video for upload (${videoRes.status})`)
+    const videoBuffer = Buffer.from(await videoRes.arrayBuffer())
+
+    // 1. Initialize the post. Until this app passes TikTok's content posting
+    // audit, posted videos are restricted to SELF_ONLY visibility.
+    const initRes = await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+            post_info: {
+                title: trimForTikTok(rawContent),
+                privacy_level: 'SELF_ONLY',
+                disable_duet: false,
+                disable_comment: false,
+                disable_stitch: false,
+            },
+            source_info: {
+                source: 'FILE_UPLOAD',
+                video_size: videoBuffer.length,
+                chunk_size: videoBuffer.length,
+                total_chunk_count: 1,
+            },
+        }),
+    })
+    const initData = await initRes.json()
+    if (!initRes.ok || initData.error?.code !== 'ok') {
+        throw new Error(initData.error?.message || `TikTok publish init failed (${initRes.status})`)
+    }
+    const publishId: string = initData.data.publish_id
+    const uploadUrl: string = initData.data.upload_url
+
+    // 2. Upload the video bytes
+    const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'video/mp4',
+            'Content-Range': `bytes 0-${videoBuffer.length - 1}/${videoBuffer.length}`,
+        },
+        body: videoBuffer,
+    })
+    if (!uploadRes.ok) {
+        const body = await uploadRes.text()
+        throw new Error(`TikTok video upload failed (${uploadRes.status}): ${body.slice(0, 300)}`)
+    }
+
+    // 3. Poll until TikTok finishes processing the upload
+    await waitForTikTokPublish(publishId, accessToken)
+
+    return { id: publishId }
+}
+
 export async function publishPost(postId: string): Promise<PublishOutcome> {
     // Clear any previous error at the start of a new attempt so stale
     // messages don't linger after a successful retry.
@@ -489,6 +621,24 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
                         .eq('account_id', account.account_id)
                 }
                 publishedRef = await publishToYouTube(token, postAny.content, postAny.media_urls)
+            } else if (account.platform === 'tiktok') {
+                // TikTok tokens last ~24h; refresh if missing/expired before uploading.
+                let token: string = account.access_token
+                const expiresAt = account.token_expires_at ? new Date(account.token_expires_at).getTime() : 0
+                if (!expiresAt || expiresAt < Date.now() + 60_000) {
+                    if (!account.refresh_token) {
+                        throw new Error('TikTok token expired and no refresh token stored — reconnect the account')
+                    }
+                    const refreshed = await refreshTikTokAccessToken(account.refresh_token)
+                    token = refreshed.accessToken
+                    await supabase
+                        .from('social_accounts')
+                        .update({ access_token: token, refresh_token: refreshed.refreshToken, token_expires_at: refreshed.expiresAt } as never)
+                        .eq('workspace_id', postAny.workspace_id)
+                        .eq('platform', 'tiktok')
+                        .eq('account_id', account.account_id)
+                }
+                publishedRef = await publishToTikTok(token, postAny.content, postAny.media_urls)
             } else {
                 throw new Error(`Publishing to ${account.platform} not yet supported`)
             }
