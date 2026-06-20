@@ -5,6 +5,7 @@ import AudienceSplit from "@/components/site/AudienceSplit";
 import AreasOfFocus from "@/components/site/AreasOfFocus";
 import Stats from "@/components/site/Stats";
 import Testimonials from "@/components/site/Testimonials";
+import EbookPromo from "@/components/site/EbookPromo";
 import Accreditations from "@/components/site/Accreditations";
 import ClosingCta from "@/components/site/ClosingCta";
 import Container from "@/components/site/Container";
@@ -90,6 +91,7 @@ export default function HomePage() {
       </section>
 
       <Testimonials />
+      <EbookPromo />
       <Accreditations />
       <ClosingCta />
     </>
