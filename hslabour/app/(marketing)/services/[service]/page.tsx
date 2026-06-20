@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ServiceJsonLd from "@/components/seo/ServiceJsonLd";
 import FaqJsonLd from "@/components/seo/FaqJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import PageHeader from "@/components/site/PageHeader";
 import ClosingCta from "@/components/site/ClosingCta";
 import { ArrowRight } from "lucide-react";
@@ -25,8 +26,9 @@ export async function generateMetadata({
   const service = getService(slug);
   if (!service) return {};
   return {
-    title: `${service.name} | H&S Labour Brokers`,
+    title: service.name,
     description: service.tagline,
+    alternates: { canonical: `/services/${slug}` },
   };
 }
 
@@ -43,6 +45,12 @@ export default async function ServiceDetailPage({
     <>
       <ServiceJsonLd name={service.name} description={service.description} />
       <FaqJsonLd faqs={service.faqs} />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Services", path: "/services" },
+          { name: service.name, path: `/services/${slug}` },
+        ]}
+      />
 
       <PageHeader
         eyebrow="Our Services"

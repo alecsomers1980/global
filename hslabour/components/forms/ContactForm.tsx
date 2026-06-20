@@ -14,6 +14,7 @@ const initialForm = {
   phone: '',
   service: '',
   message: '',
+  website: '', // honeypot — must stay empty
 };
 
 export default function ContactForm({ heading }: ContactFormProps) {
@@ -58,6 +59,7 @@ export default function ContactForm({ heading }: ContactFormProps) {
             phone: form.phone.trim() || undefined,
             service: form.service || undefined,
             message: form.message.trim(),
+            website: form.website,
           }),
         });
         const data = await res.json();
@@ -106,6 +108,20 @@ export default function ContactForm({ heading }: ContactFormProps) {
           {errorMessage}
         </div>
       )}
+
+      {/* Honeypot — hidden from real users; bots that fill it are rejected */}
+      <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="contact-website">Website</label>
+        <input
+          id="contact-website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={form.website}
+          onChange={handleChange}
+        />
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {/* Name */}

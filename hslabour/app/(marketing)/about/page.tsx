@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "About H&S Labour Brokers — Trusted Recruitment & TES Since 1998",
   description:
     "Discover the story behind H&S Labour Brokers. Since 1998 we have connected South African employers with top talent, offering recruitment, TES, payroll, vetting, HR/IR and CV handling across Johannesburg, Cape Town, Durban, Pretoria, Gqeberha and Bloemfontein. Backed by a placement guarantee and full compliance support.",
+  alternates: { canonical: "/about" },
 };
 
 const reasons = [

@@ -16,20 +16,20 @@ export default async function AdminEbookPage() {
   const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (me?.role !== "admin") redirect("/");
 
-  const product = await getEbookProduct();
   const admin = createAdminClient();
-
-  const { data: orders } = await admin
-    .from("ebook_orders")
-    .select("id, buyer_email, amount_cents, status, ref_code, created_at")
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  const { data: commissions } = await admin
-    .from("commissions")
-    .select("id, amount_cents, status, created_at, affiliate_id, profiles:affiliate_id(first_name,last_name,email)")
-    .order("created_at", { ascending: false })
-    .limit(50);
+  const [product, { data: orders }, { data: commissions }] = await Promise.all([
+    getEbookProduct(),
+    admin
+      .from("ebook_orders")
+      .select("id, buyer_email, amount_cents, status, ref_code, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50),
+    admin
+      .from("commissions")
+      .select("id, amount_cents, status, created_at, affiliate_id, profiles:affiliate_id(first_name,last_name,email)")
+      .order("created_at", { ascending: false })
+      .limit(50),
+  ]);
 
   const orderRows = (orders ?? []) as Array<{
     id: string;

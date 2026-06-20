@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Recruitment, TES & Payroll Services | H&S Labour Brokers",
   description:
     "H&S Labour Brokers offers permanent and contract recruitment, temporary employment services (TES), payroll, vetting, HR & IR, and CV response handling in South Africa.",
+  alternates: { canonical: "/services" },
 };
 
 export default function ServicesPage() {

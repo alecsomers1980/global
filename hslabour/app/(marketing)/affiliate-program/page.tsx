@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Affiliate Program | H&S Labour Brokers",
   description:
     "Make a referral and earn extra cash. Share our job-hunting e-book, earn commission on every sale, and help South Africans find work. Free to join.",
+  alternates: { canonical: "/affiliate-program" },
 };
 
 const earnings = [

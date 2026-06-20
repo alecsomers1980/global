@@ -5,17 +5,24 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type PortalResult = { success?: boolean; error?: string };
 
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+const ALLOWED_EXTENSIONS = ["pdf", "doc", "docx", "odt", "rtf", "txt", "png", "jpg", "jpeg"];
+
 export async function uploadCv(formData: FormData): Promise<PortalResult> {
   const token = String(formData.get("token") ?? "");
   const file = formData.get("file");
   if (!token) return { error: "Missing token" };
   if (!(file instanceof File) || file.size === 0) return { error: "Choose a file to upload" };
+  if (file.size > MAX_UPLOAD_BYTES) return { error: "File is too large (max 10 MB)" };
+
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    return { error: "Unsupported file type. Upload a document or image." };
+  }
 
   const admin = createAdminClient();
   const { data: job } = await admin.from("service_jobs").select("id").eq("token", token).maybeSingle();
   if (!job) return { error: "Order not found" };
-
-  const ext = file.name.split(".").pop() || "pdf";
   const path = `uploads/${job.id}-${Date.now()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   const { error: upErr } = await admin.storage

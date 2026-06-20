@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Contact H&S Labour Brokers",
   description:
     "Get in touch with H&S Labour Brokers. We provide recruitment, TES, payroll, vetting, HR & IR, and CV response handling services across South Africa.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {

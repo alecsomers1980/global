@@ -16,8 +16,9 @@ export function ServiceJsonLd({ name, description, city }: ServiceJsonLdProps) {
       "@type": "Organization",
       name: company.name,
       url: company.url,
+      logo: company.logo,
       email: company.email,
-      sameAs: company.url,
+      telephone: company.phoneE164,
     },
     areaServed: city ? { "@type": "City", name: city } : "South Africa",
   };

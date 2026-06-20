@@ -4,10 +4,16 @@ import {
   getPayfastConfig,
   verifyItnSignature,
   payfastServerConfirm,
+  isValidPayfastSource,
 } from "@/lib/payfast";
 import { computeCommissionCents } from "@/lib/ebook";
 
 export async function POST(request: NextRequest) {
+  const sourceIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  if (!(await isValidPayfastSource(sourceIp))) {
+    return new Response("invalid source", { status: 200 });
+  }
+
   const rawBody = await request.text();
   const params = new URLSearchParams(rawBody);
 

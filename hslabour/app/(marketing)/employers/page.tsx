@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Hire Staff — Labour Broking, TES & Recruitment",
   description:
     "Partner with H&S Labour Brokers for permanent, contract and temporary staffing across South Africa. 25+ years of trusted workforce solutions, compliance handled for you.",
+  alternates: { canonical: "/employers" },
 };
 
 const steps = [

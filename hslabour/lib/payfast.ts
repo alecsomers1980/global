@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import dns from "dns/promises";
 
 type Mode = "sandbox" | "live";
 
@@ -14,6 +15,20 @@ export interface PayfastConfig {
 export function getPayfastConfig(): PayfastConfig {
   const mode: Mode = process.env.PAYFAST_MODE === "live" ? "live" : "sandbox";
   const base = mode === "live" ? "https://www.payfast.co.za" : "https://sandbox.payfast.co.za";
+
+  // In live mode, never silently fall back to sandbox/empty creds — that would
+  // make ITN signatures forgeable and transact against the wrong account.
+  if (mode === "live") {
+    const missing = [
+      ["PAYFAST_MERCHANT_ID", process.env.PAYFAST_MERCHANT_ID],
+      ["PAYFAST_MERCHANT_KEY", process.env.PAYFAST_MERCHANT_KEY],
+      ["PAYFAST_PASSPHRASE", process.env.PAYFAST_PASSPHRASE],
+    ].filter(([, v]) => !v).map(([k]) => k);
+    if (missing.length > 0) {
+      throw new Error(`PayFast live mode missing env vars: ${missing.join(", ")}`);
+    }
+  }
+
   return {
     merchantId: process.env.PAYFAST_MERCHANT_ID ?? "10000100",
     merchantKey: process.env.PAYFAST_MERCHANT_KEY ?? "46f0cd694581a",
@@ -92,6 +107,31 @@ export function verifyItnSignature(
   passphrase: string,
 ): boolean {
   return buildSignature(pairs, passphrase) === receivedSignature;
+}
+
+// Defense-in-depth: confirm the ITN came from a PayFast server IP.
+// Resolves PayFast's published hosts and checks the source IP against them.
+// FAILS OPEN on any uncertainty (no IP, DNS failure) — signature + server postback
+// remain the primary guarantees, so this must never reject a legitimate ITN.
+const PAYFAST_HOSTS = [
+  "www.payfast.co.za",
+  "w1w.payfast.co.za",
+  "w2w.payfast.co.za",
+  "sandbox.payfast.co.za",
+];
+
+export async function isValidPayfastSource(ip: string | null): Promise<boolean> {
+  if (!ip) return true;
+  try {
+    const lists = await Promise.all(
+      PAYFAST_HOSTS.map((h) => dns.resolve4(h).catch(() => [] as string[])),
+    );
+    const valid = new Set(lists.flat());
+    if (valid.size === 0) return true; // DNS unavailable — don't block
+    return valid.has(ip);
+  } catch {
+    return true;
+  }
 }
 
 // Server-side confirmation: POST the raw ITN body back to PayFast; expect a "VALID" response.

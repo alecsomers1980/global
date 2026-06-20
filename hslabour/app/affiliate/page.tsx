@@ -22,18 +22,20 @@ export default async function AffiliatePage() {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name, affiliate_code, is_approved, bank_name, account_number, branch_code")
-    .eq("id", user.id)
-    .single();
-
-  // Earnings (commissions are accessed via service-role, scoped to this user).
+  // Profile + earnings are independent once we know the user — fetch in parallel.
+  // (Commissions are accessed via service-role, scoped to this user.)
   const admin = createAdminClient();
-  const { data: commissions } = await admin
-    .from("commissions")
-    .select("amount_cents, status")
-    .eq("affiliate_id", user.id);
+  const [{ data: profile }, { data: commissions }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("first_name, affiliate_code, is_approved, bank_name, account_number, branch_code")
+      .eq("id", user.id)
+      .single(),
+    admin
+      .from("commissions")
+      .select("amount_cents, status")
+      .eq("affiliate_id", user.id),
+  ]);
   const rows = (commissions ?? []) as Array<{ amount_cents: number; status: string }>;
   const paidCents = rows.filter((r) => r.status === "paid").reduce((s, r) => s + r.amount_cents, 0);
   const approvedCents = rows.filter((r) => r.status === "approved").reduce((s, r) => s + r.amount_cents, 0);

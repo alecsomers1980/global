@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/shop";
 import { formatRands } from "@/lib/ebook";
+import ProductJsonLd from "@/components/seo/ProductJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { Download, Check } from "lucide-react";
 
 export const revalidate = 3600;
@@ -39,6 +41,20 @@ export default async function ShopProductPage({
 
   return (
     <div className="min-h-screen bg-mint/40">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Shop & Services", path: "/shop" },
+          { name: product.name, path: `/shop/${product.slug}` },
+        ]}
+      />
+      {purchasable && (
+        <ProductJsonLd
+          name={product.name}
+          description={product.description ?? undefined}
+          priceCents={product.price_cents}
+          url={`/shop/${product.slug}`}
+        />
+      )}
       <div className="mx-auto max-w-3xl px-4 py-16">
         <div className="rounded-2xl border border-slate-200 bg-white p-8">
           <span className="self-start rounded-full bg-mint px-2 py-1 text-xs font-semibold text-green-dark">

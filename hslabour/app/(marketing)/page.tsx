@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "H&S Labour Brokers — Recruitment, TES & Payroll in South Africa",
   description:
     "Permanent & contract recruitment, TES, payroll, vetting and HR across South Africa. Since 1998 — compliant, guaranteed.",
+  alternates: { canonical: "/" },
 };
 
 export default function HomePage() {

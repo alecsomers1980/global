@@ -6,6 +6,7 @@ import { getServiceByLocationSlug, services } from "@/lib/site/services";
 import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
 import ServiceJsonLd from "@/components/seo/ServiceJsonLd";
 import FaqJsonLd from "@/components/seo/FaqJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 
 export const dynamicParams = false;
 export const revalidate = 3600;
@@ -29,8 +30,9 @@ export async function generateMetadata({
   const service = city ? getServiceByLocationSlug(serviceSlug) : undefined;
   if (!city || !service) return {};
   return {
-    title: `${service.locationName} in ${city.name} | H&S Labour Brokers`,
+    title: `${service.locationName} in ${city.name}`,
     description: `H&S Labour Brokers provides ${service.locationName.toLowerCase()} in ${city.name}, ${city.province}. ${service.tagline}`,
+    alternates: { canonical: `/${citySlug}/${serviceSlug}` },
   };
 }
 
@@ -57,6 +59,12 @@ export default async function CityServicePage({
       <LocalBusinessJsonLd
         city={city.name}
         service={service.locationName}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: city.name, path: `/${citySlug}` },
+          { name: service.locationName, path: `/${citySlug}/${serviceSlug}` },
+        ]}
       />
       <ServiceJsonLd
         name={service.name}

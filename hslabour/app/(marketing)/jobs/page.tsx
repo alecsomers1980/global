@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: 'Job Vacancies — H&S Labour Brokers South Africa',
   description:
     'Find permanent, contract and temporary employment services (TES) jobs across Johannesburg, Cape Town, Durban, Pretoria and Gqeberha. H&S Labour Brokers connects skilled candidates with top employers.',
+  alternates: { canonical: '/jobs' },
 };
 
 export default async function JobsPage({

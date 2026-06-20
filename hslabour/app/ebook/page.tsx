@@ -1,8 +1,13 @@
 import { getEbookProduct, formatRands } from "@/lib/ebook";
+import ProductJsonLd from "@/components/seo/ProductJsonLd";
+import BreadcrumbJsonLd from "@/components/seo/BreadcrumbJsonLd";
 import { Download, Check } from "lucide-react";
 
 export const metadata = {
-  title: "Job-Hunting E-book | H&S Labour",
+  title: "Job-Hunting E-book",
+  description:
+    "Practical, step-by-step strategies to find work faster in South Africa. Instant download after secure PayFast checkout.",
+  alternates: { canonical: "/ebook" },
 };
 
 // Always read the live product config (price/availability change in /admin/ebook).
@@ -15,6 +20,15 @@ export default async function EbookPage() {
 
   return (
     <div className="min-h-screen bg-mint/40">
+      <BreadcrumbJsonLd items={[{ name: "Job-Hunting E-book", path: "/ebook" }]} />
+      {available && (
+        <ProductJsonLd
+          name={product.title ?? "Job-Hunting E-book"}
+          description={product.description ?? undefined}
+          priceCents={product.price_cents}
+          url="/ebook"
+        />
+      )}
       <div className="mx-auto max-w-3xl px-4 py-16">
         <div className="rounded-2xl border border-slate-200 bg-white p-8">
           <h1 className="text-3xl font-bold text-navy">

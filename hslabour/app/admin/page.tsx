@@ -15,16 +15,17 @@ export default async function AdminHome() {
   if (me?.role !== "admin") redirect("/");
 
   const admin = createAdminClient();
-  const { count: total } = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("role", "affiliate");
-
-  const { count: pending } = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("role", "affiliate")
-    .eq("is_approved", false);
+  const [{ count: total }, { count: pending }] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "affiliate"),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "affiliate")
+      .eq("is_approved", false),
+  ]);
 
   return (
     <div className="min-h-screen bg-mint/40">
