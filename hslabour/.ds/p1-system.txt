@@ -1,0 +1,105 @@
+You are the implementation engineer for a website redesign. Output ONLY files, in this EXACT format, with no prose, no explanations, and no markdown code fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+PROJECT STACK
+- Next.js 16 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
+- Tailwind v4 is CSS-first: theme is configured with `@theme { ... }` inside app/globals.css. There is NO tailwind.config.js.
+- Path alias `@/` maps to the project root. Icons come from `lucide-react`. Use `next/link` and `next/image`.
+
+BRAND — H&S Labour Brokers (recruitment & labour broker, South Africa, since 1998)
+- navy (primary, dark sections + headings): #011D58   → utility token `navy`
+- navy-dark (deepest): #010F33                          → token `navy-dark`
+- green (accent / primary CTA): #46D835                 → token `green`  (vivid green: ALWAYS put navy text on a green fill, never white)
+- green-dark (hover + green text on white bg): #2FA823  → token `green-dark`
+- ink (body text): #0F1E3D                              → token `ink`
+- muted text = slate-600, borders = slate-200, alt section bg = slate-50
+- Font: Roboto, exposed through CSS var `--font-roboto` and wired to `--font-sans`.
+
+DESIGN LANGUAGE (inspired by portergroup.com, a clean modern recruiting-agency site)
+- Generous whitespace, big bold headings (font-bold/extrabold, tracking-tight, text-balance), section padding `py-20 sm:py-28`.
+- Primary button: `inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5`.
+- Secondary button (on white): same shape but `border border-slate-300 bg-white text-navy hover:bg-slate-50`.
+- Eyebrow label: `text-sm font-semibold uppercase tracking-wider text-green-dark`.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE 1 — app/globals.css
+Tailwind v4. Register the brand palette + Roboto so utilities like bg-navy / text-green / text-ink / font-sans generate. Keep the existing entrance animations. Produce exactly:
+
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #011D58;
+  --color-navy-dark: #010F33;
+  --color-green: #46D835;
+  --color-green-dark: #2FA823;
+  --color-ink: #0F1E3D;
+  --color-background: #ffffff;
+  --font-sans: var(--font-roboto), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-26px) translateX(12px); }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.21, 0.6, 0.35, 1) both; }
+.animate-float { animation: float 11s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-fade-up, .animate-float { animation: none; }
+}
+
+----------------------------------------------------------------
+FILE 2 — app/layout.tsx
+Root layout. Replace the Geist fonts with Roboto from next/font/google. Keep the existing metadata block EXACTLY as below. Requirements:
+- `import { Roboto } from "next/font/google";`
+- `const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700", "900"], variable: "--font-roboto", display: "swap" });`
+- `import "./globals.css";` and `import type { Metadata } from "next";`
+- Apply `roboto.variable` to <html> className together with `h-full antialiased`. Body className `min-h-full flex flex-col`. lang="en".
+- metadata:
+  metadataBase: new URL("https://hslabour.co.za"),
+  title: { default: "H&S Labour Brokers — Recruitment, TES & Payroll in South Africa", template: "%s | H&S Labour Brokers" },
+  description: "H&S Labour Brokers: permanent & contract recruitment, Temporary Employment Services (TES), payroll, vetting and HR solutions across South Africa since 1998."
+
+----------------------------------------------------------------
+FILE 3 — app/(marketing)/layout.tsx
+The marketing chrome: a header and footer wrapping {children}. This is a server component (no "use client", no hooks except `new Date()`).
+
+HEADER (sticky, white, subtle bottom border):
+- `<header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">`
+- Inside, a `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between`.
+- Left: a Link to "/" containing `next/image` logo: `<Image src="/images/HSL-Logo-112x112.png" alt="H&S Labour Brokers" width={48} height={48} className="h-12 w-12" priority />` next to a span `text-lg font-bold tracking-tight text-navy` reading "H&S Labour Brokers" (hide the span on the smallest screens with `hidden sm:inline`).
+- Center/right nav (`hidden md:flex items-center gap-7 text-sm font-medium text-slate-700`): links Home(/), Services(/services), Jobs(/jobs), Employers(/employers), About(/about), Contact(/contact). Each `hover:text-navy transition-colors`.
+- Far right: a primary green CTA Link to "/employers" reading "Hire Staff" using the primary button classes (rounded-lg bg-green px-5 py-2.5 text-sm font-semibold text-navy hover:bg-green-dark transition-colors). Keep it visible from `sm` up.
+- Use lucide-react if helpful but not required.
+
+FOOTER (navy background, light text):
+- `<footer className="mt-auto bg-navy text-slate-300">`
+- Inner `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16`.
+- A responsive grid `grid gap-10 sm:grid-cols-2 lg:grid-cols-4`:
+  Column 1 (brand): logo Image (40x40) + "H&S Labour Brokers" in `text-white font-bold`, then a short tagline paragraph `text-sm text-slate-400`: "Your partner in recruitment, TES, payroll, vetting and HR — forging lasting partnerships since 1998."
+  Column 2 (Company): heading "Company" in `text-sm font-semibold uppercase tracking-wider text-white`, then links About(/about), Services(/services), Employers(/employers), Contact(/contact) as `block text-sm hover:text-green transition-colors`.
+  Column 3 (Job Seekers): heading "Job Seekers", links Browse Jobs(/jobs), Our Services(/services).
+  Column 4 (Contact): heading "Contact", then `text-sm` lines: email `info@hslabour.co.za` (as a mailto link, hover:text-green), phone `011 468 4192` (as tel: link), and "Mon–Fri 8:30–16:00".
+- Below the grid, a top-bordered (`border-t border-white/10 mt-12 pt-8`) centered `text-sm text-slate-400` line: `© {currentYear} H&S Labour Brokers. All rights reserved.` Compute `const currentYear = new Date().getFullYear();`.
+- Layout root wrapper: `<div className="flex min-h-screen flex-col bg-white text-ink overflow-x-clip">`, with `<main className="flex-1 w-full">{children}</main>` between header and footer.
+- Imports: `import Link from "next/link";` `import Image from "next/image";` `import React from "react";`

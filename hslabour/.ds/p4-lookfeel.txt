@@ -1,0 +1,93 @@
+You are the implementation engineer for a website redesign. Output ONLY files, in this EXACT format, no prose, no markdown fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 (CSS-first `@theme` in globals.css, NO tailwind.config). `@/` = project root. Icons from `lucide-react`. `next/link`. SERVER components (no "use client"). Container at `@/components/site/Container` (default export).
+
+BRAND TOKENS (Tailwind utilities): `navy` #011D58, `navy-dark` #010F33, `green` #46D835 (vivid — use `text-navy` on green fills, never white), `green-dark` #2FA823, `ink` #0F1E3D. Plus a NEW pale-green token you will add: `mint` #EDF6E6.
+
+GOAL: match the look & feel of portergroup.com (a clean recruiting site) using H&S brand colours. Porter Group's signatures: a PALE-GREEN tinted hero (not white), big bold dark headings, green eyebrows/buttons/accents, and decorative ring outlines + dot grids. JSX ESCAPING: the project lints `react/no-unescaped-entities` as ERROR — never put a raw apostrophe in JSX text, write `&apos;`; raw `&` is fine.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE 1 — app/globals.css
+Output this EXACT content (it adds the `mint` token to the existing palette):
+
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #011D58;
+  --color-navy-dark: #010F33;
+  --color-green: #46D835;
+  --color-green-dark: #2FA823;
+  --color-ink: #0F1E3D;
+  --color-mint: #EDF6E6;
+  --color-background: #ffffff;
+  --font-sans: var(--font-roboto), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-26px) translateX(12px); }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.21, 0.6, 0.35, 1) both; }
+.animate-float { animation: float 11s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-fade-up, .animate-float { animation: none; }
+}
+
+----------------------------------------------------------------
+FILE 2 — components/site/Hero.tsx
+A Porter-Group-style hero on a PALE-GREEN (`bg-mint`) background, two columns. Default export `Hero`.
+- `<section className="relative overflow-hidden bg-mint">`.
+- Decorative accents (aria-hidden, pointer-events-none, behind content): a couple of concentric ring outlines top-right using divs e.g. `absolute -top-10 right-10 h-40 w-40 rounded-full border-2 border-green/30` and a smaller one offset; OK to add a faint dot-grid using an inline svg `<svg>` with a `<pattern>` of small circles `fill="#46D835"` at low opacity placed `absolute bottom-8 left-8 h-32 w-40 opacity-20`.
+- `<Container className="relative z-10 py-20 sm:py-28 lg:py-32">` with `grid items-center gap-12 lg:grid-cols-2`.
+- LEFT column (`animate-fade-up`):
+  - eyebrow `text-sm font-semibold uppercase tracking-wider text-green-dark` = "Recruitment & Workforce Solutions".
+  - h1 `mt-4 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl lg:text-6xl text-balance` = `Your partner in recruitment & workforce solutions.` with the words `workforce solutions` wrapped in `<span className="text-green-dark">`.
+  - p `mt-6 max-w-xl text-lg text-slate-600 text-pretty` = "Permanent & contract recruitment, Temporary Employment Services, payroll, vetting and HR — compliant, guaranteed, and delivered nationwide since 1998."
+  - CTA row `mt-8 flex flex-col sm:flex-row gap-4`:
+    - primary: Link `/employers` `group inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5` text "Hire Staff" + ArrowRight (`h-4 w-4 transition-transform duration-300 group-hover:translate-x-1`).
+    - secondary: Link `/jobs` `inline-flex items-center justify-center gap-2 rounded-lg border border-navy/20 bg-white px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-white/60 hover:-translate-y-0.5` text "Find a Job" + Search (`h-4 w-4`).
+  - trust row `mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-600`: three inline-flex items, each a lucide icon (`h-4 w-4 text-green-dark`) + label: (ShieldCheck) "Dept. of Employment & Labour", (Award) "25+ years&apos; experience", (RefreshCw) "Guaranteed replacement".
+- RIGHT column — a decorative, photo-free branded composition (this is where Porter Group shows a photo; build a clean placeholder that looks intentional). `relative mx-auto hidden lg:block`:
+  - a large navy disc: `relative grid h-[26rem] w-[26rem] place-items-center rounded-full bg-navy` (mx-auto).
+  - inside, a centered stack: the company initials `text-7xl font-extrabold text-white` = "H&S" and below `mt-2 text-sm uppercase tracking-[0.3em] text-green` = "Since 1998".
+  - decorative: one concentric ring `absolute -inset-5 rounded-full border border-green/40` (aria-hidden) and small green dots — a `<svg>` dot cluster `absolute -right-6 top-10 h-24 w-24 opacity-40` (aria-hidden).
+- Imports: Container from "@/components/site/Container"; Link from next/link; from lucide-react: ShieldCheck, ArrowRight, Search, Award, RefreshCw.
+
+----------------------------------------------------------------
+FILE 3 — components/site/ClosingCta.tsx
+A full-width dual CTA band (Porter Group closing style). Default export `ClosingCta`. SERVER component.
+- `<section className="grid md:grid-cols-2">` (NO container — the two halves go edge to edge).
+- LEFT half NAVY: `bg-navy px-6 py-20 sm:px-10 lg:px-16`:
+  - eyebrow `text-sm font-semibold uppercase tracking-wider text-green` = "For Career Seekers".
+  - h2 `mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl text-balance` = "Discover your next career move".
+  - p `mt-4 max-w-md text-slate-300` = "Browse live vacancies across South Africa and apply in minutes."
+  - Link `/jobs` `mt-8 inline-flex w-fit items-center justify-center gap-2 rounded-lg border border-white/40 px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10` text "Browse Jobs" + ArrowRight (`h-4 w-4`).
+- RIGHT half GREEN: `bg-green px-6 py-20 sm:px-10 lg:px-16 text-navy`:
+  - eyebrow `text-sm font-semibold uppercase tracking-wider text-navy/70` = "For Employers".
+  - h2 `mt-3 text-3xl font-bold tracking-tight sm:text-4xl text-balance` = "Let&apos;s build your team".
+  - p `mt-4 max-w-md text-navy/80` = "From a single specialist to large-scale TES — tell us what you need and we&apos;ll handle the rest."
+  - Link `/employers` `mt-8 inline-flex w-fit items-center justify-center gap-2 rounded-lg bg-navy px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-navy-dark` text "Request Staff" + ArrowRight (`h-4 w-4`).
+- Each half is a flex column: wrap content so it stacks naturally (e.g. `flex flex-col`).
+- Imports: Link from next/link; ArrowRight from lucide-react.

@@ -1,0 +1,208 @@
+===FILE: components/site/AreasOfFocus.tsx===
+import Container from "@/components/site/Container";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { services } from "@/lib/site/services";
+
+export default function AreasOfFocus() {
+  return (
+    <section className="bg-white py-20 sm:py-28">
+      <Container>
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+            Our Services
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance">
+            Everything your workforce needs
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            From permanent placements to large-scale TES — every engagement
+            backed by deep compliance expertise and our replacement guarantee.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {services.map((service) => (
+            <Link
+              key={service.slug}
+              href={`/services/${service.slug}`}
+              className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-green hover:shadow-xl"
+            >
+              <h3 className="text-lg font-semibold text-navy">
+                {service.name}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {service.tagline}
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-green-dark">
+                Learn more
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+===END===
+===FILE: components/site/Testimonials.tsx===
+import Container from "@/components/site/Container";
+import { Quote } from "lucide-react";
+
+const testimonials = [
+  {
+    quote:
+      "Smart, adaptable, and cost-effective. H&S Labour's tailored packages, covering everything from response handling to psychometrics, prove they understand and deliver to unique business needs. A decade of partnership speaks volumes.",
+    name: "Andrew",
+    role: "Director",
+  },
+  {
+    quote:
+      "H&S Labour has been a vital partner since 2005. Their tailored solutions, from recruitment to HR services, showcase a deep understanding of our needs. A strategic choice for business growth!",
+    name: "Jolie",
+    role: "HR Manager",
+  },
+];
+
+export default function Testimonials() {
+  return (
+    <section className="bg-slate-50 py-20 sm:py-28">
+      <Container>
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+            Testimonials
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance">
+            What our clients say
+          </h2>
+        </div>
+
+        <div className="mt-14 grid gap-6 sm:gap-8 md:grid-cols-2">
+          {testimonials.map((t, i) => (
+            <div
+              key={i}
+              className="flex flex-col rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+            >
+              <Quote className="h-8 w-8 text-green" />
+              <blockquote className="mt-4 flex-1 text-base leading-relaxed text-slate-700">
+                {t.quote}
+              </blockquote>
+              <footer className="mt-6">
+                <div className="font-semibold text-navy">{t.name}</div>
+                <div className="text-sm text-slate-500">{t.role}</div>
+              </footer>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+===END===
+===FILE: app/(marketing)/page.tsx===
+import type { Metadata } from "next";
+import Link from "next/link";
+import Hero from "@/components/site/Hero";
+import AudienceSplit from "@/components/site/AudienceSplit";
+import AreasOfFocus from "@/components/site/AreasOfFocus";
+import Stats from "@/components/site/Stats";
+import Testimonials from "@/components/site/Testimonials";
+import Container from "@/components/site/Container";
+import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
+import { ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "H&S Labour Brokers — Recruitment, TES & Payroll in South Africa",
+  description:
+    "Permanent & contract recruitment, TES, payroll, vetting and HR across South Africa. Since 1998 — compliant, guaranteed.",
+};
+
+export default function HomePage() {
+  return (
+    <>
+      <LocalBusinessJsonLd />
+      <Hero />
+      <AudienceSplit />
+      <AreasOfFocus />
+      <Stats />
+
+      {/* About Teaser */}
+      <section className="bg-white py-20 sm:py-28">
+        <Container>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+                About Us
+              </p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance">
+                Your trusted workforce partner since 1998
+              </h2>
+              <p className="mt-6 text-lg text-slate-600">
+                Established in 1998, H&amp;S Labour Brokers has grown into a
+                diverse portfolio of recruitment, Temporary Employment Services,
+                response handling, vetting, psychometrics and HR services across
+                many industries.
+              </p>
+              <p className="mt-4 text-lg text-slate-600">
+                Our mission is simple — create strong, lasting partnerships with
+                our clients through effective collaboration.
+              </p>
+              <Link
+                href="/about"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5"
+              >
+                More About Us
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="rounded-2xl bg-navy p-10 text-white">
+              <p className="text-2xl font-bold">
+                We aspire to be a premier service provider — delivering a
+                bespoke, holistic experience to clients and candidates alike.
+              </p>
+              <p className="mt-6 text-sm uppercase tracking-wider text-green">
+                Our Vision
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      <Testimonials />
+
+      {/* Final CTA */}
+      <section className="bg-slate-50 py-20 sm:py-28">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance">
+              Ready to hire or looking for work?
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Whether you need staff or your next job, H&amp;S Labour Brokers is
+              here to help.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/employers"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5"
+              >
+                Hire Staff
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/jobs"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-slate-50 hover:-translate-y-0.5"
+              >
+                Find a Job
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </Container>
+      </section>
+    </>
+  );
+}
+===END===

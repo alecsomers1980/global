@@ -1,0 +1,72 @@
+You are the implementation engineer for a website redesign. Output ONLY files, in this EXACT format, no prose, no markdown fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, TypeScript, Tailwind v4. `@/` = project root. lucide-react icons. next/link. SERVER components (no "use client"). Container at `@/components/site/Container` (default export).
+BRAND TOKENS: `navy` #011D58, `navy-dark` #010F33, `green` #46D835 (use `text-navy` on green fills), `green-dark` #2FA823, `ink`, `mint` #EDF6E6.
+PORTER-GROUP LOOK: alternating section backgrounds (white / navy bands), big bold headings, green eyebrows + green chevron bullet lists, green accents.
+JSX ESCAPING (lint error `react/no-unescaped-entities`): NEVER a raw apostrophe in JSX text — write `&apos;`. Raw `&` in JSX text is OK. Apostrophes inside JS/TS string literals are fine.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE 1 — lib/site/highlights.ts
+A typed map of service slug → exactly three short highlight strings. Output exactly:
+
+export const serviceHighlights: Record<string, string[]> = {
+  recruitment: ["Permanent & contract placements", "Guaranteed replacement period", "Shortlisting & assessments"],
+  tes: ["Payroll & statutory compliance", "s198A deeming managed", "Discipline & IR handled"],
+  payroll: ["PAYE, UIF & SDL deductions", "Payslips & EMP201 reports", "Timesheet capture & costing"],
+  vetting: ["Criminal & credit checks", "Qualification verification", "Reference & psychometric"],
+  "hr-ir": ["Contracts & policies", "CCMA representation", "Disciplinary hearings"],
+  "cv-response": ["Advert writing & placement", "Screening & shortlisting", "Candidate feedback"],
+};
+
+----------------------------------------------------------------
+FILE 2 — components/site/AreasOfFocus.tsx
+Services grid with green chevron bullet lists (Porter "Areas of Focus"). Default export `AreasOfFocus`. SERVER component.
+- Imports: `import Container from "@/components/site/Container";` `import Link from "next/link";` `import { ArrowRight, ChevronRight } from "lucide-react";` `import { services } from "@/lib/site/services";` `import { serviceHighlights } from "@/lib/site/highlights";`
+- `services` is an array; each item has `slug`, `name`, `tagline` (all strings).
+- `<section className="bg-white py-20 sm:py-28">` > `<Container>`.
+- Centered header `mx-auto max-w-2xl text-center`: eyebrow `text-sm font-semibold uppercase tracking-wider text-green-dark` "Areas of Focus"; h2 `mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance` "Everything your workforce needs"; subtext `mt-4 text-lg text-slate-600` "From permanent placements to large-scale TES — every engagement backed by deep compliance expertise and our replacement guarantee."
+- Grid `mt-14 grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3`.
+- For each service render a `<Link key={service.slug} href={`/services/${service.slug}`} className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-green hover:shadow-xl">`:
+  - h3 `text-lg font-semibold text-navy` = {service.name}
+  - p `mt-2 text-sm leading-relaxed text-slate-600` = {service.tagline}
+  - a `ul` `mt-5 space-y-2` of bullets from `serviceHighlights[service.slug]` (guard: `(serviceHighlights[service.slug] ?? [])`). Each `li` `flex items-start gap-2 text-sm text-slate-700`: a `<ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-green-dark" aria-hidden />` then the text.
+  - a span `mt-6 inline-flex items-center gap-1 text-sm font-medium text-green-dark` "Learn more" + `<ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />`.
+
+----------------------------------------------------------------
+FILE 3 — app/(marketing)/page.tsx
+Redesigned homepage. SERVER component with metadata export.
+- Imports:
+  `import type { Metadata } from "next";`
+  `import Link from "next/link";`
+  `import Hero from "@/components/site/Hero";`
+  `import AudienceSplit from "@/components/site/AudienceSplit";`
+  `import AreasOfFocus from "@/components/site/AreasOfFocus";`
+  `import Stats from "@/components/site/Stats";`
+  `import Testimonials from "@/components/site/Testimonials";`
+  `import ClosingCta from "@/components/site/ClosingCta";`
+  `import Container from "@/components/site/Container";`
+  `import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";`
+  `import { ArrowRight } from "lucide-react";`
+- metadata export:
+  export const metadata: Metadata = {
+    title: "H&S Labour Brokers — Recruitment, TES & Payroll in South Africa",
+    description: "Permanent & contract recruitment, TES, payroll, vetting and HR across South Africa. Since 1998 — compliant, guaranteed.",
+  };
+- Default export `HomePage` returning fragment in THIS order:
+  1. `<LocalBusinessJsonLd />`
+  2. `<Hero />`
+  3. `<AudienceSplit />`
+  4. `<AreasOfFocus />`
+  5. `<Stats />`
+  6. ABOUT band — a NAVY section (Porter "About Us" dark band). `<section className="relative overflow-hidden bg-navy py-20 sm:py-28">`. Add ONE aria-hidden decorative ring: `<div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full border border-white/10" />`. Inside `<Container className="relative z-10">` a `grid items-center gap-12 lg:grid-cols-2`:
+     - LEFT: eyebrow `text-sm font-semibold uppercase tracking-wider text-green` "About Us"; h2 `mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl text-balance` "Your trusted workforce partner since 1998"; p `mt-6 text-lg text-slate-300` "Established in 1998, H&amp;S Labour Brokers has grown into a diverse portfolio of recruitment, Temporary Employment Services, response handling, vetting, psychometrics and HR services across many industries."; p `mt-4 text-lg text-slate-300` "Our mission is simple — create strong, lasting partnerships with our clients through effective collaboration."; Link `/about` `mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5` "More About Us" + ArrowRight (`h-4 w-4`).
+     - RIGHT: an inset card `rounded-2xl border border-white/10 bg-white/5 p-10`: p `text-2xl font-bold text-white` "We aspire to be a premier service provider — delivering a bespoke, holistic experience to clients and candidates alike."; p `mt-6 text-sm uppercase tracking-wider text-green` "Our Vision".
+  7. `<Testimonials />`
+  8. `<ClosingCta />`   (this REPLACES any old final-CTA section — do not add another CTA section)
+- JSX escaping: use `H&amp;S` in text; no raw apostrophes (the copy above has none — keep it that way).

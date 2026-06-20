@@ -1,0 +1,59 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, TS, Tailwind v4. `@/` = root. lucide-react. next/link. SERVER components. `Container` default export at `@/components/site/Container`. `PageHeader` at `@/components/site/PageHeader` props `{ eyebrow, title, intro?, imageSrc?, imageAlt?, children? }`. `ClosingCta` default export at `@/components/site/ClosingCta`.
+BRAND: `navy` #011D58, `green` #46D835 (use text-navy on green fills), `green-dark` #2FA823, `mint` #EDF6E6, muted slate-600.
+ESCAPING: `react/no-unescaped-entities` is ERROR. In JSX TEXT use `&apos;` not a raw apostrophe; raw `&` in JSX text is OK. In attribute/prop strings literal `&`/`'` are fine.
+PRIMARY BTN: `inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5`.
+
+GENERATE EXACTLY THESE TWO FILES.
+
+----------------------------------------------------------------
+FILE 1 — app/(marketing)/employers/page.tsx
+Themed employers page. SERVER component. Keep metadata + ContactForm + services/company usage.
+- Imports: `import type { Metadata } from "next";` `import Link from "next/link";` `import { services } from "@/lib/site/services";` `import { company } from "@/lib/site/company";` `import ContactForm from "@/components/forms/ContactForm";` `import Container from "@/components/site/Container";` `import PageHeader from "@/components/site/PageHeader";` `import { ArrowRight, RefreshCw, ShieldCheck, Award } from "lucide-react";`
+- Keep metadata EXACTLY:
+  export const metadata: Metadata = {
+    title: "Hire Staff — Labour Broking, TES & Recruitment",
+    description: "Partner with H&S Labour Brokers for permanent, contract and temporary staffing across South Africa. 25+ years of trusted workforce solutions, compliance handled for you.",
+  };
+- Local `const steps = [{step,title,desc}]` (4) plain strings:
+  1 "Brief" / "Tell us what you need — skills, experience, culture fit."
+  2 "Source & Screen" / "We headhunt, vet, and shortlist top candidates."
+  3 "Place" / "You interview the best; we handle contracts & onboarding."
+  4 "Guarantee" / "If a candidate does not work out, we replace them — no extra cost."
+- default export `EmployersPage`, return fragment:
+  - `<PageHeader eyebrow="For Employers" title="Your partner in recruitment" intro="Scale your team with confidence. H&S Labour Brokers delivers permanent, contract and temporary staffing — backed by 25+ years of experience and a guarantee that protects your investment." imageSrc="/images/hero-people.jpg" imageAlt="H&S Labour Brokers recruitment team">` child: a primary green button as an anchor `<a href="#request-staff" className="{PRIMARY BTN classes}">Request staff <ArrowRight className="h-4 w-4" /></a>`.
+  - WHAT WE HANDLE — `<section className="bg-white py-20 sm:py-24"><Container>`: centered `mx-auto max-w-2xl text-center` with eyebrow `text-sm font-semibold uppercase tracking-wider text-green-dark` "What we handle" + h2 `mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl` "End-to-end workforce services". Then `<div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">` mapping `services` → `<Link key={service.slug} href={`/services/${service.slug}`} className="group rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green hover:shadow-xl"><h3 className="text-lg font-semibold text-navy">{service.name}</h3><p className="mt-2 text-sm text-slate-600">{service.tagline}</p></Link>`.
+  - HOW IT WORKS — `<section className="bg-mint py-20 sm:py-24"><Container>`: centered eyebrow "How it works" (green-dark) + h2 navy "A simple, proven process". Then `<ol className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">` mapping steps → `<li key={item.step} className="text-center"><span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green text-lg font-bold text-navy">{item.step}</span><h3 className="mt-4 text-lg font-semibold text-navy">{item.title}</h3><p className="mt-2 text-sm text-slate-600">{item.desc}</p></li>`.
+  - YOUR ASSURANCE — `<section className="bg-white py-20 sm:py-24"><Container><div className="mx-auto max-w-3xl">`: centered h2 navy "Your assurance"; then `<div className="mt-10 space-y-8">` with THREE inline blocks (not mapped, because one uses {company.foundedYear}). Each block: `<div className="flex items-start gap-5"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-mint text-green-dark"><ICON className="h-6 w-6" aria-hidden /></div><div><h3 className="text-lg font-semibold text-navy">TITLE</h3><p className="mt-1 text-slate-600">BODY</p></div></div>`:
+    a) ICON RefreshCw, TITLE "Replacement guarantee", BODY "If a permanent placement doesn&apos;t work out within an agreed period, we find a replacement at no additional fee — your investment stays protected."
+    b) ICON ShieldCheck, TITLE "TES compliance handled", BODY "For temporary placements we manage all payroll, UIF, PAYE, SDL and labour-law obligations — including LRA section 198A (deeming) and joint-and-several liability."
+    c) ICON Award, TITLE "25+ years of trust", BODY {`Operating since ${company.foundedYear}, we bring deep market knowledge and a proven track record to every assignment.`}  (use a JSX expression for this one so the year interpolates)
+  - REQUEST FORM — `<section id="request-staff" className="bg-mint py-20 sm:py-24"><Container><div className="mx-auto max-w-3xl">`: centered h2 navy "Start hiring today" + p `mt-3 text-center text-slate-600` "Describe your needs and we&apos;ll get back to you within one business day." then `<div className="mt-10"><ContactForm heading="Request staff" /></div>`.
+
+----------------------------------------------------------------
+FILE 2 — app/(marketing)/jobs/page.tsx
+RESTYLE ONLY — keep ALL logic identical (JOBS_SOURCE branch, fetchJobs, filtering, sorting). Below is the CURRENT file; reproduce it EXACTLY but: (1) remove the wrapping `<main ...>` element (the layout already provides one) and instead return a fragment `<>...</>`; (2) replace the old `<h1>`+intro paragraph in EACH branch with `<PageHeader .../>`; (3) wrap the body of each branch in `<section className="bg-white py-16 sm:py-20"><Container>...</Container></section>`; (4) convert color classes to brand (text-blue-700→text-green-dark, gray→slate, bg-gray-50→bg-slate-50); (5) add `<ClosingCta />` at the very end of each returned branch. Add imports: `import Container from "@/components/site/Container";` `import PageHeader from "@/components/site/PageHeader";` `import ClosingCta from "@/components/site/ClosingCta";`. Keep existing imports/logic.
+
+CURRENT FILE:
+import type { Metadata } from 'next';
+import { JOBS_SOURCE } from '@/lib/jobs/config';
+import { fetchJobs } from '@/lib/jobs/feed';
+import JobCard from '@/components/jobs/JobCard';
+import JobFilters from '@/components/jobs/JobFilters';
+import PlacementPartnerEmbed from '@/components/jobs/PlacementPartnerEmbed';
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: 'Job Vacancies — H&S Labour Brokers South Africa',
+  description: 'Find permanent, contract and temporary employment services (TES) jobs across Johannesburg, Cape Town, Durban, Pretoria and Gqeberha. H&S Labour Brokers connects skilled candidates with top employers.',
+};
+
+For the IFRAME branch (when JOBS_SOURCE === 'iframe'): PageHeader eyebrow="Careers" title="Current vacancies" intro="H&S Labour Brokers supplies permanent, contract and TES candidates across South Africa — construction, engineering, manufacturing, logistics, facilities, cleaning, security and healthcare, with deep coverage in Johannesburg, Cape Town, Durban, Pretoria and Gqeberha." imageSrc="/images/careers-people.jpg" imageAlt="Candidates placed by H&S Labour Brokers". Then a white section containing `<PlacementPartnerEmbed />` and the existing `<noscript>` block (restyle its link `text-green-dark underline`). Then `<ClosingCta />`.
+
+For the FEED branch: keep the cities/categories/filter/sort logic EXACTLY. PageHeader eyebrow="Careers" title="Job vacancies — South Africa" intro="Browse permanent, contract and temporary roles placed by H&S Labour Brokers across Johannesburg, Cape Town, Durban, Pretoria, Gqeberha and surrounding areas." imageSrc="/images/careers-people.jpg" imageAlt="Candidates placed by H&S Labour Brokers". Then a white section with `<Container>`: `{jobs.length > 0 && <JobFilters cities={cities} categories={categories} />}` then the `filteredJobs.length > 0 ? (grid of JobCard) : (empty-state)` exactly as now but restyle: empty state `bg-slate-50 rounded-2xl`, heading `text-navy`, the "Clear all filters" link `text-green-dark underline hover:text-green`. Then `<ClosingCta />`.

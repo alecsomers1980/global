@@ -1,0 +1,68 @@
+You are the implementation engineer for a website redesign. Output ONLY files, in this EXACT format, with no prose, no explanations, and no markdown code fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+PROJECT STACK
+- Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4. Path alias `@/` = project root. Icons from `lucide-react`. Links via `next/link`.
+- These are SERVER components — do NOT add "use client".
+- A Container component exists at `@/components/site/Container` with BOTH a named and default export: `import Container from "@/components/site/Container";` works.
+
+BRAND TOKENS already available as Tailwind utilities (defined in globals.css):
+- `navy` (#011D58), `navy-dark` (#010F33), `green` (#46D835, vivid — use `text-navy` on a green fill, never white text on green), `green-dark` (#2FA823), `ink` (#0F1E3D).
+- Muted text = slate-300/400 on dark, slate-600 on white. Font is Roboto globally.
+
+DESIGN LANGUAGE (inspired by portergroup.com — clean, modern recruiting agency)
+- Big bold headings: `font-extrabold tracking-tight text-balance`. Section padding `py-20 sm:py-28`.
+- Primary button classes: `group inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5`.
+- Eyebrow label: `text-sm font-semibold uppercase tracking-wider`.
+
+COMPANY FACTS (do not invent statistics beyond these):
+- H&S Labour Brokers, recruitment & labour broker, South Africa, established 1998 (25+ years' experience).
+- Registered with the Department of Employment & Labour. Guaranteed replacement on permanent placements. National footprint.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE 1 — components/site/Hero.tsx
+A clean, confident hero on a NAVY background (Porter Group feel, H&S colours). Default export `Hero`.
+Structure:
+- `<section className="relative overflow-hidden bg-navy">` with a subtle decorative element: ONE `aria-hidden` div, a soft green glow: `pointer-events-none absolute -top-32 -right-24 h-96 w-96 rounded-full bg-green/10 blur-3xl`. (Keep it tasteful — only one or two blobs max.)
+- Inside `<Container className="relative z-10 py-24 sm:py-32 lg:py-40">` with a left-aligned `max-w-3xl` block using `animate-fade-up`:
+  - Eyebrow pill: an inline-flex rounded-full `border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-white/80` containing a lucide `ShieldCheck` icon (h-4 w-4) + text "Registered • Since 1998 • 25+ years".
+  - H1 `mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl text-balance`: reads `Your partner in recruitment & workforce solutions.` where the words `workforce solutions` are wrapped in a `<span className="text-green">`.
+  - Subtext `mt-6 max-w-2xl text-lg text-slate-300 text-pretty`: "Permanent & contract recruitment, Temporary Employment Services, payroll, vetting and HR — compliant, guaranteed, and delivered nationwide since 1998."
+  - CTA row `mt-10 flex flex-col sm:flex-row gap-4`:
+    1) Primary green button Link to `/employers` text "Hire Staff" + lucide `ArrowRight` (h-4 w-4, `transition-transform duration-300 group-hover:translate-x-1`).
+    2) Secondary button Link to `/jobs`: `group inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:-translate-y-0.5` text "Find a Job" + lucide `Search` (h-4 w-4).
+  - Trust row `mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-slate-400`: three inline-flex items each with a lucide icon (h-4 w-4) + label: (ShieldCheck) "Dept. of Employment & Labour", (Award) "25+ years' experience", (RefreshCw) "Guaranteed replacement".
+- Imports: `import Container from "@/components/site/Container";` and from lucide-react: ShieldCheck, ArrowRight, Search, Award, RefreshCw. Link from next/link.
+
+----------------------------------------------------------------
+FILE 2 — components/site/AudienceSplit.tsx
+The signature Porter Group "two doors" section: an Employer card and a Career Seeker card. Default export `AudienceSplit`. SERVER component.
+- `<section className="bg-white py-20 sm:py-28">` > `<Container>` > a `grid gap-6 md:grid-cols-2`.
+- Two cards. Card A (Employer) on NAVY: `flex flex-col rounded-2xl bg-navy p-10 text-white`. Card B (Career Seeker) bordered light: `flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-10`.
+- Each card:
+  - small eyebrow `text-sm font-semibold uppercase tracking-wider` — on navy card use `text-green`, on light card use `text-green-dark`.
+  - `h3` `mt-3 text-2xl font-bold tracking-tight` — white on navy card, `text-navy` on light card.
+  - paragraph `mt-3 text-base` — `text-slate-300` on navy, `text-slate-600` on light — `flex-1` so the button sits at the bottom (add `flex-1` to the paragraph or wrap content so the link aligns to bottom).
+  - a CTA Link at the bottom (`mt-8`).
+- Card A content: eyebrow "I'm an Employer"; h3 "Build a reliable, compliant workforce"; paragraph "From a single specialist to large-scale TES, we recruit, vet and manage the people who keep your business moving — and carry the compliance load for you."; CTA Link to `/employers`, styled as the PRIMARY green button (bg-green text-navy ... hover:bg-green-dark), text "Request Staff" + ArrowRight icon.
+- Card B content: eyebrow "I'm a Career Seeker"; h3 "Take the next step in your career"; paragraph "Browse live vacancies across South Africa and apply in minutes. We place permanent, contract and temporary roles across many sectors."; CTA Link to `/jobs`, styled as a button with `bg-navy text-white hover:bg-navy-dark` (same shape/padding as primary), text "Browse Jobs" + ArrowRight icon.
+- Make both CTA buttons share the shape: `group inline-flex w-fit items-center justify-center gap-2 rounded-lg px-7 py-3.5 text-sm font-semibold shadow-sm transition-all duration-300 hover:-translate-y-0.5`. ArrowRight `h-4 w-4 transition-transform duration-300 group-hover:translate-x-1`.
+- Imports: Container from "@/components/site/Container"; Link from next/link; ArrowRight from lucide-react.
+
+----------------------------------------------------------------
+FILE 3 — components/site/Stats.tsx
+A stats band (Porter Group style) on NAVY. Default export `Stats`. SERVER component.
+- `<section className="bg-navy py-16 sm:py-20">` > `<Container>`.
+- Optional centered heading block `mx-auto max-w-2xl text-center`: eyebrow `text-green` "Why H&S Labour" + h2 `mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl text-balance` "Forging lasting partnerships since 1998".
+- Then a `mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4 text-center` of four stats. Each stat: a big number/word `text-4xl font-extrabold text-green sm:text-5xl` and below it a label `mt-2 text-sm font-medium uppercase tracking-wider text-slate-300`.
+- The four stats (do NOT invent other numbers):
+  1. value "1998", label "Established"
+  2. value "25+", label "Years' experience"
+  3. value "6", label "Service lines"
+  4. value "National", label "Footprint"
+- Imports: Container from "@/components/site/Container".

@@ -1,0 +1,53 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, TS, Tailwind v4. `@/` = root. lucide-react. next/link. SERVER components. Container default export at `@/components/site/Container`. A `PageHeader` exists at `@/components/site/PageHeader` with props `{ eyebrow, title, intro?, imageSrc?, imageAlt?, children? }`. A `ClosingCta` default export exists at `@/components/site/ClosingCta`.
+BRAND TOKENS: `navy` #011D58, `green` #46D835 (use text-navy on green fills), `green-dark` #2FA823, `mint` #EDF6E6, muted slate-600.
+ESCAPING: `react/no-unescaped-entities` is ERROR. In JSX TEXT never use raw apostrophe — use `&apos;`. Raw `&` in JSX text OK. In ATTRIBUTE/prop string values literal `&` and `'` are fine.
+PRIMARY BUTTON classes: `inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5`.
+SECONDARY BUTTON: `inline-flex items-center justify-center gap-2 rounded-lg border border-navy/20 bg-white px-7 py-3.5 text-sm font-semibold text-navy transition-all duration-300 hover:bg-slate-50 hover:-translate-y-0.5`.
+
+GENERATE EXACTLY THESE TWO FILES.
+
+----------------------------------------------------------------
+FILE 1 — app/(marketing)/about/page.tsx
+Themed About page. SERVER component. Preserve existing data usage and metadata.
+- Imports: `import type { Metadata } from "next";` `import Link from "next/link";` `import { company } from "@/lib/site/company";` `import { cities } from "@/lib/site/cities";` `import PageHeader from "@/components/site/PageHeader";` `import ClosingCta from "@/components/site/ClosingCta";` `import { ArrowRight, CheckCircle2 } from "lucide-react";`
+- Keep this metadata EXACTLY:
+  export const metadata: Metadata = {
+    title: "About H&S Labour Brokers — Trusted Recruitment & TES Since 1998",
+    description: "Discover the story behind H&S Labour Brokers. Since 1998 we have connected South African employers with top talent, offering recruitment, TES, payroll, vetting, HR/IR and CV handling across Johannesburg, Cape Town, Durban, Pretoria, Gqeberha and Bloemfontein. Backed by a placement guarantee and full compliance support.",
+  };
+- default export `AboutPage`. Compute `const yearsOfService = new Date().getFullYear() - company.foundedYear;`
+- Define a local array `const reasons` of 5 objects `{ title, body }` (plain JS strings — apostrophes fine):
+  1. title "25+ years of experience", body "We understand the South African labour market and legal landscape."
+  2. title "Registered compliance", body "Fully registered with the Department of Employment and Labour."
+  3. title "Placement guarantee", body "We back our permanent placements with a replacement period for your peace of mind."
+  4. title "Compliance handled for you", body "Our TES solutions manage payroll, UIF, PAYE, SDL and IR responsibilities, including s198A deeming and joint-and-several liability."
+  5. title "Tailored solutions", body "From permanent hires to large-scale temporary workforces, we customise our offering to your business."
+- Return a fragment:
+  - `<PageHeader eyebrow="About Us" title="Your trusted workforce partner since 1998" intro={`For over ${yearsOfService} years, H&S Labour Brokers has connected South African employers with the right people. Founded in ${company.foundedYear}, we combine deep industry knowledge with a personal, results-driven approach.`} imageSrc="/images/about-team.jpg" imageAlt="The H&S Labour Brokers team">` with ONE child: primary button Link to "/employers" "Hire Staff" + `<ArrowRight className="h-4 w-4" />`. (intro is a prop — template literal, literal & is fine.)
+  - OUR STORY — `<section className="bg-white py-16 sm:py-20"><div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">`: h2 `text-3xl font-bold tracking-tight text-navy` "Our story"; p `mt-5 text-lg leading-relaxed text-slate-600` with this text (escape the apostrophe-free copy; it has none): "Since our inception, H&S Labour Brokers has grown into a trusted partner for businesses across South Africa. We specialise in permanent and contract recruitment, temporary employment services (TES), payroll, vetting, HR & IR management, and CV response handling. Whether you need a single key hire or a full contingent workforce, we bring the same dedication to every placement." Close.
+  - WHY CHOOSE — `<section className="bg-mint py-20 sm:py-24"><div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">`: h2 `text-3xl font-bold tracking-tight text-navy text-balance` "Why employers choose H&S Labour Brokers"; then `<div className="mt-10 grid gap-6 sm:grid-cols-2">` mapping `reasons` → each a card `flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-6`: `<CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-green-dark" aria-hidden />` then a div with `<h3 className="font-semibold text-navy">{r.title}</h3>` and `<p className="mt-1 text-sm leading-relaxed text-slate-600">{r.body}</p>`. Close.
+  - ACCREDITATIONS + AREAS — `<section className="bg-white py-20 sm:py-24"><div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 grid gap-12 lg:grid-cols-2">`:
+    LEFT: h2 `text-2xl font-bold tracking-tight text-navy` "Accreditations"; `<ul className="mt-4 space-y-2">` mapping `company.accreditations` → `<li key={i} className="flex items-start gap-2 text-slate-700"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-dark" aria-hidden /><span>{a}</span></li>` (use index `i`).
+    RIGHT: h2 `text-2xl font-bold tracking-tight text-navy` "Areas we serve"; p `mt-4 text-slate-600` "We provide labour broking and recruitment services across South Africa, including:"; `<ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-700">` mapping `cities` → `<li key={city.slug} className="flex items-center gap-2"><span aria-hidden className="text-green-dark">•</span>{city.name}, {city.province}</li>`.
+  - `<ClosingCta />`
+
+----------------------------------------------------------------
+FILE 2 — app/(marketing)/services/[service]/page.tsx
+Themed service-detail page. Preserve ALL existing data-fetching logic and SEO. Output the full file:
+- Imports: `import { getService } from "@/lib/site/services";` `import { cities } from "@/lib/site/cities";` `import { notFound } from "next/navigation";` `import type { Metadata } from "next";` `import Link from "next/link";` `import ServiceJsonLd from "@/components/seo/ServiceJsonLd";` `import FaqJsonLd from "@/components/seo/FaqJsonLd";` `import PageHeader from "@/components/site/PageHeader";` `import ClosingCta from "@/components/site/ClosingCta";` `import { ArrowRight } from "lucide-react";`
+- Keep EXACTLY: `export const dynamicParams = false;` `export const revalidate = 3600;` the `generateStaticParams` (imports services, maps slug) and `generateMetadata` (returns title `${service.name} | H&S Labour Brokers`, description service.tagline; returns {} if no service) functions as in the current file.
+- default async `ServiceDetailPage({ params }: { params: Promise<{ service: string }> })`: `const { service: slug } = await params; const service = getService(slug); if (!service) notFound();`
+- Return fragment:
+  - `<ServiceJsonLd name={service.name} description={service.description} />` and `<FaqJsonLd faqs={service.faqs} />`
+  - `<PageHeader eyebrow="Our Services" title={service.name} intro={service.tagline} imageSrc="/images/about-handshake.jpg" imageAlt={service.name}>` with ONE child: primary button Link to "/employers" "Hire Staff" + `<ArrowRight className="h-4 w-4" />`.
+  - CHALLENGE/SOLUTION — `<section className="bg-white py-16 sm:py-20"><div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 grid gap-6 md:grid-cols-2">`: card A `rounded-2xl border border-slate-200 bg-slate-50 p-8`: `<p className="text-sm font-semibold uppercase tracking-wider text-green-dark">Employer challenge</p>` + `<p className="mt-3 leading-relaxed text-slate-700">{service.challenge}</p>`. card B `rounded-2xl bg-navy p-8 text-white`: `<p className="text-sm font-semibold uppercase tracking-wider text-green">Our solution</p>` + `<p className="mt-3 leading-relaxed text-slate-300">{service.solution}</p>`.
+  - DESCRIPTION — `<section className="bg-white pb-8"><div className="mx-auto max-w-3xl px-4 sm:px-6"><div className="prose max-w-none leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: service.description }} /></div></section>`
+  - FAQ — `<section className="bg-mint py-16 sm:py-20"><div className="mx-auto max-w-3xl px-4 sm:px-6">`: h2 `text-2xl font-bold tracking-tight text-navy` "Frequently asked questions"; `<dl className="mt-6 space-y-4">` mapping `service.faqs` (idx) → `<details key={idx} className="group rounded-2xl border border-slate-200 bg-white p-5 open:shadow-sm">` with `<summary className="cursor-pointer font-medium text-navy list-none marker:content-none after:ml-2 after:text-green-dark after:content-['+'] group-open:after:content-['–']">{faq.q}</summary>` and `<p className="mt-3 leading-relaxed text-slate-600">{faq.a}</p>`.
+  - AVAILABLE IN — `<section className="bg-white py-16 sm:py-20"><div className="mx-auto max-w-3xl px-4 sm:px-6">`: h2 `text-2xl font-bold tracking-tight text-navy` "Available across South Africa"; `<ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">` mapping `cities` → `<li key={city.slug}><Link href={`/${city.slug}/${service.locationSlug}`} className="block rounded-lg bg-slate-50 px-4 py-2 text-slate-800 transition-colors hover:bg-mint hover:text-navy">{city.name}, {city.province}</Link></li>`.
+  - `<ClosingCta />`

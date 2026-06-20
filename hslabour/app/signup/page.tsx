@@ -1,0 +1,161 @@
+"use client";
+
+import { useActionState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { signUp } from "@/app/auth/actions";
+
+export default function SignUpPage() {
+  const [state, action, pending] = useActionState(signUp, undefined);
+
+  if (state?.success) {
+    return (
+      <div className="min-h-screen bg-mint flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md text-center">
+          <Image
+            src="/images/HSL-Logo-112x112.png"
+            alt="H&S Labour Logo"
+            width={64}
+            height={64}
+            className="mx-auto mb-6"
+          />
+          <div className="rounded border border-green/30 bg-mint p-3 text-sm text-navy mb-6">
+            {state.message}
+          </div>
+          <Link
+            href="/login"
+            className="font-semibold text-green-dark hover:text-green"
+          >
+            Go to login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-mint flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+        <Image
+          src="/images/HSL-Logo-112x112.png"
+          alt="H&S Labour Logo"
+          width={64}
+          height={64}
+          className="mx-auto mb-6"
+        />
+
+        <h1 className="text-2xl font-bold text-navy text-center mb-1">
+          Apply to join
+        </h1>
+        <p className="text-sm text-slate-600 text-center mb-6">
+          Promote H&S Labour and earn commission. We&apos;ll review your application and email you once approved.
+        </p>
+
+        {state?.error && (
+          <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800 mb-4">
+            {state.error}
+          </div>
+        )}
+
+        <form action={action} className="mt-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="first_name"
+                className="text-sm font-medium text-slate-700"
+              >
+                First name
+              </label>
+              <input
+                id="first_name"
+                name="first_name"
+                required
+                className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="last_name"
+                className="text-sm font-medium text-slate-700"
+              >
+                Last name
+              </label>
+              <input
+                id="last_name"
+                name="last_name"
+                required
+                className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="phone"
+              className="text-sm font-medium text-slate-700"
+            >
+              Phone
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-slate-700"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-slate-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+            />
+            <p className="text-xs text-slate-500 mt-1">At least 8 characters</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark disabled:opacity-60"
+          >
+            {pending ? "Submitting…" : "Submit application"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-sm text-slate-600 text-center">
+          Already approved?{" "}
+          <Link
+            href="/login"
+            className="font-semibold text-green-dark hover:text-green"
+          >
+            Log in
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}

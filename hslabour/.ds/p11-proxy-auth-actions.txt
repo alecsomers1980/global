@@ -1,0 +1,165 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript. `@/` maps to project root. Supabase via `@supabase/ssr`.
+IMPORTANT Next 16 fact: middleware is renamed to **proxy** — the root file is `proxy.ts`, it exports a function named `proxy` and a `config` object. Do not call it middleware.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE — proxy.ts
+Root-level Next 16 proxy. Refreshes the Supabase session cookie on every matched request and guards the affiliate/admin areas. Output exactly:
+
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const path = request.nextUrl.pathname;
+  // NOTE: match the dashboard areas only — never the public "/affiliate-program" page.
+  const isAffiliateArea = path === "/affiliate" || path.startsWith("/affiliate/");
+  const isAdminArea = path === "/admin" || path.startsWith("/admin/");
+
+  if (!user && (isAffiliateArea || isAdminArea)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("redirect", path);
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isAdminArea) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    if (profile?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  return response;
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico)$).*)",
+  ],
+};
+
+----------------------------------------------------------------
+FILE — app/auth/actions.ts
+Server actions for auth, usable with React `useActionState`. Output exactly:
+
+"use server";
+
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export type AuthState = { error?: string; success?: boolean; message?: string } | undefined;
+
+export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  if (!email || !password) {
+    return { error: "Email and password are required." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect("/affiliate");
+}
+
+export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const first_name = String(formData.get("first_name") ?? "").trim();
+  const last_name = String(formData.get("last_name") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+
+  if (!email || !password || !first_name || !last_name) {
+    return { error: "Name, email and password are required." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { first_name, last_name, phone, role: "affiliate" },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {
+    success: true,
+    message: "Check your email to confirm your account, then log in.",
+  };
+}
+
+export async function signOut(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
+----------------------------------------------------------------
+FILE — app/auth/callback/route.ts
+Email-confirmation / OAuth code exchange route handler. Output exactly:
+
+import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export async function GET(request: NextRequest) {
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/affiliate";
+
+  if (code) {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      return NextResponse.redirect(`${origin}${next}`);
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/login?error=auth`);
+}

@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #011D58;
+  --color-navy-dark: #010F33;
+  --color-green: #46D835;
+  --color-green-dark: #2FA823;
+  --color-ink: #0F1E3D;
+  --color-mint: #EDF6E6;
+  --color-background: #ffffff;
+  --font-sans: var(--font-roboto), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-26px) translateX(12px); }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.21, 0.6, 0.35, 1) both; }
+.animate-float { animation: float 11s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-fade-up, .animate-float { animation: none; }
+}

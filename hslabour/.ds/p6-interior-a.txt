@@ -1,0 +1,106 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around the blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, TypeScript, Tailwind v4. `@/` = project root. lucide-react. next/link, next/image. SERVER components (no "use client"). Container at `@/components/site/Container` (default export).
+BRAND TOKENS: `navy` #011D58, `navy-dark` #010F33, `green` #46D835 (use `text-navy` on green fills), `green-dark` #2FA823, `ink`, `mint` #EDF6E6. Muted text slate-600.
+ESCAPING: `react/no-unescaped-entities` is an ERROR. In JSX TEXT never use a raw apostrophe — use `&apos;`. Raw `&` in JSX text is OK. In JSX ATTRIBUTE string values (props), literal `&` and `'` are fine — do NOT use entities there.
+
+DESIGN: Porter-Group-style interior pages. Reusable page header on a pale-green (`bg-mint`) band with green eyebrow + big navy headline + intro + optional CTA + optional photo, with subtle decorative ring/dot accents. Primary button: `inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5`. Secondary button: `... border border-navy/20 bg-white text-navy hover:bg-slate-50`.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE 1 — components/site/PageHeader.tsx
+A reusable interior page header. Default export `PageHeader`. SERVER component.
+- Props type: `{ eyebrow: string; title: string; intro?: string; imageSrc?: string; imageAlt?: string; children?: React.ReactNode }`.
+- Imports: `import Container from "@/components/site/Container";` `import Image from "next/image";`
+- `<section className="relative overflow-hidden bg-mint">`.
+- Decorative accents (aria-hidden, pointer-events-none): a ring `absolute -top-12 right-12 h-40 w-40 rounded-full border-2 border-green/30` and a smaller ring `absolute top-2 right-24 h-24 w-24 rounded-full border border-green/20`.
+- `<Container className="relative z-10 py-16 sm:py-20 lg:py-24">`.
+- If `imageSrc` is provided: a `grid items-center gap-12 lg:grid-cols-2`. LEFT = text block (below). RIGHT = `<div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-2xl shadow-xl ring-1 ring-navy/10"><Image src={imageSrc} alt={imageAlt ?? ""} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" priority /></div>`.
+  If NO imageSrc: just the text block inside `max-w-3xl`.
+- TEXT BLOCK:
+  - `<p className="text-sm font-semibold uppercase tracking-wider text-green-dark">{eyebrow}</p>`
+  - `<h1 className="mt-3 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl text-balance">{title}</h1>`
+  - `{intro && <p className="mt-5 max-w-xl text-lg text-slate-600 text-pretty">{intro}</p>}`
+  - `{children && <div className="mt-8 flex flex-wrap gap-4">{children}</div>}`
+
+----------------------------------------------------------------
+FILE 2 — components/site/AreasOfFocus.tsx
+SAME as the current file but add an optional `showHeader` prop (default true) that conditionally renders the centered header block. Output the full file:
+
+import Container from "@/components/site/Container";
+import Link from "next/link";
+import { ArrowRight, ChevronRight } from "lucide-react";
+import { services } from "@/lib/site/services";
+import { serviceHighlights } from "@/lib/site/highlights";
+
+export default function AreasOfFocus({ showHeader = true }: { showHeader?: boolean }) {
+  return (
+    <section className="bg-white py-20 sm:py-28">
+      <Container>
+        {showHeader && (
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+              Areas of Focus
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl text-balance">
+              Everything your workforce needs
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              From permanent placements to large-scale TES — every engagement backed
+              by deep compliance expertise and our replacement guarantee.
+            </p>
+          </div>
+        )}
+
+        <div className={`${showHeader ? "mt-14 " : ""}grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3`}>
+          {services.map((service) => {
+            const highlights = serviceHighlights[service.slug] ?? [];
+            return (
+              <Link
+                key={service.slug}
+                href={`/services/${service.slug}`}
+                className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-green hover:shadow-xl"
+              >
+                <h3 className="text-lg font-semibold text-navy">{service.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{service.tagline}</p>
+                <ul className="mt-5 space-y-2">
+                  {highlights.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
+                      <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-green-dark" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-green-dark">
+                  Learn more
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+----------------------------------------------------------------
+FILE 3 — app/(marketing)/services/page.tsx
+Themed services page = PageHeader + AreasOfFocus (no header) + ClosingCta. Keep the existing metadata.
+- Imports: `import type { Metadata } from "next";` `import Link from "next/link";` `import PageHeader from "@/components/site/PageHeader";` `import AreasOfFocus from "@/components/site/AreasOfFocus";` `import ClosingCta from "@/components/site/ClosingCta";` `import { ArrowRight } from "lucide-react";`
+- metadata (keep):
+  export const metadata: Metadata = {
+    title: "Recruitment, TES & Payroll Services | H&S Labour Brokers",
+    description: "H&S Labour Brokers offers permanent and contract recruitment, temporary employment services (TES), payroll, vetting, HR & IR, and CV response handling in South Africa.",
+  };
+- default export `ServicesPage`:
+  return a fragment:
+  - `<PageHeader eyebrow="Our Services" title="Workforce solutions, end to end" intro="With over 25 years of experience, H&S Labour Brokers provides end-to-end workforce solutions for employers across South Africa — from permanent placements to managed temporary employment services. We handle the complexity so you can focus on your business." imageSrc="/images/services-team.jpg" imageAlt="H&S Labour Brokers recruitment consultants">` with ONE child: a primary green button Link to "/employers" reading "Hire Staff" + `<ArrowRight className="h-4 w-4" />`. Close `</PageHeader>`.
+    (NOTE: the intro and title are ATTRIBUTE strings — use literal & and apostrophes, no entities.)
+  - `<AreasOfFocus showHeader={false} />`
+  - `<ClosingCta />`

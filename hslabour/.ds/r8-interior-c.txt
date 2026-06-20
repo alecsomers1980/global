@@ -1,0 +1,327 @@
+===FILE: app/(marketing)/employers/page.tsx===
+import type { Metadata } from "next";
+import Link from "next/link";
+import { services } from "@/lib/site/services";
+import { company } from "@/lib/site/company";
+import ContactForm from "@/components/forms/ContactForm";
+import Container from "@/components/site/Container";
+import PageHeader from "@/components/site/PageHeader";
+import { ArrowRight, RefreshCw, ShieldCheck, Award } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Hire Staff — Labour Broking, TES & Recruitment",
+  description:
+    "Partner with H&S Labour Brokers for permanent, contract and temporary staffing across South Africa. 25+ years of trusted workforce solutions, compliance handled for you.",
+};
+
+const steps = [
+  {
+    step: "1",
+    title: "Brief",
+    desc: "Tell us what you need — skills, experience, culture fit.",
+  },
+  {
+    step: "2",
+    title: "Source & Screen",
+    desc: "We headhunt, vet, and shortlist top candidates.",
+  },
+  {
+    step: "3",
+    title: "Place",
+    desc: "You interview the best; we handle contracts & onboarding.",
+  },
+  {
+    step: "4",
+    title: "Guarantee",
+    desc: "If a candidate does not work out, we replace them — no extra cost.",
+  },
+];
+
+export default function EmployersPage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="For Employers"
+        title="Your partner in recruitment"
+        intro="Scale your team with confidence. H&S Labour Brokers delivers permanent, contract and temporary staffing — backed by 25+ years of experience and a guarantee that protects your investment."
+        imageSrc="/images/hero-people.jpg"
+        imageAlt="H&S Labour Brokers recruitment team"
+      >
+        <a
+          href="#request-staff"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5"
+        >
+          Request staff <ArrowRight className="h-4 w-4" />
+        </a>
+      </PageHeader>
+
+      {/* What We Handle */}
+      <section className="bg-white py-20 sm:py-24">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+              What we handle
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              End-to-end workforce services
+            </h2>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service) => (
+              <Link
+                key={service.slug}
+                href={`/services/${service.slug}`}
+                className="group rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-green hover:shadow-xl"
+              >
+                <h3 className="text-lg font-semibold text-navy">
+                  {service.name}
+                </h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  {service.tagline}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* How It Works */}
+      <section className="bg-mint py-20 sm:py-24">
+        <Container>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-dark">
+              How it works
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              A simple, proven process
+            </h2>
+          </div>
+
+          <ol className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((item) => (
+              <li key={item.step} className="text-center">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-green text-lg font-bold text-navy">
+                  {item.step}
+                </span>
+                <h3 className="mt-4 text-lg font-semibold text-navy">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </Container>
+      </section>
+
+      {/* Your Assurance */}
+      <section className="bg-white py-20 sm:py-24">
+        <Container>
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              Your assurance
+            </h2>
+            <div className="mt-10 space-y-8">
+              <div className="flex items-start gap-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-mint text-green-dark">
+                  <RefreshCw className="h-6 w-6" aria-hidden />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-navy">
+                    Replacement guarantee
+                  </h3>
+                  <p className="mt-1 text-slate-600">
+                    If a permanent placement doesn&apos;t work out within an
+                    agreed period, we find a replacement at no additional fee —
+                    your investment stays protected.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-mint text-green-dark">
+                  <ShieldCheck className="h-6 w-6" aria-hidden />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-navy">
+                    TES compliance handled
+                  </h3>
+                  <p className="mt-1 text-slate-600">
+                    For temporary placements we manage all payroll, UIF, PAYE,
+                    SDL and labour-law obligations — including LRA section 198A
+                    (deeming) and joint-and-several liability.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-mint text-green-dark">
+                  <Award className="h-6 w-6" aria-hidden />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-navy">
+                    25+ years of trust
+                  </h3>
+                  <p className="mt-1 text-slate-600">
+                    {`Operating since ${company.foundedYear}, we bring deep market knowledge and a proven track record to every assignment.`}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Request Form */}
+      <section id="request-staff" className="bg-mint py-20 sm:py-24">
+        <Container>
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-center text-3xl font-bold tracking-tight text-navy sm:text-4xl">
+              Start hiring today
+            </h2>
+            <p className="mt-3 text-center text-slate-600">
+              Describe your needs and we&apos;ll get back to you within one
+              business day.
+            </p>
+            <div className="mt-10">
+              <ContactForm heading="Request staff" />
+            </div>
+          </div>
+        </Container>
+      </section>
+    </>
+  );
+}
+===END===
+===FILE: app/(marketing)/jobs/page.tsx===
+import type { Metadata } from 'next';
+import { JOBS_SOURCE } from '@/lib/jobs/config';
+import { fetchJobs } from '@/lib/jobs/feed';
+import JobCard from '@/components/jobs/JobCard';
+import JobFilters from '@/components/jobs/JobFilters';
+import PlacementPartnerEmbed from '@/components/jobs/PlacementPartnerEmbed';
+import Container from "@/components/site/Container";
+import PageHeader from "@/components/site/PageHeader";
+import ClosingCta from "@/components/site/ClosingCta";
+import Link from "next/link";
+
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: 'Job Vacancies — H&S Labour Brokers South Africa',
+  description: 'Find permanent, contract and temporary employment services (TES) jobs across Johannesburg, Cape Town, Durban, Pretoria and Gqeberha. H&S Labour Brokers connects skilled candidates with top employers.',
+};
+
+export default async function JobsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ city?: string; category?: string; sort?: string }>;
+}) {
+  const params = await searchParams;
+
+  // ---- IFRAME BRANCH ----
+  if (JOBS_SOURCE === 'iframe') {
+    return (
+      <>
+        <PageHeader
+          eyebrow="Careers"
+          title="Current vacancies"
+          intro="H&S Labour Brokers supplies permanent, contract and TES candidates across South Africa — construction, engineering, manufacturing, logistics, facilities, cleaning, security and healthcare, with deep coverage in Johannesburg, Cape Town, Durban, Pretoria and Gqeberha."
+          imageSrc="/images/careers-people.jpg"
+          imageAlt="Candidates placed by H&S Labour Brokers"
+        />
+        <section className="bg-white py-16 sm:py-20">
+          <Container>
+            <PlacementPartnerEmbed />
+            <noscript>
+              <div className="mt-8 text-center text-sm text-slate-600">
+                JavaScript is required to view the full job board.{' '}
+                <Link
+                  href="https://hs-labour-brokers.placementpartner.co.za/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-dark underline"
+                >
+                  Open the job board in a new tab
+                </Link>
+              </div>
+            </noscript>
+          </Container>
+        </section>
+        <ClosingCta />
+      </>
+    );
+  }
+
+  // ---- FEED BRANCH ----
+  const jobs = await fetchJobs();
+
+  // Extract unique cities and categories
+  const cities = [...new Set(jobs.map((job) => job.city).filter(Boolean))].sort();
+  const categories = [
+    ...new Set(jobs.flatMap((job) => job.categories ?? [])),
+  ].sort();
+
+  // Active filter values from URL
+  const activeCity = params.city ?? '';
+  const activeCategory = params.category ?? '';
+  const activeSort = params.sort ?? 'date';
+
+  // Apply filters & sorting
+  const filteredJobs = jobs
+    .filter((job) => !activeCity || job.city === activeCity)
+    .filter((job) => !activeCategory || (job.categories ?? []).includes(activeCategory))
+    .sort((a, b) => {
+      if (activeSort === 'title') {
+        return a.title.localeCompare(b.title);
+      }
+      // default: date descending
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Careers"
+        title="Job vacancies — South Africa"
+        intro="Browse permanent, contract and temporary roles placed by H&S Labour Brokers across Johannesburg, Cape Town, Durban, Pretoria, Gqeberha and surrounding areas."
+        imageSrc="/images/careers-people.jpg"
+        imageAlt="Candidates placed by H&S Labour Brokers"
+      />
+
+      <section className="bg-white py-16 sm:py-20">
+        <Container>
+          {jobs.length > 0 && (
+            <JobFilters cities={cities} categories={categories} />
+          )}
+
+          {filteredJobs.length > 0 ? (
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredJobs.map((job) => (
+                <JobCard key={job.id ?? job.slug} job={job} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 flex flex-col items-center justify-center rounded-2xl bg-slate-50 px-6 py-16 text-center">
+              <h2 className="text-xl font-semibold text-navy">
+                No jobs match your filters
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Try adjusting your search or clearing all filters.
+              </p>
+              <Link
+                href="/jobs"
+                className="mt-4 text-green-dark underline hover:text-green"
+              >
+                Clear all filters
+              </Link>
+            </div>
+          )}
+        </Container>
+      </section>
+
+      <ClosingCta />
+    </>
+  );
+}
+===END===

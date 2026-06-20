@@ -1,0 +1,32 @@
+import { Roboto } from "next/font/google";
+import "./globals.css";
+import type { Metadata } from "next";
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-roboto",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://hslabour.co.za"),
+  title: {
+    default: "H&S Labour Brokers — Recruitment, TES & Payroll in South Africa",
+    template: "%s | H&S Labour Brokers",
+  },
+  description:
+    "H&S Labour Brokers: permanent & contract recruitment, Temporary Employment Services (TES), payroll, vetting and HR solutions across South Africa since 1998.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={`${roboto.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
+}

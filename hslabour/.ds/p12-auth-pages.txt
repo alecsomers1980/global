@@ -1,0 +1,36 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript, Tailwind v4. `@/` = project root. `next/image`, `next/link`.
+BRAND tokens already exist as Tailwind utilities: `bg-navy` `text-navy` (#011D58), `bg-green` `text-green` (#46D835), `text-green-dark` (#2FA823), `bg-mint` (#EDF6E6), `text-ink`. Font Roboto is applied by the root layout. Logo file: `/images/HSL-Logo-112x112.png` (112x112).
+ESCAPING: `react/no-unescaped-entities` is an ERROR — in JSX TEXT use `&apos;` for apostrophes; literal apostrophes are fine inside attribute/prop strings.
+REACT 19 form pattern: `const [state, action, pending] = useActionState(serverAction, undefined);` then `<form action={action}>`; disable the submit button while `pending`.
+
+Both pages are CLIENT components (`"use client"`). Both render a single centered card (max-w-md) on a full-height `bg-mint` background, with the logo (next/image, width=64 height=64) above the heading. Inputs: `w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40`. Labels: `text-sm font-medium text-slate-700`. Primary button: `w-full rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark disabled:opacity-60`. Error box: `rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800`. Success box: `rounded border border-green/30 bg-mint p-3 text-sm text-navy`.
+
+GENERATE EXACTLY THESE TWO FILES.
+
+----------------------------------------------------------------
+FILE — app/login/page.tsx
+Affiliate / admin login.
+- `"use client";` imports: `useActionState` from "react"; `Image` from "next/image"; `Link` from "next/link"; `useSearchParams` from "next/navigation"; `{ signIn }` from "@/app/auth/actions".
+- `const [state, action, pending] = useActionState(signIn, undefined);`
+- Read `useSearchParams()`; if `searchParams.get("error") === "auth"` show an error box "Your sign-in link was invalid or expired. Please try again."
+- Heading (text-2xl font-bold text-navy): "Log in". Subtext (text-sm text-slate-600): "Access your affiliate dashboard."
+- If `state?.error`, show the error box with `{state.error}`.
+- `<form action={action} className="mt-6 space-y-4">` with: Email (input name="email" type="email" required), Password (input name="password" type="password" required), submit button text "Log in" (or "Logging in…" when pending).
+- Below the form: a line "Don&apos;t have an account?" + `<Link href="/signup" className="font-semibold text-green-dark hover:text-green">Apply to join</Link>`.
+- Because `useSearchParams` requires it, wrap the page content in `<Suspense>` (import `Suspense` from "react") — i.e. the default export renders `<Suspense fallback={null}><LoginInner /></Suspense>` and `LoginInner` holds the hook logic.
+
+----------------------------------------------------------------
+FILE — app/signup/page.tsx
+Self-serve affiliate application (Phase 0 baseline — Turnstile is added in a later step).
+- `"use client";` imports: `useActionState` from "react"; `Image` from "next/image"; `Link` from "next/link"; `{ signUp }` from "@/app/auth/actions".
+- `const [state, action, pending] = useActionState(signUp, undefined);`
+- Heading (text-2xl font-bold text-navy): "Apply to join". Subtext (text-sm text-slate-600): "Promote H&S Labour and earn commission. We&apos;ll review your application and email you once approved."
+- If `state?.success`, render ONLY the success box with `{state.message}` plus a `<Link href="/login" ...>Go to login</Link>` (do not show the form again).
+- Otherwise: if `state?.error` show the error box; then `<form action={action} className="mt-6 space-y-4">` with a 2-col grid (`grid grid-cols-2 gap-4`) for First name (name="first_name" required) and Last name (name="last_name" required), then Phone (name="phone" type="tel"), Email (name="email" type="email" required), Password (name="password" type="password" required, add helper text "At least 8 characters"). Submit button text "Submit application" (or "Submitting…" when pending).
+- Below the form: "Already approved?" + `<Link href="/login" className="font-semibold text-green-dark hover:text-green">Log in</Link>`.
