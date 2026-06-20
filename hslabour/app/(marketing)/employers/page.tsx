@@ -5,6 +5,7 @@ import { company } from "@/lib/site/company";
 import ContactForm from "@/components/forms/ContactForm";
 import Container from "@/components/site/Container";
 import PageHeader from "@/components/site/PageHeader";
+import ParallaxSection from "@/components/site/ParallaxSection";
 import { ArrowRight, RefreshCw, ShieldCheck, Award } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -113,6 +114,14 @@ export default function EmployersPage() {
           </ol>
         </Container>
       </section>
+
+      <ParallaxSection
+        image="/images/parallax/handshake.jpg"
+        eyebrow="A partnership you can trust"
+        title="The right people, placed with confidence"
+        subtitle="From a single specialist to a large-scale temporary workforce, we recruit, vet and manage the people who keep your business moving — and carry the compliance load for you."
+        cta={{ href: "#request-staff", label: "Request staff" }}
+      />
 
       {/* Your Assurance */}
       <section className="bg-white py-20 sm:py-24">

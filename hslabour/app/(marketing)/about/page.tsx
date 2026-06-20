@@ -3,6 +3,7 @@ import Link from "next/link";
 import { company } from "@/lib/site/company";
 import { cities } from "@/lib/site/cities";
 import PageHeader from "@/components/site/PageHeader";
+import ParallaxSection from "@/components/site/ParallaxSection";
 import ClosingCta from "@/components/site/ClosingCta";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
@@ -138,6 +139,13 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <ParallaxSection
+        image="/images/parallax/team-meeting.jpg"
+        eyebrow="Since 1998"
+        title="A trusted partner, built on lasting relationships"
+        subtitle="Over 25 years of connecting South African employers with the right people — through effective collaboration, deep market knowledge and a personal, results-driven approach."
+      />
 
       <ClosingCta />
     </>

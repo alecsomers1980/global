@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/site/PageHeader";
 import AreasOfFocus from "@/components/site/AreasOfFocus";
+import ParallaxSection from "@/components/site/ParallaxSection";
 import ClosingCta from "@/components/site/ClosingCta";
 import { ArrowRight } from "lucide-react";
 
@@ -31,6 +32,13 @@ export default function ServicesPage() {
         </Link>
       </PageHeader>
       <AreasOfFocus showHeader={false} />
+      <ParallaxSection
+        image="/images/parallax/workspace.jpg"
+        eyebrow="Compliance handled for you"
+        title="We manage the complexity so you can focus on your business"
+        subtitle="Payroll, UIF, PAYE, SDL and labour-law obligations — including LRA section 198A deeming and joint-and-several liability — all taken care of."
+        cta={{ href: "/employers", label: "Hire staff" }}
+      />
       <ClosingCta />
     </>
   );

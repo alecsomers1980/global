@@ -5,6 +5,7 @@ import ContactForm from "@/components/forms/ContactForm";
 import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
 import Container from "@/components/site/Container";
 import PageHeader from "@/components/site/PageHeader";
+import ParallaxSection from "@/components/site/ParallaxSection";
 import { Mail, Phone, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -110,6 +111,13 @@ export default async function ContactPage() {
           </div>
         </Container>
       </section>
+
+      <ParallaxSection
+        image="/images/parallax/warehouse.jpg"
+        eyebrow="Nationwide coverage"
+        title="Serving employers and job seekers across South Africa"
+        subtitle="From Johannesburg to Cape Town, Durban, Pretoria, Gqeberha and Bloemfontein — recruitment, TES and payroll, since 1998."
+      />
     </>
   );
 }
