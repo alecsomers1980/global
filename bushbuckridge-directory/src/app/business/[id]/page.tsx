@@ -438,6 +438,30 @@ export default async function BusinessProfilePage({
                             </div>
                         )}
 
+                        {/* Location (all tiers — interactive embed is premium-only above) */}
+                        {!isPremium && (business.address || (business.map_lat && business.map_lng)) && (
+                            <div className="bg-card/60 backdrop-blur-md border rounded-[3rem] p-8 shadow-xl">
+                                <div className="flex items-start gap-3">
+                                    <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                                    <div className="space-y-3">
+                                        {business.address && (
+                                            <p className="text-sm font-bold text-muted-foreground">{business.address}</p>
+                                        )}
+                                        <a
+                                            href={business.map_lat && business.map_lng
+                                                ? `https://www.google.com/maps?q=${business.map_lat},${business.map_lng}`
+                                                : `https://www.google.com/maps?q=${encodeURIComponent(business.address)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 text-sm font-black text-primary hover:underline"
+                                        >
+                                            View on Google Maps <ArrowRight className="h-4 w-4" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Quick Action */}
                         <div className="bg-secondary p-10 rounded-[3rem] shadow-2xl shadow-secondary/20 relative overflow-hidden group">
                             <div className="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
