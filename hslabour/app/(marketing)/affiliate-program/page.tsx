@@ -1,22 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Share2, Wallet, HeartHandshake } from "lucide-react";
 import Container from "@/components/site/Container";
 import PageHeader from "@/components/site/PageHeader";
 
 export const metadata: Metadata = {
   title: "Affiliate Program | H&S Labour Brokers",
   description:
-    "Promote H&S Labour's job-hunting e-book and earn commission on every sale. Apply to join our affiliate program.",
+    "Make a referral and earn extra cash. Share our job-hunting e-book, earn commission on every sale, and help South Africans find work. Free to join.",
 };
+
+const earnings = [
+  {
+    icon: Share2,
+    title: "Empower others",
+    body: "Share proven job-hunting strategies that genuinely help people land work.",
+  },
+  {
+    icon: Wallet,
+    title: "Earn handsome commissions",
+    body: "For every e-book sold through your link, you pocket a share of the profits.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Promote flexibly",
+    body: "Share through your blog, social media, or simple word-of-mouth — whatever suits you.",
+  },
+];
 
 const steps = [
   {
     title: "Apply",
-    body: "Sign up in a minute. We review every application and approve genuine promoters.",
+    body: "Sign up in under a minute. We review every application and approve genuine promoters.",
   },
   {
     title: "Share your link",
-    body: "Get a unique referral link to share on social media, blogs, or with your network.",
+    body: "Get a unique referral link to share on social media, your blog, or with your network.",
   },
   {
     title: "Earn commission",
@@ -29,8 +48,8 @@ export default function AffiliateProgramPage() {
     <>
       <PageHeader
         eyebrow="Earn with us"
-        title="Affiliate Program"
-        intro="Promote our job-hunting e-book and earn commission on every sale. Open to anyone — no cost to join."
+        title="Make a referral and earn some extra cash"
+        intro="Share our job-hunting e-book and earn commission on every sale. You can be ANYONE — content creator, influencer, nurse, teacher, stay-at-home parent, or just someone looking to make extra cash. Free to join."
         imageSrc="/images/careers-people.jpg"
         imageAlt="Earn commission as an H&S Labour affiliate"
       >
@@ -48,9 +67,72 @@ export default function AffiliateProgramPage() {
         </Link>
       </PageHeader>
 
+      {/* How you earn */}
       <section className="bg-white py-20 sm:py-24">
         <Container>
-          <h2 className="text-2xl font-bold tracking-tight text-navy">How it works</h2>
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold tracking-tight text-navy">
+              How you earn
+            </h2>
+            <p className="mt-3 text-slate-600">
+              Earn commission by partnering with us. There&apos;s no cost to
+              join and no limit on what you can make.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {earnings.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-slate-200 bg-white p-6"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-green-dark">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-navy">
+                  {item.title}
+                </h3>
+                <p className="mt-1 text-sm text-slate-600">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Market opportunity */}
+      <section className="bg-mint py-20 sm:py-24">
+        <Container>
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold tracking-tight text-navy">
+              A huge market to tap into
+            </h2>
+            <p className="mt-3 text-slate-600">
+              The demand for practical job-hunting help in South Africa is
+              enormous — which means plenty of people to share with.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            <div className="rounded-2xl bg-white p-8">
+              <p className="text-4xl font-bold text-green-dark">16.7M</p>
+              <p className="mt-2 text-sm text-slate-600">
+                employed South Africans who could level up their careers.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white p-8">
+              <p className="text-4xl font-bold text-green-dark">7.8M</p>
+              <p className="mt-2 text-sm text-slate-600">
+                people actively searching for work right now.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* How it works */}
+      <section className="bg-white py-20 sm:py-24">
+        <Container>
+          <h2 className="text-2xl font-bold tracking-tight text-navy">
+            How it works
+          </h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {steps.map((step, i) => (
               <div
@@ -60,7 +142,9 @@ export default function AffiliateProgramPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-lg font-bold text-green-dark">
                   {i + 1}
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-navy">{step.title}</h3>
+                <h3 className="mt-4 text-lg font-bold text-navy">
+                  {step.title}
+                </h3>
                 <p className="mt-1 text-sm text-slate-600">{step.body}</p>
               </div>
             ))}
@@ -69,8 +153,9 @@ export default function AffiliateProgramPage() {
           <div className="mt-12 rounded-2xl bg-navy p-8 text-center text-white sm:p-12">
             <h2 className="text-2xl font-bold">Ready to start earning?</h2>
             <p className="mx-auto mt-2 max-w-xl text-white/80">
-              Join free, get your link, and earn commission promoting a product
-              that genuinely helps job seekers.
+              Unlock an extra income stream, empower others in their job search,
+              and become part of a supportive community. Join free, get your
+              link, and start earning.
             </p>
             <Link
               href="/signup"
