@@ -1,0 +1,109 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript, Tailwind v4. `@/` = project root. `lucide-react` icons. `next/link`.
+BRAND: `bg-navy`/`text-navy` (#011D58), `bg-green`/`text-green` (#46D835), `text-green-dark`, `bg-mint`, `text-ink`.
+ESCAPING: `react/no-unescaped-entities` is ERROR — `&apos;` in JSX TEXT; literal apostrophes fine in prop strings.
+NOTE: `createAdminClient` from `@/lib/supabase/admin` is SYNCHRONOUS — call it as `createAdminClient()` WITHOUT await. `createClient` from `@/lib/supabase/server` IS async (await it).
+
+GENERATE EXACTLY THESE FOUR FILES.
+
+----------------------------------------------------------------
+FILE — app/admin/affiliates/actions.ts
+Server actions (logic ported verbatim, typed). Output exactly:
+
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { generateAffiliateCode } from "@/lib/affiliate/code";
+
+export type AdminResult = { success: boolean; error?: string; trackingCode?: string };
+
+export async function approveAffiliate(
+  affiliateId: string,
+  firstName: string | null,
+): Promise<AdminResult> {
+  try {
+    if (!affiliateId) return { success: false, error: "Missing ID" };
+    const supabase = createAdminClient();
+    const trackingCode = generateAffiliateCode(firstName, affiliateId);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_approved: true, affiliate_code: trackingCode })
+      .eq("id", affiliateId)
+      .eq("role", "affiliate");
+    if (error) {
+      console.error("Approve affiliate error:", error);
+      return { success: false, error: error.message };
+    }
+    revalidatePath("/admin/affiliates");
+    return { success: true, trackingCode };
+  } catch (err) {
+    console.error("approveAffiliate exception:", err);
+    return { success: false, error: "Server Exception" };
+  }
+}
+
+export async function declineAffiliate(affiliateId: string): Promise<AdminResult> {
+  try {
+    if (!affiliateId) return { success: false, error: "Missing ID" };
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_approved: false, affiliate_code: null })
+      .eq("id", affiliateId)
+      .eq("role", "affiliate");
+    if (error) {
+      console.error("Decline affiliate error:", error);
+      return { success: false, error: error.message };
+    }
+    revalidatePath("/admin/affiliates");
+    return { success: true };
+  } catch (err) {
+    console.error("declineAffiliate exception:", err);
+    return { success: false, error: "Server Exception" };
+  }
+}
+
+----------------------------------------------------------------
+FILE — app/admin/affiliates/AffiliateRow.tsx
+Client component — a single table row with approve/decline.
+- `"use client";` imports: `useState, useTransition` from "react"; `useRouter` from "next/navigation"; `{ approveAffiliate, declineAffiliate }` from "./actions"; icons `Check, X, Loader2` from "lucide-react".
+- `export interface Affiliate { id: string; first_name: string | null; last_name: string | null; email: string | null; created_at: string; is_approved: boolean; affiliate_code: string | null; }`
+- Default export `AffiliateRow({ affiliate }: { affiliate: Affiliate })`.
+- `const router = useRouter();` `const [isPending, startTransition] = useTransition();` `const [error, setError] = useState("");`
+- Helper: `function run(fn: () => Promise<{ success: boolean; error?: string }>) { setError(""); startTransition(async () => { const res = await fn(); if (!res.success) setError(res.error || "Failed"); else router.refresh(); }); }`
+- Render a `<tr className="border-b border-slate-100 hover:bg-slate-50">` with `<td>`s (each `px-4 py-3 text-sm`):
+  1. Name: `<span className="font-medium text-navy">{[affiliate.first_name, affiliate.last_name].filter(Boolean).join(" ") || "—"}</span>`
+  2. `{affiliate.email}` (text-slate-600)
+  3. Applied date: `{new Date(affiliate.created_at).toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" })}` (text-slate-500)
+  4. Status badge: if approved `<span className="rounded-full bg-green/15 px-2 py-1 text-xs font-semibold text-green-dark">Approved</span>` else `<span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">Pending</span>`
+  5. Code: `{affiliate.affiliate_code || "—"}` (font-mono text-navy)
+  6. Actions: a `flex items-center gap-2`. If `!affiliate.is_approved` show Approve button `inline-flex items-center gap-1 rounded bg-green px-3 py-1.5 text-xs font-semibold text-navy hover:bg-green-dark disabled:opacity-60` onClick `run(() => approveAffiliate(affiliate.id, affiliate.first_name))`, disabled={isPending}, content `<Check className="h-3.5 w-3.5" /> Approve`. ALWAYS show Decline button `inline-flex items-center gap-1 rounded border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-60` onClick `run(() => declineAffiliate(affiliate.id))`, disabled={isPending}, content `<X className="h-3.5 w-3.5" /> {affiliate.is_approved ? "Revoke" : "Decline"}`. If `isPending` you may prefix the action cell with `<Loader2 className="h-3.5 w-3.5 animate-spin text-slate-400" />`. If `error`, show `<span className="text-xs text-red-600">{error}</span>`.
+
+----------------------------------------------------------------
+FILE — app/admin/affiliates/page.tsx
+SERVER component — the affiliates admin list.
+- Imports: `redirect` from "next/navigation"; `createClient` from "@/lib/supabase/server"; `createAdminClient` from "@/lib/supabase/admin"; `AffiliateRow, { Affiliate }` from "./AffiliateRow"; `Link` from "next/link".
+- `export const metadata = { title: "Affiliates | Admin" };`
+- default async `AdminAffiliatesPage()`:
+  - `const supabase = await createClient();` get user; if `!user` → `redirect("/login")`.
+  - `const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();` if `me?.role !== "admin"` → `redirect("/")`.
+  - `const admin = createAdminClient();` then `const { data: affiliates } = await admin.from("profiles").select("id, first_name, last_name, email, created_at, is_approved, affiliate_code").eq("role", "affiliate").order("created_at", { ascending: false });`
+  - `const list = (affiliates ?? []) as Affiliate[];`
+  - Layout: `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-6xl px-4 py-10">`. Breadcrumb/back: `<Link href="/admin" className="text-sm text-green-dark hover:text-green">← Admin</Link>`. Heading `<h1 className="mt-2 text-3xl font-bold text-navy">Affiliates</h1>` + `<p className="mt-1 text-slate-600">{list.length} application(s). Approve to issue a tracking code.</p>`.
+  - If `list.length === 0`: `<p className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">No affiliate applications yet.</p>`.
+  - Else a card `mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white`: `<div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left"><thead><tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">` with `<th className="px-4 py-3">` headers: Name, Email, Applied, Status, Code, Actions. `</tr></thead><tbody>` mapping `list` → `<AffiliateRow key={a.id} affiliate={a} />`. Close all.
+
+----------------------------------------------------------------
+FILE — app/admin/page.tsx
+SERVER component — admin home.
+- Imports: `redirect` from "next/navigation"; `createClient` from "@/lib/supabase/server"; `createAdminClient` from "@/lib/supabase/admin"; `Link` from "next/link"; icons `Users, Clock` from "lucide-react".
+- default async `AdminHome()`:
+  - `const supabase = await createClient();` get user; if `!user` → redirect("/login"). fetch `me` role; if not "admin" → redirect("/").
+  - `const admin = createAdminClient();` get counts: `const { count: total } = await admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "affiliate");` and `const { count: pending } = await admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "affiliate").eq("is_approved", false);`
+  - Layout `min-h-screen bg-mint/40` → `mx-auto max-w-4xl px-4 py-10`: `<h1 className="text-3xl font-bold text-navy">Admin</h1>`. A grid `mt-8 grid gap-6 sm:grid-cols-2`. Card 1 = a `<Link href="/admin/affiliates">` styled `block rounded-2xl border border-slate-200 bg-white p-6 hover:border-green`: mint tile with `<Users className="h-5 w-5" />`, `<h2 className="mt-4 text-lg font-bold text-navy">Affiliates</h2>`, `<p className="mt-1 text-sm text-slate-600">{total ?? 0} total · {pending ?? 0} pending approval</p>`. Card 2 = a static info card `rounded-2xl border border-slate-200 bg-white p-6` with `<Clock>` tile, `<h2 className="mt-4 text-lg font-bold text-navy">More coming</h2>`, `<p className="mt-1 text-sm text-slate-600">Shop orders and verification jobs will appear here in later phases.</p>`.

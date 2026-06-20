@@ -1,0 +1,136 @@
+"use client";
+
+import { useState } from "react";
+import { saveBankDetails } from "./actions";
+import { Lock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+
+interface BankDetailsFormProps {
+  initialBankName?: string | null;
+  initialAccountNumber?: string | null;
+  initialBranchCode?: string | null;
+}
+
+export default function BankDetailsForm({
+  initialBankName,
+  initialAccountNumber,
+  initialBranchCode,
+}: BankDetailsFormProps) {
+  const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  async function handleAction(formData: FormData) {
+    setStatus("saving");
+    setMessage("");
+
+    const result = await saveBankDetails(formData);
+
+    if (result?.error) {
+      setStatus("error");
+      setMessage(result.error);
+    } else {
+      setStatus("success");
+      setMessage("Bank details securely saved.");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-6">
+      <div className="flex items-start gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-green-dark">
+          <Lock className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-navy">Payout details</h2>
+          <p className="text-sm text-slate-500">
+            Securely store your banking information for commission payouts.
+          </p>
+        </div>
+      </div>
+
+      <form action={handleAction} className="mt-6 grid gap-4 sm:grid-cols-3">
+        {/* Bank name */}
+        <div>
+          <label htmlFor="bank_name" className="text-sm font-medium text-slate-700">
+            Bank name
+          </label>
+          <input
+            id="bank_name"
+            name="bank_name"
+            type="text"
+            defaultValue={initialBankName ?? ""}
+            required
+            placeholder="e.g. FNB"
+            className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+          />
+        </div>
+
+        {/* Account number */}
+        <div>
+          <label htmlFor="account_number" className="text-sm font-medium text-slate-700">
+            Account number
+          </label>
+          <input
+            id="account_number"
+            name="account_number"
+            type="text"
+            defaultValue={initialAccountNumber ?? ""}
+            required
+            className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+          />
+        </div>
+
+        {/* Branch code */}
+        <div>
+          <label htmlFor="branch_code" className="text-sm font-medium text-slate-700">
+            Branch code
+          </label>
+          <input
+            id="branch_code"
+            name="branch_code"
+            type="text"
+            defaultValue={initialBranchCode ?? ""}
+            required
+            className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+          />
+        </div>
+
+        {/* Submit button - full width row */}
+        <div className="sm:col-span-3">
+          <button
+            type="submit"
+            disabled={status === "saving"}
+            className="inline-flex w-full items-center justify-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark disabled:opacity-60"
+          >
+            {status === "saving" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Saving
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4" /> Save
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+
+      {message && (
+        <div
+          className={`mt-4 flex items-center gap-2 rounded p-3 text-sm ${
+            status === "error"
+              ? "border border-red-200 bg-red-50 text-red-800"
+              : "border border-green/30 bg-mint text-navy"
+          }`}
+        >
+          {status === "error" ? (
+            <AlertCircle className="h-4 w-4" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4" />
+          )}
+          {message}
+        </div>
+      )}
+    </div>
+  );
+}
