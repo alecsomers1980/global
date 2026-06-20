@@ -8,6 +8,27 @@ import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import GalleryLightbox from '@/components/GalleryLightbox'
+import type { Metadata } from 'next'
+import { buildMetadata, pbFileUrl } from '@/lib/seo'
+import JsonLd from '@/components/JsonLd'
+import { breadcrumbLd } from '@/lib/structured-data'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const pb = await createClient()
+  try {
+    const opp: any = await pb.collection('opportunities').getOne(id)
+    return buildMetadata({
+      title: opp.title,
+      description: opp.description || `${opp.title} — tender, funding or training opportunity in Bushbuckridge.`,
+      path: `/opportunities/${id}`,
+      image: pbFileUrl(opp, opp.image),
+      type: 'article',
+    })
+  } catch {
+    return buildMetadata({ title: 'Opportunity', path: `/opportunities/${id}` })
+  }
+}
 
 const getCategoryColor = (cat: string) => {
   switch (cat) {
@@ -47,6 +68,11 @@ export default async function OpportunityDetailPage({ params }: { params: Promis
 
   return (
     <div className="flex flex-col gap-12 pb-24">
+      <JsonLd data={breadcrumbLd([
+        { name: 'Home', path: '/' },
+        { name: 'Opportunities', path: '/opportunities' },
+        { name: opp.title, path: `/opportunities/${opp.id}` },
+      ])} />
       <SecondaryHeader
         title={opp.title}
         subtitle={opp.organization || 'Available Opportunity'}

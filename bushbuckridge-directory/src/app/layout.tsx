@@ -17,14 +17,39 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+import { SITE_URL, absoluteUrl } from "@/lib/seo";
+
 export const metadata: Metadata = {
-  title: "Bushbuckridge Community Directory",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Bushbuckridge Community Directory",
+    template: "%s | Bushbuckridge Community Directory",
+  },
   description: "Find trusted local businesses, job opportunities, and community events in the Bushbuckridge region.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Bushbuckridge Community Directory",
+    url: SITE_URL,
+    title: "Bushbuckridge Community Directory",
+    description: "Find trusted local businesses, job opportunities, and community events in the Bushbuckridge region.",
+    images: [absoluteUrl("/banner.webp")],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bushbuckridge Community Directory",
+    description: "Find trusted local businesses, job opportunities, and community events in the Bushbuckridge region.",
+    images: [absoluteUrl("/banner.webp")],
+  },
 };
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
+import JsonLd from "@/components/JsonLd";
+import { organizationLd, websiteLd } from "@/lib/structured-data";
 
 export default function RootLayout({
   children,
@@ -36,6 +61,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
       >
+        <JsonLd data={[organizationLd(), websiteLd()]} />
         <Header />
         <main className="flex-1 flex flex-col">
           {children}

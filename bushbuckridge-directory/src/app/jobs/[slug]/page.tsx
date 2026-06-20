@@ -9,6 +9,27 @@ import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import GalleryLightbox from '@/components/GalleryLightbox'
 import { formatDistanceToNow } from 'date-fns'
+import type { Metadata } from 'next'
+import { buildMetadata, pbFileUrl } from '@/lib/seo'
+import JsonLd from '@/components/JsonLd'
+import { jobPostingLd, breadcrumbLd } from '@/lib/structured-data'
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const pb = await createClient()
+  try {
+    const job: any = await pb.collection('jobs').getFirstListItem(`slug = "${slug}"`)
+    return buildMetadata({
+      title: job.title,
+      description: job.description || `${job.title} vacancy in the Bushbuckridge area.`,
+      path: `/jobs/${job.slug || slug}`,
+      image: pbFileUrl(job, job.image),
+      type: 'article',
+    })
+  } catch {
+    return buildMetadata({ title: 'Job', path: `/jobs/${slug}` })
+  }
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -41,6 +62,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   return (
     <div className="flex flex-col gap-12 pb-24">
+      <JsonLd data={[
+        jobPostingLd(job),
+        breadcrumbLd([
+          { name: 'Home', path: '/' },
+          { name: 'Jobs', path: '/jobs' },
+          { name: job.title, path: `/jobs/${job.slug || job.id}` },
+        ]),
+      ]} />
       <SecondaryHeader
         title={job.title}
         subtitle={`${job.company || 'Local Business'} · ${job.location || 'Bushbuckridge Area'}`}

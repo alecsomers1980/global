@@ -26,6 +26,30 @@ import BusinessHoursDisplay from '@/components/BusinessHoursDisplay'
 import BusinessFaqs from '@/components/BusinessFaqs'
 import ReviewsSection from '@/components/ReviewsSection'
 import { Clock, Tag, PlayCircle, Award, Calendar, UsersRound } from 'lucide-react'
+import type { Metadata } from 'next'
+import { buildMetadata, pbFileUrl } from '@/lib/seo'
+import JsonLd from '@/components/JsonLd'
+import { localBusinessLd, breadcrumbLd } from '@/lib/structured-data'
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const { id } = await params
+    const pb = await createClient()
+    try {
+        const business: any = await pb.collection('businesses').getOne(id, { expand: 'sector,area' })
+        return buildMetadata({
+            title: business.name,
+            description: business.description || `${business.name} — local business in the Bushbuckridge region.`,
+            path: `/business/${id}`,
+            image: pbFileUrl(business, business.cover_image) || pbFileUrl(business, business.logo),
+        })
+    } catch {
+        return buildMetadata({ title: 'Business', path: `/business/${id}` })
+    }
+}
 
 export default async function BusinessProfilePage({
     params,
@@ -105,6 +129,14 @@ export default async function BusinessProfilePage({
 
     return (
         <div className="flex flex-col pb-24">
+            <JsonLd data={[
+                localBusinessLd(business),
+                breadcrumbLd([
+                    { name: 'Home', path: '/' },
+                    { name: 'Find a Service', path: '/find-a-service' },
+                    { name: business.name, path: `/business/${business.id}` },
+                ]),
+            ]} />
             <SecondaryHeader
                 title={business.name}
                 subtitle={(() => { const plain = (business.description || '').replace(/<[^>]*>/g, '').trim(); return plain.length > 150 ? plain.substring(0, 150) + '...' : plain; })()}

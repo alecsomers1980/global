@@ -8,6 +8,36 @@ import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import GalleryLightbox from '@/components/GalleryLightbox'
+import type { Metadata } from 'next'
+import { buildMetadata, pbFileUrl } from '@/lib/seo'
+import JsonLd from '@/components/JsonLd'
+import { eventLd, breadcrumbLd } from '@/lib/structured-data'
+
+async function findEvent(slug: string) {
+  const pb = await createClient()
+  try {
+    return await pb.collection('events').getFirstListItem(`slug = "${slug}"`)
+  } catch {
+    try {
+      return await pb.collection('events').getOne(slug)
+    } catch {
+      return null
+    }
+  }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const event: any = await findEvent(slug)
+  if (!event) return buildMetadata({ title: 'Event', path: `/events/${slug}` })
+  return buildMetadata({
+    title: event.title,
+    description: event.description || `${event.title} — community event in Bushbuckridge.`,
+    path: `/events/${event.slug || slug}`,
+    image: pbFileUrl(event, event.image),
+    type: 'article',
+  })
+}
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -39,6 +69,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 
   return (
     <div className="flex flex-col gap-12 pb-24">
+      <JsonLd data={[
+        eventLd(event),
+        breadcrumbLd([
+          { name: 'Home', path: '/' },
+          { name: 'Events', path: '/events' },
+          { name: event.title, path: `/events/${event.slug || event.id}` },
+        ]),
+      ]} />
       <SecondaryHeader
         title={event.title}
         subtitle={[event.venue, eventDate ? format(eventDate, 'EEEE, MMMM d, yyyy') : null].filter(Boolean).join(' · ')}
