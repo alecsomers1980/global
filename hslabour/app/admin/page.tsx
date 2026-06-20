@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
-import { Users, BookOpen } from "lucide-react";
+import { Users, BookOpen, Store, ClipboardList } from "lucide-react";
 
 export const metadata = { title: "Admin" };
 
@@ -56,6 +56,34 @@ export default async function AdminHome() {
             <h2 className="mt-4 text-lg font-bold text-navy">E-book</h2>
             <p className="mt-1 text-sm text-slate-600">
               Upload the file, set price &amp; commission, view sales
+            </p>
+          </Link>
+
+          {/* Shop card */}
+          <Link
+            href="/admin/shop"
+            className="block rounded-2xl border border-slate-200 bg-white p-6 hover:border-green"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-green-dark">
+              <Store className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-bold text-navy">Shop</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              CV templates &amp; services — products, prices, files
+            </p>
+          </Link>
+
+          {/* Service jobs card */}
+          <Link
+            href="/admin/services"
+            className="block rounded-2xl border border-slate-200 bg-white p-6 hover:border-green"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-green-dark">
+              <ClipboardList className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-bold text-navy">Service jobs</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Done-for-you orders — status, uploads, deliverables
             </p>
           </Link>
         </div>

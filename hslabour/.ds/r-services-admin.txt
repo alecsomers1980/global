@@ -1,0 +1,309 @@
+===FILE: app/admin/services/actions.ts===
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export type SvcResult = { success?: boolean; error?: string };
+
+async function isAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  return me?.role === "admin";
+}
+
+const STATUSES = ["received", "in_progress", "awaiting_client", "delivered"];
+
+export async function setJobStatus(formData: FormData): Promise<SvcResult> {
+  if (!(await isAdmin())) return { error: "Unauthorized" };
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!id || !STATUSES.includes(status)) return { error: "Invalid status" };
+  const admin = createAdminClient();
+  const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+  if (status === "delivered") patch.delivered_at = new Date().toISOString();
+  const { error } = await admin.from("service_jobs").update(patch).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath(`/admin/services/${id}`);
+  revalidatePath("/admin/services");
+  return { success: true };
+}
+
+export async function uploadDeliverable(formData: FormData): Promise<SvcResult> {
+  if (!(await isAdmin())) return { error: "Unauthorized" };
+  const id = String(formData.get("id") ?? "");
+  const file = formData.get("file");
+  if (!id) return { error: "Missing job" };
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a file" };
+  const admin = createAdminClient();
+  const ext = file.name.split(".").pop() || "pdf";
+  const path = `deliverables/${id}-${Date.now()}.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const { error: upErr } = await admin.storage
+    .from("shop")
+    .upload(path, buffer, { contentType: file.type || "application/octet-stream", upsert: true });
+  if (upErr) return { error: upErr.message };
+  const { error } = await admin
+    .from("service_jobs")
+    .update({ deliverable_path: path, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath(`/admin/services/${id}`);
+  return { success: true };
+}
+===END===
+===FILE: app/admin/services/page.tsx===
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import Link from "next/link";
+
+export const metadata = { title: "Services | Admin" };
+
+export default async function AdminServicesPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (profile?.role !== "admin") redirect("/");
+
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("service_jobs")
+    .select("id, product_name, buyer_email, status, revisions_remaining, created_at")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  const jobs = (data ?? []) as Array<{
+    id: string;
+    product_name: string;
+    buyer_email: string;
+    status: string;
+    revisions_remaining: number;
+    created_at: string;
+  }>;
+
+  const statusMap: Record<string, string> = {
+    received: "bg-slate-100 text-slate-600",
+    in_progress: "bg-amber-100 text-amber-700",
+    awaiting_client: "bg-blue-100 text-blue-700",
+    delivered: "bg-green/15 text-green-dark",
+  };
+
+  return (
+    <div className="min-h-screen bg-mint/40">
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <Link href="/admin" className="text-sm text-green-dark hover:text-green">
+          ← Admin
+        </Link>
+        <h1 className="mt-2 text-3xl font-bold text-navy">Service jobs</h1>
+        <p className="mt-1 text-slate-600">{jobs.length} job(s).</p>
+
+        {jobs.length === 0 ? (
+          <p className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+            No service jobs yet.
+          </p>
+        ) : (
+          <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left">
+                <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Product</th>
+                    <th className="px-4 py-3">Buyer</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Revisions</th>
+                    <th className="px-4 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobs.map((j) => (
+                    <tr key={j.id} className="border-b border-slate-100">
+                      <td className="px-4 py-3 text-sm">
+                        {new Date(j.created_at).toLocaleDateString("en-ZA")}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-navy">
+                        {j.product_name}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-600">
+                        {j.buyer_email}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                            statusMap[j.status] || ""
+                          }`}
+                        >
+                          {j.status.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{j.revisions_remaining}</td>
+                      <td className="px-4 py-3 text-sm">
+                        <Link
+                          href={`/admin/services/${j.id}`}
+                          className="text-sm font-semibold text-green-dark hover:text-green"
+                        >
+                          Open
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+===END===
+===FILE: app/admin/services/[id]/page.tsx===
+import { redirect, notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { setJobStatus, uploadDeliverable } from "../actions";
+import Link from "next/link";
+
+export const metadata = { title: "Service job | Admin" };
+
+export default async function ServiceJobPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if (profile?.role !== "admin") redirect("/");
+
+  const { id } = await params;
+  const admin = createAdminClient();
+  const { data: job } = await admin
+    .from("service_jobs")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (!job) notFound();
+
+  let uploadUrl: string | null = null;
+  if (job.upload_path) {
+    const { data: s } = await admin.storage
+      .from("shop")
+      .createSignedUrl(job.upload_path, 3600);
+    uploadUrl = s?.signedUrl ?? null;
+  }
+
+  let deliverableUrl: string | null = null;
+  if (job.deliverable_path) {
+    const { data: s } = await admin.storage
+      .from("shop")
+      .createSignedUrl(job.deliverable_path, 3600);
+    deliverableUrl = s?.signedUrl ?? null;
+  }
+
+  return (
+    <div className="min-h-screen bg-mint/40">
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <Link
+          href="/admin/services"
+          className="text-sm text-green-dark hover:text-green"
+        >
+          ← Service jobs
+        </Link>
+        <h1 className="mt-2 text-3xl font-bold text-navy">
+          {job.product_name}
+        </h1>
+        <p className="mt-1 text-slate-600">
+          {job.buyer_name ? `${job.buyer_name} · ` : ""}
+          {job.buyer_email}
+        </p>
+
+        {/* Brief card */}
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="text-lg font-bold text-navy">Brief</h2>
+          <p className="mt-2 whitespace-pre-line text-slate-600">
+            {job.brief || "—"}
+          </p>
+          {uploadUrl ? (
+            <a
+              href={uploadUrl}
+              className="mt-4 inline-block font-semibold text-green-dark hover:text-green"
+            >
+              Download buyer&apos;s CV
+            </a>
+          ) : (
+            <p className="mt-4 text-sm text-slate-500">
+              No CV uploaded by the buyer yet.
+            </p>
+          )}
+        </div>
+
+        {/* Status card */}
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="text-lg font-bold text-navy">Status</h2>
+          <form
+            action={async (formData) => {
+              "use server";
+              await setJobStatus(formData);
+            }}
+            className="mt-3 flex items-end gap-3"
+          >
+            <input type="hidden" name="id" value={job.id} />
+            <select
+              name="status"
+              defaultValue={job.status}
+              className="rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+            >
+              <option value="received">Received</option>
+              <option value="in_progress">In progress</option>
+              <option value="awaiting_client">Awaiting client</option>
+              <option value="delivered">Delivered</option>
+            </select>
+            <button className="rounded bg-green px-5 py-2 text-sm font-semibold text-navy hover:bg-green-dark">
+              Update
+            </button>
+          </form>
+          <p className="mt-2 text-sm text-slate-500">
+            Revisions remaining: {job.revisions_remaining}
+          </p>
+        </div>
+
+        {/* Deliverable card */}
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="text-lg font-bold text-navy">Deliverable</h2>
+          {deliverableUrl ? (
+            <a
+              href={deliverableUrl}
+              className="mt-2 inline-block font-semibold text-green-dark hover:text-green"
+            >
+              Download current deliverable
+            </a>
+          ) : null}
+          <form
+            action={async (formData) => {
+              "use server";
+              await uploadDeliverable(formData);
+            }}
+            className="mt-4 flex items-center gap-3"
+          >
+            <input type="hidden" name="id" value={job.id} />
+            <input type="file" name="file" className="text-sm" />
+            <button className="rounded bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-dark">
+              Upload deliverable
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+===END===

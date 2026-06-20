@@ -1,0 +1,103 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript, Tailwind v4. `@/` = project root. `lucide-react`, `next/link`.
+BRAND: `bg-navy`/`text-navy` (#011D58), `bg-green`/`text-green` (#46D835), `text-green-dark`, `bg-mint`, `text-ink`.
+ESCAPING: `react/no-unescaped-entities` is ERROR — `&apos;` in JSX TEXT; literal apostrophes fine in prop strings.
+NOTE: `createAdminClient()` from `@/lib/supabase/admin` is SYNC. `createClient()` from `@/lib/supabase/server` is async.
+SERVER ACTION + <form action>: must return void — wrap value-returning actions: `<form action={async (fd) => { "use server"; await fn(fd); }}>`.
+Statuses: 'received' | 'in_progress' | 'awaiting_client' | 'delivered'.
+
+GENERATE EXACTLY THESE THREE FILES.
+
+----------------------------------------------------------------
+FILE — app/admin/services/actions.ts
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export type SvcResult = { success?: boolean; error?: string };
+
+async function isAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  return me?.role === "admin";
+}
+
+const STATUSES = ["received", "in_progress", "awaiting_client", "delivered"];
+
+export async function setJobStatus(formData: FormData): Promise<SvcResult> {
+  if (!(await isAdmin())) return { error: "Unauthorized" };
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!id || !STATUSES.includes(status)) return { error: "Invalid status" };
+  const admin = createAdminClient();
+  const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+  if (status === "delivered") patch.delivered_at = new Date().toISOString();
+  const { error } = await admin.from("service_jobs").update(patch).eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath(`/admin/services/${id}`);
+  revalidatePath("/admin/services");
+  return { success: true };
+}
+
+export async function uploadDeliverable(formData: FormData): Promise<SvcResult> {
+  if (!(await isAdmin())) return { error: "Unauthorized" };
+  const id = String(formData.get("id") ?? "");
+  const file = formData.get("file");
+  if (!id) return { error: "Missing job" };
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a file" };
+  const admin = createAdminClient();
+  const ext = file.name.split(".").pop() || "pdf";
+  const path = `deliverables/${id}-${Date.now()}.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const { error: upErr } = await admin.storage
+    .from("shop")
+    .upload(path, buffer, { contentType: file.type || "application/octet-stream", upsert: true });
+  if (upErr) return { error: upErr.message };
+  const { error } = await admin
+    .from("service_jobs")
+    .update({ deliverable_path: path, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath(`/admin/services/${id}`);
+  return { success: true };
+}
+
+----------------------------------------------------------------
+FILE — app/admin/services/page.tsx
+SERVER. Imports: `redirect` from "next/navigation"; `createClient` from "@/lib/supabase/server"; `createAdminClient` from "@/lib/supabase/admin"; `Link` from "next/link".
+- `export const metadata = { title: "Services | Admin" };`
+- default async `AdminServicesPage()`:
+  - `const supabase = await createClient();` getUser; if !user → redirect("/login"); fetch me role; if not admin → redirect("/").
+  - `const admin = createAdminClient();`
+  - `const { data } = await admin.from("service_jobs").select("id, product_name, buyer_email, status, revisions_remaining, created_at").order("created_at", { ascending: false }).limit(100);`
+  - `const jobs = (data ?? []) as Array<{ id: string; product_name: string; buyer_email: string; status: string; revisions_remaining: number; created_at: string }>;`
+  - Layout `min-h-screen bg-mint/40` → `mx-auto max-w-5xl px-4 py-10`. `<Link href="/admin" className="text-sm text-green-dark hover:text-green">← Admin</Link>`. `<h1 className="mt-2 text-3xl font-bold text-navy">Service jobs</h1>` + `<p className="mt-1 text-slate-600">{jobs.length} job(s).</p>`.
+  - If `jobs.length === 0`: `<p className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">No service jobs yet.</p>`.
+  - Else card `mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white` with table (overflow-x-auto, `w-full min-w-[720px] text-left`): thead (`border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500`) headers Date / Product / Buyer / Status / Revisions / "". tbody mapping jobs → `<tr key={j.id} className="border-b border-slate-100">` cells (`px-4 py-3 text-sm`): date `new Date(j.created_at).toLocaleDateString("en-ZA")`, product_name (`font-medium text-navy`), buyer_email (`text-slate-600`), a status badge (see helper below), `{j.revisions_remaining}`, and `<Link href={`/admin/services/${j.id}`} className="text-sm font-semibold text-green-dark hover:text-green">Open</Link>`.
+  - Status badge inline: `received` → bg-slate-100 text-slate-600; `in_progress` → bg-amber-100 text-amber-700; `awaiting_client` → bg-blue-100 text-blue-700; `delivered` → bg-green/15 text-green-dark. Render as `<span className={`rounded-full px-2 py-1 text-xs font-semibold ${cls}`}>{j.status.replace("_", " ")}</span>`. Compute `cls` with a small inline map object typed `Record<string,string>`.
+
+----------------------------------------------------------------
+FILE — app/admin/services/[id]/page.tsx
+SERVER. Imports: `redirect, notFound` from "next/navigation"; `createClient` from "@/lib/supabase/server"; `createAdminClient` from "@/lib/supabase/admin"; `{ setJobStatus, uploadDeliverable }` from "../actions"; `Link` from "next/link".
+- `export const metadata = { title: "Service job | Admin" };`
+- Next 16 params is a Promise. Signature `export default async function ServiceJobPage({ params }: { params: Promise<{ id: string }> })`.
+- Body:
+  - `const supabase = await createClient();` getUser; if !user → redirect("/login"); fetch me role; if not admin → redirect("/").
+  - `const { id } = await params;` `const admin = createAdminClient();`
+  - `const { data: job } = await admin.from("service_jobs").select("*").eq("id", id).single();` if `!job` → `notFound();`
+  - Buyer-upload signed URL: `let uploadUrl: string | null = null; if (job.upload_path) { const { data: s } = await admin.storage.from("shop").createSignedUrl(job.upload_path, 3600); uploadUrl = s?.signedUrl ?? null; }`
+  - Deliverable signed URL: `let deliverableUrl: string | null = null; if (job.deliverable_path) { const { data: s } = await admin.storage.from("shop").createSignedUrl(job.deliverable_path, 3600); deliverableUrl = s?.signedUrl ?? null; }`
+  - Layout `min-h-screen bg-mint/40` → `mx-auto max-w-3xl px-4 py-10`. `<Link href="/admin/services" className="text-sm text-green-dark hover:text-green">← Service jobs</Link>`. `<h1 className="mt-2 text-3xl font-bold text-navy">{job.product_name}</h1>` + `<p className="mt-1 text-slate-600">{job.buyer_name ? `${job.buyer_name} · ` : ""}{job.buyer_email}</p>`.
+  - Details card `mt-6 rounded-2xl border border-slate-200 bg-white p-6`: `<h2 className="text-lg font-bold text-navy">Brief</h2>` then `<p className="mt-2 whitespace-pre-line text-slate-600">{job.brief || "—"}</p>`. Then "Buyer&apos;s CV": if `uploadUrl` → `<a href={uploadUrl} className="mt-4 inline-block font-semibold text-green-dark hover:text-green">Download buyer&apos;s CV</a>` else `<p className="mt-4 text-sm text-slate-500">No CV uploaded by the buyer yet.</p>`.
+  - Status card `mt-6 rounded-2xl border border-slate-200 bg-white p-6`: `<h2 className="text-lg font-bold text-navy">Status</h2>`. A `<form action={async (formData) => { "use server"; await setJobStatus(formData); }} className="mt-3 flex items-end gap-3">`: hidden input name="id" value={job.id}; a `<select name="status" defaultValue={job.status} className="rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40">` with options received "Received", in_progress "In progress", awaiting_client "Awaiting client", delivered "Delivered"; submit button `rounded bg-green px-5 py-2 text-sm font-semibold text-navy hover:bg-green-dark` "Update". Also a line `<p className="mt-2 text-sm text-slate-500">Revisions remaining: {job.revisions_remaining}</p>`.
+  - Deliverable card `mt-6 rounded-2xl border border-slate-200 bg-white p-6`: `<h2 className="text-lg font-bold text-navy">Deliverable</h2>`. If `deliverableUrl` → `<a href={deliverableUrl} className="mt-2 inline-block font-semibold text-green-dark hover:text-green">Download current deliverable</a>`. Then upload `<form action={async (formData) => { "use server"; await uploadDeliverable(formData); }} className="mt-4 flex items-center gap-3"><input type="hidden" name="id" value={job.id} /><input type="file" name="file" className="text-sm" /><button className="rounded bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-dark">Upload deliverable</button></form>`.
+  - Close wrappers.

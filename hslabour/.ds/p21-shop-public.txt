@@ -1,0 +1,186 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript, Tailwind v4. `@/` = project root. `lucide-react`, `next/link`. Node runtime.
+BRAND: `bg-navy`/`text-navy` (#011D58), `bg-green`/`text-green` (#46D835), `text-green-dark`, `bg-mint`, `text-ink`.
+ESCAPING: `react/no-unescaped-entities` is ERROR — `&apos;` in JSX TEXT; literal apostrophes fine in prop strings.
+HELPERS: `@/lib/shop` → `getActiveProducts()`, `getProductBySlug(slug)`, `getProductById(id)`, type `ShopProduct`. `@/lib/ebook` → `formatRands(cents)`. `@/lib/payfast` → `buildCheckout(input)` returns `{ processUrl, fields: [string,string][] }`, plus `verifyItnSignature(pairs,sig,passphrase)`, `payfastServerConfirm(rawBody)`, `getPayfastConfig()`. `@/lib/supabase/admin` → `createAdminClient()` (sync). `next/navigation` → `notFound`.
+
+GENERATE EXACTLY THESE FIVE FILES.
+
+----------------------------------------------------------------
+FILE — app/shop/page.tsx
+SERVER, dynamic. Imports: `getActiveProducts` from "@/lib/shop"; `formatRands` from "@/lib/ebook"; `Link` from "next/link"; icon `ArrowRight` from "lucide-react".
+- `export const metadata = { title: "Shop & Services | H&S Labour" };`
+- `export const dynamic = "force-dynamic";`
+- default async `ShopPage()`:
+  - `const products = await getActiveProducts();`
+  - Wrapper `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-5xl px-4 py-16">`.
+  - `<h1 className="text-3xl font-bold text-navy">Shop &amp; online services</h1>` + `<p className="mt-2 text-slate-600">CV templates, cover letters, CV revamps and more.</p>`.
+  - If `products.length === 0`: `<p className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">No products available yet — please check back soon.</p>`.
+  - Else grid `mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3` mapping products → a `<Link key={p.id} href={`/shop/${p.slug}`} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 hover:border-green">`: a kind chip `<span className="self-start rounded-full bg-mint px-2 py-1 text-xs font-semibold text-green-dark">{p.kind === "service" ? "Service" : "Instant download"}</span>`, `<h2 className="mt-3 text-lg font-bold text-navy">{p.name}</h2>`, if description `<p className="mt-1 line-clamp-3 text-sm text-slate-600">{p.description}</p>`, then a footer pushed down `<div className="mt-4 flex items-center justify-between pt-2"><span className="text-lg font-bold text-green-dark">{formatRands(p.price_cents)}</span><ArrowRight className="h-4 w-4 text-navy" /></div>`.
+  - Close wrappers.
+
+----------------------------------------------------------------
+FILE — app/shop/[slug]/page.tsx
+SERVER, dynamic. Imports: `notFound` from "next/navigation"; `getProductBySlug` from "@/lib/shop"; `formatRands` from "@/lib/ebook"; icons `Download, Check` from "lucide-react".
+- `export const metadata = { title: "Shop | H&S Labour" };`
+- `export const dynamic = "force-dynamic";`
+- Next 16 params is a Promise. Signature `export default async function ShopProductPage({ params }: { params: Promise<{ slug: string }> })`.
+- Body:
+  - `const { slug } = await params;` `const product = await getProductBySlug(slug);`
+  - if `!product || !product.is_active` → `notFound();`
+  - `const isService = product.kind === "service";`
+  - `const purchasable = product.price_cents > 0 && (isService || !!product.file_path);`
+  - Wrapper `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-3xl px-4 py-16"><div className="rounded-2xl border border-slate-200 bg-white p-8">`.
+  - Kind chip (as in list). `<h1 className="mt-3 text-3xl font-bold text-navy">{product.name}</h1>`. If description `<p className="mt-3 whitespace-pre-line text-slate-600">{product.description}</p>`.
+  - Price `<p className="mt-6 text-2xl font-bold text-green-dark">{formatRands(product.price_cents)}</p>`.
+  - Feature lines (`mt-4 space-y-1 text-sm text-slate-600`), each with `<Check className="inline h-4 w-4 text-green-dark" />`: if isService → "We&apos;ll deliver your completed document" and (if product.revisions > 0) `{`${product.revisions} revision${product.revisions === 1 ? "" : "s"} included`}`; else → "Instant download after payment". Always add "Secure checkout via PayFast".
+  - If NOT purchasable: `<p className="mt-6 rounded-lg bg-mint p-4 text-navy">This product isn&apos;t available to buy just yet.</p>` and stop (close wrappers).
+  - Else buy form `<form action="/shop/checkout" method="post" className="mt-8 space-y-4">`: hidden input name="product_id" value={product.id}; input name="buyer_name" (label "Your name", required); input name="buyer_email" type="email" (label "Email", required); if isService a textarea name="brief" rows={4} (label "Tell us what you need" — placeholder "e.g. role you're applying for, industry, anything to highlight"); submit button `inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark`: `<Download className="h-4 w-4" /> {isService ? "Pay & start" : "Buy & download"}`.
+  - Brand input/label classes as usual. Close wrappers.
+
+----------------------------------------------------------------
+FILE — app/shop/checkout/route.ts
+import { type NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getProductById } from "@/lib/shop";
+import { buildCheckout } from "@/lib/payfast";
+
+export async function POST(request: NextRequest) {
+  const form = await request.formData();
+  const productId = String(form.get("product_id") ?? "");
+  const buyer_name = String(form.get("buyer_name") ?? "").trim();
+  const buyer_email = String(form.get("buyer_email") ?? "").trim();
+  const brief = String(form.get("brief") ?? "").trim();
+  if (!productId || !buyer_email) return new Response("Missing details", { status: 400 });
+
+  const product = await getProductById(productId);
+  const purchasable =
+    !!product &&
+    product.is_active &&
+    product.price_cents > 0 &&
+    (product.kind === "service" || !!product.file_path);
+  if (!product || !purchasable) return new Response("Product not available", { status: 400 });
+
+  const admin = createAdminClient();
+  const { data: order, error } = await admin
+    .from("shop_orders")
+    .insert({
+      product_id: product.id,
+      product_name: product.name,
+      buyer_email,
+      buyer_name: buyer_name || null,
+      brief: brief || null,
+      amount_cents: product.price_cents,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+  if (error || !order) return new Response("Could not start checkout", { status: 500 });
+
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+  const { processUrl, fields } = buildCheckout({
+    amountCents: product.price_cents,
+    itemName: product.name,
+    mPaymentId: order.id,
+    buyerEmail: buyer_email,
+    buyerName: buyer_name,
+    returnUrl: `${siteUrl}/shop/success?order=${order.id}`,
+    cancelUrl: `${siteUrl}/shop/${product.slug}?cancelled=1`,
+    notifyUrl: `${siteUrl}/api/payfast/shop-notify`,
+  });
+
+  const inputs = fields
+    .map(([k, v]) => `<input type="hidden" name="${k}" value="${v.replace(/"/g, "&quot;")}" />`)
+    .join("");
+  const html = `<!doctype html><html><body onload="document.forms[0].submit()"><form action="${processUrl}" method="post">${inputs}<noscript><button type="submit">Continue to payment</button></noscript></form></body></html>`;
+  return new Response(html, { status: 200, headers: { "Content-Type": "text/html" } });
+}
+
+----------------------------------------------------------------
+FILE — app/api/payfast/shop-notify/route.ts
+import { type NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getPayfastConfig, verifyItnSignature, payfastServerConfirm } from "@/lib/payfast";
+
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const params = new URLSearchParams(rawBody);
+
+  const pairs: [string, string][] = [];
+  let signature = "";
+  for (const [k, v] of params.entries()) {
+    if (k === "signature") signature = v;
+    else pairs.push([k, v]);
+  }
+
+  const cfg = getPayfastConfig();
+  if (!verifyItnSignature(pairs, signature, cfg.passphrase)) return new Response("invalid", { status: 200 });
+  if (!(await payfastServerConfirm(rawBody))) return new Response("not validated", { status: 200 });
+
+  const data = Object.fromEntries(params.entries());
+  if (data["payment_status"] !== "COMPLETE") return new Response("ignored", { status: 200 });
+
+  const orderId = data["m_payment_id"];
+  const amountGross = Math.round(parseFloat(data["amount_gross"] ?? "0") * 100);
+  if (!orderId) return new Response("no order", { status: 200 });
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("shop_orders")
+    .select("id, amount_cents, status, product_id, product_name, buyer_email, buyer_name, brief")
+    .eq("id", orderId)
+    .single();
+  if (!order) return new Response("order not found", { status: 200 });
+  if (Math.abs(order.amount_cents - amountGross) > 1) return new Response("amount mismatch", { status: 200 });
+  if (order.status === "paid") return new Response("OK", { status: 200 });
+
+  await admin
+    .from("shop_orders")
+    .update({ status: "paid", paid_at: new Date().toISOString(), payment_ref: data["pf_payment_id"] ?? null })
+    .eq("id", order.id);
+
+  // For done-for-you services, open a job in the pipeline.
+  if (order.product_id) {
+    const { data: product } = await admin
+      .from("shop_products")
+      .select("kind, revisions")
+      .eq("id", order.product_id)
+      .single();
+    if (product && product.kind === "service") {
+      await admin.from("service_jobs").insert({
+        order_id: order.id,
+        product_name: order.product_name,
+        buyer_email: order.buyer_email,
+        buyer_name: order.buyer_name,
+        brief: order.brief,
+        status: "received",
+        revisions_remaining: product.revisions ?? 0,
+      });
+    }
+  }
+
+  return new Response("OK", { status: 200 });
+}
+
+----------------------------------------------------------------
+FILE — app/shop/success/page.tsx
+SERVER. Imports: `createAdminClient` from "@/lib/supabase/admin"; `Link` from "next/link"; icons `Download, Clock, CheckCircle2` from "lucide-react".
+- `export const metadata = { title: "Thank you | H&S Labour" };`
+- Next 16 searchParams is a Promise. Signature `export default async function ShopSuccessPage({ searchParams }: { searchParams: Promise<{ order?: string }> })`.
+- Body:
+  - `const { order: orderId } = await searchParams;`
+  - Wrapper `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-2xl px-4 py-16"><div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">`.
+  - If no orderId: `<p className="text-slate-600">Order not found.</p>` + `<Link href="/shop" className="mt-4 inline-block font-semibold text-green-dark hover:text-green">Back to the shop</Link>` then stop.
+  - `const admin = createAdminClient();` fetch order `.from("shop_orders").select("id, status, product_id").eq("id", orderId).single();`
+  - If `order?.status === "paid"`:
+    - fetch product `.from("shop_products").select("kind, file_path, name").eq("id", order.product_id).single();`
+    - Success header: green circle `<CheckCircle2 />` (`mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-green-dark`), `<h1 className="mt-4 text-2xl font-bold text-navy">Payment received</h1>`.
+    - If `product?.kind === "service"`: `<p className="mt-2 text-slate-600">Thanks for your order. Our team will be in touch by email to get started on your {product.name}.</p>`.
+    - Else (instant): if `product?.file_path` create `const { data: signed } = await admin.storage.from("shop").createSignedUrl(product.file_path, 3600);` then `<p className="mt-2 text-slate-600">Your download is ready (link valid for 1 hour).</p>` and if `signed?.signedUrl` `<a href={signed.signedUrl} className="mt-6 inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark"><Download className="h-4 w-4" /> Download</a>` else `<p className="mt-6 text-amber-600">Your download is being prepared — we&apos;ll email it shortly.</p>`.
+  - Else (not paid): amber `<Clock />` circle, `<h1 className="mt-4 text-2xl font-bold text-navy">Processing your payment</h1>`, `<p className="mt-2 text-slate-600">This can take a moment — refresh shortly or check your email.</p>`.
+  - Close wrappers.
