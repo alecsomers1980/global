@@ -9,8 +9,12 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="bg-navy py-16 sm:py-20">
-      <Container>
+    <section
+      className="relative bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed"
+      style={{ backgroundImage: "url(/images/parallax/office-collab.jpg)" }}
+    >
+      <div aria-hidden="true" className="absolute inset-0 bg-navy/85" />
+      <Container className="relative z-10 py-16 sm:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-semibold uppercase tracking-wider text-green">Why H&S Labour</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl text-balance">

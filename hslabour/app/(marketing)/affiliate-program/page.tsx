@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Share2, Wallet, HeartHandshake } from "lucide-react";
 import Container from "@/components/site/Container";
 import PageHeader from "@/components/site/PageHeader";
+import ParallaxSection from "@/components/site/ParallaxSection";
 
 export const metadata: Metadata = {
   title: "Affiliate Program | H&S Labour Brokers",
@@ -127,6 +128,14 @@ export default function AffiliateProgramPage() {
           </div>
         </Container>
       </section>
+
+      <ParallaxSection
+        image="/images/parallax/office-collab.jpg"
+        eyebrow="No cost to join"
+        title="Turn your network into an income stream"
+        subtitle="Share a product that genuinely helps job seekers, and earn commission on every sale through your unique referral link."
+        cta={{ href: "/signup", label: "Apply to join" }}
+      />
 
       {/* How it works */}
       <section className="bg-white py-20 sm:py-24">

@@ -7,6 +7,7 @@ import JobFilters from '@/components/jobs/JobFilters';
 import PlacementPartnerEmbed from '@/components/jobs/PlacementPartnerEmbed';
 import Container from '@/components/site/Container';
 import PageHeader from '@/components/site/PageHeader';
+import ParallaxSection from '@/components/site/ParallaxSection';
 import ClosingCta from '@/components/site/ClosingCta';
 
 export const revalidate = 3600;
@@ -53,6 +54,13 @@ export default async function JobsPage({
             </noscript>
           </Container>
         </section>
+        <ParallaxSection
+          image="/images/parallax/team-meeting.jpg"
+          eyebrow="Your next role awaits"
+          title="Permanent, contract and temporary roles across South Africa"
+          subtitle="We place candidates in construction, engineering, manufacturing, logistics, facilities, cleaning, security and healthcare — apply today."
+          cta={{ href: '/ebook', label: 'Get the job-hunting e-book' }}
+        />
         <ClosingCta />
       </>
     );
