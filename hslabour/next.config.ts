@@ -3,15 +3,16 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 // Conservative, static-rendering-friendly CSP. We intentionally do NOT set
-// script-src/style-src/default-src/frame-src here: a strict script CSP needs
-// nonces (which would force every page to be dynamically rendered, killing the
-// static SEO matrix + ISR), and frame-src would have to allowlist the external
-// PlacementPartner careers iframe. These directives are the safe subset that
-// hardens without risking the iframe, PayFast checkout, or Supabase calls.
+// script-src/style-src/default-src here: a strict script CSP needs nonces
+// (which would force every page to be dynamically rendered, killing the static
+// SEO matrix + ISR). The directives below harden without risking PayFast
+// checkout (a form POST) or Supabase calls. frame-src allowlists only the
+// external PlacementPartner careers iframe embedded on /jobs.
 const cspDirectives = [
   "object-src 'none'",
   "base-uri 'self'",
   "frame-ancestors 'self'",
+  "frame-src 'self' https://*.placementpartner.com https://*.placementpartner.co.za",
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
