@@ -113,8 +113,27 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-slate-400">
-          © {currentYear} H&S Labour Brokers. All rights reserved.
+        <div className="border-t border-white/10 mt-12 pt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <p className="text-sm text-slate-400 text-center sm:text-left">
+            © {currentYear} H&S Labour Brokers. All rights reserved.
+          </p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+            <li>
+              <Link href="/privacy-policy" className="hover:text-green transition-colors">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/terms" className="hover:text-green transition-colors">
+                Terms &amp; Conditions
+              </Link>
+            </li>
+            <li>
+              <Link href="/paia" className="hover:text-green transition-colors">
+                PAIA
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </footer>

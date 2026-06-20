@@ -5,6 +5,7 @@ import AudienceSplit from "@/components/site/AudienceSplit";
 import AreasOfFocus from "@/components/site/AreasOfFocus";
 import Stats from "@/components/site/Stats";
 import Testimonials from "@/components/site/Testimonials";
+import Accreditations from "@/components/site/Accreditations";
 import ClosingCta from "@/components/site/ClosingCta";
 import Container from "@/components/site/Container";
 import LocalBusinessJsonLd from "@/components/seo/LocalBusinessJsonLd";
@@ -88,6 +89,7 @@ export default function HomePage() {
       </section>
 
       <Testimonials />
+      <Accreditations />
       <ClosingCta />
     </>
   );

@@ -23,7 +23,6 @@ export default function SiteHeader() {
             width={48}
             height={48}
             className="h-12 w-12"
-            priority
           />
           <span className="text-lg font-bold tracking-tight text-navy hidden sm:inline">
             H&S Labour Brokers

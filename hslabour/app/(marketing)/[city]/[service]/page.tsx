@@ -75,9 +75,10 @@ export default async function CityServicePage({
           {city.province}. {service.solution}
         </p>
 
-        <div className="mt-8 text-gray-700 space-y-4 whitespace-pre-line">
-          {service.description}
-        </div>
+        <div
+          className="prose mt-8 max-w-none leading-relaxed text-slate-700"
+          dangerouslySetInnerHTML={{ __html: service.description }}
+        />
 
         {service.faqs.length > 0 && (
           <section className="mt-12">

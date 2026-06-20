@@ -1,7 +1,24 @@
 import { XMLParser } from 'fast-xml-parser';
+import sanitizeHtml from 'sanitize-html';
 import { applyUrl } from './apply';
 import { kebab } from '@/lib/utils';
 import type { Job } from '@/lib/jobs/types';
+
+// The job feed is external (PlacementPartner) and rendered with dangerouslySetInnerHTML,
+// so strip scripts/event-handlers and allow only safe formatting tags.
+function cleanDescription(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      'p', 'br', 'b', 'strong', 'i', 'em', 'u', 'ul', 'ol', 'li',
+      'h2', 'h3', 'h4', 'span', 'a', 'blockquote',
+    ],
+    allowedAttributes: { a: ['href', 'title', 'target', 'rel'] },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    transformTags: {
+      a: sanitizeHtml.simpleTransform('a', { rel: 'nofollow noopener', target: '_blank' }),
+    },
+  });
+}
 
 function normalise(raw: any): Job | null {
   if (!raw || typeof raw !== 'object') return null;
@@ -10,7 +27,7 @@ function normalise(raw: any): Job | null {
   const title = raw.title?.toString()?.trim();
   if (!ref || !title) return null;
 
-  const description = raw.description?.toString()?.trim() ?? '';
+  const description = cleanDescription(raw.description?.toString()?.trim() ?? '');
   const city = (raw.city ?? raw.location)?.toString()?.trim() ?? '';
   const province = raw.province?.toString()?.trim();
 

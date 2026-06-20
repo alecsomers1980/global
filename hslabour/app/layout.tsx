@@ -17,6 +17,20 @@ export const metadata: Metadata = {
   },
   description:
     "H&S Labour Brokers: permanent & contract recruitment, Temporary Employment Services (TES), payroll, vetting and HR solutions across South Africa since 1998.",
+  openGraph: {
+    type: "website",
+    siteName: "H&S Labour Brokers",
+    locale: "en_ZA",
+    url: "https://hslabour.co.za",
+    images: ["/images/HSL-Logo-112x112.png"],
+  },
+  twitter: {
+    card: "summary",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/images/HSL-Logo-112x112.png",
+  },
 };
 
 export default function RootLayout({

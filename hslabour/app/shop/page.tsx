@@ -3,8 +3,13 @@ import { formatRands } from "@/lib/ebook";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-export const metadata = { title: "Shop & Services | H&S Labour" };
-export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Shop & Services",
+  description:
+    "CV preparation, document verification and instant downloads to help you land your next job — from H&S Labour Brokers.",
+  alternates: { canonical: "/shop" },
+};
+export const revalidate = 3600;
 
 export default async function ShopPage() {
   const products = await getActiveProducts();

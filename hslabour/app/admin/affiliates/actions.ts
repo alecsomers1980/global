@@ -1,16 +1,26 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateAffiliateCode } from "@/lib/affiliate/code";
 
 export type AdminResult = { success: boolean; error?: string; trackingCode?: string };
+
+async function isAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  return me?.role === "admin";
+}
 
 export async function approveAffiliate(
   affiliateId: string,
   firstName: string | null,
 ): Promise<AdminResult> {
   try {
+    if (!(await isAdmin())) return { success: false, error: "Unauthorized" };
     if (!affiliateId) return { success: false, error: "Missing ID" };
     const supabase = createAdminClient();
     const trackingCode = generateAffiliateCode(firstName, affiliateId);
@@ -33,6 +43,7 @@ export async function approveAffiliate(
 
 export async function declineAffiliate(affiliateId: string): Promise<AdminResult> {
   try {
+    if (!(await isAdmin())) return { success: false, error: "Unauthorized" };
     if (!affiliateId) return { success: false, error: "Missing ID" };
     const supabase = createAdminClient();
     const { error } = await supabase
