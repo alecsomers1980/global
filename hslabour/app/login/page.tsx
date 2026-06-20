@@ -1,15 +1,17 @@
 "use client";
 
-import { useActionState, Suspense } from "react";
+import { useActionState, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { signIn } from "@/app/auth/actions";
 
 function LoginInner() {
   const searchParams = useSearchParams();
   const authError = searchParams.get("error") === "auth";
   const [state, action, pending] = useActionState(signIn, undefined);
+  const [showPw, setShowPw] = useState(false);
 
   return (
     <div className="min-h-screen bg-mint flex items-center justify-center p-4">
@@ -65,13 +67,41 @@ function LoginInner() {
             >
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPw ? "text" : "password"}
+                required
+                className="w-full rounded border border-slate-300 px-3 py-2 pr-10 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-navy"
+              >
+                {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 text-slate-600">
+              <input
+                type="checkbox"
+                name="remember"
+                defaultChecked
+                className="h-4 w-4"
+              />
+              Keep me logged in
+            </label>
+            <Link
+              href="/forgot-password"
+              className="font-semibold text-green-dark hover:text-green"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <button
