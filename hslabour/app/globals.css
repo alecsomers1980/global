@@ -29,10 +29,15 @@ body {
   0%, 100% { transform: translateY(0) translateX(0); }
   50% { transform: translateY(-26px) translateX(12px); }
 }
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
 .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.21, 0.6, 0.35, 1) both; }
 .animate-float { animation: float 11s ease-in-out infinite; }
+.animate-float-soft { animation: float-soft 5s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .animate-fade-up, .animate-float { animation: none; }
+  .animate-fade-up, .animate-float, .animate-float-soft { animation: none; }
 }

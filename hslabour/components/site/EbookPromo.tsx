@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Check, Download } from "lucide-react";
+import { Check, Download } from "lucide-react";
 import Container from "@/components/site/Container";
 
 export default function EbookPromo() {
@@ -58,7 +58,32 @@ export default function EbookPromo() {
           {/* Visual */}
           <div className="flex justify-center lg:justify-end">
             <div className="flex aspect-[3/4] w-56 flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-green to-green-dark p-6 text-center text-navy shadow-xl ring-1 ring-white/20">
-              <BookOpen className="h-14 w-14" />
+              <svg
+                viewBox="0 0 128 128"
+                fill="none"
+                aria-hidden="true"
+                className="h-28 w-28 animate-float-soft drop-shadow-lg"
+              >
+                {/* cover shadow */}
+                <rect x="30" y="20" width="64" height="88" rx="9" fill="#ffffff" fillOpacity="0.25" />
+                {/* pages */}
+                <rect x="36" y="24" width="60" height="80" rx="7" fill="#ffffff" />
+                {/* spine */}
+                <rect x="36" y="24" width="10" height="80" rx="5" fill="#011D58" fillOpacity="0.18" />
+                {/* title lines */}
+                <rect x="52" y="42" width="36" height="6" rx="3" fill="#011D58" />
+                <rect x="52" y="56" width="36" height="5" rx="2.5" fill="#011D58" opacity="0.4" />
+                <rect x="52" y="67" width="26" height="5" rx="2.5" fill="#011D58" opacity="0.4" />
+                {/* check badge */}
+                <circle cx="92" cy="92" r="20" fill="#011D58" />
+                <path
+                  d="M83 92.5l6 6 12-14"
+                  stroke="#46D835"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <p className="mt-4 text-lg font-bold leading-tight">
                 Job-Hunting Guide
               </p>
