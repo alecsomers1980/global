@@ -35,11 +35,11 @@ A streamlined, high-performance community directory for the Bushbuckridge region
 - [x] Payments flow (integrated into portal and signup)
 
 ## 4. Payment Integration
-- **Provider**: PayFast (South African payment gateway)
+- **Provider**: Yoco (South African payment gateway)
 - **Tiers**: Basic R199/yr | Pro Lead R799/yr | Pro Business R10 500/yr
-- **Setup flow** (`/buy-your-spot`): Creates account + business + redirects to PayFast
-- **Upgrade flow** (portal): Existing businesses upgrade tiers via PayFast
-- **ITN handler** (`/api/payments/notify`): Processes PayFast instant notifications
+- **Setup flow** (`/buy-your-spot` → `/api/payments/setup`, `/api/payments/initiate`): Creates account + business + Yoco checkout redirect
+- **Upgrade flow** (portal): Existing businesses upgrade tiers via Yoco checkout
+- **Webhook handler** (`/api/payments/yoco-webhook`): Verifies the Standard-Webhooks HMAC signature, then activates payment/subscription/business
 - **Return handler** (`/api/payments/return`): Handles post-payment redirect
 
 ## 5. Removed from Scope
@@ -48,8 +48,10 @@ A streamlined, high-performance community directory for the Bushbuckridge region
 - ~~Automated Social Media Sync~~ — Manual only
 
 ## 6. Environment Variables Required
-- `PAYFAST_MERCHANT_ID` — PayFast merchant ID
-- `PAYFAST_MERCHANT_KEY` — PayFast merchant key
-- `PAYFAST_PASSPHRASE` — PayFast passphrase (optional, recommended)
-- `PAYFAST_TEST_MODE` — "true" for sandbox, "false" for live
-- `NEXT_PUBLIC_SITE_URL` — Production URL for return/notify callbacks
+- `NEXT_PUBLIC_POCKETBASE_URL` — PocketBase instance URL
+- `NEXT_PUBLIC_SITE_URL` — Production URL for canonical links + payment/email callbacks
+- `POCKETBASE_SERVICE_EMAIL` / `POCKETBASE_SERVICE_PASSWORD` — `is_admin` service account for webhook/server writes
+- Yoco secret key + `YOCO_WEBHOOK_SECRET` — checkout creation + webhook signature verification (see `lib/settings.ts` / `getYocoConfig`)
+- `CRON_SECRET` — Bearer token guarding the `/api/cron/*` routes
+- `RENEWAL_TOKEN_SECRET` — HMAC secret for one-click renewal links
+- Resend API key — transactional email (`lib/email.ts`)

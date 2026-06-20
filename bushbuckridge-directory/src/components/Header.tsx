@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import {
     Sheet,
@@ -24,7 +25,7 @@ export default function Header() {
                 <div className="bg-white/95 h-20 w-full max-w-7xl rounded-[2rem] flex items-center justify-between gap-4 xl:gap-8 px-4 xl:px-8 shadow-xl pointer-events-auto border border-gray-100 backdrop-blur-xl">
                     <div className="flex gap-4 xl:gap-10">
                         <Link href="/" className="flex items-center group">
-                            <img src="/logo.png" alt="DBIB Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-110" />
+                            <Image src="/logo.png" alt="DBIB Logo" width={40} height={40} priority className="h-10 w-auto object-contain transition-transform group-hover:scale-110" />
                         </Link>
                         <nav className="hidden lg:flex gap-4 xl:gap-8">
                             {navLinks.map((link) => (
@@ -78,7 +79,7 @@ export default function Header() {
                                 </nav>
                                 <div className="mt-auto space-y-8 pb-8">
                                     <div className="flex items-center bg-gray-50 p-4 rounded-2xl">
-                                        <img src="/logo.png" alt="DBIB Logo" className="h-10 w-auto" />
+                                        <Image src="/logo.png" alt="DBIB Logo" width={40} height={40} className="h-10 w-auto" />
                                     </div>
                                     <p className="text-white/50 text-base leading-relaxed">
                                         The premier community directory connecting local enterprises and empowering the Bushbuckridge economy.

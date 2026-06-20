@@ -6,6 +6,33 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ArrowLeft, ArrowRight, Building2, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import SecondaryHeader from '@/components/SecondaryHeader'
+import type { Metadata } from 'next'
+import { buildMetadata, pbFileUrl } from '@/lib/seo'
+import JsonLd from '@/components/JsonLd'
+import { articleLd, breadcrumbLd } from '@/lib/structured-data'
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}): Promise<Metadata> {
+    const { id } = await params
+    const pb = await createClient()
+    try {
+        const article: any = await pb.collection('spotlight_articles').getOne(id, { expand: 'business_id' })
+        const business = article.expand?.business_id
+        const firstImage = Array.isArray(article.images) ? article.images[0] : article.images
+        return buildMetadata({
+            title: business?.name ? `Spotlight: ${business.name}` : (article.title || 'Spotlight Article'),
+            description: article.body || article.content || article.excerpt || `An in-depth look at ${business?.name || 'a leading Bushbuckridge business'}.`,
+            path: `/articles/${id}`,
+            image: pbFileUrl(article, firstImage),
+            type: 'article',
+        })
+    } catch {
+        return buildMetadata({ title: 'Spotlight Article', path: `/articles/${id}` })
+    }
+}
 
 export default async function ArticleDetailPage({
     params,
@@ -45,6 +72,14 @@ export default async function ArticleDetailPage({
 
     return (
         <div className="flex flex-col pb-24">
+            <JsonLd data={[
+                articleLd(article, business),
+                breadcrumbLd([
+                    { name: 'Home', path: '/' },
+                    { name: 'Articles', path: '/articles' },
+                    { name: business?.name ? `Spotlight: ${business.name}` : 'Spotlight Article', path: `/articles/${article.id}` },
+                ]),
+            ]} />
             <SecondaryHeader
                 title={business?.name ? `Spotlight: ${business.name}` : 'Spotlight Article'}
                 subtitle="An in-depth look at one of Bushbuckridge's leading businesses"
