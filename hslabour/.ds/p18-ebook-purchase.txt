@@ -1,0 +1,196 @@
+You are the implementation engineer. Output ONLY files, in this EXACT format, no prose, no markdown fences around blocks:
+
+===FILE: <project-relative-path>===
+<full file content>
+===END===
+
+STACK: Next.js 16 App Router, React 19, strict TypeScript, Tailwind v4. `@/` = project root. `lucide-react`, `next/link`. Node runtime.
+BRAND: `bg-navy`/`text-navy` (#011D58), `bg-green`/`text-green` (#46D835), `text-green-dark`, `bg-mint`, `text-ink`.
+ESCAPING: `react/no-unescaped-entities` is ERROR — `&apos;` in JSX TEXT; literal apostrophes fine in prop strings.
+HELPERS: `@/lib/ebook` exports `getEbookProduct()`, `computeCommissionCents(type,value,amountCents)`, `formatRands(cents)`. `@/lib/payfast` exports `buildCheckout(input)` → `{ processUrl, fields: [string,string][] }`, `verifyItnSignature(pairs, sig, passphrase)`, `payfastServerConfirm(rawBody)`, `getPayfastConfig()`. `@/lib/supabase/admin` exports `createAdminClient()` (sync). `next/headers` `cookies()` is async (await it).
+
+GENERATE EXACTLY THESE FOUR FILES.
+
+----------------------------------------------------------------
+FILE — app/ebook/page.tsx
+SERVER component — public e-book sale page. Imports: `getEbookProduct, formatRands` from "@/lib/ebook"; icons `Download, Check` from "lucide-react".
+- `export const metadata = { title: "Job-Hunting E-book | H&S Labour" };`
+- default async `EbookPage()`:
+  - `const product = await getEbookProduct();`
+  - `const available = !!product && product.is_active && product.price_cents > 0 && !!product.file_path;`
+  - Wrapper `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-3xl px-4 py-16">`.
+  - Card `rounded-2xl border border-slate-200 bg-white p-8`.
+  - Heading `<h1 className="text-3xl font-bold text-navy">{product?.title ?? "Job-Hunting E-book"}</h1>`. If `product?.description` show `<p className="mt-3 whitespace-pre-line text-slate-600">{product.description}</p>`.
+  - IF NOT available: show `<p className="mt-6 rounded-lg bg-mint p-4 text-navy">This e-book isn&apos;t available for purchase just yet. Please check back soon.</p>` and stop (close wrappers).
+  - ELSE: price `<p className="mt-6 text-2xl font-bold text-green-dark">{formatRands(product.price_cents)}</p>`. A small feature list (`mt-4 space-y-1 text-sm text-slate-600`) with two lines each prefixed `<Check className="inline h-4 w-4 text-green-dark" />`: "Instant download after payment" and "Secure checkout via PayFast".
+  - Buy form: `<form action="/ebook/checkout" method="post" className="mt-8 space-y-4">`: input name="buyer_name" (label "Your name", required), input name="buyer_email" type="email" (label "Email for your receipt &amp; download", required). Submit button `inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark`: `<Download className="h-4 w-4" /> Buy &amp; download`.
+  - Inputs: `w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40`; labels `text-sm font-medium text-slate-700`.
+  - Close wrappers.
+
+----------------------------------------------------------------
+FILE — app/ebook/checkout/route.ts
+POST route handler. Creates the order, resolves the affiliate from the ref cookie, then returns an auto-submitting HTML form that POSTs to PayFast.
+import { type NextRequest } from "next/server";
+import { cookies } from "next/headers";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getEbookProduct } from "@/lib/ebook";
+import { buildCheckout } from "@/lib/payfast";
+
+export async function POST(request: NextRequest) {
+  const form = await request.formData();
+  const buyer_name = String(form.get("buyer_name") ?? "").trim();
+  const buyer_email = String(form.get("buyer_email") ?? "").trim();
+  if (!buyer_email) {
+    return new Response("Email is required", { status: 400 });
+  }
+
+  const product = await getEbookProduct();
+  if (!product || !product.is_active || product.price_cents <= 0 || !product.file_path) {
+    return new Response("E-book is not available for purchase.", { status: 400 });
+  }
+
+  const cookieStore = await cookies();
+  const refCode = cookieStore.get("ref_code")?.value ?? "";
+
+  const admin = createAdminClient();
+
+  let affiliateId: string | null = null;
+  if (refCode) {
+    const { data: aff } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("affiliate_code", refCode)
+      .eq("is_approved", true)
+      .maybeSingle();
+    affiliateId = aff?.id ?? null;
+  }
+
+  const { data: order, error } = await admin
+    .from("ebook_orders")
+    .insert({
+      buyer_email,
+      buyer_name: buyer_name || null,
+      amount_cents: product.price_cents,
+      status: "pending",
+      affiliate_id: affiliateId,
+      ref_code: refCode || null,
+    })
+    .select("id")
+    .single();
+  if (error || !order) {
+    return new Response("Could not start checkout. Please try again.", { status: 500 });
+  }
+
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+  const { processUrl, fields } = buildCheckout({
+    amountCents: product.price_cents,
+    itemName: product.title,
+    mPaymentId: order.id,
+    buyerEmail: buyer_email,
+    buyerName: buyer_name,
+    returnUrl: `${siteUrl}/ebook/success?order=${order.id}`,
+    cancelUrl: `${siteUrl}/ebook?cancelled=1`,
+    notifyUrl: `${siteUrl}/api/payfast/notify`,
+    refCode: refCode || undefined,
+  });
+
+  const inputs = fields
+    .map(([k, v]) => `<input type="hidden" name="${k}" value="${v.replace(/"/g, "&quot;")}" />`)
+    .join("");
+  const html = `<!doctype html><html><body onload="document.forms[0].submit()"><form action="${processUrl}" method="post">${inputs}<noscript><button type="submit">Continue to payment</button></noscript></form></body></html>`;
+
+  return new Response(html, { status: 200, headers: { "Content-Type": "text/html" } });
+}
+
+----------------------------------------------------------------
+FILE — app/api/payfast/notify/route.ts
+POST ITN handler. Validate, then mark the order paid and create the commission (idempotent).
+import { type NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getPayfastConfig, verifyItnSignature, payfastServerConfirm } from "@/lib/payfast";
+import { computeCommissionCents } from "@/lib/ebook";
+
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const params = new URLSearchParams(rawBody);
+
+  // Ordered pairs as received, excluding the signature field.
+  const pairs: [string, string][] = [];
+  let signature = "";
+  for (const [k, v] of params.entries()) {
+    if (k === "signature") signature = v;
+    else pairs.push([k, v]);
+  }
+
+  const cfg = getPayfastConfig();
+  if (!verifyItnSignature(pairs, signature, cfg.passphrase)) {
+    return new Response("invalid signature", { status: 200 });
+  }
+  if (!(await payfastServerConfirm(rawBody))) {
+    return new Response("not validated", { status: 200 });
+  }
+
+  const data = Object.fromEntries(params.entries());
+  if (data["payment_status"] !== "COMPLETE") {
+    return new Response("ignored", { status: 200 });
+  }
+
+  const orderId = data["m_payment_id"];
+  const amountGross = Math.round(parseFloat(data["amount_gross"] ?? "0") * 100);
+  if (!orderId) return new Response("no order", { status: 200 });
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("ebook_orders")
+    .select("id, amount_cents, status, affiliate_id")
+    .eq("id", orderId)
+    .single();
+  if (!order) return new Response("order not found", { status: 200 });
+
+  // Amount must match (within 1 cent).
+  if (Math.abs(order.amount_cents - amountGross) > 1) {
+    return new Response("amount mismatch", { status: 200 });
+  }
+  // Idempotent: already processed.
+  if (order.status === "paid") return new Response("OK", { status: 200 });
+
+  await admin
+    .from("ebook_orders")
+    .update({ status: "paid", paid_at: new Date().toISOString(), payment_ref: data["pf_payment_id"] ?? null })
+    .eq("id", order.id);
+
+  if (order.affiliate_id) {
+    const { data: product } = await admin
+      .from("ebook_product")
+      .select("commission_type, commission_value")
+      .eq("id", 1)
+      .single();
+    if (product) {
+      const amount = computeCommissionCents(
+        product.commission_type,
+        Number(product.commission_value),
+        order.amount_cents,
+      );
+      await admin
+        .from("commissions")
+        .insert({ order_id: order.id, affiliate_id: order.affiliate_id, amount_cents: amount, status: "pending" });
+    }
+  }
+
+  return new Response("OK", { status: 200 });
+}
+
+----------------------------------------------------------------
+FILE — app/ebook/success/page.tsx
+SERVER component. Confirms the order and offers the download (signed URL) once paid.
+- Imports: `createAdminClient` from "@/lib/supabase/admin"; `Link` from "next/link"; icons `Download, Clock, CheckCircle2` from "lucide-react".
+- `export const metadata = { title: "Thank you | H&S Labour" };`
+- Next 16: page props `searchParams` is a Promise. Signature: `export default async function EbookSuccessPage({ searchParams }: { searchParams: Promise<{ order?: string }> })`.
+- Body:
+  - `const { order: orderId } = await searchParams;`
+  - Wrapper `<div className="min-h-screen bg-mint/40"><div className="mx-auto max-w-2xl px-4 py-16"><div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">`.
+  - If no `orderId`: show a generic `<p className="text-slate-600">Order not found.</p>` + a `<Link href="/ebook" className="...">Back to the e-book</Link>` and stop.
+  - `const admin = createAdminClient();` fetch order: `.from("ebook_orders").select("id, status").eq("id", orderId).single();`
+  - If `order?.status === "paid"`: fetch product file path `.from("ebook_product").select("file_path, title").eq("id", 1).single();` then if `product?.file_path` create a signed URL: `const { data: signed } = await admin.storage.from("ebook").createSignedUrl(product.file_path, 3600);`. Show success: a green circle with `<CheckCircle2 />` (`mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-green-dark`), `<h1 className="mt-4 text-2xl font-bold text-navy">Payment received</h1>`, `<p className="mt-2 text-slate-600">Thanks for your purchase. Your download link is below (valid for 1 hour).</p>`, and if `signed?.signedUrl` an anchor button `<a href={signed.signedUrl} className="mt-6 inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark"><Download className="h-4 w-4" /> Download e-book</a>` else `<p className="mt-6 text-amber-600">Your download is being prepared — we&apos;ll email it shortly.</p>`.
+  - ELSE (not paid yet): amber clock circle `<Clock />`, `<h1 className="mt-4 text-2xl font-bold text-navy">Processing your payment</h1>`, `<p className="mt-2 text-slate-600">This can take a moment. Refresh this page shortly, or check your email for the download.</p>`.
+  - Close wrappers.

@@ -1,0 +1,382 @@
+===FILE: app/ebook/page.tsx===
+import { getEbookProduct, formatRands } from "@/lib/ebook";
+import { Download, Check } from "lucide-react";
+
+export const metadata = {
+  title: "Job-Hunting E-book | H&S Labour",
+};
+
+export default async function EbookPage() {
+  const product = await getEbookProduct();
+  const available =
+    !!product && product.is_active && product.price_cents > 0 && !!product.file_path;
+
+  return (
+    <div className="min-h-screen bg-mint/40">
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8">
+          <h1 className="text-3xl font-bold text-navy">
+            {product?.title ?? "Job-Hunting E-book"}
+          </h1>
+
+          {product?.description && (
+            <p className="mt-3 whitespace-pre-line text-slate-600">
+              {product.description}
+            </p>
+          )}
+
+          {!available ? (
+            <p className="mt-6 rounded-lg bg-mint p-4 text-navy">
+              This e-book isn&apos;t available for purchase just yet. Please
+              check back soon.
+            </p>
+          ) : (
+            <>
+              <p className="mt-6 text-2xl font-bold text-green-dark">
+                {formatRands(product.price_cents)}
+              </p>
+
+              <ul className="mt-4 space-y-1 text-sm text-slate-600">
+                <li>
+                  <Check className="inline h-4 w-4 text-green-dark" /> Instant
+                  download after payment
+                </li>
+                <li>
+                  <Check className="inline h-4 w-4 text-green-dark" /> Secure
+                  checkout via PayFast
+                </li>
+              </ul>
+
+              <form
+                action="/ebook/checkout"
+                method="post"
+                className="mt-8 space-y-4"
+              >
+                <div>
+                  <label
+                    htmlFor="buyer_name"
+                    className="text-sm font-medium text-slate-700"
+                  >
+                    Your name
+                  </label>
+                  <input
+                    id="buyer_name"
+                    name="buyer_name"
+                    required
+                    className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="buyer_email"
+                    className="text-sm font-medium text-slate-700"
+                  >
+                    Email for your receipt &amp; download
+                  </label>
+                  <input
+                    id="buyer_email"
+                    name="buyer_email"
+                    type="email"
+                    required
+                    className="w-full rounded border border-slate-300 px-3 py-2 text-ink outline-none focus:border-green focus:ring-2 focus:ring-green/40"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark"
+                >
+                  <Download className="h-4 w-4" /> Buy &amp; download
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+===END===
+===FILE: app/ebook/checkout/route.ts===
+import { type NextRequest } from "next/server";
+import { cookies } from "next/headers";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getEbookProduct } from "@/lib/ebook";
+import { buildCheckout } from "@/lib/payfast";
+
+export async function POST(request: NextRequest) {
+  const form = await request.formData();
+  const buyer_name = String(form.get("buyer_name") ?? "").trim();
+  const buyer_email = String(form.get("buyer_email") ?? "").trim();
+
+  if (!buyer_email) {
+    return new Response("Email is required", { status: 400 });
+  }
+
+  const product = await getEbookProduct();
+  if (
+    !product ||
+    !product.is_active ||
+    product.price_cents <= 0 ||
+    !product.file_path
+  ) {
+    return new Response("E-book is not available for purchase.", {
+      status: 400,
+    });
+  }
+
+  const cookieStore = await cookies();
+  const refCode = cookieStore.get("ref_code")?.value ?? "";
+
+  const admin = createAdminClient();
+
+  let affiliateId: string | null = null;
+  if (refCode) {
+    const { data: aff } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("affiliate_code", refCode)
+      .eq("is_approved", true)
+      .maybeSingle();
+    affiliateId = aff?.id ?? null;
+  }
+
+  const { data: order, error } = await admin
+    .from("ebook_orders")
+    .insert({
+      buyer_email,
+      buyer_name: buyer_name || null,
+      amount_cents: product.price_cents,
+      status: "pending",
+      affiliate_id: affiliateId,
+      ref_code: refCode || null,
+    })
+    .select("id")
+    .single();
+
+  if (error || !order) {
+    return new Response("Could not start checkout. Please try again.", {
+      status: 500,
+    });
+  }
+
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+  const { processUrl, fields } = buildCheckout({
+    amountCents: product.price_cents,
+    itemName: product.title,
+    mPaymentId: order.id,
+    buyerEmail: buyer_email,
+    buyerName: buyer_name,
+    returnUrl: `${siteUrl}/ebook/success?order=${order.id}`,
+    cancelUrl: `${siteUrl}/ebook?cancelled=1`,
+    notifyUrl: `${siteUrl}/api/payfast/notify`,
+    refCode: refCode || undefined,
+  });
+
+  const inputs = fields
+    .map(
+      ([k, v]) =>
+        `<input type="hidden" name="${k}" value="${v.replace(/"/g, "&quot;")}" />`
+    )
+    .join("");
+  const html = `<!doctype html><html><body onload="document.forms[0].submit()"><form action="${processUrl}" method="post">${inputs}<noscript><button type="submit">Continue to payment</button></noscript></form></body></html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html" },
+  });
+}
+===END===
+===FILE: app/api/payfast/notify/route.ts===
+import { type NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getPayfastConfig,
+  verifyItnSignature,
+  payfastServerConfirm,
+} from "@/lib/payfast";
+import { computeCommissionCents } from "@/lib/ebook";
+
+export async function POST(request: NextRequest) {
+  const rawBody = await request.text();
+  const params = new URLSearchParams(rawBody);
+
+  const pairs: [string, string][] = [];
+  let signature = "";
+  for (const [k, v] of params.entries()) {
+    if (k === "signature") signature = v;
+    else pairs.push([k, v]);
+  }
+
+  const cfg = getPayfastConfig();
+  if (!verifyItnSignature(pairs, signature, cfg.passphrase)) {
+    return new Response("invalid signature", { status: 200 });
+  }
+  if (!(await payfastServerConfirm(rawBody))) {
+    return new Response("not validated", { status: 200 });
+  }
+
+  const data = Object.fromEntries(params.entries());
+  if (data["payment_status"] !== "COMPLETE") {
+    return new Response("ignored", { status: 200 });
+  }
+
+  const orderId = data["m_payment_id"];
+  const amountGross = Math.round(
+    parseFloat(data["amount_gross"] ?? "0") * 100
+  );
+  if (!orderId) return new Response("no order", { status: 200 });
+
+  const admin = createAdminClient();
+  const { data: order } = await admin
+    .from("ebook_orders")
+    .select("id, amount_cents, status, affiliate_id")
+    .eq("id", orderId)
+    .single();
+
+  if (!order) return new Response("order not found", { status: 200 });
+
+  if (Math.abs(order.amount_cents - amountGross) > 1) {
+    return new Response("amount mismatch", { status: 200 });
+  }
+
+  if (order.status === "paid") return new Response("OK", { status: 200 });
+
+  await admin
+    .from("ebook_orders")
+    .update({
+      status: "paid",
+      paid_at: new Date().toISOString(),
+      payment_ref: data["pf_payment_id"] ?? null,
+    })
+    .eq("id", order.id);
+
+  if (order.affiliate_id) {
+    const { data: product } = await admin
+      .from("ebook_product")
+      .select("commission_type, commission_value")
+      .eq("id", 1)
+      .single();
+
+    if (product) {
+      const amount = computeCommissionCents(
+        product.commission_type,
+        Number(product.commission_value),
+        order.amount_cents
+      );
+      await admin
+        .from("commissions")
+        .insert({
+          order_id: order.id,
+          affiliate_id: order.affiliate_id,
+          amount_cents: amount,
+          status: "pending",
+        });
+    }
+  }
+
+  return new Response("OK", { status: 200 });
+}
+===END===
+===FILE: app/ebook/success/page.tsx===
+import { createAdminClient } from "@/lib/supabase/admin";
+import Link from "next/link";
+import { Download, Clock, CheckCircle2 } from "lucide-react";
+
+export const metadata = {
+  title: "Thank you | H&S Labour",
+};
+
+export default async function EbookSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ order?: string }>;
+}) {
+  const { order: orderId } = await searchParams;
+
+  return (
+    <div className="min-h-screen bg-mint/40">
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+          {!orderId ? (
+            <>
+              <p className="text-slate-600">Order not found.</p>
+              <Link
+                href="/ebook"
+                className="mt-4 inline-block text-sm font-medium text-navy underline underline-offset-4 hover:text-green-dark"
+              >
+                Back to the e-book
+              </Link>
+            </>
+          ) : (
+            (async () => {
+              const admin = createAdminClient();
+              const { data: order } = await admin
+                .from("ebook_orders")
+                .select("id, status")
+                .eq("id", orderId)
+                .single();
+
+              if (order?.status === "paid") {
+                const { data: product } = await admin
+                  .from("ebook_product")
+                  .select("file_path, title")
+                  .eq("id", 1)
+                  .single();
+
+                let signedUrl: string | null = null;
+                if (product?.file_path) {
+                  const { data: signed } = await admin.storage
+                    .from("ebook")
+                    .createSignedUrl(product.file_path, 3600);
+                  signedUrl = signed?.signedUrl ?? null;
+                }
+
+                return (
+                  <>
+                    <CheckCircle2 className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-green-dark" />
+                    <h1 className="mt-4 text-2xl font-bold text-navy">
+                      Payment received
+                    </h1>
+                    <p className="mt-2 text-slate-600">
+                      Thanks for your purchase. Your download link is below
+                      (valid for 1 hour).
+                    </p>
+                    {signedUrl ? (
+                      <a
+                        href={signedUrl}
+                        className="mt-6 inline-flex items-center gap-2 rounded bg-green px-6 py-3 text-sm font-semibold text-navy hover:bg-green-dark"
+                      >
+                        <Download className="h-4 w-4" /> Download e-book
+                      </a>
+                    ) : (
+                      <p className="mt-6 text-amber-600">
+                        Your download is being prepared — we&apos;ll email it
+                        shortly.
+                      </p>
+                    )}
+                  </>
+                );
+              }
+
+              return (
+                <>
+                  <Clock className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700" />
+                  <h1 className="mt-4 text-2xl font-bold text-navy">
+                    Processing your payment
+                  </h1>
+                  <p className="mt-2 text-slate-600">
+                    This can take a moment. Refresh this page shortly, or check
+                    your email for the download.
+                  </p>
+                </>
+              );
+            })()
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+===END===

@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatRands } from "@/lib/ebook";
 import { signOut } from "@/app/auth/actions";
 import BankDetailsForm from "./BankDetailsForm";
 import LinkGeneratorClient from "./LinkGeneratorClient";
@@ -25,6 +27,18 @@ export default async function AffiliatePage() {
     .select("first_name, affiliate_code, is_approved, bank_name, account_number, branch_code")
     .eq("id", user.id)
     .single();
+
+  // Earnings (commissions are accessed via service-role, scoped to this user).
+  const admin = createAdminClient();
+  const { data: commissions } = await admin
+    .from("commissions")
+    .select("amount_cents, status")
+    .eq("affiliate_id", user.id);
+  const rows = (commissions ?? []) as Array<{ amount_cents: number; status: string }>;
+  const paidCents = rows.filter((r) => r.status === "paid").reduce((s, r) => s + r.amount_cents, 0);
+  const approvedCents = rows.filter((r) => r.status === "approved").reduce((s, r) => s + r.amount_cents, 0);
+  const pendingCents = rows.filter((r) => r.status === "pending").reduce((s, r) => s + r.amount_cents, 0);
+  const salesCount = rows.length;
 
   return (
     <div className="min-h-screen bg-mint/40">
@@ -80,12 +94,16 @@ export default async function AffiliatePage() {
                 <div className="flex items-center gap-2">
                   <Wallet className="h-5 w-5 text-green" />
                   <span className="text-xs font-semibold uppercase tracking-wider text-white/70">
-                    Commission earned
+                    Commission paid
                   </span>
                 </div>
-                <p className="mt-2 text-2xl font-bold">R 0.00</p>
+                <p className="mt-2 text-2xl font-bold">{formatRands(paidCents)}</p>
                 <p className="mt-1 text-sm text-white/70">
-                  Sales tracking begins when the e-book launches.
+                  Approved (awaiting payout): {formatRands(approvedCents)} · Pending:{" "}
+                  {formatRands(pendingCents)}
+                </p>
+                <p className="mt-1 text-sm text-white/70">
+                  {salesCount} sale{salesCount === 1 ? "" : "s"} referred
                 </p>
               </div>
             </div>

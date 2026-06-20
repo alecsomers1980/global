@@ -54,6 +54,16 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Affiliate attribution: stash ?ref=<code> in a 60-day cookie for the e-book sale loop.
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (ref) {
+    response.cookies.set("ref_code", ref, {
+      maxAge: 60 * 60 * 24 * 60,
+      path: "/",
+      sameSite: "lax",
+    });
+  }
+
   return response;
 }
 
