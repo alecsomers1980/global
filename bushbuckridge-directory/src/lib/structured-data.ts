@@ -63,7 +63,21 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
   });
 }
 
+function geoCoordinates(b: any) {
+  const lat = Number(b.map_lat);
+  const lng = Number(b.map_lng);
+  if (
+    b.map_lat === '' || b.map_lat == null ||
+    b.map_lng === '' || b.map_lng == null ||
+    !Number.isFinite(lat) || !Number.isFinite(lng)
+  ) {
+    return undefined;
+  }
+  return { '@type': 'GeoCoordinates', latitude: lat, longitude: lng };
+}
+
 export function localBusinessLd(b: any) {
+  const geo = geoCoordinates(b);
   return cleanObject({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -76,10 +90,15 @@ export function localBusinessLd(b: any) {
     image: pbFileUrl(b, b.logo) || undefined,
     address: {
       '@type': 'PostalAddress',
+      streetAddress: b.address || undefined,
       addressLocality: b.expand?.area?.name || b.area || 'Bushbuckridge',
       addressRegion: 'Mpumalanga',
       addressCountry: 'ZA',
     },
+    geo,
+    hasMap: geo
+      ? `https://maps.google.com/maps?q=${geo.latitude},${geo.longitude}`
+      : undefined,
     sameAs: b.website ? [b.website] : undefined,
   });
 }
