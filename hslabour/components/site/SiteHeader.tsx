@@ -3,12 +3,12 @@ import Image from "next/image";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
-  { href: "/shop", label: "Shop" },
-  { href: "/affiliate-program", label: "Affiliates" },
   { href: "/jobs", label: "Jobs" },
   { href: "/employers", label: "Employers" },
-  { href: "/about", label: "About" },
+  { href: "/shop", label: "Shop" },
+  { href: "/affiliate-program", label: "Affiliates" },
   { href: "/contact", label: "Contact" },
 ];
 
