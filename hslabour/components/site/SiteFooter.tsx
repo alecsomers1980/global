@@ -67,6 +67,11 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/submit-cv" className="block text-sm hover:text-green transition-colors">
+                  Submit your CV
+                </Link>
+              </li>
+              <li>
                 <Link href="/shop" className="block text-sm hover:text-green transition-colors">
                   Shop &amp; Services
                 </Link>

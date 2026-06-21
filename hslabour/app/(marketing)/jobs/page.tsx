@@ -35,7 +35,14 @@ export default async function JobsPage({
           intro="H&S Labour Brokers supplies permanent, contract and TES candidates across South Africa — construction, engineering, manufacturing, logistics, facilities management, cleaning, security and healthcare, with deep coverage in Johannesburg, Cape Town, Durban, Pretoria and Gqeberha."
           imageSrc="/images/careers-people.jpg"
           imageAlt="Candidates placed by H&S Labour Brokers"
-        />
+        >
+          <Link
+            href="/submit-cv"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-green px-7 py-3.5 text-sm font-semibold text-navy shadow-sm transition-all duration-300 hover:bg-green-dark hover:-translate-y-0.5"
+          >
+            Submit your CV
+          </Link>
+        </PageHeader>
         <section className="bg-white py-16 sm:py-20">
           <Container>
             <PlacementPartnerEmbed />
