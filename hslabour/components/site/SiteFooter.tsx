@@ -43,6 +43,11 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/insights" className="block text-sm hover:text-green transition-colors">
+                  Insights
+                </Link>
+              </li>
+              <li>
                 <Link href="/employers" className="block text-sm hover:text-green transition-colors">
                   Employers
                 </Link>

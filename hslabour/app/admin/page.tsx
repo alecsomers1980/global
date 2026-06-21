@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
-import { Users, BookOpen, Store, ClipboardList } from "lucide-react";
+import { Users, BookOpen, Store, ClipboardList, Newspaper } from "lucide-react";
 
 export const metadata = { title: "Admin" };
 
@@ -85,6 +85,20 @@ export default async function AdminHome() {
             <h2 className="mt-4 text-lg font-bold text-navy">Service jobs</h2>
             <p className="mt-1 text-sm text-slate-600">
               Done-for-you orders — status, uploads, deliverables
+            </p>
+          </Link>
+
+          {/* Insights card */}
+          <Link
+            href="/admin/insights"
+            className="block rounded-2xl border border-slate-200 bg-white p-6 hover:border-green"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-mint text-green-dark">
+              <Newspaper className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-lg font-bold text-navy">Insights</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Review AI-generated articles — approve, edit or discard
             </p>
           </Link>
         </div>
