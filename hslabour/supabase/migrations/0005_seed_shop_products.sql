@@ -6,7 +6,7 @@
 
 alter table public.shop_products add column if not exists requires_consent     boolean not null default false;
 alter table public.shop_products add column if not exists requires_appointment boolean not null default false;
-alter table public.shop_products add column if not exists sla_hours            int;
+alter table public.shop_products add column if not exists sla_hours            int not null default 0;
 
 insert into public.shop_products
   (slug, name, description, kind, price_cents, requires_upload, revisions,
@@ -24,7 +24,7 @@ values
 • Save time and skip the formatting stress
 
 A unique, eye-catching structure that resonates with local recruiters — not a generic template.$desc$,
-    'instant', 0, false, 0, false, false, null, true, 1
+    'instant', 0, false, 0, false, false, 0, true, 1
   ),
   (
     'cv-template-government',
@@ -37,7 +37,7 @@ A unique, eye-catching structure that resonates with local recruiters — not a 
 • Clean, easy-to-read, professional design
 
 Researched and expertly designed for the South African market, to get you the interviews you deserve.$desc$,
-    'instant', 0, false, 0, false, false, null, true, 2
+    'instant', 0, false, 0, false, false, 0, true, 2
   ),
   (
     'cv-revamp',
