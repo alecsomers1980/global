@@ -44,7 +44,7 @@ export const AffiliateMediaKit = ({
     colour: 'Glacier White',
     features: ['Leather seats', 'Reverse camera', 'Tow bar', 'Apple CarPlay'],
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600',
-    videoUrl: 'https://everestmotoring.co.za/media/v123',
+    mediaKitUrl: 'https://everestmotoring.co.za/affiliate/media/v123',
     trackingLink: 'https://everestmotoring.co.za/v/hilux-2024?ref=abc',
   },
   affiliateName = 'Partner',
@@ -86,8 +86,7 @@ export const AffiliateMediaKit = ({
                   </Heading>
                   <Text className="text-neutral-600 m-0">
                     Your personalised media kit for the{' '}
-                    <strong>{vehicle.year} {vehicle.make} {vehicle.model}</strong> is ready. Forward it
-                    to your contacts to earn commission on the sale.
+                    <strong>{vehicle.year} {vehicle.make} {vehicle.model}</strong> is ready.
                   </Text>
                 </Column>
               </Row>
@@ -103,17 +102,9 @@ export const AffiliateMediaKit = ({
                         <Img
                           src={vehicle.image}
                           width="520"
-                          height="280"
                           alt={`${vehicle.make} ${vehicle.model}`}
-                          className="w-full h-auto object-cover"
+                          className="w-full h-auto"
                         />
-                        <Row>
-                          <Column className="mt-2">
-                            <Text className="text-black font-bold text-xs bg-primary px-3 py-1 rounded m-0">
-                              AI CINEMATIC VIDEO READY
-                            </Text>
-                          </Column>
-                        </Row>
                       </Column>
                     </Row>
                   </Section>
@@ -164,25 +155,19 @@ export const AffiliateMediaKit = ({
             {/* Action Buttons */}
             <Section>
               <Row>
-                <Column className="px-[40px] py-[24px]">
-                  <Row>
-                    <Column className="w-1/2 pr-2">
-                      <Button
-                        className="bg-whatsapp text-white font-bold py-3 px-2 rounded-lg text-center w-full"
-                        href={`https://wa.me/?text=Check out this ${vehicle.year} ${vehicle.make} ${vehicle.model} at Everest Motoring! ${vehicle.trackingLink}`}
-                      >
-                        Share on WhatsApp
-                      </Button>
-                    </Column>
-                    <Column className="w-1/2 pl-2">
-                      <Button
-                        className="bg-secondary text-primary font-bold py-3 px-2 rounded-lg text-center w-full"
-                        href={vehicle.videoUrl}
-                      >
-                        Download Assets
-                      </Button>
-                    </Column>
-                  </Row>
+                <Column className="px-[40px] py-[24px] text-center">
+                  <Button
+                    className="bg-whatsapp text-white font-bold py-3 px-6 rounded-lg text-center mr-2"
+                    href={`https://wa.me/?text=Check out this ${vehicle.year} ${vehicle.make} ${vehicle.model} at Everest Motoring! ${vehicle.trackingLink}`}
+                  >
+                    Share on WhatsApp
+                  </Button>
+                  <Button
+                    className="bg-secondary text-primary font-bold py-3 px-6 rounded-lg text-center ml-2"
+                    href={vehicle.mediaKitUrl}
+                  >
+                    Download Assets
+                  </Button>
                 </Column>
               </Row>
             </Section>
