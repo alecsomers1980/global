@@ -35,6 +35,7 @@ export default async function AffiliateLayout({ children }) {
                 <div className="text-sm font-medium flex gap-6 items-center">
                     <a href="/affiliate" className="text-slate-300 hover:text-white transition-colors">Pipeline</a>
                     <a href="/affiliate/links" className="text-slate-300 hover:text-white transition-colors hidden sm:block">Link Generator</a>
+                    <a href="/affiliate/media" className="text-slate-300 hover:text-white transition-colors hidden sm:block">Media Kits</a>
                     <form action="/auth/logout" method="POST" className="border-l border-slate-700 pl-6">
                         <button type="submit" className="text-slate-400 hover:text-white transition-colors flex items-center gap-2">
                             <span className="material-symbols-outlined text-sm">logout</span>
