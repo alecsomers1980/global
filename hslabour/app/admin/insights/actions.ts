@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pickNextCategory, generateInsight, CATEGORIES } from "@/lib/insights/generator";
 
 async function isAdmin(): Promise<boolean> {
   const supabase = await createClient();
@@ -37,6 +38,58 @@ export async function saveInsight(formData: FormData): Promise<void> {
   }).eq("id", id);
   revalidatePath(`/admin/insights/${id}`);
   revalidatePath("/admin/insights");
+}
+
+// Create a blank draft and jump straight into the editor (write one by hand).
+export async function createBlankInsight(): Promise<void> {
+  if (!(await isAdmin())) return;
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("insights_posts")
+    .insert({
+      title: "Untitled article",
+      slug: `untitled-${Date.now()}`,
+      content: "",
+      category: CATEGORIES[0],
+      status: "DRAFT",
+    })
+    .select("id")
+    .single();
+  revalidatePath("/admin/insights");
+  if (data?.id) redirect(`/admin/insights/${data.id}`);
+}
+
+// Trigger the AI generator on demand (one draft, least-used category).
+// Requires DEEPSEEK_API_KEY (and optionally GEMINI/UNSPLASH) to be set.
+export async function generateInsightNow(): Promise<void> {
+  if (!(await isAdmin())) return;
+  const admin = createAdminClient();
+  const { data: recent } = await admin
+    .from("insights_posts")
+    .select("title, category")
+    .order("created_at", { ascending: false })
+    .limit(12);
+  const recentTitles = (recent ?? []).map((p: { title: string }) => p.title);
+  const recentCategories = (recent ?? []).map((p: { category: string }) => p.category);
+  const category = pickNextCategory(recentCategories);
+  const post = await generateInsight(category, recentTitles);
+  const { data } = await admin
+    .from("insights_posts")
+    .insert({
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      meta_title: post.meta_title,
+      meta_description: post.meta_description,
+      content: post.body_md,
+      image_url: post.image_url,
+      category,
+      status: "DRAFT",
+    })
+    .select("id")
+    .single();
+  revalidatePath("/admin/insights");
+  if (data?.id) redirect(`/admin/insights/${data.id}`);
 }
 
 export async function approveInsight(formData: FormData): Promise<void> {
