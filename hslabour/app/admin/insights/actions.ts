@@ -61,35 +61,51 @@ export async function createBlankInsight(): Promise<void> {
 
 // Trigger the AI generator on demand (one draft, least-used category).
 // Requires DEEPSEEK_API_KEY (and optionally GEMINI/UNSPLASH) to be set.
-export async function generateInsightNow(): Promise<void> {
-  if (!(await isAdmin())) return;
-  const admin = createAdminClient();
-  const { data: recent } = await admin
-    .from("insights_posts")
-    .select("title, category")
-    .order("created_at", { ascending: false })
-    .limit(12);
-  const recentTitles = (recent ?? []).map((p: { title: string }) => p.title);
-  const recentCategories = (recent ?? []).map((p: { category: string }) => p.category);
-  const category = pickNextCategory(recentCategories);
-  const post = await generateInsight(category, recentTitles);
-  const { data } = await admin
-    .from("insights_posts")
-    .insert({
-      title: post.title,
-      slug: post.slug,
-      excerpt: post.excerpt,
-      meta_title: post.meta_title,
-      meta_description: post.meta_description,
-      content: post.body_md,
-      image_url: post.image_url,
-      category,
-      status: "DRAFT",
-    })
-    .select("id")
-    .single();
+// Returns an error string so the UI can show what went wrong; redirects on success.
+export type GenerateState = { error?: string } | undefined;
+
+export async function generateInsightNow(
+  _prev: GenerateState,
+  _formData: FormData,
+): Promise<GenerateState> {
+  if (!(await isAdmin())) return { error: "Not authorised." };
+  let newId: string | null = null;
+  try {
+    const admin = createAdminClient();
+    const { data: recent } = await admin
+      .from("insights_posts")
+      .select("title, category")
+      .order("created_at", { ascending: false })
+      .limit(12);
+    const recentTitles = (recent ?? []).map((p: { title: string }) => p.title);
+    const recentCategories = (recent ?? []).map(
+      (p: { category: string }) => p.category,
+    );
+    const category = pickNextCategory(recentCategories);
+    const post = await generateInsight(category, recentTitles);
+    const { data, error } = await admin
+      .from("insights_posts")
+      .insert({
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        meta_title: post.meta_title,
+        meta_description: post.meta_description,
+        content: post.body_md,
+        image_url: post.image_url,
+        category,
+        status: "DRAFT",
+      })
+      .select("id")
+      .single();
+    if (error) return { error: error.message };
+    newId = data?.id ?? null;
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Generation failed." };
+  }
   revalidatePath("/admin/insights");
-  if (data?.id) redirect(`/admin/insights/${data.id}`);
+  if (newId) redirect(`/admin/insights/${newId}`);
+  return { error: "Draft could not be created." };
 }
 
 export async function approveInsight(formData: FormData): Promise<void> {

@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createBlankInsight, generateInsightNow } from "./actions";
+import { createBlankInsight } from "./actions";
+import GenerateButton from "./GenerateButton";
 
 export const metadata = { title: "Insights | Admin" };
 export const dynamic = "force-dynamic";
@@ -43,7 +44,7 @@ export default async function AdminInsightsPage() {
           buttons below to add one now.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap items-start gap-3">
           <form action={createBlankInsight}>
             <button
               type="submit"
@@ -52,14 +53,7 @@ export default async function AdminInsightsPage() {
               Write a new article
             </button>
           </form>
-          <form action={generateInsightNow}>
-            <button
-              type="submit"
-              className="rounded-lg border border-navy/20 px-5 py-2.5 text-sm font-semibold text-navy hover:bg-mint"
-            >
-              Generate with AI
-            </button>
-          </form>
+          <GenerateButton />
         </div>
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white">
