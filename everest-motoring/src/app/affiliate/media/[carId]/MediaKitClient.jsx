@@ -10,6 +10,7 @@ export default function MediaKitClient({ car, affiliateCode, videoIframeUrl, sit
 
     const trackingLink = `${siteUrl}/inventory/${car.id}?ref=${affiliateCode}`;
     const shareImageUrl = `/api/affiliate/share-image/${car.id}?ref=${affiliateCode}`;
+    const flyerImageUrl = `/api/affiliate/flyer/${car.id}?ref=${affiliateCode}`;
     const vehicleTitle = `${car.year} ${car.make} ${car.model}`;
 
     const handleCopy = () => {
@@ -141,6 +142,28 @@ export default function MediaKitClient({ car, affiliateCode, videoIframeUrl, sit
                 <p className="text-xs text-slate-400 mt-2">
                     Download the image first, then attach it in WhatsApp — links can&apos;t auto-attach images.
                 </p>
+            </div>
+
+            {/* Affiliate Flyer (A4) */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mt-6">
+                <h2 className="font-bold text-slate-800 mb-2">Affiliate Flyer (A4)</h2>
+                <p className="text-sm text-slate-500 mb-4">
+                    A printable, full-page flyer with the vehicle, full specs, premium features,
+                    and a scannable QR code linked to your tracking code — great for print or as a
+                    detailed PDF-style share.
+                </p>
+                <img
+                    src={flyerImageUrl}
+                    alt={`${vehicleTitle} flyer`}
+                    className="w-full max-w-xs rounded-lg border border-slate-200 mb-4"
+                />
+                <a
+                    href={flyerImageUrl}
+                    download={`${vehicleTitle.replace(/\s+/g, "-")}-Flyer.png`}
+                    className="inline-block px-6 py-3 rounded-lg font-bold text-sm bg-amber-500 text-white hover:bg-amber-600 text-center transition-all"
+                >
+                    Download Flyer
+                </a>
             </div>
         </div>
     );
