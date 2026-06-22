@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import AffiliateDashboardClient from "./AffiliateDashboardClient";
+import { ensureAffiliateCode } from "@/utils/affiliate/code";
 
 export const metadata = { title: "Pipeline | Affiliate Portal" };
 
@@ -17,6 +18,8 @@ export default async function AffiliateDashboard() {
         .single();
 
     if (!profile) return redirect("/login");
+
+    profile.affiliate_code = await ensureAffiliateCode(supabase, profile);
 
     // Fetch all leads attributed to this affiliate
     const { data: leads } = await supabase

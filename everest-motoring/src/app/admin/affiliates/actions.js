@@ -2,14 +2,7 @@
 
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-
-// ─── Helper: generate a deterministic affiliate tracking code ───────────────
-// Format: FIRSTNAME + last 4 chars of their UUID (uppercase, no dashes)
-function generateAffiliateCode(firstName, userId) {
-    const namePart = (firstName || "AFF").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 5);
-    const idPart = userId.replace(/-/g, "").slice(-4).toUpperCase();
-    return `${namePart}${idPart}`;
-}
+import { generateAffiliateCode } from "@/utils/affiliate/code";
 
 // ─── Approve affiliate + auto-assign tracking code ───────────────────────────
 export async function approveAffiliateAction(affiliateId, firstName) {

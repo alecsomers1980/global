@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import MediaKitClient from "./MediaKitClient";
+import { ensureAffiliateCode } from "@/utils/affiliate/code";
 
 export const metadata = { title: "Media Kit | Affiliate Portal" };
 
@@ -12,11 +13,13 @@ export default async function MediaKitPage({ params }) {
 
     const { data: profile } = await supabase
         .from("profiles")
-        .select("affiliate_code, role")
+        .select("id, first_name, affiliate_code, role")
         .eq("id", user.id)
         .single();
 
     if (!profile || profile.role !== "affiliate") return redirect("/login");
+
+    const affiliateCode = await ensureAffiliateCode(supabase, profile);
 
     const { data: car } = await supabase
         .from("cars")
@@ -39,7 +42,7 @@ export default async function MediaKitPage({ params }) {
     return (
         <MediaKitClient
             car={car}
-            affiliateCode={profile.affiliate_code || "PENDING"}
+            affiliateCode={affiliateCode}
             videoIframeUrl={videoIframeUrl}
             siteUrl={siteUrl}
         />

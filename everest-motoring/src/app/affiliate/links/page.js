@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import LinkGeneratorClient from "./LinkGeneratorClient";
+import { ensureAffiliateCode } from "@/utils/affiliate/code";
 
 export const metadata = { title: "Link Generator | Affiliate Portal" };
 
@@ -12,11 +13,13 @@ export default async function LinkGeneratorPage() {
     // Fetch the affiliate's profile data to get their unique code
     const { data: profile } = await supabase
         .from('profiles')
-        .select('affiliate_code, role')
+        .select('id, first_name, affiliate_code, role')
         .eq('id', user.id)
         .single();
 
     if (!profile || profile.role !== 'affiliate') return redirect("/login");
+
+    const affiliateCode = await ensureAffiliateCode(supabase, profile);
 
     // Fetch ONLY available cars directly from the server
     const { data: cars } = await supabase
@@ -28,7 +31,7 @@ export default async function LinkGeneratorPage() {
     return (
         <LinkGeneratorClient
             cars={cars || []}
-            affiliateCode={profile.affiliate_code || 'PENDING'}
+            affiliateCode={affiliateCode}
         />
     );
 }
