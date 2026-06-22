@@ -123,7 +123,7 @@ export default async function BusinessProfilePage({
             <div className="container mx-auto px-4 -mt-12 relative z-20">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Main Content */}
-                    <div className="lg:col-span-2 space-y-12">
+                    <div className="order-2 lg:order-1 lg:col-span-2 space-y-12">
                         {offerActive && (
                             <div className="flex items-center gap-4 rounded-[2rem] bg-secondary/15 border border-secondary/30 p-6">
                                 <div className="h-12 w-12 rounded-2xl bg-secondary flex items-center justify-center shrink-0">
@@ -288,7 +288,7 @@ export default async function BusinessProfilePage({
                     </div>
 
                     {/* Sidebar */}
-                    <aside className="space-y-8">
+                    <aside className="order-1 lg:order-2 space-y-8">
                         <div className="bg-primary/5 backdrop-blur-md border rounded-[3rem] p-10 lg:sticky lg:top-32 shadow-xl">
                             <h3 className="font-black text-2xl mb-8 tracking-tight text-primary">Connect with <span className="text-secondary italic">Us</span></h3>
 

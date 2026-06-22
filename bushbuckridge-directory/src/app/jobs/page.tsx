@@ -142,7 +142,7 @@ export default async function JobsPage() {
                 className="w-full h-16 rounded-2xl font-black border-primary/10 bg-white/50"
                 asChild
               >
-                <Link href="/list-your-business">List Your Business</Link>
+                <Link href="/employer-services">Post a Job Opening</Link>
               </Button>
             </div>
           </aside>

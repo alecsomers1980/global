@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import Link from 'next/link'
-import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, FileText, Settings, LogOut, Star } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, Calendar, DollarSign, FileText, Settings, LogOut, Star, Inbox } from 'lucide-react'
 
 export default async function AdminLayout({
     children,
@@ -34,6 +34,7 @@ export default async function AdminLayout({
                     <div className="mb-6">
                         <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3 px-4">Core Directory</p>
                         <NavLink href="/admin/businesses" icon={Briefcase}>Businesses</NavLink>
+                        <NavLink href="/admin/enquiries" icon={Inbox}>Enquiries</NavLink>
                         <NavLink href="/admin/subscriptions" icon={FileText}>Subscriptions</NavLink>
                         <NavLink href="/admin/spotlight" icon={FileText}>Spotlight Articles</NavLink>
                         <NavLink href="/admin/reviews" icon={Star}>Reviews</NavLink>
