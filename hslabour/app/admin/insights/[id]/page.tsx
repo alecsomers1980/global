@@ -20,8 +20,10 @@ function statusCls(status: string) {
 
 export default async function ReviewInsightPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ msg?: string; error?: string }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -30,6 +32,7 @@ export default async function ReviewInsightPage({
   if (me?.role !== "admin") redirect("/");
 
   const { id } = await params;
+  const { msg, error } = await searchParams;
   const admin = createAdminClient();
   const { data: post } = await admin
     .from("insights_posts")
@@ -54,6 +57,17 @@ export default async function ReviewInsightPage({
             {post.status}
           </span>
         </div>
+
+        {error && (
+          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {error}
+          </div>
+        )}
+        {msg && !error && (
+          <div className="mt-4 rounded-lg border border-green/30 bg-mint px-4 py-3 text-sm text-navy">
+            {msg}
+          </div>
+        )}
 
         {/* Edit form */}
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">

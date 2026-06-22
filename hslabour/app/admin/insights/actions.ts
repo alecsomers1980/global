@@ -18,26 +18,43 @@ function slugify(s: string): string {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+// Redirect back to the editor with a success or error message in the query string.
+function backTo(id: string, msg?: string, error?: string): never {
+  const qs = error
+    ? `?error=${encodeURIComponent(error)}`
+    : msg
+      ? `?msg=${encodeURIComponent(msg)}`
+      : "";
+  redirect(`/admin/insights/${id}${qs}`);
+}
+
 export async function saveInsight(formData: FormData): Promise<void> {
-  if (!(await isAdmin())) return;
   const id = String(formData.get("id") ?? "");
   if (!id) return;
+  if (!(await isAdmin())) backTo(id, undefined, "Not authorised — please log in again.");
   const title = String(formData.get("title") ?? "").trim();
   const slugRaw = String(formData.get("slug") ?? "").trim();
   const scheduledRaw = String(formData.get("scheduled_for") ?? "").trim();
-  const admin = createAdminClient();
-  await admin.from("insights_posts").update({
-    title,
-    slug: slugRaw ? slugify(slugRaw) : slugify(title),
-    excerpt: String(formData.get("excerpt") ?? "").trim() || null,
-    meta_title: String(formData.get("meta_title") ?? "").trim() || null,
-    meta_description: String(formData.get("meta_description") ?? "").trim() || null,
-    category: String(formData.get("category") ?? "").trim(),
-    content: String(formData.get("content") ?? ""),
-    scheduled_for: scheduledRaw ? new Date(scheduledRaw).toISOString() : null,
-  }).eq("id", id);
+  let errMsg = "";
+  try {
+    const admin = createAdminClient();
+    const { error } = await admin.from("insights_posts").update({
+      title,
+      slug: slugRaw ? slugify(slugRaw) : slugify(title),
+      excerpt: String(formData.get("excerpt") ?? "").trim() || null,
+      meta_title: String(formData.get("meta_title") ?? "").trim() || null,
+      meta_description: String(formData.get("meta_description") ?? "").trim() || null,
+      category: String(formData.get("category") ?? "").trim(),
+      content: String(formData.get("content") ?? ""),
+      scheduled_for: scheduledRaw ? new Date(scheduledRaw).toISOString() : null,
+    }).eq("id", id);
+    if (error) errMsg = error.message;
+  } catch (e) {
+    errMsg = e instanceof Error ? e.message : "Save failed.";
+  }
   revalidatePath(`/admin/insights/${id}`);
   revalidatePath("/admin/insights");
+  backTo(id, "Changes saved.", errMsg || undefined);
 }
 
 // Create a blank draft and jump straight into the editor (write one by hand).
@@ -109,24 +126,41 @@ export async function generateInsightNow(
 }
 
 export async function approveInsight(formData: FormData): Promise<void> {
-  if (!(await isAdmin())) return;
   const id = String(formData.get("id") ?? "");
   if (!id) return;
-  const admin = createAdminClient();
-  await admin.from("insights_posts").update({ status: "APPROVED" }).eq("id", id);
+  if (!(await isAdmin())) backTo(id, undefined, "Not authorised — please log in again.");
+  let errMsg = "";
+  try {
+    const admin = createAdminClient();
+    const { error } = await admin.from("insights_posts").update({ status: "APPROVED" }).eq("id", id);
+    if (error) errMsg = error.message;
+  } catch (e) {
+    errMsg = e instanceof Error ? e.message : "Approve failed.";
+  }
   revalidatePath(`/admin/insights/${id}`);
   revalidatePath("/admin/insights");
+  backTo(id, "Approved — it will publish on its scheduled date.", errMsg || undefined);
 }
 
 export async function publishInsightNow(formData: FormData): Promise<void> {
-  if (!(await isAdmin())) return;
   const id = String(formData.get("id") ?? "");
   if (!id) return;
-  const admin = createAdminClient();
-  await admin.from("insights_posts").update({ status: "PUBLISHED", published_at: new Date().toISOString() }).eq("id", id);
+  if (!(await isAdmin())) backTo(id, undefined, "Not authorised — please log in again.");
+  let errMsg = "";
+  try {
+    const admin = createAdminClient();
+    const { error } = await admin
+      .from("insights_posts")
+      .update({ status: "PUBLISHED", published_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) errMsg = error.message;
+  } catch (e) {
+    errMsg = e instanceof Error ? e.message : "Publish failed.";
+  }
   revalidatePath(`/admin/insights/${id}`);
   revalidatePath("/admin/insights");
   revalidatePath("/insights");
+  backTo(id, "Published — it is now live on /insights.", errMsg || undefined);
 }
 
 export async function discardInsight(formData: FormData): Promise<void> {
