@@ -9,7 +9,6 @@ export default function MediaKitClient({ car, affiliateCode, videoIframeUrl, sit
     const [videoError, setVideoError] = useState(null);
 
     const trackingLink = `${siteUrl}/inventory/${car.id}?ref=${affiliateCode}`;
-    const shareImageUrl = `/api/affiliate/share-image/${car.id}?ref=${affiliateCode}`;
     const flyerImageUrl = `/api/affiliate/flyer/${car.id}?ref=${affiliateCode}`;
     const vehicleTitle = `${car.year} ${car.make} ${car.model}`;
 
@@ -109,43 +108,8 @@ export default function MediaKitClient({ car, affiliateCode, videoIframeUrl, sit
                 )}
             </div>
 
-            {/* Branded Share Image */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <h2 className="font-bold text-slate-800 mb-2">Branded Share Image</h2>
-                <p className="text-sm text-slate-500 mb-4">
-                    A ready-to-send image with the vehicle, specs, and a scannable QR code linked
-                    to your tracking code — so you still get credit even if someone forwards just
-                    the image.
-                </p>
-                <img
-                    src={shareImageUrl}
-                    alt={vehicleTitle}
-                    className="w-full max-w-sm rounded-lg border border-slate-200 mb-4"
-                />
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <a
-                        href={shareImageUrl}
-                        download={`${vehicleTitle.replace(/\s+/g, "-")}.png`}
-                        className="px-6 py-3 rounded-lg font-bold text-sm bg-amber-500 text-white hover:bg-amber-600 text-center transition-all"
-                    >
-                        Download Image
-                    </a>
-                    <a
-                        href={`https://wa.me/?text=${encodeURIComponent(`Check out this ${vehicleTitle} at Everest Motoring! ${trackingLink}`)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-6 py-3 rounded-lg font-bold text-sm bg-[#25D366] text-white hover:bg-[#1ebe57] text-center transition-all"
-                    >
-                        Open WhatsApp Chat
-                    </a>
-                </div>
-                <p className="text-xs text-slate-400 mt-2">
-                    Download the image first, then attach it in WhatsApp — links can&apos;t auto-attach images.
-                </p>
-            </div>
-
             {/* Affiliate Flyer (A4) */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mt-6">
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <h2 className="font-bold text-slate-800 mb-2">Affiliate Flyer (A4)</h2>
                 <p className="text-sm text-slate-500 mb-4">
                     A printable, full-page flyer with the vehicle, full specs, premium features,
