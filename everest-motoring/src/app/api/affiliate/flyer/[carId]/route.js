@@ -196,6 +196,12 @@ export async function GET(request, { params }) {
                 </div>
             </div>
         ),
-        { width: WIDTH, height: HEIGHT }
+        {
+            width: WIDTH,
+            height: HEIGHT,
+            headers: {
+                "Content-Disposition": `attachment; filename="${`${car.year}-${car.make}-${car.model}-Flyer`.replace(/\s+/g, "-")}.png"`,
+            },
+        }
     );
 }

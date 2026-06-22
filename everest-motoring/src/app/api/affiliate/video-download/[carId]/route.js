@@ -3,6 +3,8 @@ import { enableDownloads, getMp4Url } from "@/utils/ai/cloudflareStreamService";
 
 export async function GET(request, { params }) {
     const { carId } = await params;
+    const { searchParams } = new URL(request.url);
+    const wantsRedirect = searchParams.get("redirect") === "1";
 
     const supabase = await createAdminClient();
     const { data: car, error } = await supabase
@@ -12,19 +14,27 @@ export async function GET(request, { params }) {
         .single();
 
     if (error || !car) {
-        return Response.json({ ready: false, error: "Car not found" }, { status: 404 });
+        return wantsRedirect
+            ? new Response("Car not found", { status: 404 })
+            : Response.json({ ready: false, error: "Car not found" }, { status: 404 });
     }
 
     if (typeof car.video_url !== "string" || !car.video_url.startsWith("cf:")) {
-        return Response.json({ ready: false, error: "No video available for this vehicle yet" });
+        const message = "No video available for this vehicle yet";
+        return wantsRedirect
+            ? new Response(message, { status: 404 })
+            : Response.json({ ready: false, error: message });
     }
 
     const uid = car.video_url.slice(3);
 
     try {
         await enableDownloads(uid);
-        return Response.json({ ready: true, url: getMp4Url(uid) });
+        const mp4Url = getMp4Url(uid);
+        return wantsRedirect ? Response.redirect(mp4Url, 302) : Response.json({ ready: true, url: mp4Url });
     } catch (err) {
-        return Response.json({ ready: false, error: err.message }, { status: 500 });
+        return wantsRedirect
+            ? new Response(`Video not ready: ${err.message}`, { status: 500 })
+            : Response.json({ ready: false, error: err.message }, { status: 500 });
     }
 }

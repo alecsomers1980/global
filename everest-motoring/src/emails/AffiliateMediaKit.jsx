@@ -25,7 +25,6 @@ const brandConfig = {
         primary: '#ffff01',
         'primary-dark': '#e6e600',
         secondary: '#000000',
-        whatsapp: '#25D366',
       },
     },
   },
@@ -46,6 +45,8 @@ export const AffiliateMediaKit = ({
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=600',
     mediaKitUrl: 'https://everestmotoring.co.za/affiliate/media/v123',
     trackingLink: 'https://everestmotoring.co.za/v/hilux-2024?ref=abc',
+    flyerUrl: 'https://everestmotoring.co.za/api/affiliate/flyer/v123?ref=abc',
+    videoUrl: 'https://everestmotoring.co.za/api/affiliate/video-download/v123?ref=abc&redirect=1',
   },
   affiliateName = 'Partner',
 }) => {
@@ -156,17 +157,19 @@ export const AffiliateMediaKit = ({
             <Section>
               <Row>
                 <Column className="px-[40px] py-[24px] text-center">
+                  {vehicle.videoUrl && (
+                    <Button
+                      className="bg-secondary text-primary font-bold py-3 px-6 rounded-lg text-center mr-2"
+                      href={vehicle.videoUrl}
+                    >
+                      Download Video
+                    </Button>
+                  )}
                   <Button
-                    className="bg-whatsapp text-white font-bold py-3 px-6 rounded-lg text-center mr-2"
-                    href={`https://wa.me/?text=Check out this ${vehicle.year} ${vehicle.make} ${vehicle.model} at Everest Motoring! ${vehicle.trackingLink}`}
+                    className="bg-primary text-secondary font-bold py-3 px-6 rounded-lg text-center ml-2"
+                    href={vehicle.flyerUrl}
                   >
-                    Share on WhatsApp
-                  </Button>
-                  <Button
-                    className="bg-secondary text-primary font-bold py-3 px-6 rounded-lg text-center ml-2"
-                    href={vehicle.mediaKitUrl}
-                  >
-                    Download Assets
+                    Download Flyer
                   </Button>
                 </Column>
               </Row>

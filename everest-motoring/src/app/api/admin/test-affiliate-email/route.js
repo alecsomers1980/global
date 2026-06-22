@@ -19,8 +19,12 @@ export async function GET() {
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
-    const trackingLink = `${siteUrl}/inventory/${car.id}?ref=TEST123`;
+    const ref = "TEST123";
+    const trackingLink = `${siteUrl}/inventory/${car.id}?ref=${ref}`;
     const mediaKitUrl = `${siteUrl}/affiliate/media/${car.id}`;
+    const flyerUrl = `${siteUrl}/api/affiliate/flyer/${car.id}?ref=${ref}`;
+    const hasVideo = typeof car.video_url === "string" && car.video_url.startsWith("cf:");
+    const videoUrl = hasVideo ? `${siteUrl}/api/affiliate/video-download/${car.id}?ref=${ref}&redirect=1` : null;
 
     const vehicle = {
         make: car.make,
@@ -35,6 +39,8 @@ export async function GET() {
         image: car.main_image_url,
         mediaKitUrl,
         trackingLink,
+        flyerUrl,
+        videoUrl,
     };
 
     const result = await sendEmail({
