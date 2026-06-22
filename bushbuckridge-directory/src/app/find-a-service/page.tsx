@@ -323,7 +323,7 @@ export default async function FindServicePage({
                                             </Button>
                                         )}
                                         <Button variant="ghost" className="flex-1 h-12 text-xs font-bold text-muted-foreground hover:text-primary rounded-xl" asChild>
-                                            <Link href={`/business/${biz.id}`}>
+                                            <Link href={`/business/${biz.slug}`}>
                                                 View Full Profile &rarr;
                                             </Link>
                                         </Button>
@@ -465,7 +465,7 @@ export default async function FindServicePage({
                                                     </Button>
                                                 )}
                                                 <Button variant="ghost" className="flex-1 h-12 text-xs font-bold text-muted-foreground hover:text-primary rounded-xl" asChild>
-                                                    <Link href={`/business/${biz.id}`}>
+                                                    <Link href={`/business/${biz.slug}`}>
                                                         View Full Profile &rarr;
                                                     </Link>
                                                 </Button>

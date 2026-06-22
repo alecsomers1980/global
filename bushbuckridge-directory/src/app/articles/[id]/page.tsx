@@ -110,7 +110,7 @@ export default async function ArticleDetailPage({
                                     <p className="text-muted-foreground font-medium">Explore the full business profile, contact details, gallery, and more on the directory.</p>
                                 </div>
                                 <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg bg-primary text-white shadow-lg shadow-primary/20 shrink-0">
-                                    <Link href={`/business/${business.id}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                                    <Link href={`/business/${business.slug}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
                                 </Button>
                             </div>
                         )}
@@ -182,7 +182,7 @@ export default async function ArticleDetailPage({
                                     <p className="text-muted-foreground font-medium">Explore the full business profile, contact details, gallery, and more on the directory.</p>
                                 </div>
                                 <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg bg-primary text-white shadow-lg shadow-primary/20 shrink-0">
-                                    <Link href={`/business/${business.id}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                                    <Link href={`/business/${business.slug}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
                                 </Button>
                             </div>
                         )}
@@ -250,7 +250,7 @@ export default async function ArticleDetailPage({
                                         <p className="text-muted-foreground font-medium">Explore the full business profile, contact details, gallery, and more on the directory.</p>
                                     </div>
                                     <Button asChild className="h-14 px-8 rounded-2xl font-black text-lg bg-primary text-white shadow-lg shadow-primary/20 shrink-0">
-                                        <Link href={`/business/${business.id}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                                        <Link href={`/business/${business.slug}`}>View Full Profile <ArrowRight className="ml-2 h-5 w-5" /></Link>
                                     </Button>
                                 </div>
                             )}

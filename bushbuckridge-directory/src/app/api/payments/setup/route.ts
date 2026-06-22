@@ -10,6 +10,24 @@ const TIER_LABELS: Record<string, string> = {
   'pro-business': 'Pro Business Listing (Annual)',
 }
 
+function slugify(s: string) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
+async function uniqueBusinessSlug(pb: PocketBase, name: string) {
+  const base = slugify(name) || 'business'
+  let slug = base
+  let n = 2
+  while (true) {
+    try {
+      await pb.collection('businesses').getFirstListItem(`slug = "${slug}"`)
+      slug = `${base}-${n++}`
+    } catch {
+      return slug
+    }
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -66,6 +84,7 @@ export async function POST(request: NextRequest) {
     try {
       business = await pb.collection('businesses').create({
         name: business_name,
+        slug: await uniqueBusinessSlug(pb, business_name),
         owner: user.id,
         sector: sector || null,
         area: area || null,

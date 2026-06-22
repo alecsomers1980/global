@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,18 +30,26 @@ import { Clock, Tag, PlayCircle, Award, Calendar, UsersRound } from 'lucide-reac
 export default async function BusinessProfilePage({
     params,
 }: {
-    params: Promise<{ id: string }>
+    params: Promise<{ slug: string }>
 }) {
     const pb = await createClient()
-    const { id } = await params;
+    const { slug } = await params;
 
     let business: any = null
     try {
-      business = await pb.collection('businesses').getOne(id, {
+      business = await pb.collection('businesses').getFirstListItem(`slug = "${slug}"`, {
         expand: 'sector,area',
       })
     } catch (e) {
-      notFound()
+      // Fall back to a legacy ID-based link and redirect to the canonical slug URL.
+      try {
+        business = await pb.collection('businesses').getOne(slug, {
+          expand: 'sector,area',
+        })
+      } catch (e2) {
+        notFound()
+      }
+      if (business.slug) redirect(`/business/${business.slug}`)
     }
 
     const logoUrl = business.logo 

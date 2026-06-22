@@ -46,7 +46,7 @@ export default async function PortalLayout({
                     <div className="mb-6">
                         <p className="text-[10px] font-black text-primary/30 uppercase tracking-[0.2em] mb-3 px-4">Menu</p>
                         <NavLink href="/portal" icon={BarChart3}>Analytics Dashboard</NavLink>
-                        <NavLink href={`/business/${business.id}`} icon={Building2} external>View Live Profile</NavLink>
+                        <NavLink href={`/business/${business.slug}`} icon={Building2} external>View Live Profile</NavLink>
                         <NavLink href="/portal/billing" icon={CreditCard}>Billing & Subscription</NavLink>
                         <NavLink href="/portal/settings" icon={Settings}>Profile Settings</NavLink>
                     </div>

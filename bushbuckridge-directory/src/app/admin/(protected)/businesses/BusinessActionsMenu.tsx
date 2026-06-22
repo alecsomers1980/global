@@ -53,7 +53,7 @@ export default function BusinessActionsMenu({ business }: { business: any }) {
                 <DropdownMenuLabel className="font-black text-xs uppercase tracking-widest text-primary/40 px-3 py-2">Actions</DropdownMenuLabel>
 
                 <DropdownMenuItem asChild className="rounded-xl mx-1 cursor-pointer font-bold focus:bg-primary/5 text-primary">
-                    <Link href={`/business/${business.id}`} target="_blank">
+                    <Link href={`/business/${business.slug}`} target="_blank">
                         <Building className="mr-2 h-4 w-4" /> View Live Profile
                     </Link>
                 </DropdownMenuItem>

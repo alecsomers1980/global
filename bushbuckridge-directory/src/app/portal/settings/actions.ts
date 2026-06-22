@@ -64,5 +64,5 @@ export async function updateMyBusiness(formData: FormData) {
   const svc = await createServiceClient()
   await svc.collection('businesses').update(biz.id, out)
   revalidatePath('/portal/settings')
-  revalidatePath(`/business/${biz.id}`)
+  revalidatePath(`/business/${biz.slug}`)
 }

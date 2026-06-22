@@ -347,7 +347,7 @@ export default async function Home() {
                     </Button>
                   )}
                   <Button variant="outline" className="flex-1 h-12 rounded-xl border-primary/20 hover:bg-primary/5 font-bold" asChild>
-                    <Link href={`/business/${biz.id}`}>
+                    <Link href={`/business/${biz.slug}`}>
                       View Profile
                     </Link>
                   </Button>

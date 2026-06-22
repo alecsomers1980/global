@@ -4,6 +4,24 @@ import { createClient } from '@/utils/pocketbase/server'
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import { revalidatePath } from 'next/cache'
 
+function slugify(s: string) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
+async function uniqueBusinessSlug(pb: any, name: string) {
+  const base = slugify(name) || 'business'
+  let slug = base
+  let n = 2
+  while (true) {
+    try {
+      await pb.collection('businesses').getFirstListItem(`slug = "${slug}"`)
+      slug = `${base}-${n++}`
+    } catch {
+      return slug
+    }
+  }
+}
+
 export async function updateBusinessStatus(businessId: string, status: string) {
     await requireAdmin()
     const pb = await createClient()
@@ -56,6 +74,7 @@ export async function createBusiness(data: {
   const pb = await createClient()
   await pb.collection('businesses').create({
     ...data,
+    slug: await uniqueBusinessSlug(pb, data.name),
     package_tier: data.package_tier || 'basic',
     status: data.status || 'active',
     is_featured: false,
@@ -103,7 +122,7 @@ export async function updateBusiness(businessId: string, data: {
 export async function updateBusinessFull(businessId: string, formData: FormData) {
   await requireAdmin()
   const pb = await createClient()
-  await pb.collection('businesses').update(businessId, formData)
+  const updated = await pb.collection('businesses').update(businessId, formData)
   revalidatePath('/admin/businesses')
-  revalidatePath(`/business/${businessId}`)
+  revalidatePath(`/business/${updated.slug}`)
 }
