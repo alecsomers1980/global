@@ -102,7 +102,7 @@ async function callDeepSeek(system: string, user: string): Promise<string> {
         { role: "user", content: user },
       ],
       response_format: { type: "json_object" },
-      max_tokens: 2400,
+      max_tokens: 8000,
       temperature: 0.8,
     }),
     cache: "no-store",
@@ -240,8 +240,20 @@ export async function generateInsight(
 
   const user = `Write a fresh, practical article in the "${category}" category for South African employers and/or job seekers.`;
 
-  const raw = await callDeepSeek(system, user);
-  const parsed = JSON.parse(raw) as Omit<InsightPayload, "image_url">;
+  let raw = (await callDeepSeek(system, user)).trim();
+  // Defensive: strip any ```json … ``` fences the model may add despite json mode.
+  if (raw.startsWith("```")) {
+    raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  }
+
+  let parsed: Omit<InsightPayload, "image_url">;
+  try {
+    parsed = JSON.parse(raw) as Omit<InsightPayload, "image_url">;
+  } catch {
+    throw new Error(
+      `The AI returned invalid JSON (likely truncated). Try again. Snippet: ${raw.slice(-120)}`,
+    );
+  }
   const slug = parsed.slug ? slugify(parsed.slug) : slugify(parsed.title);
   const image_url = await fetchImage(category, parsed.title);
 
