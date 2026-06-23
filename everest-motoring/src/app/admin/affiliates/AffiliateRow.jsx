@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { approveAffiliateAction, declineAffiliateAction, deleteAffiliateAction } from "./actions";
+import { approveAffiliateAction, declineAffiliateAction, deleteAffiliateAction, getAffiliateBankDetails } from "./actions";
 
 const STATUS_STYLES = {
     new: "bg-blue-100 text-blue-700",
@@ -24,6 +24,23 @@ function StatusBadge({ status }) {
 export default function AffiliateRow({ aff, affiliateLeads = [], isPending = false }) {
     const [expanded, setExpanded] = useState(false);
     const [isTxn, startTransition] = useTransition();
+    const [payoutDetails, setPayoutDetails] = useState(null);
+    const [payoutLoading, setPayoutLoading] = useState(false);
+    const [payoutError, setPayoutError] = useState("");
+
+    const handleViewPayoutDetails = () => {
+        setPayoutLoading(true);
+        setPayoutError("");
+        startTransition(async () => {
+            const result = await getAffiliateBankDetails(aff.id);
+            setPayoutLoading(false);
+            if (!result.success) {
+                setPayoutError(result.error || "Failed to load payout details");
+                return;
+            }
+            setPayoutDetails(result);
+        });
+    };
 
     const handleApprove = () => {
         startTransition(async () => {
@@ -198,6 +215,50 @@ export default function AffiliateRow({ aff, affiliateLeads = [], isPending = fal
                                         ))}
                                     </tbody>
                                 </table>
+                            )}
+                        </div>
+
+                        {/* ── Payout details (audit logged on view) ── */}
+                        <div className="mx-4 mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div className="bg-slate-800 px-4 py-2.5 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-emerald-400 text-[18px]">account_balance</span>
+                                <h4 className="text-sm font-bold text-white">Payout Details</h4>
+                                {!payoutDetails && (
+                                    <button
+                                        onClick={handleViewPayoutDetails}
+                                        disabled={payoutLoading}
+                                        className="ml-auto flex items-center gap-1.5 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-bold rounded-md transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[14px]">visibility</span>
+                                        {payoutLoading ? "Loading..." : "View Payout Details"}
+                                    </button>
+                                )}
+                            </div>
+
+                            {payoutError && (
+                                <p className="p-4 text-sm text-red-500">{payoutError}</p>
+                            )}
+
+                            {payoutDetails && (
+                                <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Bank Name</p>
+                                        <p className="font-medium text-slate-800">{payoutDetails.bankName || "—"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</p>
+                                        <p className="font-medium text-slate-800 font-mono">{payoutDetails.accountNumber || "—"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Branch Code</p>
+                                        <p className="font-medium text-slate-800 font-mono">{payoutDetails.branchCode || "—"}</p>
+                                    </div>
+                                    <p className="md:col-span-3 text-xs text-slate-400 italic">This view was recorded in the payout access log.</p>
+                                </div>
+                            )}
+
+                            {!payoutDetails && !payoutError && (
+                                <p className="p-4 text-sm text-slate-400 italic">Hidden by default. Viewing logs who accessed this affiliate's bank details and when.</p>
                             )}
                         </div>
                     </td>

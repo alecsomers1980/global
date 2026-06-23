@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { generateAffiliateCode } from "@/utils/affiliate/code";
+import { decryptBankField } from "@/utils/affiliate/bankEncryption";
 
 // ─── Approve affiliate + auto-assign tracking code ───────────────────────────
 export async function approveAffiliateAction(affiliateId, firstName) {
@@ -99,6 +100,53 @@ export async function toggleAffiliateApproval(formData) {
         revalidatePath('/admin/affiliates');
         return { success: true };
     } catch (error) {
+        return { success: false, error: "Server Exception" };
+    }
+}
+
+// ─── View an affiliate's decrypted bank details (admin-only, audit logged) ──
+export async function getAffiliateBankDetails(affiliateId) {
+    try {
+        if (!affiliateId) return { success: false, error: "Missing ID" };
+
+        const sessionClient = await createClient();
+        const { data: { user } } = await sessionClient.auth.getUser();
+        if (!user) return { success: false, error: "Unauthorized" };
+
+        const supabase = await createAdminClient();
+
+        const { data: callerProfile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (!callerProfile || callerProfile.role !== 'admin') {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const { data: affiliate, error } = await supabase
+            .from('profiles')
+            .select('bank_name, account_number, branch_code')
+            .eq('id', affiliateId)
+            .single();
+
+        if (error || !affiliate) return { success: false, error: "Affiliate not found" };
+
+        const { error: logError } = await supabase
+            .from('affiliate_payout_views')
+            .insert({ admin_id: user.id, affiliate_id: affiliateId });
+
+        if (logError) console.error("Failed to record payout view:", logError);
+
+        return {
+            success: true,
+            bankName: affiliate.bank_name,
+            accountNumber: decryptBankField(affiliate.account_number),
+            branchCode: affiliate.branch_code,
+        };
+    } catch (err) {
+        console.error("getAffiliateBankDetails exception:", err);
         return { success: false, error: "Server Exception" };
     }
 }

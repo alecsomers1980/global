@@ -6,6 +6,12 @@ import { saveBankDetails } from "./actions"; // We will create this action
 export default function BankDetailsForm({ initialBankName, initialAccountNumber, initialBranchCode }) {
     const [status, setStatus] = useState("idle");
     const [message, setMessage] = useState("");
+    const [accountNumber, setAccountNumber] = useState(initialAccountNumber || "");
+    const [revealed, setRevealed] = useState(!initialAccountNumber);
+
+    const maskedAccountNumber = accountNumber
+        ? `${"•".repeat(Math.max(accountNumber.length - 4, 0))}${accountNumber.slice(-4)}`
+        : "";
 
     async function handleAction(formData) {
         setStatus("saving");
@@ -51,15 +57,29 @@ export default function BankDetailsForm({ initialBankName, initialAccountNumber,
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Account Number</label>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-bold text-slate-400 uppercase tracking-wider">Account Number</label>
+                            {accountNumber && (
+                                <button
+                                    type="button"
+                                    onClick={() => setRevealed((r) => !r)}
+                                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+                                >
+                                    <span className="material-symbols-outlined text-[14px]">{revealed ? "visibility_off" : "visibility"}</span>
+                                    {revealed ? "Hide" : "Reveal"}
+                                </button>
+                            )}
+                        </div>
                         <input
                             type="text"
-                            name="account_number"
-                            defaultValue={initialAccountNumber || ""}
+                            value={revealed ? accountNumber : maskedAccountNumber}
+                            onChange={(e) => revealed && setAccountNumber(e.target.value)}
+                            readOnly={!revealed}
                             required
                             placeholder="Account Number"
                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                         />
+                        <input type="hidden" name="account_number" value={accountNumber} />
                     </div>
                     <div className="flex gap-4">
                         <div className="flex-1">

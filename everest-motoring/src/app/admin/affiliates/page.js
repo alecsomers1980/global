@@ -19,6 +19,26 @@ export default async function AdminAffiliatesPage() {
         .from('leads')
         .select('id, affiliate_id, client_name, status, created_at, cars(year, make, model, price)');
 
+    // 2b. Fetch recent payout-detail view events for the audit log
+    const { data: payoutViews } = await supabase
+        .from('affiliate_payout_views')
+        .select('id, admin_id, affiliate_id, viewed_at')
+        .order('viewed_at', { ascending: false })
+        .limit(20);
+
+    const viewerIds = [...new Set((payoutViews || []).flatMap(v => [v.admin_id, v.affiliate_id]).filter(Boolean))];
+    const { data: viewerProfiles } = viewerIds.length
+        ? await supabase.from('profiles').select('id, first_name, last_name').in('id', viewerIds)
+        : { data: [] };
+    const nameById = new Map((viewerProfiles || []).map(p => [p.id, `${p.first_name || ''} ${p.last_name || ''}`.trim() || 'Unknown']));
+
+    const payoutViewLog = (payoutViews || []).map(v => ({
+        id: v.id,
+        viewedAt: v.viewed_at,
+        adminName: v.admin_id ? (nameById.get(v.admin_id) || 'Unknown') : 'Unknown',
+        affiliateName: nameById.get(v.affiliate_id) || 'Unknown',
+    }));
+
     // 3. Build metrics + attach leads per affiliate
     const affiliateMetrics = (affiliates || []).map(affiliate => {
         const affiliateLeads = (leads || []).filter(l => l.affiliate_id === affiliate.id);
@@ -111,6 +131,38 @@ export default async function AdminAffiliatesPage() {
                     )}
                 </div>
             </div>
+
+            {/* ── Payout Access Log ── */}
+            {payoutViewLog.length > 0 && (
+                <div className="mt-12">
+                    <div className="flex items-center gap-3 mb-3">
+                        <h2 className="text-lg font-bold text-slate-800">Payout Access Log</h2>
+                        <span className="text-xs text-slate-400">Most recent {payoutViewLog.length} bank-detail views</span>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <table className="w-full text-left text-sm">
+                            <thead className="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th className="px-6 py-3 font-bold">Admin</th>
+                                    <th className="px-6 py-3 font-bold">Affiliate</th>
+                                    <th className="px-6 py-3 font-bold">Viewed At</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {payoutViewLog.map(entry => (
+                                    <tr key={entry.id}>
+                                        <td className="px-6 py-3 font-medium text-slate-800">{entry.adminName}</td>
+                                        <td className="px-6 py-3 text-slate-600">{entry.affiliateName}</td>
+                                        <td className="px-6 py-3 text-slate-500">
+                                            {new Date(entry.viewedAt).toLocaleString('en-ZA')}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

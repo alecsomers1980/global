@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { encryptBankField } from "@/utils/affiliate/bankEncryption";
 
 export async function saveBankDetails(formData) {
     const supabase = await createClient();
@@ -24,7 +25,7 @@ export async function saveBankDetails(formData) {
         .from("profiles")
         .update({
             bank_name,
-            account_number,
+            account_number: encryptBankField(account_number),
             branch_code
         })
         .eq("id", user.id);
