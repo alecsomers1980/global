@@ -255,7 +255,9 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
 
                 {mediaUrl ? (
                     <div className="rounded-xl overflow-hidden" style={{ background: '#13131a' }}>
-                        <img src={mediaUrl} alt="" className="w-full h-auto block" />
+                        {/\.(mp4|webm|mov)(\?|$)/i.test(mediaUrl)
+                            ? <video src={mediaUrl} controls playsInline preload="metadata" className="w-full h-auto block" />
+                            : <img src={mediaUrl} alt="" className="w-full h-auto block" />}
                     </div>
                 ) : (
                     <div className="aspect-square rounded-xl flex items-center justify-center" style={{ background: '#13131a', border: '1px solid #1a1a27' }}>
