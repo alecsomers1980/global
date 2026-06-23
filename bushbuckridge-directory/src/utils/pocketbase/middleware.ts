@@ -18,6 +18,9 @@ export async function updateSession(request: NextRequest) {
   try {
     if (pb.authStore.isValid) {
       await pb.collection('users').authRefresh();
+      if ((pb.authStore.record as any)?.suspended) {
+        pb.authStore.clear();
+      }
     }
   } catch (e) {
     pb.authStore.clear();

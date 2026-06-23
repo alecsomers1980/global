@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { format, isPast } from 'date-fns'
-import { Briefcase, AlertCircle, Download, ExternalLink, Sparkles, TrendingUp, MapPin, Building2, ArrowRight } from 'lucide-react'
+import { Briefcase, AlertCircle, Download, Sparkles, TrendingUp, MapPin, Building2, ArrowRight } from 'lucide-react'
 import SecondaryHeader from '@/components/SecondaryHeader'
 import Link from 'next/link'
 
@@ -147,14 +147,14 @@ export default async function OpportunitiesPage() {
                   </CardHeader>
                   <CardContent className="px-8 pb-8 flex-1">
                     <p className="text-muted-foreground font-medium leading-relaxed line-clamp-3">
-                      {opp.description || opp.contact_info || ''}
+                      {opp.description ? opp.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&') : (opp.contact_info || '')}
                     </p>
                   </CardContent>
-                  <CardFooter className="p-8 pt-0 gap-4 flex-wrap">
+                  <CardFooter className="p-8 pt-0 gap-4 flex-col">
                     {opp.attachment && (
                       <Button
                         variant="outline"
-                        className="h-14 flex-1 rounded-2xl font-black border-primary/10 shadow-sm"
+                        className="h-14 w-full rounded-2xl font-black border-primary/10 shadow-sm"
                         disabled={closed}
                         asChild
                       >
@@ -168,36 +168,13 @@ export default async function OpportunitiesPage() {
                       </Button>
                     )}
                     <Button
-                      variant="outline"
-                      className="h-14 flex-1 rounded-2xl font-black border-primary/10 shadow-sm"
+                      className="h-14 w-full bg-primary hover:bg-primary/90 rounded-2xl font-black shadow-lg shadow-primary/10 transition-all active:scale-95"
                       asChild
                     >
                       <Link href={`/opportunities/${opp.id}`}>
                         View Details <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
-                    {opp.link ? (
-                      <Button
-                        className="h-14 flex-1 bg-primary hover:bg-primary/90 rounded-2xl font-black shadow-lg shadow-primary/10 transition-all active:scale-95"
-                        disabled={closed}
-                        asChild
-                      >
-                        <a
-                          href={opp.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Apply <ExternalLink className="ml-2 h-4 w-4" />
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button
-                        className="h-14 flex-1 bg-primary hover:bg-primary/90 rounded-2xl font-black shadow-lg shadow-primary/10 transition-all active:scale-95"
-                        disabled
-                      >
-                        Apply <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    )}
                   </CardFooter>
                 </Card>
               )

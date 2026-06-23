@@ -160,8 +160,8 @@ export default async function EventsPage() {
                                                             style={{ backgroundImage: `url('${heroImage(event)}')` }}
                                                         />
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                                                        <div className="absolute top-6 left-6 flex flex-col items-center justify-center h-16 w-16 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 text-white shadow-xl">
-                                                            <span className="text-2xl font-black leading-none">{format(new Date(event.date), 'dd')}</span>
+                                                        <div className="absolute top-6 left-6 flex flex-col items-center justify-center px-3 py-1.5 min-w-[4rem] bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 text-white shadow-xl">
+                                                            <span className="text-2xl font-black leading-tight">{format(new Date(event.date), 'dd')}</span>
                                                             <span className="text-[10px] font-black uppercase tracking-widest">{format(new Date(event.date), 'MMM')}</span>
                                                         </div>
                                                         <Badge className="absolute top-6 right-6 bg-secondary text-secondary-foreground font-black px-4 py-1.5 rounded-full shadow-lg">

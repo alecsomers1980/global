@@ -25,7 +25,14 @@ export default function LoginPage() {
 
         try {
             const authData = await pb.collection('users').authWithPassword(email, password)
-            
+
+            if (authData.record.suspended) {
+                pb.authStore.clear()
+                toast.error('Your account has been suspended. Please contact support.')
+                setLoading(false)
+                return
+            }
+
             // Sync the auth store to a cookie via Server Action
             const maxAge = rememberMe ? 60 * 60 * 24 * 30 : undefined;
             await setAuthCookie(pb.authStore.token, pb.authStore.model, maxAge);
