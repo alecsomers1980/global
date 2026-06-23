@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,6 +18,14 @@ const STATUS_STYLES: Record<string, string> = {
     contacted: 'bg-amber-50 text-amber-700 border-amber-200',
     approved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     resolved: 'bg-muted text-muted-foreground border-border',
+}
+
+function stripHtml(value: string): string {
+    return value
+        .replace(/<\/(p|div|br)\s*\/?>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
 }
 
 export default async function AdminEnquiriesPage({
@@ -75,45 +84,54 @@ export default async function AdminEnquiriesPage({
                                 <TableHead className="py-6 px-8 font-black uppercase tracking-widest text-xs text-primary/40">Type</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">From</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Contact</TableHead>
-                                <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Details</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Status</TableHead>
                                 <TableHead className="py-6 px-4 font-black uppercase tracking-widest text-xs text-primary/40">Received</TableHead>
                                 <TableHead className="py-6 px-8 text-right font-black uppercase tracking-widest text-xs text-primary/40">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {enquiries?.map((enq) => (
-                                <TableRow key={enq.id} className="hover:bg-primary/5 transition-colors border-primary/5 align-top">
-                                    <TableCell className="py-6 px-8">
-                                        <Badge variant="outline" className="rounded-xl font-bold">{TYPE_LABELS[enq.type] || enq.type}</Badge>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4 font-bold text-primary">
-                                        {enq.business_name || enq.contact_person || '—'}
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
-                                        <div>{enq.contact_person}</div>
-                                        <div>{enq.email}</div>
-                                        <div>{enq.phone}</div>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground max-w-sm whitespace-pre-wrap">
-                                        {enq.details || '—'}
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4">
-                                        <Badge variant="outline" className={`capitalize rounded-xl font-bold ${STATUS_STYLES[enq.status] || ''}`}>
-                                            {enq.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="py-6 px-4 text-sm font-medium text-muted-foreground">
-                                        {enq.created ? format(new Date(enq.created), 'MMM d, yyyy') : '-'}
-                                    </TableCell>
-                                    <TableCell className="py-6 px-8 text-right">
-                                        <EnquiryActionsMenu enquiry={enq} />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {enquiries?.map((enq) => {
+                                const details = enq.details ? stripHtml(enq.details) : ''
+                                return (
+                                    <Fragment key={enq.id}>
+                                        <TableRow className="hover:bg-primary/5 transition-colors border-0 align-top">
+                                            <TableCell className="pt-6 pb-3 px-8">
+                                                <Badge variant="outline" className="rounded-xl font-bold">{TYPE_LABELS[enq.type] || enq.type}</Badge>
+                                            </TableCell>
+                                            <TableCell className="pt-6 pb-3 px-4 font-bold text-primary">
+                                                {enq.business_name || enq.contact_person || '—'}
+                                            </TableCell>
+                                            <TableCell className="pt-6 pb-3 px-4 text-sm font-medium text-muted-foreground">
+                                                <div>{enq.contact_person}</div>
+                                                <div>{enq.email}</div>
+                                                <div>{enq.phone}</div>
+                                            </TableCell>
+                                            <TableCell className="pt-6 pb-3 px-4">
+                                                <Badge variant="outline" className={`capitalize rounded-xl font-bold ${STATUS_STYLES[enq.status] || ''}`}>
+                                                    {enq.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="pt-6 pb-3 px-4 text-sm font-medium text-muted-foreground">
+                                                {enq.created ? format(new Date(enq.created), 'MMM d, yyyy') : '-'}
+                                            </TableCell>
+                                            <TableCell className="pt-6 pb-3 px-8 text-right">
+                                                <EnquiryActionsMenu enquiry={enq} />
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow className="hover:bg-primary/5 transition-colors border-primary/5">
+                                            <TableCell colSpan={6} className="pt-0 pb-6 px-8">
+                                                <div className="text-[11px] font-black uppercase tracking-widest text-primary/40 mb-1.5">Details</div>
+                                                <p className="text-sm font-medium text-muted-foreground whitespace-pre-wrap max-w-3xl">
+                                                    {details || '—'}
+                                                </p>
+                                            </TableCell>
+                                        </TableRow>
+                                    </Fragment>
+                                )
+                            })}
                             {(!enquiries || enquiries.length === 0) && (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="py-8 text-center text-muted-foreground font-medium">No enquiries found.</TableCell>
+                                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground font-medium">No enquiries found.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
