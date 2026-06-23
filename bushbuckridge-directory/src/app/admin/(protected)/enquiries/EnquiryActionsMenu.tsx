@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { MoreHorizontal, CheckCircle2, PhoneCall, Archive, Trash2 } from 'lucide-react'
+import { MoreHorizontal, CheckCircle2, Archive, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 
 const STATUS_OPTIONS: { value: string; label: string; icon: any }[] = [
     { value: 'approved', label: 'Approve', icon: CheckCircle2 },
-    { value: 'contacted', label: 'Mark Contacted', icon: PhoneCall },
     { value: 'resolved', label: 'Mark Resolved', icon: Archive },
 ]
 

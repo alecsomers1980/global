@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import Link from 'next/link'
 import { requireAdmin } from '@/utils/pocketbase/admin'
 import { createClient } from '@/utils/pocketbase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,10 +16,11 @@ const TYPE_LABELS: Record<string, string> = {
 
 const STATUS_STYLES: Record<string, string> = {
     new: 'bg-blue-50 text-blue-700 border-blue-200',
-    contacted: 'bg-amber-50 text-amber-700 border-amber-200',
     approved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     resolved: 'bg-muted text-muted-foreground border-border',
 }
+
+const isArchived = (status: string) => status === 'approved' || status === 'resolved'
 
 function stripHtml(value: string): string {
     return value
@@ -38,6 +40,7 @@ export default async function AdminEnquiriesPage({
 
     const resolvedParams = await searchParams
     const q = typeof resolvedParams?.q === 'string' ? resolvedParams.q.toLowerCase() : ''
+    const tab = resolvedParams?.tab === 'archive' ? 'archive' : 'active'
 
     let enquiries: any[] = []
     try {
@@ -53,6 +56,25 @@ export default async function AdminEnquiriesPage({
         console.error('Failed to fetch enquiries', e)
     }
 
+    const activeCount = enquiries.filter((e) => !isArchived(e.status)).length
+    const archiveCount = enquiries.filter((e) => isArchived(e.status)).length
+    const visibleEnquiries = enquiries.filter((e) =>
+        tab === 'archive' ? isArchived(e.status) : !isArchived(e.status)
+    )
+
+    const tabHref = (key: string) => {
+        const params = new URLSearchParams()
+        if (key === 'archive') params.set('tab', 'archive')
+        if (q) params.set('q', q)
+        const qs = params.toString()
+        return `/admin/enquiries${qs ? `?${qs}` : ''}`
+    }
+
+    const TABS = [
+        { key: 'active', label: 'Active', count: activeCount },
+        { key: 'archive', label: 'Archive', count: archiveCount },
+    ]
+
     return (
         <div className="space-y-10">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -61,6 +83,7 @@ export default async function AdminEnquiriesPage({
                     <p className="text-muted-foreground font-medium mt-2 text-lg">Job posting requests, general enquiries and listing signups.</p>
                 </div>
                 <form method="get" className="flex items-center gap-2">
+                    {tab === 'archive' && <input type="hidden" name="tab" value="archive" />}
                     <input
                         name="q"
                         defaultValue={q}
@@ -73,9 +96,30 @@ export default async function AdminEnquiriesPage({
                 </form>
             </div>
 
+            <div className="flex items-center gap-2 border-b border-primary/10">
+                {TABS.map((t) => (
+                    <Link
+                        key={t.key}
+                        href={tabHref(t.key)}
+                        className={`flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 -mb-px transition-colors ${
+                            tab === t.key
+                                ? 'border-primary text-primary'
+                                : 'border-transparent text-muted-foreground hover:text-primary'
+                        }`}
+                    >
+                        {t.label}
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-black ${
+                            tab === t.key ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        }`}>
+                            {t.count}
+                        </span>
+                    </Link>
+                ))}
+            </div>
+
             <Card className="border-0 shadow-xl bg-card/60 backdrop-blur-xl rounded-[2rem] overflow-hidden">
                 <CardHeader className="p-8 border-b border-primary/5 bg-white/50">
-                    <CardTitle className="text-2xl font-black">All Enquiries</CardTitle>
+                    <CardTitle className="text-2xl font-black">{tab === 'archive' ? 'Archived Enquiries' : 'Active Enquiries'}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Table>
@@ -90,7 +134,7 @@ export default async function AdminEnquiriesPage({
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {enquiries?.map((enq) => {
+                            {visibleEnquiries.map((enq) => {
                                 const details = enq.details ? stripHtml(enq.details) : ''
                                 return (
                                     <Fragment key={enq.id}>
@@ -129,9 +173,11 @@ export default async function AdminEnquiriesPage({
                                     </Fragment>
                                 )
                             })}
-                            {(!enquiries || enquiries.length === 0) && (
+                            {visibleEnquiries.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground font-medium">No enquiries found.</TableCell>
+                                    <TableCell colSpan={6} className="py-8 text-center text-muted-foreground font-medium">
+                                        {tab === 'archive' ? 'No archived enquiries.' : 'No active enquiries.'}
+                                    </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
