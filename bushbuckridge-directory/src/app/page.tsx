@@ -66,7 +66,7 @@ export default async function Home() {
   try {
     const [bizRes, jobRes, eventRes] = await Promise.all([
       pb.collection('businesses').getList(1, 1, { filter: 'status = "active"' }),
-      pb.collection('jobs').getList(1, 1),
+      pb.collection('jobs').getList(1, 1, { filter: 'status = "published"' }),
       pb.collection('events').getList(1, 1),
     ])
     businessCount = bizRes.totalItems

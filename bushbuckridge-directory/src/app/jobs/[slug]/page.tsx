@@ -16,7 +16,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   let job: any
   try {
-    job = await pb.collection('jobs').getFirstListItem(`slug = "${slug}"`)
+    job = await pb.collection('jobs').getFirstListItem(`slug = "${slug}" && status = "published"`)
   } catch {
     notFound()
   }

@@ -12,7 +12,7 @@ export default async function JobsPage() {
   let jobs: any[] = []
   let error = false
   try {
-    const records = await pb.collection('jobs').getList(1, 50, {})
+    const records = await pb.collection('jobs').getList(1, 50, { filter: 'status = "published"' })
     jobs = records.items
   } catch (e) {
     console.error('Failed to fetch jobs', e)
