@@ -266,6 +266,17 @@ function formatDuration(seconds) {
   return `${mins}m ${secs}s`;
 }
 
+// Captions come from social posts full of emojis and newlines, which Helvetica
+// can't render (empty boxes) and which break table row layout. Strip emoji /
+// pictographs and collapse all whitespace to single spaces.
+function cleanCaption(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function SectionTitle({ children }) {
   return <Text style={styles.sectionTitle}>{children}</Text>;
 }
@@ -637,7 +648,7 @@ function SocialSection({ social }) {
           if (totalEng === 0) return `${c.postsPublished} posts published. Engagement is still accumulating for this period.`;
           return `${c.postsPublished} posts published, earning ${totalEng} total engagements${
             c.topPosts && c.topPosts[0]
-              ? ` — top post: "${c.topPosts[0].caption}" (${c.topPosts[0].engagement} engagements)`
+              ? ` — top post: "${cleanCaption(c.topPosts[0].caption)}" (${c.topPosts[0].engagement} engagements)`
               : ''
           }.`;
         })()}
@@ -653,7 +664,7 @@ function SocialSection({ social }) {
             colWidths="7% 51% 14% 14% 14%"
             columns={[
               { header: '#', key: 'rank' },
-              { header: 'Post', key: 'caption', render: (row) => row.caption || '(no caption)' },
+              { header: 'Post', key: 'caption', render: (row) => cleanCaption(row.caption) || '(no caption)' },
               {
                 header: 'Platform',
                 key: 'platform',
