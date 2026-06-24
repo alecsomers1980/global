@@ -42,19 +42,35 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
             if (!tokenCache.has(cacheKey)) {
                 const { data: acct } = await supabase
                     .from('social_accounts')
-                    .select('access_token')
+                    .select('access_token, refresh_token')
                     .eq('workspace_id', workspaceId)
                     .eq('platform', platform)
                     .limit(1)
                     .maybeSingle()
 
-                if (acct?.access_token) {
-                    tokenCache.set(cacheKey, acct.access_token)
-                } else {
+                if (!acct?.access_token) {
                     // No connected account for this platform — skip silently
                     errors++
                     continue
                 }
+
+                let usableToken = acct.access_token
+                // Google (YouTube) access tokens expire after ~1h, so the stored token is
+                // almost always stale by the time this runs — refresh it first.
+                if (platform === 'youtube' && acct.refresh_token) {
+                    try {
+                        const refreshed = await refreshGoogleAccessToken(acct.refresh_token)
+                        usableToken = refreshed.accessToken
+                        await supabase
+                            .from('social_accounts')
+                            .update({ access_token: refreshed.accessToken, token_expires_at: refreshed.expiresAt } as any)
+                            .eq('workspace_id', workspaceId)
+                            .eq('platform', platform)
+                    } catch (e: any) {
+                        console.error('[fetchEngagement] YouTube token refresh failed:', e?.message || e)
+                    }
+                }
+                tokenCache.set(cacheKey, usableToken)
             }
 
             const accessToken = tokenCache.get(cacheKey)!
@@ -103,23 +119,21 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
 
 async function fetchFacebookMetrics(postId: string, accessToken: string) {
     try {
-        // post_impressions_unique IS the per-post reach. It requires a PAGE access
-        // token with read_insights + pages_read_engagement — the same token we publish
-        // with, so it should already be a page token. If reach comes back null, the
-        // stored token is a user token, not a page token (see fetchEngagement notes).
-        const url = `https://graph.facebook.com/v19.0/${postId}?fields=reactions.summary(total_count),comments.summary(total_count),shares,insights.metric(post_impressions,post_impressions_unique).as(insights)&access_token=${accessToken}`
+        // Post-level impression/reach metrics (post_impressions, post_impressions_unique)
+        // were deprecated by Meta on 2026-06-15 and now return "(#100) The value must be a
+        // valid insights metric" — which previously failed the WHOLE request and zeroed
+        // even likes/comments. We now request only engagement, which still works. Reach
+        // and impressions are no longer available per-post from the Graph API.
+        const url = `https://graph.facebook.com/v19.0/${postId}?fields=reactions.summary(total_count),comments.summary(total_count),shares&access_token=${accessToken}`
         const res = await fetch(url)
         const data = await res.json()
         if (data.error) {
             console.error('[fetchEngagement] FB API error:', data.error)
             return null
         }
-        const insights: any[] = data?.insights?.data || []
-        const impressions = insights.find((m) => m.name === 'post_impressions')?.values?.[0]?.value ?? null
-        const reach = insights.find((m) => m.name === 'post_impressions_unique')?.values?.[0]?.value ?? null
         return {
-            impressions,
-            reach,
+            impressions: null, // deprecated by Meta 2026-06-15
+            reach: null,       // deprecated by Meta 2026-06-15
             likes: data?.reactions?.summary?.total_count ?? null,
             comments: data?.comments?.summary?.total_count ?? null,
             shares: data?.shares?.count ?? null,
@@ -182,5 +196,29 @@ async function fetchInstagramMetrics(mediaId: string, accessToken: string) {
     } catch (err: any) {
         console.error('[fetchEngagement] IG fetch error:', err)
         return null
+    }
+}
+
+// Google (YouTube) access tokens expire after ~1h. Mirror the refresh used by the
+// publish flow so engagement back-fill uses a fresh token instead of the stale one.
+async function refreshGoogleAccessToken(refreshToken: string): Promise<{ accessToken: string; expiresAt: string }> {
+    const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            client_id: process.env.GOOGLE_CLIENT_ID || '',
+            client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token',
+        }).toString(),
+    })
+    const data = await res.json()
+    if (!res.ok || data.error) {
+        throw new Error(data.error_description || data.error || 'Failed to refresh Google token')
+    }
+    const expiresIn: number = data.expires_in || 3600
+    return {
+        accessToken: data.access_token,
+        expiresAt: new Date(Date.now() + expiresIn * 1000).toISOString(),
     }
 }
