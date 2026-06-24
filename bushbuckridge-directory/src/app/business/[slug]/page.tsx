@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import Image from 'next/image'
 import { notFound, redirect } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -139,12 +140,13 @@ export default async function BusinessProfilePage({
                         <Card className="border-0 bg-card/60 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
                             <CardHeader className="p-10 pb-2">
                                 <div className="flex justify-between items-center mb-6">
-                                    <div className="h-24 w-24 rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-white">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
+                                    <div className="relative h-24 w-24 rounded-3xl border-4 border-white shadow-2xl overflow-hidden bg-white">
+                                        <Image
                                             src={logoUrl}
                                             alt={business.name}
-                                            className="h-full w-full object-cover"
+                                            fill
+                                            sizes="96px"
+                                            className="object-cover"
                                         />
                                     </div>
                                     {business.is_verified && (

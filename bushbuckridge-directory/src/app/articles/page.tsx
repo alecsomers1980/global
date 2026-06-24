@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { ArrowRight, Newspaper } from 'lucide-react'
@@ -79,11 +80,12 @@ export default async function ArticlesIndexPage({
                                 <Link key={article.id} href={`/articles/${article.id}`} className="group">
                                     <Card className="border-0 bg-card/80 backdrop-blur-sm shadow-xl rounded-[2rem] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
                                         <div className="relative h-56 overflow-hidden">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={thumbUrl}
                                                 alt={business?.name || 'Spotlight'}
-                                                className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 33vw"
+                                                className="object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                                             <Badge className="absolute top-4 left-4 bg-secondary text-secondary-foreground font-black text-[10px] px-3 py-1 shadow-lg">

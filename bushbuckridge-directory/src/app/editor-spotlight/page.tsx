@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
@@ -32,14 +33,15 @@ function GalleryGrid({
   return (
     <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3">
       {images.map((img, idx) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={img}
-          src={getSrc(img)}
-          alt={`Gallery image ${idx + 1}`}
-          className="aspect-[4/3] w-full rounded-lg object-cover shadow-md"
-          loading="lazy"
-        />
+        <div key={img} className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-md">
+          <Image
+            src={getSrc(img)}
+            alt={`Gallery image ${idx + 1}`}
+            fill
+            sizes="(max-width: 768px) 50vw, 33vw"
+            className="object-cover"
+          />
+        </div>
       ))}
     </div>
   )
@@ -56,12 +58,9 @@ function Signature({
 }) {
   return (
     <div className="mt-16 flex items-center gap-4 border-t border-stone-200 pt-8">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={heroSrc}
-        alt={name}
-        className="h-14 w-14 rounded-full object-cover ring-2 ring-stone-200"
-      />
+      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ring-stone-200">
+        <Image src={heroSrc} alt={name} fill sizes="56px" className="object-cover" />
+      </div>
       <div>
         <p className="text-sm font-semibold text-stone-900">{name}</p>
         {title && <p className="text-sm text-stone-600">{title}</p>}
@@ -108,11 +107,13 @@ export default async function EditorSpotlightPage() {
         <>
           {/* Hero band */}
           <section className="relative flex h-[50vh] min-h-[380px] items-center justify-center overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={heroSrc}
               alt={displayName}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-transparent" />
             <div className="relative z-10 mx-auto max-w-4xl px-4 text-center text-white">
@@ -145,12 +146,9 @@ export default async function EditorSpotlightPage() {
             </Link>
 
             {/* Mobile avatar (hidden on desktop) */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroSrc}
-              alt={displayName}
-              className="mx-auto mb-8 h-24 w-24 rounded-full object-cover shadow ring-2 ring-stone-200 md:hidden"
-            />
+            <div className="relative mx-auto mb-8 h-24 w-24 overflow-hidden rounded-full shadow ring-2 ring-stone-200 md:hidden">
+              <Image src={heroSrc} alt={displayName} fill sizes="96px" className="object-cover" />
+            </div>
 
             {displayQuote && (
               <div className="mb-10 border-l-4 border-stone-200 pl-4 italic text-stone-600">
@@ -174,11 +172,13 @@ export default async function EditorSpotlightPage() {
       {layout === 'hero_top' && (
         <>
           <section className="relative flex h-[60vh] min-h-[500px] items-end overflow-hidden md:h-[75vh]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={heroSrc}
               alt={displayName}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="relative z-10 w-full px-4 pb-12 text-white md:pb-16">
@@ -211,12 +211,9 @@ export default async function EditorSpotlightPage() {
               Back to Home
             </Link>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroSrc}
-              alt={displayName}
-              className="mx-auto mb-8 h-24 w-24 rounded-full object-cover shadow ring-2 ring-stone-200 md:hidden"
-            />
+            <div className="relative mx-auto mb-8 h-24 w-24 overflow-hidden rounded-full shadow ring-2 ring-stone-200 md:hidden">
+              <Image src={heroSrc} alt={displayName} fill sizes="96px" className="object-cover" />
+            </div>
 
             {displayQuote && (
               <div className="mb-10 border-l-4 border-stone-200 pl-4 italic text-stone-600">
@@ -243,13 +240,15 @@ export default async function EditorSpotlightPage() {
           <div className="mx-auto max-w-6xl px-4 pt-12">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {galleryImages.map((img, idx) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={img}
-                  src={getSrc(img)}
-                  alt={`${displayName} image ${idx + 1}`}
-                  className="aspect-[4/3] w-full rounded-lg object-cover shadow-md"
-                />
+                <div key={img} className="relative aspect-[4/3] w-full overflow-hidden rounded-lg shadow-md">
+                  <Image
+                    src={getSrc(img)}
+                    alt={`${displayName} image ${idx + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
               ))}
             </div>
           </div>

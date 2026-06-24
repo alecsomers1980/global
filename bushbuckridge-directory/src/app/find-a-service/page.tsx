@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -223,14 +224,15 @@ export default async function FindServicePage({
                         <div className="grid gap-6">
                             {featuredProBusinesses.map((biz) => (
                                 <Card key={biz.id} className="group flex flex-col lg:flex-row gap-0 overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-primary/20 rounded-[2.5rem]">
-                                    <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
+                                    <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0 min-h-[16rem]">
+                                        <Image
                                             src={biz.logo
                                                 ? `${(process.env.NEXT_PUBLIC_POCKETBASE_URL || '').trim().replace(/\/+$/, '')}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
                                                 : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
                                             alt={biz.name}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            fill
+                                            sizes="(max-width: 1024px) 100vw, 288px"
+                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                         {biz.is_featured && (
@@ -365,14 +367,15 @@ export default async function FindServicePage({
                                 <div className="grid gap-6">
                                     {bizList.map((biz) => (
                                         <Card key={biz.id} className="group flex flex-col lg:flex-row gap-0 overflow-hidden border-0 bg-card/50 backdrop-blur-sm shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-primary/20 rounded-[2.5rem]">
-                                            <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0">
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img
+                                            <div className="lg:w-72 h-64 lg:h-auto bg-muted relative overflow-hidden flex-shrink-0 min-h-[16rem]">
+                                                <Image
                                                     src={biz.logo
                                                         ? `${(process.env.NEXT_PUBLIC_POCKETBASE_URL || '').trim().replace(/\/+$/, '')}/api/files/${biz.collectionId}/${biz.id}/${biz.logo}`
                                                         : 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&q=80&w=800'}
                                                     alt={biz.name}
-                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    fill
+                                                    sizes="(max-width: 1024px) 100vw, 288px"
+                                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                                                 {biz.is_featured && (

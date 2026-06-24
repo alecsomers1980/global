@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/pocketbase/server'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -55,8 +56,7 @@ export default async function ArticleDetailPage({
             {layout === 'hero_top' && (
                 <>
                     <section className="relative w-full h-[60vh] md:h-[75vh] overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={heroImage} alt={business?.name || 'Spotlight'} className="h-full w-full object-cover" />
+                        <Image src={heroImage} alt={business?.name || 'Spotlight'} fill sizes="100vw" className="object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                         <div className="absolute bottom-8 left-8 right-8 md:bottom-12 md:left-12 md:right-12 z-10">
                             <Badge className="bg-secondary text-secondary-foreground font-black text-xs px-4 py-1.5 mb-3 shadow-lg">SPOTLIGHT FEATURE</Badge>
@@ -94,9 +94,8 @@ export default async function ArticleDetailPage({
                                 <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-6">Photo Gallery</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     {galleryImages.slice(1).map((img: string, i: number) => (
-                                        <div key={img} className="rounded-[1.5rem] overflow-hidden h-48 shadow-lg group border-2 border-primary/5">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${i + 1}`} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <div key={img} className="relative rounded-[1.5rem] overflow-hidden h-48 shadow-lg group border-2 border-primary/5">
+                                            <Image src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${i + 1}`} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                         </div>
                                     ))}
                                 </div>
@@ -135,8 +134,7 @@ export default async function ArticleDetailPage({
                                         if (index === 0) {
                                             return (
                                                 <div key={img} className="relative overflow-hidden rounded-[3rem] shadow-2xl md:col-span-2 md:row-span-2 h-72 md:h-[28rem] group border-2 border-primary/5">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} hero`} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                    <Image src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} hero`} fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                                     <div className="absolute bottom-6 left-8 right-8 z-10">
                                                         <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">{business?.name || 'Spotlight'}</h2>
@@ -145,9 +143,8 @@ export default async function ArticleDetailPage({
                                             )
                                         } else {
                                             return (
-                                                <div key={img} className="rounded-[2rem] overflow-hidden h-64 md:h-80 shadow-lg group border-2 border-primary/5">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${index}`} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div key={img} className="relative rounded-[2rem] overflow-hidden h-64 md:h-80 shadow-lg group border-2 border-primary/5">
+                                                    <Image src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${index}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                                 </div>
                                             )
                                         }
@@ -200,8 +197,7 @@ export default async function ArticleDetailPage({
 
                     <Card className="border-0 bg-card/80 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden">
                         <div className="relative h-72 md:h-96 overflow-hidden">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={heroImage} alt={business?.name || 'Spotlight'} className="h-full w-full object-cover" />
+                            <Image src={heroImage} alt={business?.name || 'Spotlight'} fill sizes="(max-width: 768px) 100vw, 56rem" className="object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                             <div className="absolute bottom-6 left-8 right-8">
                                 <Badge className="bg-secondary text-secondary-foreground font-black text-xs px-4 py-1.5 mb-3 shadow-lg">SPOTLIGHT FEATURE</Badge>
@@ -234,9 +230,8 @@ export default async function ArticleDetailPage({
                                     <h3 className="text-sm font-black text-primary/30 uppercase tracking-[0.2em] mb-6">Photo Gallery</h3>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                         {galleryImages.slice(1).map((img: string, i: number) => (
-                                            <div key={img} className="rounded-[1.5rem] overflow-hidden h-48 shadow-lg group border-2 border-primary/5">
-                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                <img src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${i + 1}`} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <div key={img} className="relative rounded-[1.5rem] overflow-hidden h-48 shadow-lg group border-2 border-primary/5">
+                                                <Image src={fileUrl(img)} alt={`${business?.name || 'Spotlight'} gallery image ${i + 1}`} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                             </div>
                                         ))}
                                     </div>

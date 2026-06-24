@@ -12,6 +12,12 @@ import SecondaryHeader from '@/components/SecondaryHeader'
 export default function EnquiriesPage() {
     async function submitEnquiry(formData: FormData) {
         'use server'
+        const { rateLimit, clientIp } = await import('@/lib/rate-limit')
+        const limit = rateLimit(`enquiry:${await clientIp()}`)
+        if (!limit.ok) {
+            redirect('/enquiries?error=true')
+        }
+
         const contactPerson = String(formData.get('name') || '')
         const phone = String(formData.get('phone') || '')
         const email = String(formData.get('email') || '')

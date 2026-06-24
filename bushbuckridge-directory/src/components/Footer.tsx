@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 export default function Footer() {
@@ -12,7 +13,7 @@ export default function Footer() {
                     <div className="space-y-6">
                         <div className="flex flex-col items-start gap-4">
                             <div className="bg-white p-4 rounded-3xl shadow-sm inline-block">
-                                <img src="/logo.png" alt="DBIB Logo" className="h-20 w-auto object-contain" />
+                                <Image src="/logo.png" alt="DBIB Logo" width={500} height={500} className="h-20 w-auto object-contain" />
                             </div>
                         </div>
                         <p className="text-white/50 text-base leading-relaxed max-w-xs">

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -106,11 +107,13 @@ export default async function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 text-white">
         {/* Optimized Background Image */}
         <div className="absolute inset-0 z-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/banner.webp"
             alt="Bushbuckridge Landscape"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
           />
           {/* Dark overlay for text readability and to soften any upscaling artifacts */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70" />
@@ -216,11 +219,12 @@ export default async function Home() {
               <div className="relative">
                 <div className="absolute -inset-4 bg-secondary/20 rounded-full blur-2xl" />
                 <div className="relative h-72 w-72 md:h-80 md:w-80 rounded-full overflow-hidden border-4 border-secondary/40 shadow-2xl bg-white/5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={editorSpotlight.image ? `${process.env.NEXT_PUBLIC_POCKETBASE_URL}/api/files/${editorSpotlight.collectionId}/${editorSpotlight.id}/${editorSpotlight.image}` : '/ophelia-mnisi.jpg'}
                     alt={editorSpotlight.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 288px, 320px"
+                    className="object-cover"
                   />
                 </div>
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2">
@@ -388,8 +392,7 @@ export default async function Home() {
               return (
                 <Link href={`/articles/${hero.id}`} className="group block mb-10">
                   <div className="relative h-80 md:h-[28rem] rounded-[3rem] overflow-hidden shadow-2xl border border-primary/5">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={heroThumb} alt={heroBiz?.name || 'Spotlight'} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <Image src={heroThumb} alt={heroBiz?.name || 'Spotlight'} fill sizes="(max-width: 1024px) 100vw, 66vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                     <div className="absolute bottom-8 left-8 right-8">
                       <Badge className="bg-secondary text-secondary-foreground font-black text-xs px-4 py-1.5 mb-4 shadow-lg">LATEST SPOTLIGHT</Badge>
@@ -416,8 +419,7 @@ export default async function Home() {
                     <Link key={article.id} href={`/articles/${article.id}`} className="group">
                       <div className="bg-card rounded-[2rem] shadow-xl overflow-hidden border border-border/50 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
                         <div className="relative h-44 overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={thumb} alt={biz?.name || 'Spotlight'} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <Image src={thumb} alt={biz?.name || 'Spotlight'} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover group-hover:scale-110 transition-transform duration-700" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                           <Badge className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground font-black text-[10px] px-3 py-1 shadow-lg">SPOTLIGHT</Badge>
                         </div>

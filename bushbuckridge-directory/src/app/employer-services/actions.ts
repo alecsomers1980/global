@@ -2,12 +2,18 @@
 
 import { createServiceClient } from '@/utils/pocketbase/service'
 import { redirect } from 'next/navigation'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 function slugify(s: string) {
     return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 }
 
 export async function submitJobPosting(formData: FormData) {
+    const limit = rateLimit(`job-posting:${await clientIp()}`)
+    if (!limit.ok) {
+        throw new Error('Too many submissions. Please try again in a few minutes.')
+    }
+
     const title = String(formData.get('title') || '')
     if (!formData.get('positions')) formData.delete('positions')
     formData.set('slug', `${slugify(title) || 'job'}-${Math.random().toString(36).slice(2, 7)}`)

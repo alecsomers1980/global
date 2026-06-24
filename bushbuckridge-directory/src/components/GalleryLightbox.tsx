@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import Image from 'next/image'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface GalleryLightboxProps {
@@ -63,11 +64,12 @@ export default function GalleryLightbox({ images, businessName }: GalleryLightbo
         className="relative h-80 w-full cursor-pointer overflow-hidden rounded-[2rem] group border-2 border-primary/5 shadow-lg"
         onClick={() => openLightbox(activeIndex)}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={images[activeIndex]}
           alt={`${businessName} - Image ${activeIndex + 1}`}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, 800px"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
         <div className="absolute bottom-4 right-4 rounded-full bg-white/80 px-3 py-1.5 text-sm font-bold text-gray-800 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100 shadow-lg">
@@ -88,11 +90,12 @@ export default function GalleryLightbox({ images, businessName }: GalleryLightbo
                   : 'ring-1 ring-gray-200 opacity-70 hover:opacity-100 hover:scale-105'
               }`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={src}
                 alt={`${businessName} - Thumbnail ${index + 1}`}
-                className="h-full w-full object-cover"
+                fill
+                sizes="80px"
+                className="object-cover"
               />
             </button>
           ))}
