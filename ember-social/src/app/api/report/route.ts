@@ -11,7 +11,7 @@ import crypto from 'crypto'
  * The workspace is derived from the key (same scheme as /api/trigger), so no
  * workspace id in the URL and no separate report secret are needed.
  *
- * Returns { current: { totals, perPlatform, postsPublished }, previous: {...} }
+ * Returns { current: { totals, perPlatform, postsPublished, topPosts }, previous: {...} }
  */
 export async function GET(req: Request) {
   const authHeader = req.headers.get('Authorization')
@@ -59,7 +59,7 @@ export async function GET(req: Request) {
   const { data: rows, error } = await supabase
     .from('post_results')
     .select(
-      'platform, platform_post_id, impressions, reach, likes, comments, shares, fetched_at, posts!inner(id, scheduled_at)'
+      'platform, platform_post_id, impressions, reach, likes, comments, shares, fetched_at, posts!inner(id, scheduled_at, content)'
     )
     .eq('posts.workspace_id', workspaceId)
     .order('fetched_at', { ascending: false })
@@ -89,6 +89,7 @@ function emptyWindowResult() {
     totals: { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0 },
     perPlatform: {} as Record<string, any>,
     postsPublished: 0,
+    topPosts: [],
   }
 }
 
@@ -135,9 +136,70 @@ function aggregateInWindow(rows: any[], start: string, end: string) {
     if (postId) postsSeen.add(postId)
   }
 
+  // Build topPosts aggregation per unique post
+  const postAgg: Record<string, {
+    likes: number
+    comments: number
+    shares: number
+    platforms: string[]
+    caption: string
+  }> = {}
+
+  for (const row of rows) {
+    const scheduledAt = row.posts?.scheduled_at
+    if (!scheduledAt) continue
+    if (scheduledAt < start || scheduledAt >= end) continue
+
+    const postId = row.posts?.id
+    if (!postId) continue
+
+    const likes = row.likes || 0
+    const comments = row.comments || 0
+    const shares = row.shares || 0
+    const platform = row.platform || 'unknown'
+
+    if (!postAgg[postId]) {
+      const content = row.posts?.content
+      let caption = ''
+      if (content != null && content !== undefined) {
+        caption = String(content)
+        if (caption.length > 90) {
+          caption = caption.slice(0, 90) + '…'
+        }
+      }
+      postAgg[postId] = {
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        platforms: [],
+        caption,
+      }
+    }
+
+    postAgg[postId].likes += likes
+    postAgg[postId].comments += comments
+    postAgg[postId].shares += shares
+    if (!postAgg[postId].platforms.includes(platform)) {
+      postAgg[postId].platforms.push(platform)
+    }
+  }
+
+  const topPosts = Object.entries(postAgg)
+    .map(([postId, data]) => ({
+      caption: data.caption,
+      platforms: data.platforms,
+      likes: data.likes,
+      comments: data.comments,
+      shares: data.shares,
+      engagement: data.likes + data.comments + data.shares,
+    }))
+    .sort((a, b) => b.engagement - a.engagement)
+    .slice(0, 5)
+
   return {
     totals,
     perPlatform,
     postsPublished: postsSeen.size,
+    topPosts,
   }
 }

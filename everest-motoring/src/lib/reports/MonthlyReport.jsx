@@ -604,7 +604,7 @@ function SocialSection({ social }) {
       <View>
         <SectionTitle>Social Media</SectionTitle>
         <MutedPanel>
-          Social media data is not yet available for this period.
+          Social media is not connected yet for this period.
         </MutedPanel>
       </View>
     );
@@ -616,6 +616,7 @@ function SocialSection({ social }) {
   const pt = p.totals || {};
 
   const platforms = buildPlatformRows(c.perPlatform, p.perPlatform);
+  const totalEng = (ct.likes || 0) + (ct.comments || 0) + (ct.shares || 0);
 
   return (
     <View>
@@ -623,31 +624,77 @@ function SocialSection({ social }) {
 
       {/* Headline tiles */}
       <View style={styles.statRow}>
-        <StatTile label="Total Reach" value={ct.reach} prevValue={pt.reach} />
-        <StatTile label="Engagement" value={(ct.likes || 0) + (ct.comments || 0) + (ct.shares || 0)} prevValue={(pt.likes || 0) + (pt.comments || 0) + (pt.shares || 0)} />
         <StatTile label="Posts Published" value={c.postsPublished} prevValue={p.postsPublished} />
-        <StatTile label="Impressions" value={ct.impressions} prevValue={pt.impressions} />
+        <StatTile label="Total Engagement" value={totalEng} prevValue={(pt.likes || 0) + (pt.comments || 0) + (pt.shares || 0)} />
+        <StatTile label="Shares" value={ct.shares} prevValue={pt.shares} />
+        <StatTile label="Comments" value={ct.comments} prevValue={pt.comments} />
       </View>
+
+      {/* Commentary */}
+      <Text style={{ fontSize: 9, color: '#555', marginBottom: 8, fontStyle: 'italic' }}>
+        {(() => {
+          if ((c.postsPublished || 0) === 0) return "No posts were published in this period.";
+          if (totalEng === 0) return `${c.postsPublished} posts published. Engagement is still accumulating for this period.`;
+          return `${c.postsPublished} posts published, earning ${totalEng} total engagements${
+            c.topPosts && c.topPosts[0]
+              ? ` — top post: "${c.topPosts[0].caption}" (${c.topPosts[0].engagement} engagements)`
+              : ''
+          }.`;
+        })()}
+      </Text>
+
+      {/* Top posts */}
+      {c.topPosts && c.topPosts.length > 0 && (
+        <View>
+          <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: BRAND_BLACK, marginTop: 8, marginBottom: 4 }}>
+            Top Posts This Month
+          </Text>
+          <DataTable
+            colWidths="7% 51% 14% 14% 14%"
+            columns={[
+              { header: '#', key: 'rank' },
+              { header: 'Post', key: 'caption', render: (row) => row.caption || '(no caption)' },
+              {
+                header: 'Platform',
+                key: 'platform',
+                render: (row) =>
+                  (row.platforms || [])
+                    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+                    .join(', '),
+              },
+              { header: 'Shares', key: 'shares', align: 'right' },
+              { header: 'Eng.', key: 'engagement', align: 'right' },
+            ]}
+            rows={c.topPosts.map((tp, i) => ({
+              rank: String(i + 1),
+              caption: tp.caption,
+              platforms: tp.platforms,
+              shares: tp.shares,
+              engagement: tp.engagement,
+            }))}
+          />
+        </View>
+      )}
 
       {/* Per-platform table */}
       {platforms.length > 0 && (
         <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
+          <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
             By Platform
           </Text>
           <DataTable
             columns={[
-              { header: "Platform", key: "name" },
-              { header: "Reach", key: "reach", align: "right" },
-              { header: "Engagement", key: "engagement", align: "right" },
+              { header: 'Platform', key: 'name' },
+              { header: 'Shares', key: 'shares', align: 'right' },
+              { header: 'Engagement', key: 'engagement', align: 'right' },
               {
-                header: "Δ",
-                key: "delta",
-                align: "right",
+                header: 'Δ',
+                key: 'delta',
+                align: 'right',
                 render: (row) => {
-                  if (!row.pEng) return row.cEng > 0 ? "NEW" : "—";
+                  if (!row.pEng) return row.cEng > 0 ? 'NEW' : '—';
                   const pct = ((row.cEng - row.pEng) / row.pEng) * 100;
-                  return `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`;
+                  return `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`;
                 },
               },
             ]}
@@ -656,6 +703,10 @@ function SocialSection({ social }) {
           />
         </View>
       )}
+
+      <Text style={{ fontSize: 7, color: '#9ca3af', marginTop: 6 }}>
+        Note: per-post reach &amp; impressions are no longer provided by Meta (platform change, June 2026).
+      </Text>
     </View>
   );
 }
@@ -672,7 +723,7 @@ function buildPlatformRows(current, previous) {
     const pEng = (pp.likes || 0) + (pp.comments || 0) + (pp.shares || 0);
     return {
       name: name.charAt(0).toUpperCase() + name.slice(1),
-      reach: formatNumber(cc.reach),
+      shares: formatNumber(cc.shares),
       engagement: formatNumber(cEng),
       cEng,
       pEng,
