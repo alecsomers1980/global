@@ -65,6 +65,8 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
                 metrics = await fetchFacebookMetrics(row.platform_post_id, accessToken)
             } else if (platform === 'instagram') {
                 metrics = await fetchInstagramMetrics(row.platform_post_id, accessToken)
+            } else if (platform === 'youtube') {
+                metrics = await fetchYouTubeMetrics(row.platform_post_id, accessToken)
             }
 
             // For unsupported platforms, leave metrics null and update fetched_at to stop retries
@@ -101,6 +103,10 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
 
 async function fetchFacebookMetrics(postId: string, accessToken: string) {
     try {
+        // post_impressions_unique IS the per-post reach. It requires a PAGE access
+        // token with read_insights + pages_read_engagement — the same token we publish
+        // with, so it should already be a page token. If reach comes back null, the
+        // stored token is a user token, not a page token (see fetchEngagement notes).
         const url = `https://graph.facebook.com/v19.0/${postId}?fields=reactions.summary(total_count),comments.summary(total_count),shares,insights.metric(post_impressions,post_impressions_unique).as(insights)&access_token=${accessToken}`
         const res = await fetch(url)
         const data = await res.json()
@@ -108,16 +114,49 @@ async function fetchFacebookMetrics(postId: string, accessToken: string) {
             console.error('[fetchEngagement] FB API error:', data.error)
             return null
         }
-        const impressions = data?.insights?.data?.[0]?.values?.[0]?.value || null
+        const insights: any[] = data?.insights?.data || []
+        const impressions = insights.find((m) => m.name === 'post_impressions')?.values?.[0]?.value ?? null
+        const reach = insights.find((m) => m.name === 'post_impressions_unique')?.values?.[0]?.value ?? null
         return {
             impressions,
-            reach: null, // FB doesn't expose reach here without page-level token
+            reach,
             likes: data?.reactions?.summary?.total_count ?? null,
             comments: data?.comments?.summary?.total_count ?? null,
             shares: data?.shares?.count ?? null,
         }
     } catch (err: any) {
         console.error('[fetchEngagement] FB fetch error:', err)
+        return null
+    }
+}
+
+// YouTube public statistics for a video. platform_post_id is the video id.
+// Uses the connected channel's OAuth token; videoCount/viewCount come from the
+// public statistics part. YouTube has no "reach" concept, so we map views ->
+// impressions and leave reach null. shares are not exposed by the Data API.
+async function fetchYouTubeMetrics(videoId: string, accessToken: string) {
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}`
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } })
+        const data = await res.json()
+        if (data.error) {
+            console.error('[fetchEngagement] YouTube API error:', data.error)
+            return null
+        }
+        const stats = data?.items?.[0]?.statistics
+        if (!stats) {
+            console.error('[fetchEngagement] YouTube: no statistics for video', videoId)
+            return null
+        }
+        return {
+            impressions: stats.viewCount != null ? Number(stats.viewCount) : null,
+            reach: null,
+            likes: stats.likeCount != null ? Number(stats.likeCount) : null,
+            comments: stats.commentCount != null ? Number(stats.commentCount) : null,
+            shares: null,
+        }
+    } catch (err: any) {
+        console.error('[fetchEngagement] YouTube fetch error:', err)
         return null
     }
 }
