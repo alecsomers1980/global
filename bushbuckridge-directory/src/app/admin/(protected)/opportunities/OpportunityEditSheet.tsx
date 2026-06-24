@@ -238,6 +238,7 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
           <div className="grid md:grid-cols-2 gap-6 pt-2 border-t border-primary/5">
             <ImageUploadField
               label="Main Photo"
+              hint="Landscape, recommended 1200 × 675 px (JPG). Max 2MB."
               files={imageFiles}
               onFilesChange={setImageFiles}
               existing={keptImage ? [fileUrl(keptImage)] : []}
@@ -247,7 +248,7 @@ export default function OpportunityEditSheet({ open, onClose, opportunity }: Pro
               label="Gallery"
               multiple
               maxFiles={10}
-              hint="Up to 10 images."
+              hint="Landscape, recommended 1200 × 800 px (JPG). Up to 10 images."
               files={galleryFiles}
               onFilesChange={setGalleryFiles}
               existing={keptGallery.map((f) => fileUrl(f))}

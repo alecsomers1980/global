@@ -140,7 +140,7 @@ export default function JobPostingForm() {
             <div className="grid md:grid-cols-2 gap-6 pt-2 border-t">
                 <ImageUploadField
                     label="Main Photo"
-                    hint="Optional — a logo or cover image for the listing."
+                    hint="Optional. Landscape, recommended 1200 × 675 px (JPG). Max 2MB."
                     files={imageFiles}
                     onFilesChange={setImageFiles}
                 />
@@ -148,7 +148,7 @@ export default function JobPostingForm() {
                     label="Gallery"
                     multiple
                     maxFiles={5}
-                    hint="Optional — up to 5 images."
+                    hint="Optional. Landscape, recommended 1200 × 800 px (JPG). Up to 5 images."
                     files={galleryFiles}
                     onFilesChange={setGalleryFiles}
                 />

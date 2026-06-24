@@ -264,6 +264,7 @@ export default function BusinessEditSheet({ open, onClose, business }: Props) {
           <div className="grid md:grid-cols-2 gap-6 pt-2 border-t border-primary/5">
             <ImageUploadField
               label="Logo"
+              hint="Square, recommended 400 × 400 px (PNG, transparent background). Max 2MB."
               files={logoFiles}
               onFilesChange={setLogoFiles}
               existing={keptLogo ? [fileUrl(keptLogo)] : []}
@@ -271,6 +272,7 @@ export default function BusinessEditSheet({ open, onClose, business }: Props) {
             />
             <ImageUploadField
               label="Cover / Banner Image"
+              hint="Landscape, recommended 1600 × 600 px (JPG). Max 2MB."
               files={coverFiles}
               onFilesChange={setCoverFiles}
               existing={keptCover ? [fileUrl(keptCover)] : []}
@@ -281,7 +283,7 @@ export default function BusinessEditSheet({ open, onClose, business }: Props) {
             label="Photo Gallery"
             multiple
             maxFiles={10}
-            hint="Up to 10 images."
+            hint="Landscape, recommended 1200 × 800 px (JPG). Up to 10 images."
             files={galleryFiles}
             onFilesChange={setGalleryFiles}
             existing={keptGallery.map((f) => fileUrl(f))}

@@ -155,6 +155,7 @@ export default function SettingsForm({ business, pbUrl }: { business: any; pbUrl
           </div>
           <ImageUploadField
             label="Business Logo"
+            hint="Square, recommended 400 × 400 px (PNG, transparent background). Max 2MB."
             files={logoFiles}
             onFilesChange={setLogoFiles}
             existing={keptLogo ? [fileUrl(keptLogo)] : []}
@@ -187,6 +188,7 @@ export default function SettingsForm({ business, pbUrl }: { business: any; pbUrl
         <CardContent className="p-8 space-y-6">
           <ImageUploadField
             label="Cover / Banner Image"
+            hint="Landscape, recommended 1600 × 600 px (JPG). Max 2MB."
             files={coverFiles}
             onFilesChange={setCoverFiles}
             existing={keptCover ? [fileUrl(keptCover)] : []}
@@ -197,7 +199,7 @@ export default function SettingsForm({ business, pbUrl }: { business: any; pbUrl
             label={`Photo Gallery (max ${galleryMax || 3})`}
             multiple
             maxFiles={galleryMax || 3}
-            hint={isPremium ? 'Up to 10 images.' : 'Up to 3 images.'}
+            hint={`Landscape, recommended 1200 × 800 px (JPG). Up to ${galleryMax || 3} images.`}
             files={galleryFiles}
             onFilesChange={setGalleryFiles}
             existing={keptGallery.map((f) => fileUrl(f))}
