@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     const redirectUri = `${baseUrl}/api/auth/facebook/callback`
 
     // Request permissions for pages and Instagram Business
-    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_manage_posts,pages_manage_engagement'
+    // read_insights is required for post_impressions / post_impressions_unique (reach)
+    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_metadata,pages_manage_posts,pages_manage_engagement,read_insights'
 
     let authUrl = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${workspaceId}&scope=${scope}`
 
