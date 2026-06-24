@@ -34,6 +34,7 @@ if (!KIE_KEY) { console.error('KIE_API_KEY missing in .env.local'); process.exit
 
 const BUCKET = 'campaign-media'
 const GENERATE_AUDIO = true   // engine/dust ambience; flip to false to add your own music in CapCut
+const ASPECT = process.env.ASPECT || '16:9'   // set ASPECT=9:16 for the vertical IG/TikTok cut
 
 // Reference stills → @Image 1..3 in the prompt (order matters).
 const REFS = ['video-shot-1.jpg', 'video-shot-4.jpg', 'video-shot-3.jpg']
@@ -45,6 +46,11 @@ Shot 1: The silver Toyota Land Cruiser 79 single-cab bakkie from @Image 1 accele
 Shot 2: The silver Toyota Hilux Raider double-cab from @Image 2 races along a bushveld dirt two-track, dynamic side tracking shot keeping pace with the moving truck, low sun strobing through acacia trees, a long trail of dust billowing behind, sense of speed and freedom.
 
 Shot 3: The black Land Rover Discovery 4 from @Image 3 drives up and rolls to a stop on a clifftop overlooking the vast misty Blyde River Canyon at sunset, the camera glides slowly past the vehicle to reveal the enormous canyon and escarpment, settling dust catching the golden light. End on the sweeping vista.`
+
+// Vertical cut: swap the widescreen framing language for tall 9:16 social-reel framing.
+const FINAL_PROMPT = ASPECT === '9:16'
+    ? PROMPT.replace('anamorphic widescreen', 'vertical 9:16 portrait framing for Instagram Reels and TikTok, tall composition, subject centred')
+    : PROMPT
 
 async function uploadStill(name) {
     const bytes = readFileSync(resolve('public/preview', name))
@@ -62,11 +68,11 @@ async function createTask(imageUrls) {
     const body = {
         model: 'bytedance/seedance-2-mini',
         input: {
-            prompt: PROMPT,
+            prompt: FINAL_PROMPT,
             reference_image_urls: imageUrls,
             generate_audio: GENERATE_AUDIO,
             resolution: '720p',
-            aspect_ratio: '16:9',
+            aspect_ratio: ASPECT,
             duration: 15,
             web_search: false,
             nsfw_checker: true,
@@ -118,6 +124,6 @@ console.log(`Render done: ${videoUrl}`)
 console.log('Downloading...')
 const vr = await fetch(videoUrl)
 const buf = Buffer.from(await vr.arrayBuffer())
-const out = resolve('public/preview/everest-reel-seedance.mp4')
+const out = resolve(`public/preview/everest-reel-seedance${ASPECT === '9:16' ? '-vertical' : ''}.mp4`)
 writeFileSync(out, buf)
 console.log(`\nSaved ${out} (${(buf.length / 1024 / 1024).toFixed(1)} MB)`)

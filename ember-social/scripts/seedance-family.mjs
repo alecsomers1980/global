@@ -30,6 +30,7 @@ if (!KIE_KEY || !OPENAI_KEY) { console.error('KIE_API_KEY and OPENAI_API_KEY req
 
 const BUCKET = 'campaign-media'
 const GENERATE_AUDIO = true
+const ASPECT = process.env.ASPECT || '16:9'   // set ASPECT=9:16 for the vertical IG/TikTok cut
 
 // Approved reference stills (scene 2 uses the corrected LEFT-side still).
 const REF_STILLS = ['family-shot-1.jpg', 'family-shot-2b.jpg', 'family-shot-3.jpg']
@@ -54,6 +55,11 @@ Shot 2: The maroon Hyundai Tucson from @Image 2 drives along a scenic green Pano
 
 Shot 3: The maroon Hyundai Tucson from @Image 3 is parked at a clifftop picnic lookout in warm afternoon light, two adults and a small child step out and walk together toward the edge to take in the vast misty valley, the camera glides slowly past the vehicle to reveal the sweeping view. Warm, joyful, end on the vista.`
 
+// Vertical cut: swap widescreen framing for tall 9:16 social-reel framing.
+const FINAL_PROMPT = ASPECT === '9:16'
+    ? PROMPT.replace('anamorphic widescreen', 'vertical 9:16 portrait framing for Instagram Reels and TikTok, tall composition, subject centred')
+    : PROMPT
+
 async function upload(name, bytes) {
     const path = `seedance-refs/${Date.now()}-${name}`
     const r = await fetch(`${SB_URL}/storage/v1/object/${BUCKET}/${path}`, {
@@ -71,7 +77,7 @@ async function createTask(urls) {
         headers: { Authorization: `Bearer ${KIE_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
             model: 'bytedance/seedance-2-mini',
-            input: { prompt: PROMPT, reference_image_urls: urls, generate_audio: GENERATE_AUDIO, resolution: '720p', aspect_ratio: '16:9', duration: 15, web_search: false, nsfw_checker: true },
+            input: { prompt: FINAL_PROMPT, reference_image_urls: urls, generate_audio: GENERATE_AUDIO, resolution: '720p', aspect_ratio: ASPECT, duration: 15, web_search: false, nsfw_checker: true },
         }),
     })
     const data = await r.json()
@@ -97,9 +103,13 @@ async function poll(taskId) {
     throw new Error('timed out')
 }
 
-console.log('Regenerating departure still (boot closed, door entry)...')
-try { writeFileSync(resolve('public/preview/family-shot-1.jpg'), await gen(SHOT1_PROMPT)) }
-catch (e) { console.log(`  still-gen unavailable (${e.message.slice(0, 70)}) — using existing family-shot-1.jpg; door fix relies on the prompt`) }
+if (ASPECT === '9:16') {
+    console.log('Vertical cut: reusing existing reference stills (no still regen).')
+} else {
+    console.log('Regenerating departure still (boot closed, door entry)...')
+    try { writeFileSync(resolve('public/preview/family-shot-1.jpg'), await gen(SHOT1_PROMPT)) }
+    catch (e) { console.log(`  still-gen unavailable (${e.message.slice(0, 70)}) — using existing family-shot-1.jpg; door fix relies on the prompt`) }
+}
 
 console.log('Uploading reference stills...')
 const urls = []
@@ -119,6 +129,6 @@ const videoUrl = await poll(taskId)
 console.log(`Render done: ${videoUrl}`)
 
 const buf = Buffer.from(await (await fetch(videoUrl)).arrayBuffer())
-const out = resolve('public/preview/everest-reel-family.mp4')
+const out = resolve(`public/preview/everest-reel-family${ASPECT === '9:16' ? '-vertical' : ''}.mp4`)
 writeFileSync(out, buf)
 console.log(`\nSaved ${out} (${(buf.length / 1024 / 1024).toFixed(1)} MB)`)

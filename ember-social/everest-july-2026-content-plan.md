@@ -124,3 +124,33 @@ Do **not** reuse the July two. Each month gets fresh lifestyle films from the co
 > 📞 013 854 0600
 > 🌐 everestmotoring.co.za
 > 📍 White River, Mpumalanga
+
+---
+
+## 6. New Content Angles — to layer into August onward
+
+Beyond the three pillars we run now (lifestyle · maintenance/tips · spotlight), these five angles add variety and — importantly for a dealership — drive enquiries and trust. Rotate them in; don't replace the lifestyle spine.
+
+| Angle | What it is | Best format | Example post |
+|---|---|---|---|
+| **Finance / affordability** | The "From R—/month" hook — the single biggest motivator for car buyers. | `studio` or `spec_card` with a clean price-from line; **carousel** (car → terms → CTA) | *"Drive it from R3,499 p/m."* — Polo on studio black, finance line, "T&Cs apply, on approved credit." |
+| **Comparison / "which one"** | Two cars side by side, let the audience self-select. High comment/engagement. | `multi_car` (2-up) or **carousel** | *"Family or fun? Tucson vs Swift — which is you?"* |
+| **Just-arrived / Just-sold** | Freshness + urgency signals. "Just arrived" = newness; "Just sold" = social proof + FOMO. | Single `lifestyle_hero` / `studio`, or **Story** | *"JUST IN: 2021 Ford Ranger. Won't last long."* / *"SOLD in 3 days. Yours next?"* |
+| **Trust / dealership** | Why buy from Everest — warranty, AA / DEKRA check, trade-ins welcome, finance arranged. | `tip_card`-style card or **carousel** (one promise per slide) | *"Every Everest car: checked, warrantied, finance-ready."* |
+| **Seasonal / local** | White River & lowveld hooks tied to the calendar — Kruger season, long weekends, school holidays. | `lifestyle_hero` + **vertical reel** | *"Long weekend ahead — where are you headed?"* (Panorama Route) |
+
+> **Conversion note:** Finance and Just-arrived convert hardest for a dealership — give them a recurring slot. Trust posts are the quiet workhorses that close hesitant buyers.
+
+---
+
+## 7. Format & Platform Variations — getting more from each idea
+
+How we turn one idea into several posts and reach all three platforms (Facebook · Instagram · TikTok).
+
+- **Vertical (9:16) reels — biggest reach win.** Our brand films are 16:9 (great on Facebook). For **Instagram Reels and TikTok**, a native 9:16 cut roughly triples reach. *Both July reels now have a 9:16 vertical version (native re-render, 720p, branded vertical outro) — see the review link.*
+- **Carousels — best organic reach on Instagram right now.** Build from a single car's photos: slide 1 hook → slides 2-4 detail shots (interior, boot, dash) → final slide price/CTA. Also ideal for the Trust angle (one promise per slide).
+- **Static → motion (free).** Turn any static spotlight into a 5-sec Ken-Burns clip with our `ffmpeg` pipeline — no Seedance cost — for cheap TikTok/Reels volume.
+- **Caption A/B.** Same image, two hooks (emotional vs. price-led) to learn what the audience responds to.
+- **Recurring named slots** train the audience to expect content: *Feature Friday*, *Just Arrived*, *Tip Tuesday*, *Sunday Drive*.
+
+**Aspect-ratio cheat sheet:** static feed **4:5** (FB + IG) · reels/stories/TikTok **9:16** · carousels **4:5 or 1:1** · landscape brand films **16:9** (FB feed, IG feed video).
