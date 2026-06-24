@@ -72,10 +72,14 @@ ff(['-loop', '1', '-i', endcardPng,
 
 const offset = (dur - XF).toFixed(2)
 console.log('Crossfading reel into outro...')
+// Web-streaming friendly: 720p, capped bitrate, faststart (moov atom up front) so
+// the clip starts playing in the client review link without a full download.
 ff(['-i', SRC, '-i', endClip,
     '-filter_complex',
     `[0:v][1:v]xfade=transition=fade:duration=${XF}:offset=${offset}[v];[0:a][1:a]acrossfade=d=${XF}[a]`,
     '-map', '[v]', '-map', '[a]',
-    '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-c:a', 'aac', '-pix_fmt', 'yuv420p', OUT])
+    '-c:v', 'libx264', '-profile:v', 'main', '-level', '4.0', '-preset', 'medium',
+    '-crf', '23', '-maxrate', '2500k', '-bufsize', '5000k',
+    '-c:a', 'aac', '-b:a', '128k', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', OUT])
 
 console.log(`\nDone → ${OUT}`)
