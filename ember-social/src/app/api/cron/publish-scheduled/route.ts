@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { publishPost } from '@/lib/publish'
 import { fetchEngagementSnapshot } from '@/lib/engagement/fetchEngagement'
+import { recordFollowerSnapshots } from '@/lib/followers/recordSnapshots'
 
 export const maxDuration = 300;
 
@@ -98,11 +99,20 @@ export async function GET(req: Request) {
             console.error('publish-scheduled: engagement fetch error:', err)
         }
 
+        // Record a daily follower-count snapshot — best-effort, self-throttled to ~1/day
+        let followerSummary: any = { inserted: 0, errors: 0 }
+        try {
+            followerSummary = await recordFollowerSnapshots(supabase)
+        } catch (err: any) {
+            console.error('publish-scheduled: follower snapshot error:', err)
+        }
+
         return NextResponse.json({
             success: true,
             published: allPosts.length,
             results,
-            engagement: engagementSummary
+            engagement: engagementSummary,
+            followers: followerSummary
         })
     } catch (error: any) {
         console.error('publish-scheduled cron error:', error)
