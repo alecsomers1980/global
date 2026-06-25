@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -88,11 +89,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-gray-50">
       {/* Desktop Sidebar */}
       <aside className="hidden w-64 flex-col border-r border-gray-200 bg-white lg:flex">
-        <div className="flex h-16 items-center gap-3 border-b border-gray-100 px-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-teal text-sm font-bold text-white">
-            E
-          </div>
-          <span className="font-bold text-brand-navy">Exec-Air Admin</span>
+        <div className="flex h-16 items-center gap-2 border-b border-gray-100 px-6">
+          <Image
+            src="/images/logos/Exec-Air_Logo_2023.png"
+            alt="Exec-Air"
+            width={140}
+            height={42}
+            className="h-11 w-auto"
+            priority
+          />
+          <span className="font-bold text-brand-navy">Admin</span>
         </div>
         {sidebar}
       </aside>
@@ -103,7 +109,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <aside className="absolute left-0 top-0 z-50 flex h-full w-64 flex-col bg-white shadow-2xl animate-[fade-in-up_0.2s_ease-out]">
             <div className="flex h-16 items-center justify-between border-b border-gray-100 px-6">
-              <span className="font-bold text-brand-navy">Exec-Air Admin</span>
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/images/logos/Exec-Air_Logo_2023.png"
+                  alt="Exec-Air"
+                  width={140}
+                  height={42}
+                  className="h-11 w-auto"
+                />
+                <span className="font-bold text-brand-navy">Admin</span>
+              </div>
               <button onClick={() => setSidebarOpen(false)} className="rounded-lg p-1 hover:bg-gray-100">
                 <X className="h-5 w-5" />
               </button>
@@ -134,7 +149,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 lg:px-10">{children}</main>
       </div>
     </div>
   );

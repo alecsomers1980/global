@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import CookieConsent from "@/components/CookieConsent";
+import SiteChrome from "@/components/SiteChrome";
 import { localBusinessSchema } from "@/lib/structured-data";
 import "./globals.css";
 
@@ -81,10 +79,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <Header />
-        <main className="relative min-h-screen">{children}</main>
-        <Footer />
-        <CookieConsent />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
