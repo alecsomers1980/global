@@ -186,6 +186,65 @@ export async function fetchGaReport({ curr, prev }) {
       previousSessions: Number(prevDevicesMap[d.name]?.value) || 0,
     }));
 
+    // ---- new data ----
+    // 1. newVsReturning (wrapped so a failure can't blank the whole section)
+    let newVsReturning = [];
+    try {
+      const newVsReturningResp = await runSingleRange(client, property, curr.start, curr.end, {
+        dimensions: ["newVsReturning"],
+        metrics: ["sessions"],
+      });
+      newVsReturning = extractDimensionRows(newVsReturningResp, "newVsReturning").map((r) => ({
+        name: r.name,
+        sessions: Number(r.value) || 0,
+      }));
+    } catch (err) {
+      console.error("[reports/ga] newVsReturning fetch failed:", err);
+      newVsReturning = [];
+    }
+
+    // 2. YoY (year-over-year totals) — last-year dates, isolated so no-data won't break the report
+    let yoy = null;
+    try {
+      const lastYear = (parseInt(curr.start.slice(0, 4)) - 1).toString();
+      const lastYearStart = curr.start.replace(/^\d{4}/, lastYear);
+      const lastYearEnd = curr.end.replace(/^\d{4}/, lastYear);
+      const yoyResp = await runSingleRange(client, property, lastYearStart, lastYearEnd, {
+        metrics: ["totalUsers", "sessions"],
+      });
+      yoy = extractTotals(yoyResp);
+    } catch (err) {
+      console.error("[reports/ga] YoY data fetch failed:", err);
+      yoy = null;
+    }
+
+    // 3. Demographics (require Google Signals — may be empty) — isolated
+    let demographics = { age: [], gender: [] };
+    try {
+      const [ageResp, genderResp] = await Promise.all([
+        runSingleRange(client, property, curr.start, curr.end, {
+          dimensions: ["userAgeBracket"],
+          metrics: ["activeUsers"],
+          limit: 12,
+        }),
+        runSingleRange(client, property, curr.start, curr.end, {
+          dimensions: ["userGender"],
+          metrics: ["activeUsers"],
+          limit: 5,
+        }),
+      ]);
+      const ageRows = extractDimensionRows(ageResp, "userAgeBracket")
+        .filter((r) => r.name !== "(not set)" && r.name !== "unknown")
+        .map((r) => ({ name: r.name, users: Number(r.value) || 0 }));
+      const genderRows = extractDimensionRows(genderResp, "userGender")
+        .filter((r) => r.name !== "(not set)" && r.name !== "unknown")
+        .map((r) => ({ name: r.name, users: Number(r.value) || 0 }));
+      demographics = { age: ageRows, gender: genderRows };
+    } catch (err) {
+      console.error("[reports/ga] Demographics data fetch failed:", err);
+      demographics = { age: [], gender: [] };
+    }
+
     return {
       available: true,
       totals: {
@@ -199,6 +258,9 @@ export async function fetchGaReport({ curr, prev }) {
       })),
       devices,
       geo: extractGeoRows(currGeoResp),
+      newVsReturning,
+      yoy,
+      demographics,
     };
   } catch (err) {
     console.error("[reports/ga] GA4 API error:", err);

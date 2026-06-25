@@ -396,6 +396,17 @@ function TrafficSection({ ga }) {
         <StatTile label="Engagement Rate" value={c.engagementRate} prevValue={p.engagementRate} isPercent />
       </View>
 
+      {/* Year-over-year line */}
+      {ga.yoy && Number(ga.yoy.sessions) > 0 && (
+        <Text style={{ fontSize: 9, color: '#555', marginBottom: 6, fontStyle: 'italic' }}>
+          Year-over-year: {c.sessions} sessions vs {ga.yoy.sessions} same month last year ({(() => {
+            const yoySessions = Number(ga.yoy.sessions);
+            const pct = Math.round(((c.sessions - yoySessions) / yoySessions) * 100);
+            return `${pct >= 0 ? '+' : ''}${pct}%`;
+          })()}).
+        </Text>
+      )}
+
       {/* Acquisition table */}
       {channels.length > 0 && (
         <View>
@@ -486,6 +497,62 @@ function TrafficSection({ ga }) {
             ]}
             colWidths="70% 30%"
             rows={geo}
+          />
+        </View>
+      )}
+
+      {/* New vs Returning Visitors */}
+      {ga.newVsReturning && ga.newVsReturning.filter(r => r.name === 'new' || r.name === 'returning').length > 0 && (
+        <View>
+          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
+            New vs Returning Visitors
+          </Text>
+          <DataTable
+            columns={[
+              { header: 'Visitor Type', key: 'label' },
+              { header: 'Sessions', key: 'sessions', align: 'right' },
+            ]}
+            colWidths="60% 40%"
+            rows={ga.newVsReturning
+              .filter(r => r.name === 'new' || r.name === 'returning')
+              .map(r => ({
+                label: r.name.charAt(0).toUpperCase() + r.name.slice(1),
+                sessions: r.sessions,
+              }))}
+          />
+        </View>
+      )}
+
+      {/* Demographics – Age */}
+      {ga.demographics?.age?.length > 0 && (
+        <View>
+          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
+            Audience Age
+          </Text>
+          <DataTable
+            columns={[
+              { header: 'Age', key: 'name' },
+              { header: 'Users', key: 'users', align: 'right' },
+            ]}
+            colWidths="60% 40%"
+            rows={ga.demographics.age}
+          />
+        </View>
+      )}
+
+      {/* Demographics – Gender */}
+      {ga.demographics?.gender?.length > 0 && (
+        <View>
+          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
+            Audience Gender
+          </Text>
+          <DataTable
+            columns={[
+              { header: 'Gender', key: 'name' },
+              { header: 'Users', key: 'users', align: 'right' },
+            ]}
+            colWidths="60% 40%"
+            rows={ga.demographics.gender}
           />
         </View>
       )}
