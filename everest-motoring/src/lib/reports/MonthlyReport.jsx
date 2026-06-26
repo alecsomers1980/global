@@ -407,6 +407,23 @@ function TrafficSection({ ga }) {
         </Text>
       )}
 
+      {/* Key Events (Conversions) */}
+      {ga.keyEvents && ga.keyEvents.length > 0 && (
+        <View>
+          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
+            Key Events (Conversions)
+          </Text>
+          <DataTable
+            columns={[
+              { header: "Event", key: "name" },
+              { header: "Count", key: "count", align: "right" },
+            ]}
+            colWidths="70% 30%"
+            rows={ga.keyEvents}
+          />
+        </View>
+      )}
+
       {/* Acquisition table */}
       {channels.length > 0 && (
         <View>

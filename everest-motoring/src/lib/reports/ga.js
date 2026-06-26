@@ -245,6 +245,23 @@ export async function fetchGaReport({ curr, prev }) {
       demographics = { age: [], gender: [] };
     }
 
+    // 4. Key events (conversions) — only events marked as key in GA4; isolated
+    let keyEvents = [];
+    try {
+      const keyEventsResp = await runSingleRange(client, property, curr.start, curr.end, {
+        dimensions: ["eventName"],
+        metrics: ["keyEvents"],
+        limit: 25,
+      });
+      keyEvents = extractDimensionRows(keyEventsResp, "eventName")
+        .map((r) => ({ name: r.name, count: Number(r.value) || 0 }))
+        .filter((r) => r.count > 0)
+        .sort((a, b) => b.count - a.count);
+    } catch (err) {
+      console.error("[reports/ga] keyEvents fetch failed:", err);
+      keyEvents = [];
+    }
+
     return {
       available: true,
       totals: {
@@ -261,6 +278,7 @@ export async function fetchGaReport({ curr, prev }) {
       newVsReturning,
       yoy,
       demographics,
+      keyEvents,
     };
   } catch (err) {
     console.error("[reports/ga] GA4 API error:", err);
