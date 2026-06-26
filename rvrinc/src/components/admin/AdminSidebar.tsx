@@ -23,9 +23,9 @@ const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Case Manager", href: "/admin/cases", icon: Briefcase },
     { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-    { name: "Insights", href: "/admin/insights", icon: FileText },
-    { name: "Case Statuses", href: "/admin/statuses", icon: ListChecks },
-    { name: "User Management", href: "/admin/users", icon: ShieldCheck },
+    { name: "Insights", href: "/admin/insights", icon: FileText, adminOnly: true },
+    { name: "Case Statuses", href: "/admin/statuses", icon: ListChecks, adminOnly: true },
+    { name: "User Management", href: "/admin/users", icon: ShieldCheck, adminOnly: true },
     { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
@@ -61,7 +61,9 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
             </div>
 
             <nav className="flex-1 p-4 space-y-2">
-                {navItems.map((item) => {
+                {navItems
+                    .filter((item) => !item.adminOnly || user?.role === "admin")
+                    .map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
                     return (

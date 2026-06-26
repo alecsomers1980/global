@@ -3,6 +3,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const EXEMPT_ADMIN_PATHS = ['/admin/complete-profile', '/admin/update-password']
 
+// Sections only admins may access; staff are redirected to the dashboard.
+const ADMIN_ONLY_PREFIXES = ['/admin/insights', '/admin/statuses', '/admin/users']
+
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
         request: { headers: request.headers },
@@ -47,13 +50,21 @@ export async function middleware(request: NextRequest) {
             // Check if profile is completed
             const { data: profile } = await supabase
                 .from('profiles')
-                .select('profile_completed')
+                .select('profile_completed, role')
                 .eq('id', user.id)
                 .single()
 
             if (profile && profile.profile_completed === false) {
                 const completeUrl = new URL('/admin/complete-profile', request.url)
                 return NextResponse.redirect(completeUrl)
+            }
+
+            // Admin-only sections: redirect non-admins to the dashboard
+            const isAdminOnly = ADMIN_ONLY_PREFIXES.some(
+                (p) => pathname === p || pathname.startsWith(p + '/')
+            )
+            if (isAdminOnly && profile?.role !== 'admin') {
+                return NextResponse.redirect(new URL('/admin', request.url))
             }
         }
     }
