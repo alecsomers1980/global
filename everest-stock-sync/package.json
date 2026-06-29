@@ -1,0 +1,28 @@
+{
+  "name": "everest-stock-sync",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-automation spike: log into cars.co.za dealer portal and scrape current stock.",
+  "scripts": {
+    "spike": "tsx src/spike-carscoza.ts",
+    "spike:headed": "cross-env HEADLESS=false tsx src/spike-carscoza.ts",
+    "chrome": "powershell -ExecutionPolicy Bypass -File ./launch-chrome.ps1",
+    "attended": "tsx src/attended-carscoza.ts",
+    "map": "tsx src/map-form.ts",
+    "create:carscoza": "tsx src/create-carscoza.ts",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "node-notifier": "^10.0.1",
+    "playwright": "^1.49.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "@types/node-notifier": "^8.0.5",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
