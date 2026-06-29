@@ -24,12 +24,29 @@ export interface Vehicle {
   description: string | null;
   main_image_url: string | null;
   gallery_urls: string[] | null;
+  // AutoTrader listing detail
+  transmission: string | null; // "Automatic" | "Manual"
+  fuel_type: string | null;
+  service_history: string | null; // full | full_franchise | partial | none | ...
+  manufacturer_colour: string | null;
+  previous_owners: number | null;
+  accident_involved: boolean | null;
+  has_warranty: boolean | null;
+  warranty_end_date: string | null;
+  warranty_mileage: number | null;
+  registration_number: string | null;
+  vin: string | null;
+  trade_in_price: number | null;
+  reconditioning_cost: number | null;
 }
 
 const COLUMNS =
   "stock_number,make,model,year,mileage,price,condition,condition_rating," +
   "colour,sold_roadworthy,eligible_for_finance,features,description," +
-  "main_image_url,gallery_urls";
+  "main_image_url,gallery_urls,transmission,fuel_type,service_history," +
+  "manufacturer_colour,previous_owners,accident_involved,has_warranty," +
+  "warranty_end_date,warranty_mileage,registration_number,vin," +
+  "trade_in_price,reconditioning_cost";
 
 function readCreds(): { url: string; key: string } {
   let url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";

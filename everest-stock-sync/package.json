@@ -11,6 +11,7 @@
     "attended": "tsx src/attended-carscoza.ts",
     "map": "tsx src/map-form.ts",
     "create:carscoza": "tsx src/create-carscoza.ts",
+    "create:autotrader": "tsx src/create-autotrader.ts",
     "postinstall": "playwright install chromium"
   },
   "dependencies": {
