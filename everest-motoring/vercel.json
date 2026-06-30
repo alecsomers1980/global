@@ -23,10 +23,6 @@
         {
             "path": "/api/cron/advance-sale-video",
             "schedule": "* * * * *"
-        },
-        {
-            "path": "/api/cron/monthly-report",
-            "schedule": "0 7 1 * *"
         }
     ]
 }
