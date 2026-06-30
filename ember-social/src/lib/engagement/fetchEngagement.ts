@@ -75,7 +75,7 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
 
             const accessToken = tokenCache.get(cacheKey)!
 
-            let metrics: { impressions: number | null; reach: number | null; likes: number | null; comments: number | null; shares: number | null } | null = null
+            let metrics: { impressions: number | null; reach: number | null; likes: number | null; comments: number | null; shares: number | null; clicks: number | null; video_views: number | null } | null = null
 
             if (platform === 'facebook') {
                 metrics = await fetchFacebookMetrics(row.platform_post_id, accessToken)
@@ -87,7 +87,7 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
 
             // For unsupported platforms, leave metrics null and update fetched_at to stop retries
             if (metrics === null) {
-                metrics = { impressions: null, reach: null, likes: null, comments: null, shares: null }
+                metrics = { impressions: null, reach: null, likes: null, comments: null, shares: null, clicks: null, video_views: null }
             }
 
             const { error: updateErr } = await supabase
@@ -98,6 +98,8 @@ export async function fetchEngagementSnapshot(supabase: SupabaseClient): Promise
                     likes: metrics.likes,
                     comments: metrics.comments,
                     shares: metrics.shares,
+                    clicks: metrics.clicks,
+                    video_views: metrics.video_views,
                     fetched_at: now.toISOString(),
                 } as any)
                 .eq('id', row.id)
@@ -124,19 +126,26 @@ async function fetchFacebookMetrics(postId: string, accessToken: string) {
         // valid insights metric" — which previously failed the WHOLE request and zeroed
         // even likes/comments. We now request only engagement, which still works. Reach
         // and impressions are no longer available per-post from the Graph API.
-        const url = `https://graph.facebook.com/v19.0/${postId}?fields=reactions.summary(total_count),comments.summary(total_count),shares&access_token=${accessToken}`
+        // post_clicks (link/photo/other clicks) and post_video_views survived the
+        // 2026-06-15 deprecation that killed post_impressions/reach. Requesting them
+        // alongside engagement is a single valid call (verified against the live page).
+        const url = `https://graph.facebook.com/v19.0/${postId}?fields=reactions.summary(total_count),comments.summary(total_count),shares,insights.metric(post_clicks,post_video_views).as(insights)&access_token=${accessToken}`
         const res = await fetch(url)
         const data = await res.json()
         if (data.error) {
             console.error('[fetchEngagement] FB API error:', data.error)
             return null
         }
+        const clicks = data?.insights?.data?.find((m: any) => m.name === 'post_clicks')?.values?.[0]?.value ?? null
+        const video_views = data?.insights?.data?.find((m: any) => m.name === 'post_video_views')?.values?.[0]?.value ?? null
         return {
             impressions: null, // deprecated by Meta 2026-06-15
             reach: null,       // deprecated by Meta 2026-06-15
             likes: data?.reactions?.summary?.total_count ?? null,
             comments: data?.comments?.summary?.total_count ?? null,
             shares: data?.shares?.count ?? null,
+            clicks,
+            video_views,
         }
     } catch (err: any) {
         console.error('[fetchEngagement] FB fetch error:', err)
@@ -168,6 +177,8 @@ async function fetchYouTubeMetrics(videoId: string, accessToken: string) {
             likes: stats.likeCount != null ? Number(stats.likeCount) : null,
             comments: stats.commentCount != null ? Number(stats.commentCount) : null,
             shares: null,
+            clicks: null,
+            video_views: stats.viewCount != null ? Number(stats.viewCount) : null,
         }
     } catch (err: any) {
         console.error('[fetchEngagement] YouTube fetch error:', err)
@@ -192,6 +203,8 @@ async function fetchInstagramMetrics(mediaId: string, accessToken: string) {
             likes: data?.like_count ?? null,
             comments: data?.comments_count ?? null,
             shares: null, // IG doesn't expose shares
+            clicks: null,
+            video_views: null,
         }
     } catch (err: any) {
         console.error('[fetchEngagement] IG fetch error:', err)
