@@ -249,7 +249,7 @@ async function uploadPhotos(page: Page, v: Vehicle) {
 async function main() {
   let browser;
   try {
-    const vehicle = await fetchVehicle(process.env.VEHICLE_STOCK);
+    const vehicle = await fetchVehicle({ id: process.env.VEHICLE_ID, stock: process.env.VEHICLE_STOCK });
     const conn = await connectExisting(cfg.host, `https://${cfg.host}/`);
     browser = conn.browser;
     const page = conn.page;

@@ -65,15 +65,19 @@ function readCreds(): { url: string; key: string } {
   return { url, key };
 }
 
-/** Fetch one vehicle — by stock number if given, else the first row. */
-export async function fetchVehicle(stockNumber?: string): Promise<Vehicle> {
+/** Fetch one vehicle — by id (preferred), else stock number, else first row. */
+export async function fetchVehicle(opts?: { id?: string; stock?: string }): Promise<Vehicle> {
   const { url, key } = readCreds();
-  const filter = stockNumber ? `&stock_number=eq.${encodeURIComponent(stockNumber)}` : "";
+  const filter = opts?.id
+    ? `&id=eq.${encodeURIComponent(opts.id)}`
+    : opts?.stock
+      ? `&stock_number=eq.${encodeURIComponent(opts.stock)}`
+      : "";
   const res = await fetch(`${url}/rest/v1/cars?select=${COLUMNS}${filter}&limit=1`, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
   });
   if (!res.ok) throw new Error(`Supabase fetch failed: ${res.status} ${await res.text()}`);
   const rows = (await res.json()) as Vehicle[];
-  if (!rows.length) throw new Error(`No vehicle found${stockNumber ? ` for stock ${stockNumber}` : ""}.`);
+  if (!rows.length) throw new Error(`No vehicle found${opts?.id ? ` for id ${opts.id}` : opts?.stock ? ` for stock ${opts.stock}` : ""}.`);
   return rows[0];
 }

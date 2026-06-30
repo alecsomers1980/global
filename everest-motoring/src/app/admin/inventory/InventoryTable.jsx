@@ -6,6 +6,7 @@ import SocialPostButton from "./SocialPostButton";
 import MarkSoldButton from "./MarkSoldButton";
 import SeoFixButton from "./SeoFixButton";
 import DeleteVehicleButton from "./DeleteVehicleButton";
+import SyndicateButtons from "./SyndicateButtons";
 
 export default function InventoryTable({ initialCars, deleteCarAction }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -171,7 +172,8 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                             </div>
                                         )}
                                     </td>
-                                    <td className="p-6 flex justify-end gap-2">
+                                    <td className="p-6 flex justify-end items-center gap-2">
+                                        <SyndicateButtons car={car} />
                                         <SeoFixButton car={car} />
                                         <SocialPostButton car={car} />
                                         <MarkSoldButton car={car} />
