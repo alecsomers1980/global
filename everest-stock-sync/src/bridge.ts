@@ -12,8 +12,14 @@ const ALLOW_ORIGINS = (
 
 let busy = false;
 
+function isAllowedOrigin(origin: string): boolean {
+  if (ALLOW_ORIGINS.includes(origin)) return true;
+  // Allow any local dev origin regardless of port (next dev may use 3000/3001/…).
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+}
+
 function getCorsOrigin(origin?: string): string {
-  if (origin && ALLOW_ORIGINS.includes(origin)) return origin;
+  if (origin && isAllowedOrigin(origin)) return origin;
   return ALLOW_ORIGINS[0];
 }
 
