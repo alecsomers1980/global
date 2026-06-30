@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface VideoHeroProps {
   eyebrow: string;
@@ -9,15 +10,23 @@ interface VideoHeroProps {
 export default function VideoHero({ eyebrow, title, subtitle }: VideoHeroProps) {
   return (
     <section className="relative min-h-[88vh] flex items-center overflow-hidden text-white">
-      {/* Video background */}
+      {/* Optimized still = fast, prioritized LCP (Vercel serves WebP) */}
+      <Image
+        src="/images/hero/about-1.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {/* Video background, deferred so it doesn't starve the LCP image */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
-        poster="/images/hero/about-1.jpg"
+        preload="none"
       >
         <source src="/videos/water-ripple.mp4" type="video/mp4" />
       </video>
