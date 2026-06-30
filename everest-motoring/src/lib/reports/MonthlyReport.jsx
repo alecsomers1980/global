@@ -28,7 +28,8 @@ const GREY = "#9ca3af";
 
 // ──── Register font (system font fallback for PDF) ────
 // We register Helvetica as both normal and bold — these are built into
-// @react-pdf/renderer and always available.
+// @react-pdf/renderer and always available. NOTE: built-in Helvetica has no
+// glyphs for ▲ ▼ Δ etc., so deltas/headers use plain ASCII + colour instead.
 
 // ──── Styles ────
 const styles = StyleSheet.create({
@@ -38,17 +39,19 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
     paddingHorizontal: 40,
     fontFamily: "Helvetica",
+    color: BRAND_BLACK,
   },
   // Cover band
   coverBand: {
     backgroundColor: BRAND_BLACK,
-    paddingVertical: 32,
+    paddingVertical: 28,
     paddingHorizontal: 40,
     marginHorizontal: -40,
-    marginBottom: 24,
+    marginBottom: 26,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderBottom: `3 solid ${BRAND_YELLOW}`,
   },
   coverLogo: {
     width: 140,
@@ -56,14 +59,16 @@ const styles = StyleSheet.create({
   },
   coverTitle: {
     color: BRAND_YELLOW,
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Helvetica-Bold",
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   coverSub: {
-    color: "#aaaaaa",
-    fontSize: 10,
+    color: "#bbbbbb",
+    fontSize: 9,
     marginTop: 4,
+    letterSpacing: 0.3,
   },
   // Section
   sectionTitle: {
@@ -71,10 +76,20 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
     color: BRAND_BLACK,
     textTransform: "uppercase",
+    letterSpacing: 0.6,
     borderBottom: `2 solid ${BRAND_YELLOW}`,
-    paddingBottom: 4,
+    paddingBottom: 5,
     marginBottom: 12,
-    marginTop: 20,
+    marginTop: 22,
+  },
+  // Sub-heading above each table
+  subHeading: {
+    fontSize: 10,
+    fontFamily: "Helvetica-Bold",
+    color: BRAND_BLACK,
+    letterSpacing: 0.3,
+    marginTop: 14,
+    marginBottom: 5,
   },
   // Stat tiles row
   statRow: {
@@ -84,8 +99,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statTile: {
-    backgroundColor: "#f9fafb",
-    border: "1 solid #e5e5e5",
+    backgroundColor: "#fafafa",
+    border: "1 solid #ececec",
     borderRadius: 6,
     padding: 10,
     width: "23%",
@@ -96,6 +111,7 @@ const styles = StyleSheet.create({
     color: MID_GREY,
     textTransform: "uppercase",
     fontFamily: "Helvetica-Bold",
+    letterSpacing: 0.3,
     marginBottom: 4,
   },
   statValue: {
@@ -113,8 +129,11 @@ const styles = StyleSheet.create({
   deltaDown: { color: RED },
   deltaNone: { color: GREY },
   // Tables
+  tableBlock: {
+    marginBottom: 6,
+  },
   table: {
-    marginBottom: 10,
+    marginBottom: 4,
   },
   tableHeader: {
     flexDirection: "row",
@@ -128,6 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 7,
     fontFamily: "Helvetica-Bold",
     textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
   tableRow: {
     flexDirection: "row",
@@ -212,10 +232,9 @@ function DeltaChip({ curr, prev, isMoney, isPercent, isDuration }) {
     // Duration is in seconds — show difference, not percentage
     const diff = c - p;
     const sign = diff >= 0 ? "+" : "";
-    const color = diff >= 0 ? styles.deltaNone : styles.deltaNone; // neutral for duration
     return (
-      <Text style={[styles.deltaChip, color]}>
-        {sign}{Math.round(diff)}s
+      <Text style={[styles.deltaChip, styles.deltaNone]}>
+        {sign}{Math.round(diff)}s vs prev
       </Text>
     );
   }
@@ -227,23 +246,31 @@ function DeltaChip({ curr, prev, isMoney, isPercent, isDuration }) {
     const color = diff >= 0 ? styles.deltaUp : styles.deltaDown;
     return (
       <Text style={[styles.deltaChip, color]}>
-        {sign}{diff.toFixed(1)}pp
+        {sign}{diff.toFixed(1)}pp vs prev
       </Text>
     );
   }
 
+  // Plain count metric — percentage change. Built-in Helvetica has no ▲/▼
+  // glyphs, so we signal direction with sign + colour (renders reliably).
   const pct = ((c - p) / p) * 100;
-  const sign = pct >= 0 ? "▲ " : "▼ ";
-  const color = pct >= 0 ? styles.deltaUp : styles.deltaDown;
+  const positive = pct >= 0;
+  const color = positive ? styles.deltaUp : styles.deltaDown;
   return (
     <Text style={[styles.deltaChip, color]}>
-      {sign}{Math.abs(pct).toFixed(0)}%
+      {positive ? "+" : "-"}{Math.abs(pct).toFixed(0)}% vs prev
     </Text>
   );
 }
 
 function StatTile({ label, value, prevValue, isMoney, isPercent, isDuration }) {
-  const display = isMoney ? money(value) : isDuration ? formatDuration(value) : formatNumber(value);
+  const display = isMoney
+    ? money(value)
+    : isDuration
+    ? formatDuration(value)
+    : isPercent
+    ? `${formatNumber(value)}%`
+    : formatNumber(value);
   return (
     <View style={styles.statTile}>
       <Text style={styles.statLabel}>{label}</Text>
@@ -278,7 +305,25 @@ function cleanCaption(text) {
 }
 
 function SectionTitle({ children }) {
-  return <Text style={styles.sectionTitle}>{children}</Text>;
+  // minPresenceAhead keeps a section heading from being stranded at the very
+  // bottom of a page — if there isn't room for the heading plus the start of
+  // its content, the whole thing moves to the next page.
+  return (
+    <Text style={styles.sectionTitle} minPresenceAhead={150}>
+      {children}
+    </Text>
+  );
+}
+
+// A titled table that never splits across a page boundary. The heading and the
+// whole table move together (wrap=false); individual rows are also atomic.
+function TableBlock({ title, children }) {
+  return (
+    <View style={styles.tableBlock} wrap={false}>
+      {title ? <Text style={styles.subHeading}>{title}</Text> : null}
+      {children}
+    </View>
+  );
 }
 
 function DataTable({ columns, rows, colWidths }) {
@@ -306,6 +351,7 @@ function DataTable({ columns, rows, colWidths }) {
       {rows.map((row, ri) => (
         <View
           key={ri}
+          wrap={false}
           style={[
             styles.tableRow,
             ri % 2 === 1 ? styles.tableRowAlt : {},
@@ -386,7 +432,7 @@ function TrafficSection({ ga }) {
       <SectionTitle>Website Traffic</SectionTitle>
 
       {/* Stat tiles */}
-      <View style={styles.statRow}>
+      <View style={styles.statRow} wrap={false}>
         <StatTile label="Total Visitors" value={c.totalUsers} prevValue={p.totalUsers} />
         <StatTile label="New Visitors" value={c.newUsers} prevValue={p.newUsers} />
         <StatTile label="Sessions" value={c.sessions} prevValue={p.sessions} />
@@ -409,10 +455,7 @@ function TrafficSection({ ga }) {
 
       {/* Key Events (Conversions) */}
       {ga.keyEvents && ga.keyEvents.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Key Events (Conversions)
-          </Text>
+        <TableBlock title="Key Events (Conversions)">
           <DataTable
             columns={[
               { header: "Event", key: "name" },
@@ -421,45 +464,34 @@ function TrafficSection({ ga }) {
             colWidths="70% 30%"
             rows={ga.keyEvents}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Acquisition table */}
       {channels.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Traffic by Channel
-          </Text>
+        <TableBlock title="Traffic by Channel">
           <DataTable
             columns={[
               { header: "Channel", key: "name" },
               { header: "Sessions", key: "currentSessions", align: "right" },
               { header: "Prev", key: "previousSessions", align: "right" },
               {
-                header: "Δ",
+                header: "Change",
                 key: "delta",
                 align: "right",
-                render: (row) => {
-                  const curr = row.currentSessions;
-                  const prev = row.previousSessions;
-                  if (!prev) return "NEW";
-                  const pct = ((curr - prev) / prev) * 100;
-                  return `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`;
-                },
+                color: (row) => deltaColor(row.currentSessions, row.previousSessions),
+                render: (row) => deltaPct(row.currentSessions, row.previousSessions),
               },
             ]}
             colWidths="40% 20% 20% 20%"
             rows={channels}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Top pages */}
       {topPages.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Top Pages
-          </Text>
+        <TableBlock title="Top Pages">
           <DataTable
             columns={[
               { header: "Page", key: "path" },
@@ -468,45 +500,34 @@ function TrafficSection({ ga }) {
             colWidths="70% 30%"
             rows={topPages}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Devices */}
       {devices.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Devices
-          </Text>
+        <TableBlock title="Devices">
           <DataTable
             columns={[
               { header: "Device", key: "name" },
               { header: "Sessions", key: "sessions", align: "right" },
               { header: "Prev", key: "previousSessions", align: "right" },
               {
-                header: "Δ",
+                header: "Change",
                 key: "delta",
                 align: "right",
-                render: (row) => {
-                  const curr = row.sessions;
-                  const prev = row.previousSessions;
-                  if (!prev) return "NEW";
-                  const pct = ((curr - prev) / prev) * 100;
-                  return `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`;
-                },
+                color: (row) => deltaColor(row.sessions, row.previousSessions),
+                render: (row) => deltaPct(row.sessions, row.previousSessions),
               },
             ]}
             colWidths="30% 25% 25% 20%"
             rows={devices}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Geo — cities */}
       {geo.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Top Locations (Cities)
-          </Text>
+        <TableBlock title="Top Locations (Cities)">
           <DataTable
             columns={[
               { header: "City", key: "name" },
@@ -515,15 +536,12 @@ function TrafficSection({ ga }) {
             colWidths="70% 30%"
             rows={geo}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* New vs Returning Visitors */}
       {ga.newVsReturning && ga.newVsReturning.filter(r => r.name === 'new' || r.name === 'returning').length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            New vs Returning Visitors
-          </Text>
+        <TableBlock title="New vs Returning Visitors">
           <DataTable
             columns={[
               { header: 'Visitor Type', key: 'label' },
@@ -537,15 +555,12 @@ function TrafficSection({ ga }) {
                 sessions: r.sessions,
               }))}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Demographics – Age */}
       {ga.demographics?.age?.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Audience Age
-          </Text>
+        <TableBlock title="Audience Age">
           <DataTable
             columns={[
               { header: 'Age', key: 'name' },
@@ -554,15 +569,12 @@ function TrafficSection({ ga }) {
             colWidths="60% 40%"
             rows={ga.demographics.age}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Demographics – Gender */}
       {ga.demographics?.gender?.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Audience Gender
-          </Text>
+        <TableBlock title="Audience Gender">
           <DataTable
             columns={[
               { header: 'Gender', key: 'name' },
@@ -571,7 +583,7 @@ function TrafficSection({ ga }) {
             colWidths="60% 40%"
             rows={ga.demographics.gender}
           />
-        </View>
+        </TableBlock>
       )}
     </View>
   );
@@ -588,7 +600,7 @@ function ActivitySection({ website, emails }) {
     <View>
       <SectionTitle>Website Activity</SectionTitle>
 
-      <View style={styles.statRow}>
+      <View style={styles.statRow} wrap={false}>
         <StatTile label="Cars Added" value={c.carsAdded} prevValue={p.carsAdded} />
         <StatTile label="Cars Sold" value={c.carsSold} prevValue={p.carsSold} />
         <StatTile label="Sold — List Value" value={c.carsSoldListValue} prevValue={p.carsSoldListValue} isMoney />
@@ -601,12 +613,7 @@ function ActivitySection({ website, emails }) {
 
       {/* Email stats table */}
       {emails && emails.available !== false && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Emails Sent
-          </Text>
-          {renderEmailTable(ec, ep)}
-        </View>
+        <TableBlock title="Emails Sent">{renderEmailTable(ec, ep)}</TableBlock>
       )}
 
       {emails && emails.available === false && (
@@ -615,21 +622,24 @@ function ActivitySection({ website, emails }) {
 
       {/* Leads breakdown */}
       {c.leadsByStatus && Object.keys(c.leadsByStatus).length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            Leads by Status
-          </Text>
+        <TableBlock title="Leads by Status">
           <DataTable
             columns={[
               { header: "Status", key: "status" },
               { header: "This Month", key: "current", align: "right" },
               { header: "Last Month", key: "previous", align: "right" },
-              { header: "Δ", key: "delta", align: "right" },
+              {
+                header: "Change",
+                key: "delta",
+                align: "right",
+                color: (row) => deltaColor(row.current, row.previous),
+                render: (row) => deltaPct(row.current, row.previous),
+              },
             ]}
             colWidths="35% 25% 20% 20%"
             rows={buildLeadStatusRows(c.leadsByStatus, p.leadsByStatus)}
           />
-        </View>
+        </TableBlock>
       )}
     </View>
   );
@@ -665,14 +675,11 @@ function renderEmailTable(current, previous) {
         { header: "This Month", key: "current", align: "right", bold: (row) => row?.isTotal },
         { header: "Last Month", key: "previous", align: "right", bold: (row) => row?.isTotal },
         {
-          header: "Δ",
+          header: "Change",
           key: "delta",
           align: "right",
-          render: (row) => {
-            if (row.previous === 0) return row.current > 0 ? "NEW" : "—";
-            const pct = ((row.current - row.previous) / row.previous) * 100;
-            return `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`;
-          },
+          color: (row) => deltaColor(row.current, row.previous),
+          render: (row) => deltaPct(row.current, row.previous),
         },
       ]}
       colWidths="40% 25% 20% 15%"
@@ -682,11 +689,11 @@ function renderEmailTable(current, previous) {
 }
 
 function buildLeadStatusRows(current, previous) {
-  const allStatuses = new Set([...Object.keys(current), ...Object.keys(previous)]);
+  const allStatuses = new Set([...Object.keys(current), ...Object.keys(previous || {})]);
   const rows = Array.from(allStatuses).map((s) => ({
     status: s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
     current: current[s] || 0,
-    previous: previous[s] || 0,
+    previous: (previous || {})[s] || 0,
   }));
   rows.sort((a, b) => b.current - a.current);
   return rows;
@@ -718,7 +725,7 @@ function SocialSection({ social }) {
       <SectionTitle>Social Media</SectionTitle>
 
       {/* Headline tiles */}
-      <View style={styles.statRow}>
+      <View style={styles.statRow} wrap={false}>
         <StatTile label="Posts Published" value={c.postsPublished} prevValue={p.postsPublished} />
         <StatTile label="Total Engagement" value={totalEng} prevValue={(pt.likes || 0) + (pt.comments || 0) + (pt.shares || 0)} />
         <StatTile label="Shares" value={ct.shares} prevValue={pt.shares} />
@@ -740,10 +747,7 @@ function SocialSection({ social }) {
 
       {/* Top posts */}
       {c.topPosts && c.topPosts.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: BRAND_BLACK, marginTop: 8, marginBottom: 4 }}>
-            Top Posts This Month
-          </Text>
+        <TableBlock title="Top Posts This Month">
           <DataTable
             colWidths="7% 51% 14% 14% 14%"
             columns={[
@@ -768,35 +772,29 @@ function SocialSection({ social }) {
               engagement: tp.engagement,
             }))}
           />
-        </View>
+        </TableBlock>
       )}
 
       {/* Per-platform table */}
       {platforms.length > 0 && (
-        <View>
-          <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: BRAND_BLACK, marginBottom: 4, marginTop: 8 }}>
-            By Platform
-          </Text>
+        <TableBlock title="By Platform">
           <DataTable
             columns={[
               { header: 'Platform', key: 'name' },
               { header: 'Shares', key: 'shares', align: 'right' },
               { header: 'Engagement', key: 'engagement', align: 'right' },
               {
-                header: 'Δ',
+                header: 'Change',
                 key: 'delta',
                 align: 'right',
-                render: (row) => {
-                  if (!row.pEng) return row.cEng > 0 ? 'NEW' : '—';
-                  const pct = ((row.cEng - row.pEng) / row.pEng) * 100;
-                  return `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`;
-                },
+                color: (row) => deltaColor(row.cEng, row.pEng),
+                render: (row) => deltaPct(row.cEng, row.pEng),
               },
             ]}
             colWidths="30% 25% 25% 20%"
             rows={platforms}
           />
-        </View>
+        </TableBlock>
       )}
 
       <Text style={{ fontSize: 7, color: '#9ca3af', marginTop: 6 }}>
@@ -804,6 +802,18 @@ function SocialSection({ social }) {
       </Text>
     </View>
   );
+}
+
+// Shared delta helpers for table "Change" columns — keep colour + text in sync.
+function deltaPct(curr, prev) {
+  if (!prev) return Number(curr) > 0 ? "NEW" : "—";
+  const pct = ((Number(curr) - Number(prev)) / Number(prev)) * 100;
+  return `${pct >= 0 ? "+" : "-"}${Math.abs(pct).toFixed(0)}%`;
+}
+
+function deltaColor(curr, prev) {
+  if (!prev) return Number(curr) > 0 ? GREEN : GREY;
+  return Number(curr) - Number(prev) >= 0 ? GREEN : RED;
 }
 
 function buildPlatformRows(current, previous) {
