@@ -18,6 +18,16 @@ import { sendAlert } from "./lib/alert.js";
 
 const norm = (s: string) => s.toLowerCase().replace(/[\s.]/g, "");
 
+// AutoTrader Seller Comments cap at 1500 chars. Trim to the last full sentence
+// (else last word) within the limit so we never cut mid-word.
+function truncate(text: string, max = 1500): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const stop = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("! "), cut.lastIndexOf("? "));
+  const end = stop > max * 0.6 ? stop + 1 : cut.lastIndexOf(" ");
+  return (end > 0 ? cut.slice(0, end) : cut).trim();
+}
+
 /**
  * STEP 1 (automated): drill the Make→Model→Variant→… tree to a verified spec,
  * which navigates to the /Dealer/Listing page. Picks the best token-overlap
@@ -218,7 +228,7 @@ async function fillForm(page: Page, v: Vehicle) {
   await fillText(page, "retailPrice", v.price);
   await fillText(page, "tradeInPrice", v.trade_in_price);
   await fillText(page, "reconditioningCosts", v.reconditioning_cost);
-  if (v.description) await fillText(page, "description", v.description);
+  if (v.description) await fillText(page, "description", truncate(v.description, 1500));
 
   // Status: force Draft so the listing is never published/Active.
   await selectVal(page, "status", "Draft");

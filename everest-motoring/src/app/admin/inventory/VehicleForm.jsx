@@ -8,11 +8,14 @@ import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
 import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
 import { postCarToGbpAction } from "./gbp_actions";
 
+// Spelling aligned to cars.co.za option labels so features carry over directly
+// during syndication. Everest-only extras (Lane Assist, Bluetooth, etc.) kept.
 const CAR_FEATURES = {
-    "Safety & Security": ["ABS", "Airbags", "Alarm System", "ISOFIX", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor"],
-    "Comfort & Convenience": ["Air Conditioning", "Climate Control", "Cruise Control", "Keyless Entry", "Power Steering", "Power Windows", "Sunroof", "Leather Seats"],
-    "Technology & Entertainment": ["Bluetooth", "Navigation", "Premium Audio", "Touchscreen", "Apple CarPlay", "Android Auto", "USB Ports"],
-    "Exterior & Performance": ["Alloy Wheels", "Tow Bar", "Roof Rails", "Daytime Running Lights", "Xenon/LED Lights", "Fog Lights", "4WD/AWD"]
+    "Safety & Security": ["ABS", "Air bags", "Alarm", "ISOFIX", "Rear-view camera", "Park distance control", "Lane Assist", "Blind Spot Monitor"],
+    "Comfort & Convenience": ["Aircon", "Climate control", "Cruise control", "Keyless Entry", "Power Steering", "Electric Windows", "Sunroof", "Leather seats", "Heated seats"],
+    "Technology & Entertainment": ["Bluetooth", "Sat nav", "Radio", "Touchscreen", "Apple CarPlay & Android Auto", "USB Ports", "Wireless charging pad"],
+    "Exterior & Performance": ["Alloy Wheels", "Towbar", "Roof Rails", "Daytime Running Lights", "Xenon lights", "LED lights", "Fog Lights", "4WD/AWD"],
+    "Warranty & Service": ["Motorplan", "Full service record"]
 };
 
 const COLOURS = ["Beige", "Black", "Blue", "Bronze", "Brown", "Burgundy", "Gold", "Green", "Grey", "Indigo", "Magenta", "Maroon", "Navy", "Orange", "Pink", "Purple", "Red", "Silver", "Turquoise", "White", "Yellow"];

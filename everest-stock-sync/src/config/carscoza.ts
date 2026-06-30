@@ -120,6 +120,23 @@ export const carscoza = {
     "Motor Plan": ["Motorplan"],
     "Full Service History": ["Full service record"],
     "Wireless Charging": ["Wireless charging pad"],
+    // Old Everest spelling kept for existing vehicles:
+    "Tow Bar": ["Towbar"],
+    // Identity entries — Everest now stores the cars.co.za spelling directly:
+    "Aircon": ["Aircon"],
+    "Air bags": ["Air bags"],
+    "Climate control": ["Climate control"],
+    "Cruise control": ["Cruise control"],
+    "Leather seats": ["Leather seats"],
+    "Park distance control": ["Park distance control"],
+    "Rear-view camera": ["Rear-view camera"],
+    "Sat nav": ["Sat nav"],
+    "Xenon lights": ["Xenon lights"],
+    "LED lights": ["LED lights"],
+    "Apple CarPlay & Android Auto": ["Apple CarPlay & Android Auto"],
+    "Heated seats": ["Heated seats"],
+    "Wireless charging pad": ["Wireless charging pad"],
+    "Full service record": ["Full service record"],
   } as Record<string, string[]>,
 } as const;
 
