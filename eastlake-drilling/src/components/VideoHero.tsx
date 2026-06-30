@@ -28,7 +28,7 @@ export default function VideoHero({ eyebrow, title, subtitle }: VideoHeroProps) 
         playsInline
         preload="none"
       >
-        <source src="/videos/water-ripple.mp4" type="video/mp4" />
+        <source src="/videos/water-ripple-720.mp4" type="video/mp4" />
       </video>
 
       {/* Gradient overlay */}
