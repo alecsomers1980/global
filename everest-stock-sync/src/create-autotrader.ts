@@ -232,18 +232,24 @@ async function uploadPhotos(page: Page, v: Vehicle) {
   const files = await downloadImages(urls);
   if (!files.length) return;
 
-  // Target the image file input (a separate PDF input exists for documents).
-  const input = page.locator('input[type="file"][accept*="image" i]').first();
-  if (!(await input.count())) return log("warn", "No image file input found for photos.");
-  const multiple = await input.evaluate((el) => (el as HTMLInputElement).multiple).catch(() => false);
-  if (multiple) {
-    await input.setInputFiles(files);
-  } else {
-    for (const f of files) await input.setInputFiles(f); // one at a time
+  // Photos failing must NOT fail the whole run — the form is already filled.
+  try {
+    // Target the image file input (a separate PDF input exists for documents).
+    const input = page.locator('input[type="file"][accept*="image" i]').first();
+    if (!(await input.count())) return log("warn", "No image file input found for photos.");
+    const multiple = await input.evaluate((el) => (el as HTMLInputElement).multiple).catch(() => false);
+    if (multiple) {
+      await input.setInputFiles(files, { timeout: 45_000 });
+    } else {
+      for (const f of files) await input.setInputFiles(f, { timeout: 45_000 }); // one at a time
+    }
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForTimeout(Math.min(3000 + files.length * 900, 25_000));
+    log("ok", `  uploaded ${files.length} photo(s).`);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message.split("\n")[0] : String(err);
+    log("warn", `  PHOTO UPLOAD FAILED (form still filled — add photos manually): ${msg}`);
   }
-  await page.waitForLoadState("networkidle").catch(() => {});
-  await page.waitForTimeout(Math.min(3000 + files.length * 900, 25_000));
-  log("ok", `  uploaded ${files.length} photo(s).`);
 }
 
 async function main() {

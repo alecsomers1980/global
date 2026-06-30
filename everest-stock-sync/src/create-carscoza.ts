@@ -199,29 +199,52 @@ async function uploadPhotos(page: Page, v: Vehicle) {
   const files = await downloadImages(urls);
   if (files.length === 0) return;
 
-  // Clicking the button opens an Uppy modal with hidden file inputs. Target
-  // the Uppy browse input directly (skip the webkitdirectory/folder one) —
-  // more robust than the generic [role=dialog], which also matches a Drawer.
-  await page.locator(cfg.addForm.photosDropzone).first().click();
-  const input = page
-    .locator('input.uppy-Dashboard-input[type="file"]:not([webkitdirectory])')
-    .first();
-  await input.waitFor({ state: "attached", timeout: 10_000 });
-  await input.setInputFiles(files);
-  log("info", "  files added to Uppy — starting upload…");
-  await page.waitForTimeout(1500);
+  // Photos failing must NOT fail the whole run — the form is already filled,
+  // so we log a warning and let the human add photos manually if needed.
+  try {
+    // The page has 3 Uppy uploaders (License Disc, Photos, Files). Clicking the
+    // photos button opens its modal; scope the input to that open modal so we
+    // never grab a different uploader's input.
+    const openPhotosModal = async () => {
+      await page.locator(cfg.addForm.photosDropzone).first().click();
+      const modal = page
+        .locator(".mantine-Modal-content")
+        .filter({ has: page.locator("input.uppy-Dashboard-input") })
+        .first();
+      await modal.waitFor({ state: "visible", timeout: 12_000 });
+      return modal;
+    };
+    let modal;
+    try {
+      modal = await openPhotosModal();
+    } catch {
+      modal = await openPhotosModal(); // one retry if the modal didn't open
+    }
 
-  // Uppy shows an "Upload N files" button; click it if present.
-  const uploadBtn = page
-    .locator('.uppy-StatusBar-actionBtn--upload, .uppy-Dashboard button:has-text("Upload")')
-    .first();
-  if (await uploadBtn.isVisible().catch(() => false)) {
-    await uploadBtn.click();
-    log("info", "  clicked Uppy upload button");
+    const input = modal
+      .locator('input.uppy-Dashboard-input[type="file"]:not([webkitdirectory])')
+      .first();
+    await input.waitFor({ state: "attached", timeout: 10_000 });
+    await page.waitForTimeout(1000); // let Uppy initialise before files are set
+    await input.setInputFiles(files, { timeout: 45_000 });
+    log("info", "  files added to Uppy — starting upload…");
+    await page.waitForTimeout(1500);
+
+    // Uppy shows an "Upload N files" button; click it if present.
+    const uploadBtn = modal
+      .locator('.uppy-StatusBar-actionBtn--upload, .uppy-Dashboard button:has-text("Upload")')
+      .first();
+    if (await uploadBtn.isVisible().catch(() => false)) {
+      await uploadBtn.click();
+      log("info", "  clicked Uppy upload button");
+    }
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForTimeout(Math.min(3000 + files.length * 900, 25_000));
+    log("ok", `  uploaded ${files.length} photo(s).`);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message.split("\n")[0] : String(err);
+    log("warn", `  PHOTO UPLOAD FAILED (form still filled — add photos manually): ${msg}`);
   }
-  await page.waitForLoadState("networkidle").catch(() => {});
-  await page.waitForTimeout(Math.min(3000 + files.length * 900, 25_000));
-  log("ok", `  uploaded ${files.length} photo(s).`);
 }
 
 async function main() {
