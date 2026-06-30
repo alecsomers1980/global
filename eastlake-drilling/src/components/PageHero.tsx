@@ -21,7 +21,7 @@ const PageHero: FC<PageHeroProps> = ({ eyebrow, title, subtitle, image }) => {
         preload="auto"
         poster={image ?? "/images/hero/about-1.jpg"}
       >
-        <source src="/videos/water-ripple.mp4" type="video/mp4" />
+        <source src="/videos/water-ripple-720.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-br from-brand-darker/80 via-ink/70 to-ink/50" />
 
