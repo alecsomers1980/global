@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FC } from "react";
 
 interface PageHeroProps {
@@ -11,15 +12,24 @@ interface PageHeroProps {
 const PageHero: FC<PageHeroProps> = ({ eyebrow, title, subtitle, image }) => {
   return (
     <section className="relative min-h-[40vh] grid place-items-center text-center overflow-hidden">
-      {/* Water video background (same banner across all secondary pages) */}
+      {/* Optimized still image = fast, prioritized LCP (Vercel serves WebP) */}
+      <Image
+        src={image ?? "/images/hero/about-1.jpg"}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {/* Same water video, fades in over the still once buffered (deferred so it
+          doesn't starve the LCP image on slow mobile) */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
-        poster={image ?? "/images/hero/about-1.jpg"}
+        preload="none"
       >
         <source src="/videos/water-ripple-720.mp4" type="video/mp4" />
       </video>
