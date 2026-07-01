@@ -4,4 +4,5 @@ node_modules/
 .auth/
 .chrome-profile/
 evidence/
+release/
 *.log

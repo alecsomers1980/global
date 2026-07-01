@@ -1,5 +1,7 @@
+import "dotenv/config";
 import { createServer } from "http";
 import { spawn } from "child_process";
+import path from "path";
 import { log } from "./lib/logger.js";
 import { dashboardHtml } from "./dashboard.js";
 import { fetchVehicles } from "./lib/supabase.js";
@@ -121,7 +123,10 @@ const server = createServer((req, res) => {
       };
       const script = scriptMap[pathname];
 
-      const child = spawn("npx", ["tsx", script], {
+      // Use the running Node + local tsx CLI (no npx/npm) so this also works
+      // when packaged with a bundled node.exe and no global tooling.
+      const tsxCli = path.join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
+      const child = spawn(process.execPath, [tsxCli, script], {
         cwd: process.cwd(),
         env: {
           ...process.env,
@@ -129,7 +134,6 @@ const server = createServer((req, res) => {
           VEHICLE_STOCK: payload.stock || "",
           SUBMIT: payload.submit ? "true" : "",
         },
-        shell: true,
       });
 
       let output = "";

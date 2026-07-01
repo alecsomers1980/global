@@ -3,6 +3,11 @@ $ErrorActionPreference = "Stop"
 try {
     $root = $PSScriptRoot
 
+    # Use a bundled node.exe (installed app) if present, else system node (dev).
+    $bundledNode = Join-Path $root "node.exe"
+    if (Test-Path $bundledNode) { $nodeExe = $bundledNode } else { $nodeExe = "node" }
+    $tsxCli = Join-Path $root "node_modules\tsx\dist\cli.mjs"
+
     function Test-PortListening {
         param([int]$Port)
         $null -ne (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue)
@@ -47,7 +52,8 @@ try {
     Write-Host "Checking bridge port (8799)..." -ForegroundColor Cyan
     if (-not (Test-PortListening 8799)) {
         Write-Host "Starting Node bridge server..." -ForegroundColor Cyan
-        Start-Process powershell -ArgumentList "-NoExit","-Command","Set-Location '$root'; npm run bridge" -WindowStyle Minimized
+        $bridgeCmd = "Set-Location '$root'; & `"$nodeExe`" `"$tsxCli`" `"src\bridge.ts`""
+        Start-Process powershell -ArgumentList "-NoExit","-Command",$bridgeCmd -WindowStyle Minimized
 
         $timeout = 20000   # milliseconds
         $elapsed = 0
