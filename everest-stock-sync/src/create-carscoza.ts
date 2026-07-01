@@ -247,6 +247,15 @@ async function uploadPhotos(page: Page, v: Vehicle) {
   }
 }
 
+/**
+ * AUTO-SUBMIT seam. Enabled with SUBMIT=true once the fill is trusted. For now
+ * it does NOT publish — it leaves the filled form for manual review/submit.
+ * To enable later: set Status=Active and click the "Add Vehicle" button here.
+ */
+async function submitListing(_page: Page) {
+  log("warn", "SUBMIT flag set, but auto-submit is not enabled yet — left filled for manual submit.");
+}
+
 async function main() {
   let browser;
   try {
@@ -266,7 +275,11 @@ async function main() {
     await uploadPhotos(page, vehicle);
 
     await captureEvidence(page, "create-filled");
-    log("ok", "Form filled. STOPPED before submit — review the browser, then submit manually if correct.");
+    if (process.env.SUBMIT === "true") {
+      await submitListing(page);
+    } else {
+      log("ok", "Form filled. STOPPED before submit — review the browser, then submit manually if correct.");
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await sendAlert("cars.co.za create failed", msg);

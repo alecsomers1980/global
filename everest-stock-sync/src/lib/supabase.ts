@@ -81,3 +81,37 @@ export async function fetchVehicle(opts?: { id?: string; stock?: string }): Prom
   if (!rows.length) throw new Error(`No vehicle found${opts?.id ? ` for id ${opts.id}` : opts?.stock ? ` for stock ${opts.stock}` : ""}.`);
   return rows[0];
 }
+
+export interface VehicleListItem {
+  id: string;
+  year: number | null;
+  make: string | null;
+  model: string | null;
+  price: number | null;
+  mileage: number | null;
+  stock_number: string | null;
+  status: string | null;
+  image: string | null;
+}
+
+/** Fetch the stock list for the local dashboard (lightweight columns only). */
+export async function fetchVehicles(): Promise<VehicleListItem[]> {
+  const { url, key } = readCreds();
+  const cols = "id,year,make,model,price,mileage,stock_number,status,main_image_url";
+  const res = await fetch(`${url}/rest/v1/cars?select=${cols}&order=make.asc&limit=200`, {
+    headers: { apikey: key, Authorization: `Bearer ${key}` },
+  });
+  if (!res.ok) throw new Error(`Supabase fetch failed: ${res.status} ${await res.text()}`);
+  const rows = (await res.json()) as (Record<string, unknown>)[];
+  return rows.map((r) => ({
+    id: String(r.id),
+    year: (r.year as number) ?? null,
+    make: (r.make as string) ?? null,
+    model: (r.model as string) ?? null,
+    price: (r.price as number) ?? null,
+    mileage: (r.mileage as number) ?? null,
+    stock_number: (r.stock_number as string) ?? null,
+    status: (r.status as string) ?? null,
+    image: (r.main_image_url as string) ?? null,
+  }));
+}

@@ -1,6 +1,8 @@
 import { createServer } from "http";
 import { spawn } from "child_process";
 import { log } from "./lib/logger.js";
+import { dashboardHtml } from "./dashboard.js";
+import { fetchVehicles } from "./lib/supabase.js";
 
 const PORT = parseInt(process.env.BRIDGE_PORT || "8799", 10);
 const ALLOW_ORIGINS = (
@@ -60,6 +62,22 @@ const server = createServer((req, res) => {
     return;
   }
 
+  // Local dashboard (served to the dealer's own browser).
+  if (method === "GET" && (pathname === "/" || pathname === "/index.html")) {
+    setCorsHeaders(res, origin);
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    res.end(dashboardHtml);
+    return;
+  }
+
+  // Stock list for the dashboard.
+  if (method === "GET" && pathname === "/vehicles") {
+    fetchVehicles()
+      .then((vehicles) => respond(res, 200, { ok: true, vehicles }, origin))
+      .catch((err) => respond(res, 500, { ok: false, error: String(err?.message || err) }, origin));
+    return;
+  }
+
   // Create routes
   if (
     method === "POST" &&
@@ -68,7 +86,7 @@ const server = createServer((req, res) => {
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", () => {
-      let payload: { id?: string; stock?: string };
+      let payload: { id?: string; stock?: string; submit?: boolean };
       try {
         payload = JSON.parse(body);
       } catch {
@@ -109,6 +127,7 @@ const server = createServer((req, res) => {
           ...process.env,
           VEHICLE_ID: payload.id || "",
           VEHICLE_STOCK: payload.stock || "",
+          SUBMIT: payload.submit ? "true" : "",
         },
         shell: true,
       });

@@ -281,7 +281,13 @@ async function main() {
     await uploadPhotos(page, vehicle);
 
     await captureEvidence(page, "autotrader-create-filled");
-    log("ok", "Filled. STOPPED before submit — review the browser, submit manually if correct.");
+    if (process.env.SUBMIT === "true") {
+      // AUTO-SUBMIT seam — enabled later once trusted. For now, does not publish.
+      // To enable: set status=Active and click Save/Next through to publish here.
+      log("warn", "SUBMIT flag set, but auto-submit is not enabled yet — left filled for manual submit.");
+    } else {
+      log("ok", "Filled. STOPPED before submit — review the browser, submit manually if correct.");
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await sendAlert("AutoTrader create failed", msg);

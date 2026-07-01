@@ -12,6 +12,7 @@
     "map": "tsx src/map-form.ts",
     "create:carscoza": "tsx src/create-carscoza.ts",
     "bridge": "tsx src/bridge.ts",
+    "agent": "powershell -ExecutionPolicy Bypass -File ./Start-Agent.ps1",
     "create:autotrader": "tsx src/create-autotrader.ts",
     "postinstall": "playwright install chromium"
   },
