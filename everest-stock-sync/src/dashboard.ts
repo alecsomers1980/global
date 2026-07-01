@@ -1,332 +1,475 @@
 export const dashboardHtml = `<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Everest Syndication Agent</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
     background: #f5f5f5;
-    color: #212121;
-    min-height: 100vh;
+    color: #333;
+    padding: 16px;
   }
-  .container {
+  .dashboard {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 32px 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 32px;
   }
-  header {
-    margin-bottom: 24px;
+  .header h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 6px;
   }
-  header h1 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #d32f2f;
-  }
-  .subtitle {
-    font-size: 16px;
-    color: #616161;
-    margin-top: 4px;
+  .header p {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 18px;
   }
   .info-banner {
-    background: #fff3e0;
-    border-left: 4px solid #ff9800;
-    padding: 14px 18px;
-    border-radius: 6px;
+    background: #fff3cd;
+    border-left: 4px solid #ffeeba;
+    padding: 12px 16px;
+    border-radius: 4px;
+    color: #856404;
     font-size: 14px;
-    line-height: 1.5;
-    color: #4e342e;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+    line-height: 1.4;
   }
   .toolbar {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     margin-bottom: 24px;
   }
-  .btn {
-    background: #d32f2f;
-    color: white;
-    border: none;
-    padding: 9px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn:hover { background: #b71c1c; }
-  .btn:active { background: #9a0007; }
-  .toolbar-status {
-    font-size: 14px;
-    color: #616161;
-  }
-  .load-error {
-    background: #ffebee;
-    border-left: 4px solid #d32f2f;
-    padding: 14px 18px;
-    border-radius: 6px;
-    color: #b71c1c;
-    margin-bottom: 20px;
-    display: none;
-  }
-  .retry-btn {
-    background: #d32f2f;
-    color: white;
-    border: none;
-    padding: 6px 16px;
+  .toolbar button {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    background: #fff;
+    font-size: 14px;
     cursor: pointer;
-    margin-top: 10px;
-    font-size: 13px;
+    transition: border-color 0.2s, color 0.2s;
   }
-  .vehicle-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .toolbar button:hover {
+    border-color: #d32f2f;
+    color: #d32f2f;
   }
-  .vehicle-card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  .toolbar button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
   }
-  .thumbnail {
-    width: 96px;
-    height: 72px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: #eee;
-  }
-  .placeholder {
-    background: #eeeeee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: #9e9e9e;
-  }
-  .details {
+  .status-message {
+    font-size: 14px;
+    color: #666;
+    margin-left: auto;
     flex: 1;
-    min-width: 0;
-  }
-  .title {
-    font-weight: 600;
-    font-size: 16px;
-    color: #212121;
-    margin-bottom: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .sub-line {
+  #vehicle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .vehicle-card {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .vehicle-card:last-child {
+    border-bottom: none;
+  }
+  .vehicle-img-wrapper {
+    flex-shrink: 0;
+    margin-right: 16px;
+  }
+  .vehicle-img {
+    width: 96px;
+    height: 72px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #e0e0e0;
+    display: block;
+  }
+  .vehicle-img-placeholder {
+    width: 96px;
+    height: 72px;
+    border-radius: 6px;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 12px;
+  }
+  .vehicle-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 16px;
+  }
+  .vehicle-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vehicle-sub {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
     font-size: 14px;
-    color: #616161;
+    color: #555;
+    margin-bottom: 4px;
   }
   .status-pill {
     display: inline-block;
-    padding: 2px 10px;
+    padding: 2px 8px;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    text-transform: capitalize;
-    white-space: nowrap;
+    text-transform: uppercase;
+    line-height: 1.4;
   }
-  .status-available { background: #c8e6c9; color: #2e7d32; }
-  .status-unavailable { background: #e0e0e0; color: #424242; }
-  .status-pill.filling { background: #fff3e0; color: #e65100; }
-  .status-pill.success { background: #c8e6c9; color: #2e7d32; }
-  .status-pill.error { background: #ffebee; color: #c62828; }
-  .status-pill.busy { background: #fff3e0; color: #e65100; }
-  .actions {
+  .status-pill.available {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  .status-pill.default {
+    background: #f5f5f5;
+    color: #757575;
+  }
+  .portal-controls {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    gap: 24px;
+    flex-shrink: 0;
   }
-  .action-btn {
-    background: #d32f2f;
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
+  .portal-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .portal-btn {
+    font-size: 12px;
+    padding: 2px 8px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background: #fff;
+    color: #444;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.2s;
+    transition: border-color 0.2s, color 0.2s;
   }
-  .action-btn:hover { background: #b71c1c; }
-  .action-btn:disabled {
-    opacity: 0.5;
+  .portal-btn:hover {
+    border-color: #d32f2f;
+    color: #d32f2f;
+  }
+  .portal-btn:disabled {
+    opacity: .5;
     cursor: not-allowed;
-    background: #d32f2f;
+  }
+  .caption {
+    font-size: 11px;
+    color: #888;
+    cursor: default;
+  }
+  .caption a {
+    color: #888;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .caption a:hover {
+    color: #555;
+  }
+  .row-status {
+    font-size: 13px;
+    margin-top: 2px;
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
+<div class="dashboard">
+  <div class="header">
     <h1>Everest Syndication Agent</h1>
-    <p class="subtitle">Push vehicles to cars.co.za &amp; AutoTrader</p>
-  </header>
-
+    <p>Push vehicles to cars.co.za &amp; AutoTrader</p>
+  </div>
   <div class="info-banner">
-    Before you start: open Chrome via Start-Agent, log in to cars.co.za AND AutoTrader (solve any "Just a moment" check). Each button fills that car's listing and STOPS before submit — review it in the Chrome window and submit manually.
+    Before you start: open Chrome via Start-Agent, log in to cars.co.za AND AutoTrader (solve any 'Just a moment' check). Each button fills that car's listing and STOPS before submit — review it in the Chrome window and submit manually.
   </div>
-
   <div class="toolbar">
-    <button id="refresh-btn" class="btn">Refresh</button>
-    <span id="toolbar-status" class="toolbar-status"></span>
+    <button id="refresh-button">Refresh</button>
+    <button id="check-button">Check listings</button>
+    <span class="status-message" id="status-message"></span>
   </div>
-
-  <div id="load-error" class="load-error"></div>
-  <div id="vehicle-list" class="vehicle-list"></div>
+  <div id="vehicle-list"></div>
 </div>
-
 <script>
-(function() {
+  var vehicles = [];
+  var autoDetected = { carscoza: {}, autotrader: {} };
   var running = false;
-  var vehicleList = document.getElementById('vehicle-list');
-  var toolbarStatus = document.getElementById('toolbar-status');
-  var loadErrorDiv = document.getElementById('load-error');
+  var vehicleStatuses = {};
 
-  function formatNum(num) {
-    if (num === null || num === undefined) return '';
+  var vehicleList;
+  var refreshButton;
+  var checkButton;
+  var statusMessage;
+
+  function formatNumber(num) {
     return num.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ' ');
   }
 
-  function renderVehicles(vehicles) {
+  function disableAllRunBtns() {
+    var btns = document.querySelectorAll('.run-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].disabled = true;
+    }
+  }
+
+  function updateRowStatus(id, text, color) {
+    var el = document.getElementById('status-' + id);
+    if (el) {
+      el.textContent = text;
+      el.style.color = color;
+    }
+  }
+
+  async function runFill(id, portal, btn) {
+    if (running) return;
+    running = true;
+    disableAllRunBtns();
+    if (btn) {
+      btn.innerText = btn.innerText + ' \\u2026';
+    }
+    updateRowStatus(id, 'Filling\\u2026 watch the Chrome window (30\\u201390s)', '#555');
+    try {
+      var res = await fetch('/create/' + portal, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
+      });
+      if (res.status === 409) {
+        vehicleStatuses[id] = { text: 'Busy \\u2014 another run is in progress.', color: '#c62828' };
+      } else if (!res.ok) {
+        var msg;
+        try {
+          var d = await res.json();
+          msg = d.error || (d.log && d.log.slice(-300)) || ('HTTP ' + res.status);
+        } catch (e) {
+          msg = 'HTTP ' + res.status;
+        }
+        vehicleStatuses[id] = { text: 'Failed: ' + msg, color: '#c62828' };
+      } else {
+        var data = await res.json();
+        if (data.ok) {
+          vehicleStatuses[id] = { text: '\\u2713 Filled \\u2014 review the Chrome window and submit manually.', color: '#2e7d32' };
+        } else {
+          var errMsg = data.error || (data.log && data.log.slice(-300)) || 'Unknown error';
+          vehicleStatuses[id] = { text: 'Failed: ' + errMsg, color: '#c62828' };
+        }
+      }
+    } catch (err) {
+      vehicleStatuses[id] = { text: 'Cannot reach the agent. Is it running?', color: '#c62828' };
+    } finally {
+      running = false;
+      render();
+    }
+  }
+
+  async function markListed(id, portal, listed) {
+    try {
+      var res = await fetch('/mark-listed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, portal: portal, listed: listed })
+      });
+      if (res.ok) {
+        for (var i = 0; i < vehicles.length; i++) {
+          if (vehicles[i].id === id) {
+            vehicles[i][portal + '_listed'] = listed;
+            break;
+          }
+        }
+        render();
+      } else {
+        var msg = 'Failed to update listing status.';
+        try {
+          var data = await res.json();
+          if (data.error) msg = data.error;
+        } catch (e) {}
+        alert(msg);
+      }
+    } catch (err) {
+      alert('Cannot reach the agent.');
+    }
+  }
+
+  async function checkListings() {
+    if (checkButton.disabled) return;
+    checkButton.disabled = true;
+    statusMessage.textContent = 'Checking portals\\u2026 (make sure you are logged in) \\u2014 this can take ~30s';
+    try {
+      var res = await fetch('/listed');
+      if (res.status === 409) {
+        statusMessage.textContent = 'Busy, try again shortly.';
+      } else if (!res.ok) {
+        var msg = 'HTTP error ' + res.status;
+        try {
+          var d = await res.json();
+          msg = d.error || msg;
+        } catch (e) {}
+        statusMessage.textContent = msg;
+      } else {
+        var data = await res.json();
+        if (data.ok) {
+          autoDetected.carscoza = {};
+          (data.carscoza || []).forEach(function(id) { autoDetected.carscoza[id] = true; });
+          autoDetected.autotrader = {};
+          (data.autotrader || []).forEach(function(id) { autoDetected.autotrader[id] = true; });
+          var cCount = data.carscoza ? data.carscoza.length : 0;
+          var aCount = data.autotrader ? data.autotrader.length : 0;
+          statusMessage.textContent = 'Checked: ' + cCount + ' on cars.co.za, ' + aCount + ' on AutoTrader.';
+          render();
+        } else {
+          statusMessage.textContent = data.error || 'Check listings failed.';
+        }
+      }
+    } catch (err) {
+      statusMessage.textContent = 'Cannot reach the agent.';
+    } finally {
+      checkButton.disabled = false;
+    }
+  }
+
+  function loadVehicles() {
+    fetch('/vehicles')
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        if (data.ok) {
+          vehicles = data.vehicles;
+          render();
+        } else {
+          showError('Could not load vehicles from the agent.');
+        }
+      })
+      .catch(function(err) {
+        showError('Could not load vehicles from the agent.');
+      });
+  }
+
+  function showError(msg) {
+    vehicleList.innerHTML = '<div style="color:#d32f2f; padding:20px; text-align:center;">' + msg + ' <button id="retry-btn" style="margin-left:8px; padding:4px 12px; border:1px solid #ccc; border-radius:4px; background:#fff; cursor:pointer;">Retry</button></div>';
+    var retry = document.getElementById('retry-btn');
+    if (retry) retry.addEventListener('click', loadVehicles);
+  }
+
+  function render() {
     var html = '';
     for (var i = 0; i < vehicles.length; i++) {
       var v = vehicles[i];
-      html += '<div class="vehicle-card" data-id="' + v.id + '">';
-
+      var imgHtml;
       if (v.image) {
-        html += '<img class="thumbnail" src="' + v.image + '" alt="">';
+        imgHtml = '<img src="' + v.image + '" class="vehicle-img" alt="car">';
       } else {
-        html += '<div class="thumbnail placeholder"><span>No image</span></div>';
+        imgHtml = '<div class="vehicle-img-placeholder">No image</div>';
+      }
+      var title = [v.year, v.make, v.model].filter(Boolean).join(' ');
+      var priceStr = v.price != null ? ('R ' + formatNumber(v.price)) : 'POA';
+      var mileageStr = v.mileage != null ? (formatNumber(v.mileage) + ' km') : '';
+      var pillClass = v.status === 'available' ? 'available' : 'default';
+      var pillHtml = '<span class="status-pill ' + pillClass + '">' + v.status + '</span>';
+      var subHtml = priceStr;
+      if (mileageStr) subHtml += ' \\u00b7 ' + mileageStr;
+      subHtml += ' ' + pillHtml;
+
+      var controlsHtml = '';
+      var portals = ['carscoza', 'autotrader'];
+      for (var p = 0; p < portals.length; p++) {
+        var portal = portals[p];
+        var portalLabel = portal === 'carscoza' ? 'cars.co.za' : 'AutoTrader';
+        var isListed = (v[portal + '_listed'] === true) || (autoDetected[portal] && autoDetected[portal][v.id] === true);
+        controlsHtml += '<div class="portal-group">';
+        if (isListed) {
+          controlsHtml += '<button class="portal-btn" disabled style="opacity:.5; cursor:not-allowed;">' + portalLabel + ' \\u2713</button>';
+          if (v[portal + '_listed'] === true) {
+            controlsHtml += '<div class="caption"><a href="#" class="unmark-link" data-vehicle-id="' + v.id + '" data-portal="' + portal + '">unmark</a></div>';
+          } else {
+            controlsHtml += '<div class="caption" style="color:#888;">on portal</div>';
+          }
+        } else {
+          controlsHtml += '<button class="portal-btn run-btn" data-vehicle-id="' + v.id + '" data-portal="' + portal + '"' + (running ? ' disabled' : '') + '>' + portalLabel + '</button>';
+          controlsHtml += '<div class="caption"><a href="#" class="mark-link" data-vehicle-id="' + v.id + '" data-portal="' + portal + '">mark listed</a></div>';
+        }
+        controlsHtml += '</div>';
       }
 
-      html += '<div class="details">';
-      html += '<div class="title">' + v.year + ' ' + v.make + ' ' + v.model + '</div>';
-      html += '<div class="sub-line">';
-
-      var priceStr = v.price !== null && v.price !== undefined ? 'R ' + formatNum(v.price) : 'POA';
-      html += '<span>' + priceStr + '</span>';
-
-      if (v.mileage !== null && v.mileage !== undefined) {
-        html += '<span>·</span><span>' + formatNum(v.mileage) + ' km</span>';
+      var statusContent = '';
+      if (vehicleStatuses[v.id]) {
+        statusContent = '<span style="color:' + vehicleStatuses[v.id].color + '">' + vehicleStatuses[v.id].text + '</span>';
       }
 
-      var statusClass = v.status === 'available' ? 'status-available' : 'status-unavailable';
-      html += '<span class="status-pill ' + statusClass + '">' + v.status + '</span>';
-      html += '</div></div>';
-
-      html += '<div class="actions">';
-      html += '<button class="action-btn" data-vehicle-id="' + v.id + '" data-portal="carscoza">cars.co.za</button>';
-      html += '<button class="action-btn" data-vehicle-id="' + v.id + '" data-portal="autotrader">AutoTrader</button>';
-      html += '</div>';
-
-      html += '</div>';
+      html += '<div class="vehicle-card">' +
+        '<div class="vehicle-img-wrapper">' + imgHtml + '</div>' +
+        '<div class="vehicle-info">' +
+          '<div class="vehicle-title">' + title + '</div>' +
+          '<div class="vehicle-sub">' + subHtml + '</div>' +
+          '<div class="row-status" id="status-' + v.id + '">' + statusContent + '</div>' +
+        '</div>' +
+        '<div class="portal-controls">' + controlsHtml + '</div>' +
+      '</div>';
     }
     vehicleList.innerHTML = html;
   }
 
-  function loadVehicles() {
-    loadErrorDiv.style.display = 'none';
-    vehicleList.innerHTML = '';
-    toolbarStatus.textContent = 'Loading…';
-
-    fetch('/vehicles')
-      .then(function(res) {
-        if (!res.ok) throw new Error('Could not load vehicles');
-        return res.json();
-      })
-      .then(function(data) {
-        if (!data.ok || !Array.isArray(data.vehicles)) throw new Error('Invalid data');
-        toolbarStatus.textContent = 'Loaded ' + data.vehicles.length + ' vehicle' + (data.vehicles.length !== 1 ? 's' : '');
-        renderVehicles(data.vehicles);
-      })
-      .catch(function(err) {
-        console.error(err);
-        toolbarStatus.textContent = 'Error';
-        loadErrorDiv.style.display = 'block';
-        loadErrorDiv.innerHTML = '<p>Could not load vehicles from the agent.</p><button id="retry-btn" class="retry-btn">Retry</button>';
-        document.getElementById('retry-btn').addEventListener('click', function() { loadVehicles(); });
-      });
+  function delegationHandler(e) {
+    var target = e.target;
+    if (target.classList.contains('run-btn')) {
+      e.preventDefault();
+      var vehicleId = parseInt(target.dataset.vehicleId);
+      var portal = target.dataset.portal;
+      runFill(vehicleId, portal, target);
+      return;
+    }
+    if (target.classList.contains('unmark-link')) {
+      e.preventDefault();
+      var vehicleId = parseInt(target.dataset.vehicleId);
+      var portal = target.dataset.portal;
+      markListed(vehicleId, portal, false);
+      return;
+    }
+    if (target.classList.contains('mark-link')) {
+      e.preventDefault();
+      var vehicleId = parseInt(target.dataset.vehicleId);
+      var portal = target.dataset.portal;
+      markListed(vehicleId, portal, true);
+      return;
+    }
   }
 
-  document.getElementById('refresh-btn').addEventListener('click', loadVehicles);
+  document.addEventListener('DOMContentLoaded', function() {
+    vehicleList = document.getElementById('vehicle-list');
+    refreshButton = document.getElementById('refresh-button');
+    checkButton = document.getElementById('check-button');
+    statusMessage = document.getElementById('status-message');
 
-  vehicleList.addEventListener('click', function(e) {
-    var btn = e.target.closest ? e.target.closest('.action-btn') : null;
-    if (!btn) return;
-    if (running) return;
+    refreshButton.addEventListener('click', loadVehicles);
+    checkButton.addEventListener('click', checkListings);
+    vehicleList.addEventListener('click', delegationHandler);
 
-    var vehicleId = btn.dataset.vehicleId;
-    var portal = btn.dataset.portal;
-    var card = document.querySelector('.vehicle-card[data-id="' + vehicleId + '"]');
-    if (!card) return;
-    var statusBadge = card.querySelector('.status-pill');
-    var originalText = btn.innerText;
-
-    running = true;
-    var allButtons = document.querySelectorAll('.action-btn');
-    allButtons.forEach(function(b) { b.disabled = true; });
-
-    btn.innerText = portal === 'carscoza' ? 'cars.co.za …' : 'AutoTrader …';
-    statusBadge.textContent = 'Filling… watch the Chrome window (30–90s)';
-    statusBadge.className = 'status-pill filling';
-
-    fetch('/create/' + portal, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: vehicleId })
-    })
-    .then(function(res) {
-      if (res.status === 409) {
-        statusBadge.textContent = 'Busy — another run is in progress. Try again shortly.';
-        statusBadge.className = 'status-pill busy';
-        return;
-      }
-      return res.json().then(function(data) {
-        if (data.ok) {
-          statusBadge.textContent = '✓ Filled — review the Chrome window and submit manually.';
-          statusBadge.className = 'status-pill success';
-        } else {
-          var msg = data.error || (data.log ? data.log.slice(-300) : ('HTTP ' + res.status));
-          statusBadge.textContent = 'Failed: ' + msg;
-          statusBadge.className = 'status-pill error';
-        }
-      }).catch(function() {
-        statusBadge.textContent = 'Failed: Could not parse response';
-        statusBadge.className = 'status-pill error';
-      });
-    })
-    .catch(function(err) {
-      statusBadge.textContent = 'Cannot reach the agent. Is it running?';
-      statusBadge.className = 'status-pill error';
-    })
-    .finally(function() {
-      running = false;
-      allButtons.forEach(function(b) { b.disabled = false; });
-      btn.innerText = originalText;
-    });
+    loadVehicles();
   });
-
-  loadVehicles();
-})();
 </script>
 </body>
 </html>`;

@@ -4,7 +4,21 @@ import { spawn } from "child_process";
 import path from "path";
 import { log } from "./lib/logger.js";
 import { dashboardHtml } from "./dashboard.js";
-import { fetchVehicles } from "./lib/supabase.js";
+import { fetchVehicles, type VehicleListItem } from "./lib/supabase.js";
+import { getListedFlags, setListed, type Portal } from "./lib/listedStore.js";
+import { getPortalListings } from "./lib/scrapeListed.js";
+
+// Does a scraped listing row text describe this vehicle? Requires year + make +
+// the first model word to all appear (loose but avoids false positives).
+const normText = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+function listingMatches(text: string, v: VehicleListItem): boolean {
+  const t = normText(text);
+  if (v.year && !t.includes(String(v.year))) return false;
+  if (v.make && !t.includes(normText(v.make))) return false;
+  const modelTok = (v.model || "").split(/\s+/)[0];
+  if (modelTok && !t.includes(normText(modelTok))) return false;
+  return Boolean(v.year || v.make);
+}
 
 const PORT = parseInt(process.env.BRIDGE_PORT || "8799", 10);
 const ALLOW_ORIGINS = (
@@ -72,11 +86,61 @@ const server = createServer((req, res) => {
     return;
   }
 
-  // Stock list for the dashboard.
+  // Stock list for the dashboard (with each car's manual "listed" flags merged).
   if (method === "GET" && pathname === "/vehicles") {
     fetchVehicles()
-      .then((vehicles) => respond(res, 200, { ok: true, vehicles }, origin))
+      .then((vehicles) => {
+        const flags = getListedFlags();
+        const merged = vehicles.map((v) => ({
+          ...v,
+          carscoza_listed: Boolean(flags[v.id]?.carscoza),
+          autotrader_listed: Boolean(flags[v.id]?.autotrader),
+        }));
+        respond(res, 200, { ok: true, vehicles: merged }, origin);
+      })
       .catch((err) => respond(res, 500, { ok: false, error: String(err?.message || err) }, origin));
+    return;
+  }
+
+  // Manual toggle: mark/unmark a vehicle as listed on a portal.
+  if (method === "POST" && pathname === "/mark-listed") {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      let p: { id?: string; portal?: Portal; listed?: boolean };
+      try {
+        p = JSON.parse(body);
+      } catch {
+        return respond(res, 400, { ok: false, error: "invalid json" }, origin);
+      }
+      if (!p.id || (p.portal !== "carscoza" && p.portal !== "autotrader")) {
+        return respond(res, 400, { ok: false, error: "id and portal (carscoza|autotrader) required" }, origin);
+      }
+      setListed(p.id, p.portal, Boolean(p.listed));
+      respond(res, 200, { ok: true }, origin);
+    });
+    return;
+  }
+
+  // Auto-detect: scrape each portal's live stock and return matched vehicle ids.
+  if (method === "GET" && pathname === "/listed") {
+    if (busy) {
+      respond(res, 409, { ok: false, busy: true, error: "A run is already in progress" }, origin);
+      return;
+    }
+    busy = true;
+    (async () => {
+      try {
+        const [listings, vehicles] = await Promise.all([getPortalListings(), fetchVehicles()]);
+        const carscoza = vehicles.filter((v) => listings.carscoza.some((t) => listingMatches(t, v))).map((v) => v.id);
+        const autotrader = vehicles.filter((v) => listings.autotrader.some((t) => listingMatches(t, v))).map((v) => v.id);
+        respond(res, 200, { ok: true, carscoza, autotrader }, origin);
+      } catch (err) {
+        respond(res, 500, { ok: false, error: String((err as Error)?.message || err) }, origin);
+      } finally {
+        busy = false;
+      }
+    })();
     return;
   }
 
