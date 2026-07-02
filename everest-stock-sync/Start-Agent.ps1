@@ -45,7 +45,7 @@ try {
         }
     }
     else {
-        Write-Host "Chrome remote debugging port 9222 already in use — assuming Chrome is already running." -ForegroundColor Green
+        Write-Host "Chrome remote debugging port 9222 already in use -assuming Chrome is already running." -ForegroundColor Green
     }
 
     # --- Node bridge server ---
@@ -67,14 +67,14 @@ try {
             $elapsed += 500
         }
         if (-not $bridgeUp) {
-            Write-Warning "Bridge did not start within 20 seconds — check the bridge window."
+            Write-Warning "Bridge did not start within 20 seconds -check the bridge window."
         }
         else {
             Write-Host "Bridge is ready." -ForegroundColor Green
         }
     }
     else {
-        Write-Host "Bridge port 8799 already in use — bridge is already running." -ForegroundColor Green
+        Write-Host "Bridge port 8799 already in use -bridge is already running." -ForegroundColor Green
     }
 
     # --- Dashboard ---
