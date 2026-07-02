@@ -943,11 +943,20 @@ export default function MonthlyReport({ data, monthLabel, logo }) {
           </View>
         </View>
 
-        {/* Sections */}
+        {/* Sections — each major section starts on its own page (break).
+            Website Activity and Social Media were explicitly requested on
+            their own pages; breaking before every section keeps each one
+            self-contained. */}
         <TrafficSection ga={data.ga} />
-        <ActivitySection website={data.website} emails={data.emails} />
-        <AffiliateSection affiliates={data.affiliates} />
-        <SocialSection social={data.social} />
+        <View break>
+          <ActivitySection website={data.website} emails={data.emails} />
+        </View>
+        <View break>
+          <AffiliateSection affiliates={data.affiliates} />
+        </View>
+        <View break>
+          <SocialSection social={data.social} />
+        </View>
 
         <ReportFooter />
       </Page>
