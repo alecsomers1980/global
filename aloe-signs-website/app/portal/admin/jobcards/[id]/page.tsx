@@ -64,6 +64,7 @@ const JOBCARD_ITEM_OPTIONS = [
     { label: 'STICKERS', description: 'Full Colour' },
     { label: 'TRAVEL + VEHICLE', description: 'To get the A Team on Site' },
     { label: 'UV PRINT', description: 'Direct UV Print' },
+    { label: 'VEHICLE', description: 'Vehicle branding / wrap' },
     { label: 'WALLPAPER', description: 'Full Colour' },
 ];
 
@@ -332,15 +333,19 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const handleSave = async () => {
         setSaving(true);
         try {
-            await fetch(`/api/portal/admin/jobcards/${id}`, {
+            const res = await fetch(`/api/portal/admin/jobcards/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(jobcard),
             });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || `Save failed (${res.status})`);
+            }
             alert('Jobcard saved!');
         } catch (e) {
             console.error(e);
-            alert('Failed to save.');
+            alert('Failed to save: ' + (e as Error).message);
         } finally {
             setSaving(false);
         }
@@ -639,7 +644,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             </div>
                             <div className="p-2 flex-1 bg-gray-50">
                                 <span className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Date:</span>
-                                <input type="text" name="date" value={jobcard.date || ''} onChange={handleChange} className="w-full bg-white border border-gray-300 p-1 text-sm focus:outline-none" />
+                                <input type="date" name="date" value={jobcard.date || ''} onChange={handleChange} className="w-full bg-white border border-gray-300 p-1 text-sm focus:outline-none" />
                             </div>
                         </div>
                     </div>
