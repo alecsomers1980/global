@@ -59,7 +59,7 @@ export async function GET(req: Request) {
   const { data: rows, error } = await supabase
     .from('post_results')
     .select(
-      'platform, platform_post_id, impressions, reach, likes, comments, shares, fetched_at, posts!inner(id, scheduled_at, content)'
+      'platform, platform_post_id, impressions, reach, likes, comments, shares, clicks, video_views, fetched_at, posts!inner(id, scheduled_at, content)'
     )
     .eq('posts.workspace_id', workspaceId)
     .order('fetched_at', { ascending: false })
@@ -78,28 +78,69 @@ export async function GET(req: Request) {
 
   const typed = rows as any[]
 
-  return NextResponse.json({
-    current: aggregateInWindow(typed, currStart, currEnd),
-    previous: aggregateInWindow(typed, prevStart, prevEnd),
-  })
+  const currAgg = aggregateInWindow(typed, currStart, currEnd)
+  const prevAgg = aggregateInWindow(typed, prevStart, prevEnd)
+
+  // Best-effort page-level reach for Facebook. Post-level reach/impressions were
+  // deprecated by Meta on 2026-06-15; page_impressions_unique still works. Any
+  // failure leaves pageReach null so the report never breaks.
+  try {
+    const { data: fb } = await supabase
+      .from('social_accounts')
+      .select('account_id, access_token')
+      .eq('workspace_id', workspaceId)
+      .eq('platform', 'facebook')
+      .limit(1)
+      .maybeSingle()
+    if ((fb as any)?.account_id && (fb as any)?.access_token) {
+      currAgg.pageReach = await fetchPageReach((fb as any).account_id, (fb as any).access_token, currEnd)
+      prevAgg.pageReach = await fetchPageReach((fb as any).account_id, (fb as any).access_token, prevEnd)
+    }
+  } catch (e) {
+    console.error('[report] page reach lookup failed:', e)
+  }
+
+  return NextResponse.json({ current: currAgg, previous: prevAgg })
 }
 
 function emptyWindowResult() {
   return {
-    totals: { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0 },
+    totals: { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, clicks: 0, video_views: 0 },
     perPlatform: {} as Record<string, any>,
     postsPublished: 0,
     topPosts: [],
+    pageReach: null as number | null,
+  }
+}
+
+// Post-level reach was deprecated by Meta on 2026-06-15. Page-level reach
+// (page_impressions_unique) still exists — we report it as a page-wide, 28-day
+// unique-reach figure ending at the window's end. Best-effort: any error → null.
+async function fetchPageReach(pageId: string, token: string, endISO: string): Promise<number | null> {
+  try {
+    const until = Math.floor(new Date(endISO).getTime() / 1000)
+    const since = until - 3 * 24 * 3600
+    const url = `https://graph.facebook.com/v19.0/${pageId}/insights/page_impressions_unique?period=days_28&since=${since}&until=${until}&access_token=${token}`
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
+    const data = await res.json()
+    if (data.error) { console.error('[report] page reach error:', data.error); return null }
+    const values = data?.data?.[0]?.values
+    if (!Array.isArray(values) || values.length === 0) return null
+    const v = values[values.length - 1]?.value
+    return typeof v === 'number' ? v : (Number(v) || null)
+  } catch (err) {
+    console.error('[report] page reach fetch failed:', err)
+    return null
   }
 }
 
 function aggregateInWindow(rows: any[], start: string, end: string) {
   const postsSeen = new Set<string>()
 
-  const totals = { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0 }
+  const totals = { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, clicks: 0, video_views: 0 }
   const perPlatform: Record<
     string,
-    { impressions: number; reach: number; likes: number; comments: number; shares: number }
+    { impressions: number; reach: number; likes: number; comments: number; shares: number; clicks: number; video_views: number }
   > = {}
 
   for (const row of rows) {
@@ -114,22 +155,28 @@ function aggregateInWindow(rows: any[], start: string, end: string) {
     const shares = row.shares || 0
     const impressions = row.impressions || 0
     const reach = row.reach || 0
+    const clicks = row.clicks || 0
+    const video_views = row.video_views || 0
 
     totals.impressions += impressions
     totals.reach += reach
     totals.likes += likes
     totals.comments += comments
     totals.shares += shares
+    totals.clicks += clicks
+    totals.video_views += video_views
 
     const p = row.platform || 'unknown'
     if (!perPlatform[p]) {
-      perPlatform[p] = { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0 }
+      perPlatform[p] = { impressions: 0, reach: 0, likes: 0, comments: 0, shares: 0, clicks: 0, video_views: 0 }
     }
     perPlatform[p].impressions += impressions
     perPlatform[p].reach += reach
     perPlatform[p].likes += likes
     perPlatform[p].comments += comments
     perPlatform[p].shares += shares
+    perPlatform[p].clicks += clicks
+    perPlatform[p].video_views += video_views
 
     // Track unique posts
     const postId = row.posts?.id
@@ -201,5 +248,6 @@ function aggregateInWindow(rows: any[], start: string, end: string) {
     perPlatform,
     postsPublished: postsSeen.size,
     topPosts,
+    pageReach: null as number | null,
   }
 }
