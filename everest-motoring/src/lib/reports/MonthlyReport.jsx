@@ -699,6 +699,88 @@ function buildLeadStatusRows(current, previous) {
   return rows;
 }
 
+// ──── Section: Affiliate Network ────
+function AffiliateSection({ affiliates }) {
+  if (!affiliates || affiliates.available === false) {
+    return (
+      <View>
+        <SectionTitle>Affiliate Network</SectionTitle>
+        <MutedPanel>Affiliate data is not yet available for this period.</MutedPanel>
+      </View>
+    );
+  }
+
+  const c = affiliates.current || {};
+  const p = affiliates.previous || {};
+  const active = affiliates.activeAffiliates || 0;
+  const top = affiliates.topAffiliates || [];
+  const pipe = affiliates.pipeline || {};
+
+  if (active === 0 && (c.leads || 0) === 0) {
+    return (
+      <View>
+        <SectionTitle>Affiliate Network</SectionTitle>
+        <MutedPanel>No affiliate activity yet for this period.</MutedPanel>
+      </View>
+    );
+  }
+
+  const commentary = (() => {
+    if ((c.leads || 0) === 0) {
+      return `The affiliate network has ${active} active member(s) but drove no new leads this period.`;
+    }
+    return `The affiliate network has ${active} active member(s). This month they generated ${c.leads || 0} lead(s) and closed ${c.completed || 0} deal(s), earning ${money(c.commission || 0)} in commissions.`;
+  })();
+
+  const topColumns = [
+    { header: 'Affiliate', key: 'name' },
+    { header: 'Leads', key: 'leads', align: 'right' },
+    { header: 'Completed', key: 'completed', align: 'right' },
+    { header: 'Est. Value', key: 'saleValue', align: 'right', render: (row) => money(row.saleValue) },
+  ];
+
+  const pipelineRows = [
+    { stage: 'Inquiry (new / contacted)', count: pipe.inquiry || 0 },
+    { stage: 'Busy with Financing', count: pipe.financing || 0 },
+    { stage: 'Completed Deals', count: pipe.completed || 0 },
+  ];
+
+  const pipelineColumns = [
+    { header: 'Stage', key: 'stage' },
+    { header: 'Leads', key: 'count', align: 'right' },
+  ];
+
+  return (
+    <View>
+      <SectionTitle>Affiliate Network</SectionTitle>
+      <View style={styles.statRow} wrap={false}>
+        <StatTile label="Affiliate Leads" value={c.leads} prevValue={p.leads} />
+        <StatTile label="Completed Deals" value={c.completed} prevValue={p.completed} />
+        <StatTile label="Commission Owed" value={c.commission} prevValue={p.commission} isMoney />
+        <StatTile label="New Affiliates" value={c.newAffiliates} prevValue={p.newAffiliates} />
+      </View>
+
+      <Text style={{ fontSize: 9, color: '#555', marginBottom: 8, fontStyle: 'italic' }}>
+        {commentary}
+      </Text>
+
+      {top.length > 0 && (
+        <TableBlock title="Top Affiliates This Month">
+          <DataTable colWidths="40% 20% 20% 20%" columns={topColumns} rows={top} />
+        </TableBlock>
+      )}
+
+      <TableBlock title="Affiliate Pipeline (This Month)">
+        <DataTable colWidths="70% 30%" columns={pipelineColumns} rows={pipelineRows} />
+      </TableBlock>
+
+      <Text style={{ fontSize: 7, color: '#9ca3af', marginTop: 6 }}>
+        Completed deals and commissions are attributed by lead-creation date, consistent with the affiliate portal. Commission is a flat R1 000 per completed deal.
+      </Text>
+    </View>
+  );
+}
+
 // ──── Section: Social Media ────
 function SocialSection({ social }) {
   if (!social || social.available === false) {
@@ -864,6 +946,7 @@ export default function MonthlyReport({ data, monthLabel, logo }) {
         {/* Sections */}
         <TrafficSection ga={data.ga} />
         <ActivitySection website={data.website} emails={data.emails} />
+        <AffiliateSection affiliates={data.affiliates} />
         <SocialSection social={data.social} />
 
         <ReportFooter />

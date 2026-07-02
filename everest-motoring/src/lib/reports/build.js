@@ -10,6 +10,7 @@ import { fetchGaReport } from "./ga";
 import { fetchWebsiteActivity } from "./website";
 import { fetchEmailStats } from "./emails";
 import { fetchSocialReport } from "./social";
+import { fetchAffiliateReport } from "./affiliates";
 
 let _logoDataUrl = null;
 
@@ -29,11 +30,12 @@ function getLogoDataUrl() {
 export async function buildReportData(month) {
   const { monthLabel, prevLabel, curr, prev } = getMonthWindows(month);
 
-  const [ga, website, emails, social] = await Promise.allSettled([
+  const [ga, website, emails, social, affiliates] = await Promise.allSettled([
     fetchGaReport({ curr, prev }),
     fetchWebsiteActivity({ curr, prev }),
     fetchEmailStats({ curr, prev }),
     fetchSocialReport({ month }),
+    fetchAffiliateReport({ curr, prev }),
   ]);
 
   return {
@@ -51,6 +53,10 @@ export async function buildReportData(month) {
     social:
       social.status === "fulfilled"
         ? social.value
+        : { available: false, error: "Module failed" },
+    affiliates:
+      affiliates.status === "fulfilled"
+        ? affiliates.value
         : { available: false, error: "Module failed" },
   };
 }
