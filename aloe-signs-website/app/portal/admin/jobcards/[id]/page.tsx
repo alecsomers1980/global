@@ -97,22 +97,43 @@ const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; n
         }));
     };
 
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newDateValue = e.target.value; // YYYY-MM-DD
+        const newDateISO = new Date(newDateValue + 'T00:00:00').toISOString();
+        const updatedWorkflow = {
+            ...workflow,
+            [name]: {
+                ticked: true,
+                ticked_at: newDateISO
+            }
+        };
+        const newStatus = calculateWorkflowStatus(updatedWorkflow);
+        setJobcard((prev: any) => ({
+            ...prev,
+            status_workflow_json: updatedWorkflow,
+            status: newStatus
+        }));
+    };
+
     return (
         <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
             <label className="flex items-center gap-2 cursor-pointer">
-                <input 
-                    type="checkbox" 
-                    checked={!!item.ticked} 
-                    onChange={handleCheck} 
-                    disabled={name === 'captured'} 
-                    className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" 
+                <input
+                    type="checkbox"
+                    checked={!!item.ticked}
+                    onChange={handleCheck}
+                    disabled={name === 'captured'}
+                    className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
                 />
                 <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
             </label>
-            {dateTicked && (
-                <span className="text-[9px] text-gray-400 font-medium">
-                    {dateTicked.toLocaleDateString([], {day:'2-digit', month:'2-digit'})} {dateTicked.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </span>
+            {item.ticked && dateTicked && (
+                <input
+                    type="date"
+                    value={dateTicked.toISOString().slice(0, 10)}
+                    onChange={handleDateChange}
+                    className="text-[9px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 w-full focus:outline-none"
+                />
             )}
         </div>
     );
@@ -131,6 +152,60 @@ const Toggle = ({ label, name, jobcard, handleChange }: { label: string; name: s
         <input type="checkbox" name={name} checked={!!jobcard[name]} onChange={handleChange} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 focus:ring-aloe-green cursor-pointer" />
     </label>
 );
+
+const DeptCompleted = ({ deptKey, jobcard, setJobcard }: { deptKey: string; jobcard: any; setJobcard: any }) => {
+    const completion = jobcard.department_completion_json?.[deptKey] || { completed: false, completed_at: null };
+
+    const handleCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setJobcard((prev: any) => ({
+            ...prev,
+            department_completion_json: {
+                ...(prev.department_completion_json || {}),
+                [deptKey]: {
+                    ...completion,
+                    completed: checked,
+                    completed_at: checked ? new Date().toISOString() : completion.completed_at,
+                },
+            },
+        }));
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = e.target.value;
+        setJobcard((prev: any) => ({
+            ...prev,
+            department_completion_json: {
+                ...(prev.department_completion_json || {}),
+                [deptKey]: {
+                    ...completion,
+                    completed: true,
+                    completed_at: newDate ? new Date(newDate).toISOString() : completion.completed_at,
+                },
+            },
+        }));
+    };
+
+    return (
+        <div className="flex items-center gap-2 px-3 py-1 bg-gray-50/80 border-b border-gray-200">
+            <label className="text-[10px] uppercase font-bold text-gray-500">Completed</label>
+            <input
+                type="checkbox"
+                className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
+                checked={completion.completed}
+                onChange={handleCheckedChange}
+            />
+            {completion.completed && (
+                <input
+                    type="date"
+                    className="text-[10px] text-gray-600 border border-gray-200 rounded px-1 py-0.5 focus:outline-none"
+                    value={completion.completed_at ? completion.completed_at.slice(0, 10) : ''}
+                    onChange={handleDateChange}
+                />
+            )}
+        </div>
+    );
+};
 
 export default function JobcardEditPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -275,6 +350,16 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }));
     };
 
+    const handleDigitalChange = (name: string, value: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            digital_details_json: {
+                ...(prev.digital_details_json || {}),
+                [name]: value
+            }
+        }));
+    };
+
     const handleApplicateChange = (name: string, value: any) => {
         setJobcard((prev: any) => ({
             ...prev,
@@ -343,6 +428,39 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                 throw new Error(data.error || `Save failed (${res.status})`);
             }
             alert('Jobcard saved!');
+        } catch (e) {
+            console.error(e);
+            alert('Failed to save: ' + (e as Error).message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSaveAndNew = async () => {
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/portal/admin/jobcards/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jobcard),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || `Save failed (${res.status})`);
+            }
+            const newRes = await fetch(`/api/portal/admin/jobcards`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({}),
+            });
+            if (!newRes.ok) {
+                const newData = await newRes.json().catch(() => ({}));
+                throw new Error(newData.error || `Create new jobcard failed (${newRes.status})`);
+            }
+            const { id: newId } = await newRes.json();
+            if (newId) {
+                router.push(`/portal/admin/jobcards/${newId}`);
+            }
         } catch (e) {
             console.error(e);
             alert('Failed to save: ' + (e as Error).message);
@@ -557,6 +675,9 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         <button onClick={handleSave} disabled={saving} className="bg-[#84cc16] text-[#0a0a0a] px-6 py-2 rounded-md font-bold shadow-md hover:bg-[#84cc16]/90 disabled:opacity-50">
                             {saving ? 'Saving...' : 'Save Jobcard'}
                         </button>
+                        <button onClick={handleSaveAndNew} disabled={saving} className="bg-[#84cc16]/80 text-[#0a0a0a] px-6 py-2 rounded-md font-bold shadow-md hover:bg-[#84cc16]/90 disabled:opacity-50">
+                            {saving ? 'Saving...' : 'Save & Add Jobcard'}
+                        </button>
                     </div>
                 </div>
 
@@ -713,22 +834,53 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                                         />
                                                                     </td>
                                                                     <td className="px-1 py-1">
-                                                                        <select 
-                                                                            value={item.item || ''} 
-                                                                            onChange={(e) => handleItemChange(index, 'item', e.target.value)}
-                                                                            className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
-                                                                        >
-                                                                            <option value="">Select Item...</option>
-                                                                            {JOBCARD_ITEM_OPTIONS.map((opt, i) => (
-                                                                                <option key={i} value={opt.label}>
-                                                                                    {opt.label}
-                                                                                </option>
-                                                                            ))}
-                                                                        </select>
-                                                                        {item.item && (
-                                                                            <div className="text-[9px] text-gray-400 mt-0.5 px-1 truncate leading-tight">
-                                                                                {JOBCARD_ITEM_OPTIONS.find(o => o.label === item.item)?.description}
-                                                                            </div>
+                                                                        {item.itemCustom === 'true' ? (
+                                                                            <>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    value={item.item || ''}
+                                                                                    onChange={(e) => handleItemChange(index, 'item', e.target.value)}
+                                                                                    placeholder="Custom item name..."
+                                                                                    className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
+                                                                                />
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        handleItemChange(index, 'itemCustom', 'false');
+                                                                                        handleItemChange(index, 'item', '');
+                                                                                    }}
+                                                                                    className="text-[9px] text-gray-400 mt-0.5 px-1 hover:text-aloe-green focus:outline-none"
+                                                                                >
+                                                                                    ↩ Use dropdown list
+                                                                                </button>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <select
+                                                                                    value={item.item || ''}
+                                                                                    onChange={(e) => {
+                                                                                        if (e.target.value === '__custom__') {
+                                                                                            handleItemChange(index, 'itemCustom', 'true');
+                                                                                        } else {
+                                                                                            handleItemChange(index, 'item', e.target.value);
+                                                                                        }
+                                                                                    }}
+                                                                                    className="w-full bg-white border border-gray-200 rounded p-1 text-xs focus:outline-none focus:ring-1 focus:ring-aloe-green/30 focus:border-aloe-green/30 font-medium truncate"
+                                                                                >
+                                                                                    <option value="">Select Item...</option>
+                                                                                    {JOBCARD_ITEM_OPTIONS.map((opt, i) => (
+                                                                                        <option key={i} value={opt.label}>
+                                                                                            {opt.label}
+                                                                                        </option>
+                                                                                    ))}
+                                                                                    <option value="__custom__">+ Add Custom Item...</option>
+                                                                                </select>
+                                                                                {item.item && (
+                                                                                    <div className="text-[9px] text-gray-400 mt-0.5 px-1 truncate leading-tight">
+                                                                                        {JOBCARD_ITEM_OPTIONS.find(o => o.label === item.item)?.description}
+                                                                                    </div>
+                                                                                )}
+                                                                            </>
                                                                         )}
                                                                     </td>
                                                                     <td className="px-1 py-1 w-[120px]">
@@ -852,6 +1004,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 </div>
                                 <div className="grid grid-cols-1 gap-x-2">
                                     <Toggle label="Artwork" name="prod_artwork" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="artwork" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_artwork && (
                                         <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-2">
                                             <div className="flex items-center justify-between">
@@ -865,6 +1018,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="UV Flatbed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="flatbed" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_flatbed && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 gap-2">
                                             <div className="grid grid-cols-2 gap-2">
@@ -940,6 +1094,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="HP Latex" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="digital" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_digital && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
                                             <div className="grid grid-cols-2 gap-x-2 py-2">
@@ -962,9 +1117,32 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                     />
                                                 </div>
                                             )}
+                                            <div className="px-3 pb-3 pt-1 grid grid-cols-2 gap-3 border-t border-gray-200 mt-1">
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Running Meters</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        value={jobcard.digital_details_json?.running_meters ?? ''}
+                                                        onChange={(e) => handleDigitalChange('running_meters', e.target.value)}
+                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Date Printed</label>
+                                                    <input
+                                                        type="date"
+                                                        value={jobcard.digital_details_json?.print_date ?? ''}
+                                                        onChange={(e) => handleDigitalChange('print_date', e.target.value)}
+                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                     <Toggle label="HP Vinyl Cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="vinyl_cut" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_vinyl_cut && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-2 text-xs overflow-x-auto">
                                             <table className="w-full text-left">
@@ -1018,6 +1196,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="screen" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_screen && (
                                         <div className="flex flex-col border-b border-gray-300 bg-orange-50/50 p-3 text-xs gap-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1084,6 +1263,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="applicate" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_applicate && (
                                         <div className="flex flex-col border-b border-gray-300 bg-green-50/50 p-3 text-xs gap-3">
                                             <div className="flex flex-wrap gap-6">
@@ -1128,6 +1308,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="engineer" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_engineer && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 text-xs gap-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
@@ -1232,6 +1413,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <Toggle label="Outsource" name="prod_outsource" jobcard={jobcard} handleChange={handleChange} />
+                                    <DeptCompleted deptKey="outsource" jobcard={jobcard} setJobcard={setJobcard} />
                                 </div>
                             </div>
 
