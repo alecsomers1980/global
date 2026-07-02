@@ -453,20 +453,6 @@ function TrafficSection({ ga }) {
         </Text>
       )}
 
-      {/* Key Events (Conversions) */}
-      {ga.keyEvents && ga.keyEvents.length > 0 && (
-        <TableBlock title="Key Events (Conversions)">
-          <DataTable
-            columns={[
-              { header: "Event", key: "name" },
-              { header: "Count", key: "count", align: "right" },
-            ]}
-            colWidths="70% 30%"
-            rows={ga.keyEvents}
-          />
-        </TableBlock>
-      )}
-
       {/* Acquisition table */}
       {channels.length > 0 && (
         <TableBlock title="Traffic by Channel">
