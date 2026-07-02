@@ -798,6 +798,11 @@ function SocialSection({ social }) {
         <StatTile label="Total Engagement" value={totalEng} prevValue={(pt.likes || 0) + (pt.comments || 0) + (pt.shares || 0)} />
         <StatTile label="Shares" value={ct.shares} prevValue={pt.shares} />
         <StatTile label="Comments" value={ct.comments} prevValue={pt.comments} />
+        <StatTile label="Link Clicks" value={ct.clicks} prevValue={pt.clicks} />
+        <StatTile label="Video Views" value={ct.video_views} prevValue={pt.video_views} />
+        {c.pageReach != null && (
+          <StatTile label="Reach (page-wide)" value={c.pageReach} prevValue={p.pageReach} />
+        )}
       </View>
 
       {/* Commentary */}
@@ -866,7 +871,9 @@ function SocialSection({ social }) {
       )}
 
       <Text style={{ fontSize: 7, color: '#9ca3af', marginTop: 6 }}>
-        Note: per-post reach &amp; impressions are no longer provided by Meta (platform change, June 2026).
+        Note: Meta no longer provides per-post reach or impressions (platform change, June 2026). Engagement,
+        link clicks and video views are reported per post; "Reach (page-wide)" is a Facebook Page-level figure
+        (28-day unique reach), not a per-post number.
       </Text>
     </View>
   );
