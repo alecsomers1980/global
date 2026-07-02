@@ -437,21 +437,21 @@ export const dashboardHtml = `<!doctype html>
     var target = e.target;
     if (target.classList.contains('run-btn')) {
       e.preventDefault();
-      var vehicleId = parseInt(target.dataset.vehicleId);
+      var vehicleId = target.dataset.vehicleId;
       var portal = target.dataset.portal;
       runFill(vehicleId, portal, target);
       return;
     }
     if (target.classList.contains('unmark-link')) {
       e.preventDefault();
-      var vehicleId = parseInt(target.dataset.vehicleId);
+      var vehicleId = target.dataset.vehicleId;
       var portal = target.dataset.portal;
       markListed(vehicleId, portal, false);
       return;
     }
     if (target.classList.contains('mark-link')) {
       e.preventDefault();
-      var vehicleId = parseInt(target.dataset.vehicleId);
+      var vehicleId = target.dataset.vehicleId;
       var portal = target.dataset.portal;
       markListed(vehicleId, portal, true);
       return;
