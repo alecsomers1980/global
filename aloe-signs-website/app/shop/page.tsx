@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { products, categories, Product, getLowestUnitPrice } from '@/lib/data';
+import { categories, Product, getLowestUnitPrice } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
 import ServiceHero from '@/components/ServiceHero';
@@ -14,6 +14,9 @@ export default function ShopPage() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [priceRange, setPriceRange] = useState([0, 15000]);
     const { addToCart } = useCart();
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => { fetch('/api/products').then(r => r.json()).then(d => setProducts(d.products || [])).catch(() => {}); }, []);
 
     const filteredProducts = products.filter(product => {
         const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
@@ -33,7 +36,7 @@ export default function ShopPage() {
 
             <main>
                 {/* Page Header */}
-                <ServiceHero 
+                <ServiceHero
                     title="Shop"
                     tagline="Professional signage products delivered fast"
                     description="Browse our collection of ready-made signs, hardware, and accessories built with the same Aloe Signs quality you expect."

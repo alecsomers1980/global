@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
-
-const MATERIALS = ['ContraVision', 'PVC', 'Wallpaper', 'Cast', 'Polymeric', 'Monomeric', 'Air Release', 'Lightbox', 'Other'];
+import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexRate, computeHpLatexCharge, syncAutoLines } from '@/lib/jobcard-charges';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
@@ -327,6 +326,38 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                 ...(prev.artwork_details_json || {}),
                 [name]: value
             }
+        }));
+    };
+
+    const [settings, setSettings] = useState<any>(null);
+    useEffect(() => {
+        fetch('/api/settings')
+            .then(r => r.ok ? r.json() : { pricing: null })
+            .then(d => setSettings(d.pricing))
+            .catch(() => {});
+    }, []);
+    useEffect(() => {
+        if (!jobcard) return;
+        const synced = syncAutoLines(jobcard, settings);
+        const sameItems = JSON.stringify(synced.items_json) === JSON.stringify(jobcard.items_json || []);
+        const sameTotal = String(synced.total) === String(jobcard.total ?? '');
+        if (!sameItems || !sameTotal) {
+            setJobcard((prev: any) => ({ ...prev, ...synced }));
+        }
+    }, [jobcard, settings]);
+    const handleArtworkMilestone = (key: string, patch: any) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            artwork_details_json: {
+                ...(prev.artwork_details_json || {}),
+                milestones: {
+                    ...(prev.artwork_details_json?.milestones || {}),
+                    [key]: {
+                        ...(prev.artwork_details_json?.milestones?.[key] || {}),
+                        ...patch,
+                    },
+                },
+            },
         }));
     };
 
@@ -1007,13 +1038,68 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <DeptCompleted deptKey="artwork" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_artwork && (
                                         <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-2">
+                                            {/* Sign-off milestones */}
+                                            <div className="space-y-1">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wide">Sign-off</span>
+                                                {['proof_sent', 'approved', 'received'].map(key => {
+                                                    const milestone = jobcard.artwork_details_json?.milestones?.[key] || {};
+                                                    const done = milestone.done === true;
+                                                    return (
+                                                        <label key={key} className="flex items-center justify-between py-1 px-1 hover:bg-white/40 rounded">
+                                                            <span className="text-[10px] font-medium text-gray-700">{key === 'proof_sent' ? 'Proof Sent' : key === 'approved' ? 'Approved' : 'Received'}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={done}
+                                                                    onChange={e => {
+                                                                        if (e.target.checked) {
+                                                                            handleArtworkMilestone(key, { done: true, date: new Date().toISOString().slice(0, 10) });
+                                                                        } else {
+                                                                            handleArtworkMilestone(key, { done: false });
+                                                                        }
+                                                                    }}
+                                                                    className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
+                                                                />
+                                                                {done && (
+                                                                    <input
+                                                                        type="date"
+                                                                        value={milestone.date || ''}
+                                                                        onChange={e => handleArtworkMilestone(key, { date: e.target.value, done: true })}
+                                                                        className="w-28 border border-gray-300 p-0.5 text-xs bg-white text-gray-800"
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                            {/* Hours row */}
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] uppercase font-bold text-gray-500">Hours</span>
-                                                <input type="text" value={jobcard.artwork_details_json?.hours || ''} onChange={e => handleArtworkChange('hours', e.target.value)} className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800" />
+                                                <input
+                                                    type="text"
+                                                    value={jobcard.artwork_details_json?.hours || ''}
+                                                    onChange={e => handleArtworkChange('hours', e.target.value)}
+                                                    className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800"
+                                                />
                                             </div>
+                                            {/* Rate row */}
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] uppercase font-bold text-gray-500">Rate</span>
-                                                <input type="text" value={jobcard.artwork_details_json?.rate || ''} onChange={e => handleArtworkChange('rate', e.target.value)} className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800" />
+                                                <input
+                                                    type="text"
+                                                    value={jobcard.artwork_details_json?.rate || ''}
+                                                    placeholder={String(getArtworkRate(jobcard, settings))}
+                                                    onChange={e => handleArtworkChange('rate', e.target.value)}
+                                                    className="w-20 border border-gray-300 p-1 text-xs bg-white text-gray-800"
+                                                />
+                                            </div>
+                                            {/* Charge display */}
+                                            <div className="flex items-center justify-between pt-1 border-t border-gray-200">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Charge</span>
+                                                <span className="font-bold text-gray-800 text-xs">
+                                                    R {computeArtworkCharge(jobcard, settings).toFixed(2)}
+                                                </span>
                                             </div>
                                         </div>
                                     )}
@@ -1098,10 +1184,17 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     {jobcard.prod_digital && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
                                             <div className="grid grid-cols-2 gap-x-2 py-2">
-                                                {MATERIALS.map(m => (
-                                                    <label key={m} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
-                                                        <span className="text-[10px] font-medium text-gray-700">{m}</span>
-                                                        <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                                {getHpLatexMaterials(settings).map(m => (
+                                                    <label key={m.name} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
+                                                        <span className="text-[10px] font-medium text-gray-700">
+                                                            {m.name} <span className="text-[9px] text-gray-400 ml-1">R {m.price}</span>
+                                                        </span>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m.name)}
+                                                            onChange={() => handleMaterialToggle(m.name)}
+                                                            className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
+                                                        />
                                                     </label>
                                                 ))}
                                             </div>
@@ -1138,6 +1231,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
                                                     />
                                                 </div>
+                                            </div>
+                                            <div className="px-3 pb-3 text-xs flex items-center justify-between border-t border-gray-200 pt-2">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Rate: R {computeHpLatexRate(jobcard, settings).toFixed(2)}/m</span>
+                                                <span className="font-bold text-gray-700">Charge: R {computeHpLatexCharge(jobcard, settings).toFixed(2)}</span>
                                             </div>
                                         </div>
                                     )}

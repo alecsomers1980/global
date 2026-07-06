@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
-import { Palette, FileSpreadsheet, ArrowRight } from 'lucide-react';
+import { Palette, FileSpreadsheet, ArrowRight, Settings, Package } from 'lucide-react';
 
 export default function AdminHubPage() {
     const router = useRouter();
@@ -67,6 +67,40 @@ export default function AdminHubPage() {
                         </h3>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             Create, edit, and track physical processing of production job cards.
+                        </p>
+                    </Link>
+
+                    {/* Settings */}
+                    <Link
+                        href="/portal/admin/settings"
+                        className="group p-8 bg-white/3 backdrop-blur-md border border-white/10 hover:border-[#84cc16]/40 hover:bg-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 text-left relative overflow-hidden flex flex-col items-start"
+                    >
+                        <div className="w-14 h-14 bg-[#84cc16]/10 text-[#84cc16] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <Settings size={28} />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2 text-white group-hover:text-[#84cc16] transition-colors">
+                            Settings
+                            <ArrowRight size={20} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Manage artwork rate, HP Latex prices and other pricing.
+                        </p>
+                    </Link>
+
+                    {/* Shop Products */}
+                    <Link
+                        href="/portal/admin/products"
+                        className="group p-8 bg-white/3 backdrop-blur-md border border-white/10 hover:border-[#84cc16]/40 hover:bg-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 text-left relative overflow-hidden flex flex-col items-start"
+                    >
+                        <div className="w-14 h-14 bg-[#84cc16]/10 text-[#84cc16] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <Package size={28} />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2 text-white group-hover:text-[#84cc16] transition-colors">
+                            Shop Products
+                            <ArrowRight size={20} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Add, edit and delete products in the online shop.
                         </p>
                     </Link>
                 </div>

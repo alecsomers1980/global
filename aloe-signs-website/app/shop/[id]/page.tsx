@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getProductById, products } from '@/lib/data';
+import { Product } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import Header from '@/components/Header';
 import ServiceHero from '@/components/ServiceHero';
@@ -13,18 +13,33 @@ import { useCart } from '@/context/CartContext';
 
 export default function ProductDetailPage() {
     const params = useParams();
-    const product = getProductById(params.id as string);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
 
     const [quantity, setQuantity] = useState(6);
     const [sides, setSides] = useState<'single' | 'double'>('single');
     const [artwork, setArtwork] = useState(false);
-    const [selectedVariant, setSelectedVariant] = useState(product?.variants?.[0] || null);
+    const [selectedVariant, setSelectedVariant] = useState<{ name: string; price: number } | null>(null);
+
+    useEffect(() => {
+        const id = params.id as string;
+        setLoading(true);
+        Promise.all([
+            fetch('/api/products/' + id).then(r => r.ok ? r.json() : { product: null }),
+            fetch('/api/products').then(r => r.ok ? r.json() : { products: [] }),
+        ]).then(([one, all]) => {
+            setProduct(one.product ?? null);
+            setAllProducts(all.products ?? []);
+            if (one.product?.variants?.length) setSelectedVariant(one.product.variants[0]);
+        }).finally(() => setLoading(false));
+    }, [params.id]);
 
     // Calculate dynamic price
     const currentPrice = useMemo(() => {
         if (!product) return 0;
-        
+
         if (product.variants && selectedVariant) {
             return selectedVariant.price + (artwork && product.artworkFee ? product.artworkFee : 0);
         }
@@ -44,6 +59,10 @@ export default function ProductDetailPage() {
 
         return price;
     }, [product, quantity, sides, artwork, selectedVariant]);
+
+    if (loading) {
+        return (<div className="min-h-screen flex items-center justify-center"><p className="text-medium-grey">Loading…</p></div>);
+    }
 
     if (!product) {
         return (
@@ -74,16 +93,14 @@ export default function ProductDetailPage() {
             <Header />
 
             <main className="bg-white">
-                {/* Page Header */}
-                <ServiceHero 
+                <ServiceHero
                     title={product.name}
                     tagline={product.category.replace('-', ' ').toUpperCase()}
-                    description={product.description.split('\n')[0]} // First paragraph of description
+                    description={product.description.split('\n')[0]}
                     backgroundImage={product.image}
                     compact={true}
                 />
 
-                {/* Breadcrumb */}
                 <section className="bg-white py-4 border-b border-border-grey">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <nav className="text-sm text-medium-grey">
@@ -96,71 +113,44 @@ export default function ProductDetailPage() {
                     </div>
                 </section>
 
-                {/* Product Detail */}
                 <section className="py-12 bg-white">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <div className="grid lg:grid-cols-2 gap-12">
-                            {/* Product Image */}
                             <div className="relative aspect-square bg-bg-grey rounded-[2.5rem] overflow-hidden">
-                                <Image
-                                    src={product.image}
-                                    alt={product.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                                {/* Discount icon removed as requested */}
+                                <Image src={product.image} alt={product.name} fill className="object-cover" />
                             </div>
 
-                            {/* Product Info */}
                             <div className="space-y-6">
                                 <div>
-                                    <h1 className="text-4xl font-bold text-charcoal mb-2">
-                                        {product.name}
-                                    </h1>
+                                    <h1 className="text-4xl font-bold text-charcoal mb-2">{product.name}</h1>
                                     <p className="text-lg text-medium-grey">{product.size}</p>
                                 </div>
 
-                                {/* Pricing */}
                                 <div className="space-y-2">
                                     {product.originalPrice && !product.pricingTiers && (
                                         <div className="flex items-center gap-3">
-                                            <span className="text-2xl text-light-grey line-through">
-                                                R{formatPrice(product.originalPrice)}
-                                            </span>
-                                            <span className="bg-red-500 text-white px-3 py-1 rounded text-sm font-semibold">
-                                                Limited Time Offer
-                                            </span>
+                                            <span className="text-2xl text-light-grey line-through">R{formatPrice(product.originalPrice)}</span>
+                                            <span className="bg-red-500 text-white px-3 py-1 rounded text-sm font-semibold">Limited Time Offer</span>
                                         </div>
                                     )}
-                                    <div className="text-5xl font-bold text-aloe-green">
-                                        R{formatPrice(currentPrice)}
-                                    </div>
+                                    <div className="text-5xl font-bold text-aloe-green">R{formatPrice(currentPrice)}</div>
                                     {product.pricingTiers && (
                                         <div className="space-y-1">
-                                            <p className="text-xl font-bold text-charcoal">
-                                                (R{formatPrice(currentPrice / quantity)} per board)
-                                            </p>
-                                            <p className="text-lg text-medium-grey">
-                                                Total price for {quantity} units
-                                            </p>
+                                            <p className="text-xl font-bold text-charcoal">(R{formatPrice(currentPrice / quantity)} per board)</p>
+                                            <p className="text-lg text-medium-grey">Total price for {quantity} units</p>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Description */}
                                 <div>
                                     <h2 className="text-xl font-bold text-charcoal mb-3">Description</h2>
-                                    <p className="text-medium-grey leading-relaxed whitespace-pre-wrap">
-                                        {product.description}
-                                    </p>
+                                    <p className="text-medium-grey leading-relaxed whitespace-pre-wrap">{product.description}</p>
                                 </div>
 
-                                {/* Product Options (For Matrix Pricing) */}
                                 {(product.pricingTiers || product.variants) && (
                                     <div className="space-y-6 bg-bg-grey p-6 rounded-lg border border-border-grey">
                                         <h3 className="font-bold text-charcoal text-lg">Configuration</h3>
 
-                                        {/* generic size variants */}
                                         {product.variants && (
                                             <div className="space-y-2">
                                                 <label className="block text-sm font-medium text-charcoal">Select Size</label>
@@ -181,7 +171,6 @@ export default function ProductDetailPage() {
                                             </div>
                                         )}
 
-                                        {/* Quantity */}
                                         {product.pricingTiers && (
                                             <>
                                                 <div className="space-y-2">
@@ -202,7 +191,6 @@ export default function ProductDetailPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Sides */}
                                                 <div className="space-y-2">
                                                     <label className="block text-sm font-medium text-charcoal">Printing</label>
                                                     <div className="grid grid-cols-2 gap-4">
@@ -229,7 +217,6 @@ export default function ProductDetailPage() {
                                             </>
                                         )}
 
-                                        {/* Artwork */}
                                         {product.artworkFee && (
                                             <div className="flex items-center gap-4 p-4 bg-white rounded border border-border-grey">
                                                 <input
@@ -248,18 +235,12 @@ export default function ProductDetailPage() {
                                     </div>
                                 )}
 
-                                {/* Features */}
                                 <div>
                                     <h2 className="text-xl font-bold text-charcoal mb-3">Features</h2>
                                     <ul className="space-y-2">
                                         {product.features.map((feature, index) => (
                                             <li key={index} className="flex items-start gap-3">
-                                                <svg
-                                                    className="w-6 h-6 text-aloe-green flex-shrink-0 mt-0.5"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
+                                                <svg className="w-6 h-6 text-aloe-green flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                                 <span className="text-charcoal">{feature}</span>
@@ -268,15 +249,11 @@ export default function ProductDetailPage() {
                                     </ul>
                                 </div>
 
-                                {/* Stock Status */}
                                 <div className="flex items-center gap-2">
                                     <div className={`w-3 h-3 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'}`} />
-                                    <span className="text-medium-grey">
-                                        {product.inStock ? 'In Stock' : 'Out of Stock'}
-                                    </span>
+                                    <span className="text-medium-grey">{product.inStock ? 'In Stock' : 'Out of Stock'}</span>
                                 </div>
 
-                                {/* Add to Cart */}
                                 <div className="flex gap-4 pt-4">
                                     <button
                                         onClick={handleAddToCart}
@@ -285,10 +262,7 @@ export default function ProductDetailPage() {
                                     >
                                         {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                                     </button>
-                                    <Link
-                                        href="/shop/cart"
-                                        className="px-8 py-4 border-2 border-charcoal text-charcoal font-bold text-lg rounded hover:bg-charcoal hover:text-white transition-colors"
-                                    >
+                                    <Link href="/shop/cart" className="px-8 py-4 border-2 border-charcoal text-charcoal font-bold text-lg rounded hover:bg-charcoal hover:text-white transition-colors">
                                         View Cart
                                     </Link>
                                 </div>
@@ -297,12 +271,11 @@ export default function ProductDetailPage() {
                     </div>
                 </section>
 
-                {/* Similar Products */}
                 <section className="py-12 bg-white border-t border-border-grey">
                     <div className="max-w-[1400px] mx-auto px-6">
                         <h2 className="text-2xl font-bold text-charcoal mb-6">Similar Products</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {products
+                            {allProducts
                                 .filter(p => p.category === product.category && p.id !== product.id)
                                 .slice(0, 4)
                                 .map(similarProduct => (
