@@ -13,11 +13,28 @@ export const HP_LATEX_FALLBACK: { name: string; price: number }[] = [
   { name: 'Other', price: 0 },
 ];
 
+// Vinyl Cut materials: cost is per running meter, differs by roll width (600 / 1200).
+export const VINYL_CUT_FALLBACK: { name: string; price600: number; price1200: number }[] = [
+  { name: 'Mask/Pos', price600: 45, price1200: 90 },
+  { name: 'Poly', price600: 19.92, price1200: 159.84 },
+  { name: 'Cast', price600: 228, price1200: 456 },
+  { name: 'Engineer', price600: 210, price1200: 420 },
+  { name: 'Avery Crystal', price600: 107.6, price1200: 215.16 },
+  { name: 'Other', price600: 0, price1200: 0 },
+];
+
 export function getHpLatexMaterials(settings: any): { name: string; price: number }[] {
   if (settings?.hp_latex_materials && Array.isArray(settings.hp_latex_materials) && settings.hp_latex_materials.length > 0) {
     return settings.hp_latex_materials;
   }
   return HP_LATEX_FALLBACK;
+}
+
+export function getVinylCutMaterials(settings: any): { name: string; price600: number; price1200: number }[] {
+  if (settings?.vinyl_cut_materials && Array.isArray(settings.vinyl_cut_materials) && settings.vinyl_cut_materials.length > 0) {
+    return settings.vinyl_cut_materials;
+  }
+  return VINYL_CUT_FALLBACK;
 }
 
 export function getArtworkRate(jobcard: any, settings: any): number {
@@ -52,6 +69,29 @@ export function computeHpLatexCharge(jobcard: any, settings: any): number {
   return meters * computeHpLatexRate(jobcard, settings);
 }
 
+// Per-meter rate for a single vinyl-cut row, based on its material + width.
+export function getVinylCutRowRate(row: any, settings: any): number {
+  if (!row) return 0;
+  const mats = getVinylCutMaterials(settings);
+  const m = mats.find(x => x.name === row.type);
+  if (!m) return 0;
+  if (row.type === 'Other') return parseFloat(row.custom_price) || 0;
+  return String(row.width) === '1200' ? (Number(m.price1200) || 0) : (Number(m.price600) || 0);
+}
+
+// Total vinyl-cut charge: Σ(running meters × per-meter rate) + R200 if print-cut.
+export function computeVinylCutCharge(jobcard: any, settings: any): number {
+  if (!jobcard?.prod_vinyl_cut) return 0;
+  const rows = Array.isArray(jobcard.vinyl_cut_details_json) ? jobcard.vinyl_cut_details_json : [];
+  let sum = 0;
+  for (const row of rows) {
+    const meters = parseFloat(row?.qty) || 0;
+    sum += meters * getVinylCutRowRate(row, settings);
+  }
+  if (jobcard.vinyl_cut_printcut) sum += 200;
+  return sum;
+}
+
 export function syncAutoLines(jobcard: any, settings: any): {
   items_json: any[];
   sub_total: string;
@@ -59,10 +99,10 @@ export function syncAutoLines(jobcard: any, settings: any): {
   total: string;
 } {
   let items = (Array.isArray(jobcard?.items_json) ? jobcard.items_json : []).filter(
-    (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex'
+    (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex' && it._auto !== 'vinyl_cut'
   );
 
-  // Artwork line
+  // Artwork line ('ARTWORK / LAYOUT' is a real dropdown option, so it displays fine)
   if (jobcard?.prod_artwork) {
     const hours = parseFloat(jobcard?.artwork_details_json?.hours) || 0;
     if (hours > 0) {
@@ -80,23 +120,61 @@ export function syncAutoLines(jobcard: any, settings: any): {
     }
   }
 
-  // HP Latex line
+  // HP Latex line — show the material name in the Item column (itemCustom so it isn't
+  // hidden by the dropdown, which only lists JOBCARD_ITEM_OPTIONS).
   if (jobcard?.prod_digital) {
     const meters = parseFloat(jobcard?.digital_details_json?.running_meters) || 0;
     if (meters > 0) {
       const rate = computeHpLatexRate(jobcard, settings);
       if (rate > 0) {
+        const names = getSelectedHpLatexNames(jobcard, settings);
         const charge = meters * rate;
         items.push({
           _auto: 'hp_latex',
-          item: 'HP LATEX PRINT',
+          item: names.length ? `HP Latex — ${names.join(', ')}` : 'HP Latex Print',
+          itemCustom: 'true',
           quantity: String(jobcard.digital_details_json?.running_meters ?? ''),
           size: '',
-          description: getSelectedHpLatexNames(jobcard, settings).join(', '),
+          description: 'HP Latex print',
           price: String(rate),
           total: charge.toFixed(2),
         });
       }
+    }
+  }
+
+  // HP Vinyl Cut — one line per row (running meters × per-meter rate), material shown.
+  if (jobcard?.prod_vinyl_cut) {
+    const rows = Array.isArray(jobcard.vinyl_cut_details_json) ? jobcard.vinyl_cut_details_json : [];
+    rows.forEach((row: any) => {
+      const meters = parseFloat(row?.qty) || 0;
+      const rate = getVinylCutRowRate(row, settings);
+      if (meters > 0 && rate > 0) {
+        const matName = row.type === 'Other' ? (row.type_other || 'Other') : row.type;
+        const width = String(row.width || '600');
+        items.push({
+          _auto: 'vinyl_cut',
+          item: `Vinyl Cut — ${matName} (${width}mm)`,
+          itemCustom: 'true',
+          quantity: String(row.qty ?? ''),
+          size: '',
+          description: 'HP vinyl cut',
+          price: String(rate),
+          total: (meters * rate).toFixed(2),
+        });
+      }
+    });
+    if (jobcard.vinyl_cut_printcut) {
+      items.push({
+        _auto: 'vinyl_cut',
+        item: 'Vinyl Cut — Print & Cut setup',
+        itemCustom: 'true',
+        quantity: '1',
+        size: '',
+        description: '',
+        price: '200',
+        total: '200.00',
+      });
     }
   }
 

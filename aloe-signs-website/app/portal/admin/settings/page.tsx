@@ -9,9 +9,16 @@ interface Material {
   price: number;
 }
 
+interface VinylMaterial {
+  name: string;
+  price600: number;
+  price1200: number;
+}
+
 interface Pricing {
   artwork_hourly_rate: number;
   hp_latex_materials: Material[];
+  vinyl_cut_materials: VinylMaterial[];
 }
 
 export default function AdminSettingsPage() {
@@ -94,6 +101,34 @@ export default function AdminSettingsPage() {
       if (!prev) return prev;
       const newMaterials = prev.hp_latex_materials.filter((_, i) => i !== index);
       return { ...prev, hp_latex_materials: newMaterials };
+    });
+  };
+
+  const updateVinyl = (index: number, field: 'name' | 'price600' | 'price1200', value: string) => {
+    setPricing(prev => {
+      if (!prev) return prev;
+      const list = [...(prev.vinyl_cut_materials || [])];
+      list[index] = {
+        ...list[index],
+        [field]: field === 'name' ? value : (parseFloat(value) || 0),
+      };
+      return { ...prev, vinyl_cut_materials: list };
+    });
+  };
+
+  const addVinyl = () => {
+    setPricing(prev =>
+      prev
+        ? { ...prev, vinyl_cut_materials: [...(prev.vinyl_cut_materials || []), { name: '', price600: 0, price1200: 0 }] }
+        : prev
+    );
+  };
+
+  const removeVinyl = (index: number) => {
+    setPricing(prev => {
+      if (!prev) return prev;
+      const list = (prev.vinyl_cut_materials || []).filter((_, i) => i !== index);
+      return { ...prev, vinyl_cut_materials: list };
     });
   };
 
@@ -182,6 +217,65 @@ export default function AdminSettingsPage() {
         </div>
         <button
           onClick={addMaterial}
+          className="mt-4 inline-flex items-center gap-1 text-sm text-[#84cc16] hover:text-lime-400 transition"
+        >
+          <Plus size={16} /> Add material
+        </button>
+      </section>
+
+      {/* Vinyl Cut Materials Section */}
+      <section className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <h2 className="text-xl font-semibold mb-1">Vinyl Cut Materials</h2>
+        <p className="text-white/40 text-xs mb-4">Cost per running meter, by roll width.</p>
+        <div className="flex items-center gap-3 mb-2 px-1 text-[10px] uppercase font-bold text-white/40">
+          <span className="flex-1">Material</span>
+          <span className="w-28">R / m @ 600</span>
+          <span className="w-28">R / m @ 1200</span>
+          <span className="w-8" />
+        </div>
+        <div className="space-y-3">
+          {(pricing.vinyl_cut_materials || []).length === 0 && (
+            <p className="text-white/50 text-sm italic">No materials added yet.</p>
+          )}
+          {(pricing.vinyl_cut_materials || []).map((material, idx) => (
+            <div key={idx} className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder="Material name"
+                value={material.name}
+                onChange={e => updateVinyl(idx, 'name', e.target.value)}
+                className="flex-1 bg-black/30 border border-white/10 rounded px-3 py-2 text-white"
+              />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="600"
+                value={material.price600}
+                onChange={e => updateVinyl(idx, 'price600', e.target.value)}
+                className="w-28 bg-black/30 border border-white/10 rounded px-3 py-2 text-white"
+              />
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="1200"
+                value={material.price1200}
+                onChange={e => updateVinyl(idx, 'price1200', e.target.value)}
+                className="w-28 bg-black/30 border border-white/10 rounded px-3 py-2 text-white"
+              />
+              <button
+                onClick={() => removeVinyl(idx)}
+                className="text-red-400 hover:text-red-300 transition p-2"
+                title="Remove material"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={addVinyl}
           className="mt-4 inline-flex items-center gap-1 text-sm text-[#84cc16] hover:text-lime-400 transition"
         >
           <Plus size={16} /> Add material

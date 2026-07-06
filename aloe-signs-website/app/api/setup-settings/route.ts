@@ -16,6 +16,14 @@ const pricing = {
     { name: "Drytac Retac", price: 184.95 },
     { name: "Poly Lightbox 1370", price: 184.95 },
     { name: "Other", price: 0 }
+  ],
+  vinyl_cut_materials: [
+    { name: "Mask/Pos", price600: 45, price1200: 90 },
+    { name: "Poly", price600: 19.92, price1200: 159.84 },
+    { name: "Cast", price600: 228, price1200: 456 },
+    { name: "Engineer", price600: 210, price1200: 420 },
+    { name: "Avery Crystal", price600: 107.6, price1200: 215.16 },
+    { name: "Other", price600: 0, price1200: 0 }
   ]
 };
 
@@ -27,9 +35,17 @@ export async function GET() {
       updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     )`;
 
+    // Fresh installs get the full defaults.
     await sql.query(
       'INSERT INTO settings (key, value) VALUES ($1, $2::jsonb) ON CONFLICT (key) DO NOTHING',
       ['pricing', JSON.stringify(pricing)]
+    );
+
+    // Existing rows: back-fill any missing top-level keys (e.g. vinyl_cut_materials)
+    // without clobbering values the admin has already edited (value wins on conflict).
+    await sql.query(
+      `UPDATE settings SET value = $1::jsonb || value WHERE key = 'pricing'`,
+      [JSON.stringify(pricing)]
     );
 
     return NextResponse.json({ success: true, message: 'settings table ready' });

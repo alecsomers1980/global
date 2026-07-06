@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
-import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexRate, computeHpLatexCharge, syncAutoLines } from '@/lib/jobcard-charges';
+import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexRate, computeHpLatexCharge, getVinylCutMaterials, computeVinylCutCharge, syncAutoLines } from '@/lib/jobcard-charges';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
@@ -1242,42 +1242,41 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <DeptCompleted deptKey="vinyl_cut" jobcard={jobcard} setJobcard={setJobcard} />
                                     {jobcard.prod_vinyl_cut && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-2 text-xs overflow-x-auto">
+                                            <label className="flex items-center justify-between px-1 py-1 mb-1 cursor-pointer">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Print &amp; Cut <span className="text-gray-400 normal-case font-normal">(+R200)</span></span>
+                                                <input type="checkbox" name="vinyl_cut_printcut" checked={!!jobcard.vinyl_cut_printcut} onChange={handleChange} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                            </label>
                                             <table className="w-full text-left">
                                                 <thead>
                                                     <tr className="border-b border-gray-300">
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-16">QTY</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">WIDTH</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">TYPE</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-16">R.Meters</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">Width</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">Material</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Polymeric', spec: '' }]).map((row: any, idx: number) => (
+                                                    {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Mask/Pos', spec: '' }]).map((row: any, idx: number) => (
                                                         <tr key={idx} className="border-b border-gray-100 flex flex-wrap sm:table-row">
                                                             <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
-                                                                <input type="text" value={row.qty || ''} onChange={e => handleVinylRowChange(idx, 'qty', e.target.value)} placeholder="Qty" className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                <input type="number" step="0.01" min="0" value={row.qty || ''} onChange={e => handleVinylRowChange(idx, 'qty', e.target.value)} placeholder="Meters" className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
                                                             </td>
                                                             <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
                                                                 <select value={row.width || '600'} onChange={e => handleVinylRowChange(idx, 'width', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800 mb-1">
                                                                     <option value="600">600</option>
                                                                     <option value="1200">1200</option>
-                                                                    <option value="other">other</option>
                                                                 </select>
-                                                                {row.width === 'other' && (
-                                                                    <input type="text" placeholder="Specify..." value={row.width_other || ''} onChange={e => handleVinylRowChange(idx, 'width_other', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
-                                                                )}
                                                             </td>
                                                             <td className="p-1 align-top block sm:table-cell w-full sm:w-auto">
-                                                                <select value={row.type || 'Polymeric'} onChange={e => handleVinylRowChange(idx, 'type', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800 mb-1">
-                                                                    <option value="Polymeric">Polymeric</option>
-                                                                    <option value="Monomeric">Monomeric</option>
-                                                                    <option value="Cast">Cast</option>
-                                                                    <option value="Reflective">Reflective</option>
-                                                                    <option value="Mask">Mask</option>
-                                                                    <option value="Clear">Clear</option>
-                                                                    <option value="Other">Other</option>
+                                                                <select value={row.type || 'Mask/Pos'} onChange={e => handleVinylRowChange(idx, 'type', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800 mb-1">
+                                                                    {getVinylCutMaterials(settings).map(m => (
+                                                                        <option key={m.name} value={m.name}>{m.name}</option>
+                                                                    ))}
                                                                 </select>
                                                                 {row.type === 'Other' && (
-                                                                    <input type="text" placeholder="Specify..." value={row.type_other || ''} onChange={e => handleVinylRowChange(idx, 'type_other', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                    <div className="flex gap-1">
+                                                                        <input type="text" placeholder="Name..." value={row.type_other || ''} onChange={e => handleVinylRowChange(idx, 'type_other', e.target.value)} className="w-1/2 border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                        <input type="number" step="0.01" min="0" placeholder="R/m" value={row.custom_price || ''} onChange={e => handleVinylRowChange(idx, 'custom_price', e.target.value)} className="w-1/2 border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                    </div>
                                                                 )}
                                                             </td>
                                                         </tr>
@@ -1286,9 +1285,12 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </table>
                                             <div className="p-1 w-full mt-2 border-t border-gray-200 pt-2">
                                                 <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Specs</label>
-                                                {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Polymeric', spec: '' }]).map((row: any, idx: number) => (
+                                                {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Mask/Pos', spec: '' }]).map((row: any, idx: number) => (
                                                     <textarea key={`spec-${idx}`} value={row.spec || ''} onChange={e => handleVinylRowChange(idx, 'spec', e.target.value)} rows={3} placeholder="Enter detailed specs here..." className="w-full border border-gray-300 p-1.5 focus:outline-none bg-white text-gray-800 resize-y" />
                                                 ))}
+                                            </div>
+                                            <div className="px-1 pt-2 text-xs flex items-center justify-end border-t border-gray-200 mt-2">
+                                                <span className="font-bold text-gray-700">Charge: R {computeVinylCutCharge(jobcard, settings).toFixed(2)}</span>
                                             </div>
                                         </div>
                                     )}

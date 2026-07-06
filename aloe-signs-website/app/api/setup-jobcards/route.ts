@@ -36,6 +36,7 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'prod_engineer', type: 'BOOLEAN DEFAULT false' },
     { name: 'prod_outsource', type: 'BOOLEAN DEFAULT false' },
     { name: 'prod_artwork', type: 'BOOLEAN DEFAULT false' },
+    { name: 'vinyl_cut_printcut', type: 'BOOLEAN DEFAULT false' },
 
     // Tracking checklist
     { name: 'track_quote', type: 'BOOLEAN DEFAULT false' },
