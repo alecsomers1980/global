@@ -38,6 +38,9 @@ export const PostSaleReviewEmail = ({
   deliveryPhotoUrl = null,
   videoUrl = 'https://everestmotoring.co.za/media/celebration',
   reviewUrl = 'https://www.google.com/search?q=Everest+Motoring',
+  // When false, this sale was not posted to social — so don't invite the
+  // customer to find their video on Facebook (it isn't there).
+  postedToSocial = true,
 }) => {
   const videoThumb = deliveryPhotoUrl || carImageUrl;
 
@@ -131,15 +134,18 @@ export const PostSaleReviewEmail = ({
                     </Section>
 
                     <Text className="text-neutral-600 text-sm leading-relaxed mt-[16px] m-0">
-                      Download the video to keep and share it with friends and family — or watch it
-                      on our Facebook page and share it directly from there.
+                      {postedToSocial
+                        ? 'Download the video to keep and share it with friends and family — or watch it on our Facebook page and share it directly from there.'
+                        : 'Download the video to keep and share it with friends and family.'}
                     </Text>
 
-                    <Text className="mt-[8px] m-0">
-                      <Link href={FACEBOOK_URL} className="text-black font-bold underline">
-                        View on our Facebook page
-                      </Link>
-                    </Text>
+                    {postedToSocial && (
+                      <Text className="mt-[8px] m-0">
+                        <Link href={FACEBOOK_URL} className="text-black font-bold underline">
+                          View on our Facebook page
+                        </Link>
+                      </Text>
+                    )}
                   </Column>
                 </Row>
               </Section>

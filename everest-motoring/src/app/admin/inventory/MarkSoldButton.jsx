@@ -346,6 +346,25 @@ export default function MarkSoldButton({ car }) {
                                     ></textarea>
                                 </div>
 
+                                {!existingSale && (
+                                    <label className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-lg p-4 cursor-pointer">
+                                        <input type="checkbox" name="skip_social" className="mt-1 h-4 w-4" />
+                                        <span>
+                                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to social media</span>
+                                            <span className="block text-xs text-slate-500 mt-0.5">
+                                                Skip the &ldquo;Just Sold&rdquo; celebration post. The review email won&apos;t mention
+                                                Facebook, but the customer still gets their downloadable video.
+                                            </span>
+                                        </span>
+                                    </label>
+                                )}
+
+                                {existingSale?.skip_social && (
+                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                        Social posting disabled for this sale
+                                    </div>
+                                )}
+
                                 <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                                     <button
                                         type="button"

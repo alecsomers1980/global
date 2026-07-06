@@ -177,6 +177,9 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                         <SeoFixButton car={car} />
                                         <SocialPostButton car={car} />
                                         <MarkSoldButton car={car} />
+                                        <a href={`/api/admin/flyer/${car.id}`} download className="text-slate-400 hover:text-primary transition-colors p-2" title="Download A4 Flyer">
+                                            <span className="material-symbols-outlined">wallpaper</span>
+                                        </a>
                                         <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-primary transition-colors p-2" title="Edit Vehicle">
                                             <span className="material-symbols-outlined">edit</span>
                                         </a>

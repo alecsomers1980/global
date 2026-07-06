@@ -53,6 +53,7 @@ export default async function AdminLayout({ children }) {
                     <nav className="hidden lg:flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.3em]">
                         <a href="/admin" className="text-white hover:text-primary transition-all">Dashboard</a>
                         <a href="/admin/inventory" className="text-slate-400 hover:text-white transition-all">Inventory</a>
+                        <a href="/admin/sales" className="text-slate-400 hover:text-white transition-all">Sales</a>
                         <a href="/admin/news" className="text-slate-400 hover:text-white transition-all">News</a>
                         <a href="/admin/leads" className="text-slate-400 hover:text-white transition-all">Car Inquiries</a>
                         <a href="/admin/trade-ins" className="text-slate-400 hover:text-white transition-all">Trade-In Requests</a>
@@ -71,6 +72,12 @@ export default async function AdminLayout({ children }) {
                         <span className="material-symbols-outlined text-[18px]">public</span>
                         View Site
                     </a>
+                    <form action="/auth/logout" method="POST">
+                        <button type="submit" className="text-slate-400 hover:text-white transition-all flex items-center gap-2 font-black uppercase tracking-widest text-[10px] bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                            <span className="material-symbols-outlined text-[18px]">logout</span>
+                            Sign Out
+                        </button>
+                    </form>
                 </div>
             </div>
 

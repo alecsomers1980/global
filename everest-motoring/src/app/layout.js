@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className={`${microgramme.variable} bg-background-light text-slate-900 font-body antialiased selection:bg-primary/20 selection:text-primary`}>
+      <body className={`${microgramme.variable} bg-background-light text-slate-900 font-body antialiased selection:bg-slate-800 selection:text-white`}>
         <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
           <Header siteConfig={siteConfig} />
           <main className="flex-1 flex flex-col">{children}</main>

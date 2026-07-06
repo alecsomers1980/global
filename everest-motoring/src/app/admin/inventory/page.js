@@ -92,6 +92,10 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <SeoBatchButton />
+                    <a href="/admin/sales" className="bg-white border border-slate-300 hover:bg-slate-50 transition-all px-6 py-3 rounded-xl font-black text-slate-800 shadow-sm flex items-center gap-2 active:scale-95">
+                        <span className="material-symbols-outlined text-[20px]">sell</span>
+                        Off-Inventory Sale
+                    </a>
                     <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-all px-6 py-3 rounded-xl font-black text-black shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95">
                         <span className="material-symbols-outlined text-[20px]">add</span>
                         Add Vehicle

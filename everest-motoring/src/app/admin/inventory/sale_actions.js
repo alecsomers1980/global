@@ -58,6 +58,23 @@ export async function getSaleForCar(carId) {
     return data;
 }
 
+// Sales for vehicles that were never in the inventory (car_id is null). Used by
+// the off-inventory sales page so they can still be managed (handover video etc.).
+export async function getOfflineSales() {
+    await requireAdmin();
+    const admin = await createAdminClient();
+    const { data, error } = await admin
+        .from("sales")
+        .select("*")
+        .is("car_id", null)
+        .order("created_at", { ascending: false });
+    if (error) {
+        console.error("getOfflineSales error:", error);
+        return [];
+    }
+    return data || [];
+}
+
 // Attach (or replace) the delivery photo on an existing sale — used when a sale
 // was recorded without a photo and we now want to create a handover video that
 // includes the buyer.
@@ -112,6 +129,7 @@ async function markCarAsSoldInner(formData) {
     const buyerPhone = formData.get("buyer_phone") || null;
     const buyerBirthday = formData.get("buyer_birthday") || null;
     const notes = formData.get("notes") || null;
+    const skipSocial = !!formData.get("skip_social");
     const photoFile = formData.get("delivery_photo");
 
     if (!carId || !buyerName) {
@@ -167,6 +185,7 @@ async function markCarAsSoldInner(formData) {
             buyer_birthday: buyerBirthday,
             delivery_photo_url: deliveryPhotoUrl,
             notes,
+            skip_social: skipSocial,
             sold_at: sold_at.toISOString(),
             review_email_scheduled_for: willEmail ? scheduledFor.toISOString() : null,
             created_by: user.id,
@@ -227,6 +246,7 @@ async function markCarAsSoldInner(formData) {
                     carImageUrl: car.main_image_url,
                     deliveryPhotoUrl,
                     reviewUrl,
+                    postedToSocial: !skipSocial,
                 }),
                 scheduledAt: scheduledFor.toISOString(),
             });
@@ -249,13 +269,124 @@ async function markCarAsSoldInner(formData) {
     return { success: true };
 }
 
+// Record a sale for a vehicle that was never listed in the inventory. Mirrors
+// markCarAsSold (review email + record) but stores the vehicle details on the
+// sale itself (car_id stays null). The handover video + social post are driven
+// later from the off-inventory sales page, reusing the same pipeline.
+export async function addOffInventorySale(formData) {
+    try {
+        const { user } = await requireAdmin();
+        const admin = await createAdminClient();
+
+        const buyerName = formData.get("buyer_name");
+        const buyerEmail = formData.get("buyer_email") || null;
+        const buyerPhone = formData.get("buyer_phone") || null;
+        const buyerBirthday = formData.get("buyer_birthday") || null;
+        const notes = formData.get("notes") || null;
+        const skipSocial = !!formData.get("skip_social");
+
+        const vehicleYearRaw = formData.get("vehicle_year");
+        const vehicleYear = vehicleYearRaw ? parseInt(vehicleYearRaw, 10) : null;
+        const vehicleMake = (formData.get("vehicle_make") || "").trim();
+        const vehicleModel = (formData.get("vehicle_model") || "").trim();
+        const vehicleImageFile = formData.get("vehicle_image");
+        const photoFile = formData.get("delivery_photo");
+
+        if (!buyerName || !vehicleMake || !vehicleModel) {
+            return { error: "Buyer name, vehicle make and model are required." };
+        }
+
+        async function uploadPublic(bucket, file) {
+            if (!file || typeof file !== "object" || file.size === 0) return null;
+            const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
+            const fileName = `offline-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const { error: upErr } = await admin.storage
+                .from(bucket)
+                .upload(fileName, file, { upsert: false, contentType: file.type || "image/jpeg" });
+            if (upErr) {
+                console.error(`Upload to ${bucket} failed:`, upErr);
+                return null;
+            }
+            return admin.storage.from(bucket).getPublicUrl(fileName).data.publicUrl;
+        }
+
+        const vehicleImageUrl = await uploadPublic("vehicles", vehicleImageFile);
+        const deliveryPhotoUrl = await uploadPublic("delivery-photos", photoFile);
+
+        const sold_at = new Date();
+        const scheduledFor = new Date(sold_at.getTime() + REVIEW_DELAY_DAYS * 24 * 60 * 60 * 1000);
+        const willEmail = !!buyerEmail;
+
+        const { data: sale, error: saleErr } = await admin
+            .from("sales")
+            .insert({
+                car_id: null,
+                buyer_name: buyerName,
+                buyer_email: buyerEmail,
+                buyer_phone: buyerPhone,
+                buyer_birthday: buyerBirthday,
+                vehicle_year: vehicleYear,
+                vehicle_make: vehicleMake,
+                vehicle_model: vehicleModel,
+                vehicle_image_url: vehicleImageUrl,
+                delivery_photo_url: deliveryPhotoUrl,
+                notes,
+                skip_social: skipSocial,
+                sold_at: sold_at.toISOString(),
+                review_email_scheduled_for: willEmail ? scheduledFor.toISOString() : null,
+                created_by: user.id,
+            })
+            .select()
+            .single();
+        if (saleErr) {
+            console.error("Off-inventory sale insert error:", saleErr);
+            return { error: "Failed to record sale." };
+        }
+
+        if (willEmail) {
+            const reviewUrl =
+                process.env.GOOGLE_REVIEW_URL ||
+                "https://www.google.com/search?q=Everest+Motoring+White+River";
+            const vehicleModelLabel = [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ");
+            try {
+                const result = await sendEmail({
+                    to: buyerEmail,
+                    subject: `Congratulations on your ${vehicleModelLabel}`,
+                    react: React.createElement(PostSaleReviewEmail, {
+                        customerName: buyerName,
+                        vehicleModel: vehicleModelLabel,
+                        carImageUrl: vehicleImageUrl,
+                        deliveryPhotoUrl,
+                        reviewUrl,
+                        postedToSocial: !skipSocial,
+                    }),
+                    scheduledAt: scheduledFor.toISOString(),
+                });
+                if (result.success && result.data?.id) {
+                    await admin.from("sales").update({ review_email_id: result.data.id }).eq("id", sale.id);
+                } else if (!result.success) {
+                    console.warn("Off-inventory review email scheduling failed (sale still recorded):", result.error);
+                }
+            } catch (err) {
+                console.warn("Off-inventory review email scheduling threw (sale still recorded):", err);
+            }
+        }
+
+        revalidatePath("/admin/sales");
+        return { success: true, saleId: sale.id };
+    } catch (err) {
+        console.error("addOffInventorySale unexpected error:", err);
+        return { error: `Server error: ${err?.message || String(err)}` };
+    }
+}
+
 export async function startSaleVideo(saleId, styleKey) {
     await requireAdmin();
     const admin = await createAdminClient();
 
     const { data: sale, error: saleErr } = await admin
         .from("sales")
-        .select("id, buyer_name, delivery_photo_url, car_id, sale_video_status")
+        .select("id, buyer_name, delivery_photo_url, car_id, vehicle_image_url, sale_video_status")
         .eq("id", saleId)
         .single();
     if (saleErr || !sale) return { error: "Sale not found." };
@@ -264,24 +395,29 @@ export async function startSaleVideo(saleId, styleKey) {
     }
 
     // With a delivery photo -> Pixel Build that animates the people in it.
-    // Without one -> the car's main image with the car-only Pixel Build (no
-    // people added). Either way the clip is generated silently and a
-    // congratulations voiceover is added once it's ready (no on-screen text).
+    // Without one -> the vehicle's main image with the car-only Pixel Build (no
+    // people added). For off-inventory sales (no car_id) the vehicle image stored
+    // on the sale stands in for the car's main image. Either way the clip is
+    // generated silently and a congratulations voiceover is added once it's ready.
     let imageUrl = sale.delivery_photo_url;
     let promptStyle;
     if (imageUrl) {
         promptStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
     } else {
-        const { data: car } = await admin
-            .from("cars")
-            .select("main_image_url")
-            .eq("id", sale.car_id)
-            .single();
-        imageUrl = car?.main_image_url || null;
+        if (sale.car_id) {
+            const { data: car } = await admin
+                .from("cars")
+                .select("main_image_url")
+                .eq("id", sale.car_id)
+                .single();
+            imageUrl = car?.main_image_url || null;
+        } else {
+            imageUrl = sale.vehicle_image_url || null;
+        }
         promptStyle = "pixel_build_car_only";
     }
     if (!imageUrl) {
-        return { error: "No delivery photo, and this vehicle has no main image to use." };
+        return { error: "No delivery photo, and this vehicle has no image to use." };
     }
 
     const prompt = buildSeedancePrompt(promptStyle, { buyerName: sale.buyer_name });
@@ -338,7 +474,7 @@ export async function pollSaleVideo(saleId) {
 
     const { data: sale } = await admin
         .from("sales")
-        .select("id, car_id, buyer_name, buyer_email, delivery_photo_url, sale_video_task_id, sale_video_status, sale_video_url, review_email_id, review_email_sent_at, review_email_scheduled_for")
+        .select("id, car_id, buyer_name, buyer_email, delivery_photo_url, vehicle_year, vehicle_make, vehicle_model, vehicle_image_url, skip_social, sale_video_task_id, sale_video_status, sale_video_url, review_email_id, review_email_sent_at, review_email_scheduled_for")
         .eq("id", saleId)
         .single();
     if (!sale) return { error: "Sale not found." };
@@ -359,20 +495,31 @@ export async function pollSaleVideo(saleId) {
         // Claim finalization first so a concurrent poll doesn't re-mux.
         await admin.from("sales").update({ sale_video_status: "finalizing" }).eq("id", saleId);
 
+        // Resolve the vehicle label + image from either the inventory car or the
+        // off-inventory fields stored on the sale itself.
+        let vehicleLabel = "";
+        let carImageUrl = null;
+        if (sale.car_id) {
+            const { data: car } = await admin
+                .from("cars")
+                .select("make, model, year, main_image_url")
+                .eq("id", sale.car_id)
+                .single();
+            vehicleLabel = car ? `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim() : "";
+            carImageUrl = car?.main_image_url || null;
+        } else {
+            vehicleLabel = [sale.vehicle_year, sale.vehicle_make, sale.vehicle_model].filter(Boolean).join(" ");
+            carImageUrl = sale.vehicle_image_url || null;
+        }
+
         // Add the congratulations voiceover onto the (silent) Pixel Build clip.
         // Best-effort: if it fails, fall back to the silent clip rather than
         // failing the whole sale video.
         let finalUrl = result.videoUrl;
         try {
-            const { data: car } = await admin
-                .from("cars")
-                .select("make, model, year")
-                .eq("id", sale.car_id)
-                .single();
-            const carLabel = car ? `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim() : "vehicle";
             finalUrl = await addCongratsVoiceover(result.videoUrl, {
                 fullName: sale.buyer_name,
-                carLabel,
+                carLabel: vehicleLabel,
                 carId: sale.car_id,
             });
         } catch (voErr) {
@@ -397,9 +544,11 @@ export async function pollSaleVideo(saleId) {
                     oldEmailId: sale.review_email_id,
                     buyerEmail: sale.buyer_email,
                     buyerName: sale.buyer_name,
-                    carId: sale.car_id,
+                    vehicleModel: vehicleLabel || "your new vehicle",
+                    carImageUrl,
                     deliveryPhotoUrl: sale.delivery_photo_url,
                     videoUrl: finalUrl,
+                    postedToSocial: !sale.skip_social,
                     scheduledFor,
                 });
             }
@@ -427,7 +576,7 @@ export async function pollSaleVideo(saleId) {
     return { status: "generating" };
 }
 
-async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, buyerName, carId, deliveryPhotoUrl, videoUrl, scheduledFor }) {
+async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, buyerName, vehicleModel, carImageUrl, deliveryPhotoUrl, videoUrl, postedToSocial = true, scheduledFor }) {
     const admin = await createAdminClient();
 
     // Cancel the old scheduled email — Resend doesn't allow content updates on scheduled mail.
@@ -438,12 +587,6 @@ async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, 
         console.warn("Failed to cancel previous review email (continuing to schedule new):", err);
     }
 
-    const { data: car } = await admin
-        .from("cars")
-        .select("make, model, year, main_image_url")
-        .eq("id", carId)
-        .single();
-    const vehicleModel = car ? `${car.year} ${car.make} ${car.model}` : "your new vehicle";
     const reviewUrl =
         process.env.GOOGLE_REVIEW_URL ||
         "https://www.google.com/search?q=Everest+Motoring+White+River";
@@ -454,10 +597,11 @@ async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, 
         react: React.createElement(PostSaleReviewEmail, {
             customerName: buyerName,
             vehicleModel,
-            carImageUrl: car?.main_image_url,
+            carImageUrl,
             deliveryPhotoUrl,
             videoUrl,
             reviewUrl,
+            postedToSocial,
         }),
         scheduledAt: scheduledFor.toISOString(),
     });

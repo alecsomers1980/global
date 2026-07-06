@@ -243,17 +243,20 @@ export async function postSoldVideoToEmber(saleId) {
   try {
     const admin = await createAdminClient();
 
-    // Atomic claim: update social_post_created_at only if null
+    // Atomic claim: update social_post_created_at only if null AND the sale is
+    // allowed on social. When skip_social is true (client opted out) the filter
+    // matches no rows, so nothing is claimed and no post is ever created.
     const { data: claimed } = await admin
       .from("sales")
       .update({ social_post_created_at: new Date().toISOString() })
       .eq("id", saleId)
+      .eq("skip_social", false)
       .is("social_post_created_at", null)
       .select(
-        "id, car_id, buyer_name, sale_video_url, sale_video_status, sold_at, review_email_scheduled_for"
+        "id, car_id, buyer_name, vehicle_year, vehicle_make, vehicle_model, sale_video_url, sale_video_status, sold_at, review_email_scheduled_for"
       );
 
-    if (!claimed || claimed.length === 0) return; // already posted or claimed elsewhere
+    if (!claimed || claimed.length === 0) return; // opted out, already posted, or claimed elsewhere
     const sale = claimed[0];
 
     // Video must be ready before posting
@@ -265,15 +268,21 @@ export async function postSoldVideoToEmber(saleId) {
       return;
     }
 
-    // Look up the car details
-    const { data: car } = await admin
-      .from("cars")
-      .select("make, model, year")
-      .eq("id", sale.car_id)
-      .single();
-    const label = car
-      ? [car.year, car.make, car.model].filter(Boolean).join(" ")
-      : "their new car";
+    // Resolve the vehicle label from the inventory car or, for off-inventory
+    // sales, the fields stored on the sale itself.
+    let label;
+    if (sale.car_id) {
+      const { data: car } = await admin
+        .from("cars")
+        .select("make, model, year")
+        .eq("id", sale.car_id)
+        .single();
+      label = car ? [car.year, car.make, car.model].filter(Boolean).join(" ") : "their new car";
+    } else {
+      label =
+        [sale.vehicle_year, sale.vehicle_make, sale.vehicle_model].filter(Boolean).join(" ") ||
+        "their new car";
+    }
 
     // Compute target posting time: 08:00 SAST (UTC+2) on the review-email day
     const base = sale.review_email_scheduled_for
