@@ -83,21 +83,25 @@ export async function addDeliveryPhotoToSale(formData) {
     const admin = await createAdminClient();
 
     const saleId = formData.get("sale_id");
-    const file = formData.get("delivery_photo");
     if (!saleId) return { error: "Missing sale." };
-    if (!file || typeof file !== "object" || file.size === 0) {
-        return { error: "Please choose a photo to upload." };
+
+    // Two paths: a client-uploaded URL (large photos, bypasses the request-body
+    // limit) or a raw file posted through the action (legacy MarkSoldButton path).
+    let url = formData.get("delivery_photo_url") || null;
+
+    if (!url) {
+        const file = formData.get("delivery_photo");
+        if (!file || typeof file !== "object" || file.size === 0) {
+            return { error: "Please choose a photo to upload." };
+        }
+        const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
+        const fileName = `${saleId}-${Date.now()}.${ext}`;
+        const { error: upErr } = await admin.storage
+            .from("delivery-photos")
+            .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
+        if (upErr) return { error: `Upload failed: ${upErr.message}` };
+        url = admin.storage.from("delivery-photos").getPublicUrl(fileName).data.publicUrl;
     }
-
-    const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
-    const fileName = `${saleId}-${Date.now()}.${ext}`;
-    const { error: upErr } = await admin.storage
-        .from("delivery-photos")
-        .upload(fileName, file, { contentType: file.type || "image/jpeg", upsert: true });
-    if (upErr) return { error: `Upload failed: ${upErr.message}` };
-
-    const { data: urlData } = admin.storage.from("delivery-photos").getPublicUrl(fileName);
-    const url = urlData.publicUrl;
 
     const { error: updErr } = await admin
         .from("sales")
@@ -289,29 +293,15 @@ export async function addOffInventorySale(formData) {
         const vehicleYear = vehicleYearRaw ? parseInt(vehicleYearRaw, 10) : null;
         const vehicleMake = (formData.get("vehicle_make") || "").trim();
         const vehicleModel = (formData.get("vehicle_model") || "").trim();
-        const vehicleImageFile = formData.get("vehicle_image");
-        const photoFile = formData.get("delivery_photo");
+        // Images are uploaded to Supabase storage on the client (like VehicleForm)
+        // and only their URLs are sent here — server actions can't accept files
+        // larger than the platform request-body cap.
+        const vehicleImageUrl = formData.get("vehicle_image_url") || null;
+        const deliveryPhotoUrl = formData.get("delivery_photo_url") || null;
 
         if (!buyerName || !vehicleMake || !vehicleModel) {
             return { error: "Buyer name, vehicle make and model are required." };
         }
-
-        async function uploadPublic(bucket, file) {
-            if (!file || typeof file !== "object" || file.size === 0) return null;
-            const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
-            const fileName = `offline-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-            const { error: upErr } = await admin.storage
-                .from(bucket)
-                .upload(fileName, file, { upsert: false, contentType: file.type || "image/jpeg" });
-            if (upErr) {
-                console.error(`Upload to ${bucket} failed:`, upErr);
-                return null;
-            }
-            return admin.storage.from(bucket).getPublicUrl(fileName).data.publicUrl;
-        }
-
-        const vehicleImageUrl = await uploadPublic("vehicles", vehicleImageFile);
-        const deliveryPhotoUrl = await uploadPublic("delivery-photos", photoFile);
 
         const sold_at = new Date();
         const scheduledFor = new Date(sold_at.getTime() + REVIEW_DELAY_DAYS * 24 * 60 * 60 * 1000);

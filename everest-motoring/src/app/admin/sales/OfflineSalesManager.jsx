@@ -1,8 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 import { addOffInventorySale, addDeliveryPhotoToSale } from "../inventory/sale_actions";
 import SaleVideoPicker from "../inventory/SaleVideoPicker";
+
+// Upload an image straight to Supabase storage from the browser so large photos
+// don't hit the server-action / platform request-body limit. Returns the public
+// URL (or null when no file was chosen).
+async function uploadImage(supabase, bucket, file) {
+    if (!file || file.size === 0) return null;
+    const ext = (file.name?.split(".").pop() || "jpg").toLowerCase();
+    const fileName = `offline-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, { contentType: file.type || "image/jpeg" });
+    if (error) throw new Error(`Image upload failed: ${error.message}`);
+    return supabase.storage.from(bucket).getPublicUrl(fileName).data.publicUrl;
+}
 
 function vehicleLabel(sale) {
     return [sale.vehicle_year, sale.vehicle_make, sale.vehicle_model].filter(Boolean).join(" ") || "Vehicle";
@@ -94,6 +109,20 @@ function AddSaleModal({ onClose }) {
         setSubmitting(true);
         try {
             const fd = new FormData(e.target);
+            const vehicleFile = fd.get("vehicle_image");
+            const deliveryFile = fd.get("delivery_photo");
+            // Upload images client-side, then send only their URLs to the action.
+            fd.delete("vehicle_image");
+            fd.delete("delivery_photo");
+
+            const supabase = createClient();
+            const [vehicleImageUrl, deliveryPhotoUrl] = await Promise.all([
+                uploadImage(supabase, "vehicles", vehicleFile),
+                uploadImage(supabase, "delivery-photos", deliveryFile),
+            ]);
+            if (vehicleImageUrl) fd.set("vehicle_image_url", vehicleImageUrl);
+            if (deliveryPhotoUrl) fd.set("delivery_photo_url", deliveryPhotoUrl);
+
             const result = await addOffInventorySale(fd);
             if (result?.error) {
                 alert(result.error);
@@ -209,9 +238,11 @@ function ManageSaleModal({ sale: initialSale, onClose }) {
         if (!file) return;
         setPhotoUploading(true);
         try {
+            const supabase = createClient();
+            const url = await uploadImage(supabase, "delivery-photos", file);
             const fd = new FormData();
             fd.set("sale_id", sale.id);
-            fd.set("delivery_photo", file);
+            fd.set("delivery_photo_url", url);
             const res = await addDeliveryPhotoToSale(fd);
             if (res?.error) {
                 alert(res.error);
