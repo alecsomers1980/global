@@ -23,6 +23,8 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'entry_number', type: 'VARCHAR(255)' },
     { name: 'date', type: 'VARCHAR(255)' },
     { name: 'compiled_by', type: 'TEXT' },
+    { name: 'quote_number', type: 'VARCHAR(255)' },
+    { name: 'purchase_order_number', type: 'VARCHAR(255)' },
 
     // Design grid
     { name: 'design_notes', type: 'TEXT' },
@@ -120,6 +122,8 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'screen_details_json', type: 'JSONB' },
     { name: 'applicate_details_json', type: 'JSONB' },
     { name: 'digital_details_json', type: "JSONB DEFAULT '{}'::jsonb" },
+    { name: 'outsource_details_json', type: "JSONB DEFAULT '[]'::jsonb" },
+    { name: 'install_tools_json', type: "JSONB DEFAULT '{}'::jsonb" },
     { name: 'department_completion_json', type: "JSONB DEFAULT '{}'::jsonb" },
 ];
 

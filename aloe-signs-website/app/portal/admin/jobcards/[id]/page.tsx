@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
-import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexRate, computeHpLatexCharge, getVinylCutMaterials, computeVinylCutCharge, syncAutoLines } from '@/lib/jobcard-charges';
+import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexCharge, getHpLatexRows, getHpLatexRowRate, getVinylCutMaterials, getVinylCutRowRate, computeVinylCutCharge, syncAutoLines } from '@/lib/jobcard-charges';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
@@ -414,6 +414,59 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         }));
     };
 
+    const handleAddHpLatexRow = () => {
+        setJobcard((prev: any) => {
+            const rows = Array.isArray(prev.digital_details_json?.rows) ? prev.digital_details_json.rows : [];
+            return { ...prev, digital_details_json: { ...(prev.digital_details_json || {}), rows: [...rows, { material: '', meters: '' }] } };
+        });
+    };
+
+    const handleHpLatexRowChange = (index: number, field: string, value: string) => {
+        setJobcard((prev: any) => {
+            const rows = Array.isArray(prev.digital_details_json?.rows) ? [...prev.digital_details_json.rows] : [];
+            if (!rows[index]) rows[index] = { material: '', meters: '' };
+            rows[index] = { ...rows[index], [field]: value };
+            return { ...prev, digital_details_json: { ...(prev.digital_details_json || {}), rows } };
+        });
+    };
+
+    const handleRemoveHpLatexRow = (index: number) => {
+        setJobcard((prev: any) => {
+            const rows = Array.isArray(prev.digital_details_json?.rows) ? prev.digital_details_json.rows.filter((_: any, i: number) => i !== index) : [];
+            return { ...prev, digital_details_json: { ...(prev.digital_details_json || {}), rows } };
+        });
+    };
+
+    const handleToolToggle = (key: string) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            install_tools_json: { ...(prev.install_tools_json || {}), [key]: !prev.install_tools_json?.[key] },
+        }));
+    };
+
+    const handleAddOutsourceRow = () => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            outsource_details_json: [...(Array.isArray(prev.outsource_details_json) ? prev.outsource_details_json : []), { company: '', date_sent: '', return_date: '' }],
+        }));
+    };
+
+    const handleOutsourceRowChange = (index: number, field: string, value: string) => {
+        setJobcard((prev: any) => {
+            const rows = Array.isArray(prev.outsource_details_json) ? [...prev.outsource_details_json] : [];
+            if (!rows[index]) rows[index] = { company: '', date_sent: '', return_date: '' };
+            rows[index] = { ...rows[index], [field]: value };
+            return { ...prev, outsource_details_json: rows };
+        });
+    };
+
+    const handleRemoveOutsourceRow = (index: number) => {
+        setJobcard((prev: any) => ({
+            ...prev,
+            outsource_details_json: Array.isArray(prev.outsource_details_json) ? prev.outsource_details_json.filter((_: any, i: number) => i !== index) : [],
+        }));
+    };
+
     const handleApplicateChange = (name: string, value: any) => {
         setJobcard((prev: any) => ({
             ...prev,
@@ -814,6 +867,8 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         {/* Job Info (Block 3) */}
                         <div className="w-full lg:w-[35%] border-b lg:border-b-0 lg:border-r border-black flex flex-col">
                             <InputLine label="Invoice:" name="invoice" jobcard={jobcard} handleChange={handleChange} />
+                            <InputLine label="Quote No:" name="quote_number" jobcard={jobcard} handleChange={handleChange} />
+                            <InputLine label="PO No:" name="purchase_order_number" jobcard={jobcard} handleChange={handleChange} />
                             <div className="flex border-b border-gray-300 flex-1">
                                 <span className="w-24 uppercase text-[10px] text-gray-500 font-bold py-2 px-2 border-r border-gray-300 flex items-start bg-gray-50">Address:</span>
                                 <textarea name="address" value={jobcard.address || ''} onChange={handleChange} className="flex-1 py-1 px-3 text-sm focus:outline-none focus:bg-blue-50 bg-white font-medium resize-none text-gray-800 h-full" rows={2} />
@@ -1211,58 +1266,52 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     )}
                                     <DeptRow label="HP Latex" name="prod_digital" deptKey="digital" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_digital && (
-                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
-                                            <div className="grid grid-cols-2 gap-x-2 py-2">
-                                                {getHpLatexMaterials(settings).map(m => (
-                                                    <label key={m.name} className="flex items-center justify-between px-3 py-1 hover:bg-gray-50 cursor-pointer">
-                                                        <span className="text-[10px] font-medium text-gray-700">
-                                                            {m.name} <span className="text-[9px] text-gray-400 ml-1">R {m.price}</span>
-                                                        </span>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m.name)}
-                                                            onChange={() => handleMaterialToggle(m.name)}
-                                                            className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
-                                                        />
-                                                    </label>
-                                                ))}
+                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-2 text-xs overflow-x-auto">
+                                            <table className="w-full text-left">
+                                                <thead>
+                                                    <tr className="border-b border-gray-300">
+                                                        <th className="p-1 font-bold text-gray-500 uppercase">Material</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-16">Meters</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-20">Cost</th>
+                                                        <th className="p-1 w-8"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(getHpLatexRows(jobcard).length > 0 ? getHpLatexRows(jobcard) : [{ material: '', meters: '' }]).map((row: any, idx: number) => (
+                                                        <tr key={idx} className="border-b border-gray-100 align-top">
+                                                            <td className="p-1">
+                                                                <select value={row.material || ''} onChange={e => handleHpLatexRowChange(idx, 'material', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800">
+                                                                    <option value="">Select material...</option>
+                                                                    {getHpLatexMaterials(settings).map(m => (
+                                                                        <option key={m.name} value={m.name}>{m.name} (R {m.price})</option>
+                                                                    ))}
+                                                                </select>
+                                                                {row.material === 'Other' && (
+                                                                    <div className="flex gap-1 mt-1">
+                                                                        <input type="text" placeholder="Name..." value={row.type_other || ''} onChange={e => handleHpLatexRowChange(idx, 'type_other', e.target.value)} className="w-1/2 border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                        <input type="number" step="0.01" min="0" placeholder="R/m" value={row.custom_price || ''} onChange={e => handleHpLatexRowChange(idx, 'custom_price', e.target.value)} className="w-1/2 border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                                    </div>
+                                                                )}
+                                                            </td>
+                                                            <td className="p-1">
+                                                                <input type="number" step="0.01" min="0" value={row.meters || ''} onChange={e => handleHpLatexRowChange(idx, 'meters', e.target.value)} placeholder="Meters" className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                            </td>
+                                                            <td className="p-1 text-gray-700 font-medium whitespace-nowrap">
+                                                                R {((parseFloat(row.meters) || 0) * getHpLatexRowRate(row, settings)).toFixed(2)}
+                                                            </td>
+                                                            <td className="p-1 text-center">
+                                                                <button type="button" onClick={() => handleRemoveHpLatexRow(idx)} className="text-gray-300 hover:text-red-500" title="Remove">✕</button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            <button type="button" onClick={handleAddHpLatexRow} className="mt-2 w-full py-1 border border-dashed border-gray-300 rounded text-[11px] font-medium text-gray-500 hover:border-black hover:text-black">+ Add product</button>
+                                            <div className="mt-2 border-t border-gray-200 pt-2">
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Date Printed</label>
+                                                <input type="date" value={jobcard.digital_details_json?.print_date ?? ''} onChange={(e) => handleDigitalChange('print_date', e.target.value)} className="w-40 border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50" />
                                             </div>
-                                            {Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes('Other') && (
-                                                <div className="px-3 pb-3">
-                                                    <input 
-                                                        type="text" 
-                                                        name="materials_other_text"
-                                                        value={jobcard.materials_other_text || ''} 
-                                                        onChange={handleChange}
-                                                        placeholder="Specify other material..."
-                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="px-3 pb-3 pt-1 grid grid-cols-2 gap-3 border-t border-gray-200 mt-1">
-                                                <div>
-                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Running Meters</label>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        min="0"
-                                                        value={jobcard.digital_details_json?.running_meters ?? ''}
-                                                        onChange={(e) => handleDigitalChange('running_meters', e.target.value)}
-                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Date Printed</label>
-                                                    <input
-                                                        type="date"
-                                                        value={jobcard.digital_details_json?.print_date ?? ''}
-                                                        onChange={(e) => handleDigitalChange('print_date', e.target.value)}
-                                                        className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="px-3 pb-3 text-xs flex items-center justify-between border-t border-gray-200 pt-2">
-                                                <span className="text-[10px] uppercase font-bold text-gray-500">Rate: R {computeHpLatexRate(jobcard, settings).toFixed(2)}/m</span>
+                                            <div className="px-1 pt-2 text-xs flex items-center justify-end border-t border-gray-200 mt-2">
                                                 <span className="font-bold text-gray-700">Charge: R {computeHpLatexCharge(jobcard, settings).toFixed(2)}</span>
                                             </div>
                                         </div>
@@ -1278,8 +1327,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                 <thead>
                                                     <tr className="border-b border-gray-300">
                                                         <th className="p-1 font-bold text-gray-500 uppercase w-16">R.Meters</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">Width</th>
-                                                        <th className="p-1 font-bold text-gray-500 uppercase w-1/2">Material</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase">Width</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase">Material</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-20">Cost</th>
+                                                        <th className="p-1 w-8"></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1307,10 +1358,17 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                                     </div>
                                                                 )}
                                                             </td>
+                                                            <td className="p-1 align-top block sm:table-cell w-full sm:w-auto text-gray-700 font-medium whitespace-nowrap">
+                                                                R {((parseFloat(row.qty) || 0) * getVinylCutRowRate(row, settings)).toFixed(2)}
+                                                            </td>
+                                                            <td className="p-1 align-top block sm:table-cell text-center">
+                                                                <button type="button" onClick={() => handleRemoveVinylRow(idx)} className="text-gray-300 hover:text-red-500" title="Remove">✕</button>
+                                                            </td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
                                             </table>
+                                            <button type="button" onClick={handleAddVinylRow} className="mt-2 w-full py-1 border border-dashed border-gray-300 rounded text-[11px] font-medium text-gray-500 hover:border-black hover:text-black">+ Add product</button>
                                             <div className="p-1 w-full mt-2 border-t border-gray-200 pt-2">
                                                 <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Specs</label>
                                                 {((Array.isArray(jobcard.vinyl_cut_details_json) && jobcard.vinyl_cut_details_json.length > 0) ? jobcard.vinyl_cut_details_json : [{ qty: '', width: '600', type: 'Mask/Pos', spec: '' }]).map((row: any, idx: number) => (
@@ -1537,6 +1595,39 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                         </div>
                                     )}
                                     <DeptRow label="Outsource" name="prod_outsource" deptKey="outsource" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
+                                    {jobcard.prod_outsource && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-purple-50/50 p-2 text-xs overflow-x-auto">
+                                            <table className="w-full text-left">
+                                                <thead>
+                                                    <tr className="border-b border-gray-300">
+                                                        <th className="p-1 font-bold text-gray-500 uppercase">Company</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-28">Date Sent</th>
+                                                        <th className="p-1 font-bold text-gray-500 uppercase w-28">Return Date</th>
+                                                        <th className="p-1 w-8"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(Array.isArray(jobcard.outsource_details_json) && jobcard.outsource_details_json.length > 0 ? jobcard.outsource_details_json : [{ company: '', date_sent: '', return_date: '' }]).map((row: any, idx: number) => (
+                                                        <tr key={idx} className="border-b border-gray-100 align-top">
+                                                            <td className="p-1">
+                                                                <input type="text" value={row.company || ''} onChange={e => handleOutsourceRowChange(idx, 'company', e.target.value)} placeholder="Company..." className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                            </td>
+                                                            <td className="p-1">
+                                                                <input type="date" value={row.date_sent || ''} onChange={e => handleOutsourceRowChange(idx, 'date_sent', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                            </td>
+                                                            <td className="p-1">
+                                                                <input type="date" value={row.return_date || ''} onChange={e => handleOutsourceRowChange(idx, 'return_date', e.target.value)} className="w-full border border-gray-300 p-1 focus:outline-none bg-white text-gray-800" />
+                                                            </td>
+                                                            <td className="p-1 text-center">
+                                                                <button type="button" onClick={() => handleRemoveOutsourceRow(idx)} className="text-gray-300 hover:text-red-500" title="Remove">✕</button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                            <button type="button" onClick={handleAddOutsourceRow} className="mt-2 w-full py-1 border border-dashed border-gray-300 rounded text-[11px] font-medium text-gray-500 hover:border-black hover:text-black">+ Add company</button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -1559,33 +1650,54 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 
                                 <Toggle label="Installation" name="track_installation" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_installation && (
-                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-3">
+                                        <span className="text-[10px] uppercase font-bold text-gray-500 block">Installation address &amp; vehicles</span>
                                         <textarea name="installation_address" value={jobcard.installation_address || ''} onChange={handleChange} placeholder="Installation Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-3 gap-2">
                                             <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_bakkie" checked={!!jobcard.install_bakkie} onChange={handleChange} className="text-aloe-green" /> Bakkie</label>
                                             <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_truck" checked={!!jobcard.install_truck} onChange={handleChange} className="text-aloe-green" /> Truck</label>
                                             <label className="flex items-center gap-2 text-[10px] sm:text-xs"><input type="checkbox" name="install_trailer" checked={!!jobcard.install_trailer} onChange={handleChange} className="text-aloe-green" /> Trailer</label>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-2 mt-2">
-                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                                                <span>Riggers</span>
-                                                <input type="text" name="install_riggers" value={jobcard.install_riggers || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                        <div className="border-t border-gray-200 pt-2">
+                                            <span className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Everyone working on site</span>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Riggers</span>
+                                                    <input type="text" name="install_riggers" value={jobcard.install_riggers || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Applicators</span>
+                                                    <input type="text" name="install_applicators" value={jobcard.install_applicators || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Builders</span>
+                                                    <input type="text" name="install_builders" value={jobcard.install_builders || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Minions</span>
+                                                    <input type="text" name="install_minions" value={jobcard.install_minions || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
                                             </div>
-                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                                                <span>Applicators</span>
-                                                <input type="text" name="install_applicators" value={jobcard.install_applicators || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
-                                            </div>
-                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                                                <span>Builders</span>
-                                                <input type="text" name="install_builders" value={jobcard.install_builders || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
-                                            </div>
-                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                                                <span>Minions</span>
-                                                <input type="text" name="install_minions" value={jobcard.install_minions || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
-                                            </div>
-                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
-                                                <span>Electrical</span>
-                                                <input type="text" name="install_electrical" value={jobcard.install_electrical || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                        </div>
+                                        <div className="border-t border-gray-200 pt-2">
+                                            <span className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Tools required</span>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-1">
+                                                {[
+                                                    { key: 'basic', label: 'Basic' },
+                                                    { key: 'applicate', label: 'Applicate' },
+                                                    { key: 'electrical', label: 'Electrical' },
+                                                    { key: 'special', label: 'Special' },
+                                                    { key: 'set_build', label: 'Set Build' },
+                                                    { key: 'generator', label: 'Generator' },
+                                                    { key: 'compressor', label: 'Compressor' },
+                                                    { key: 'ladders', label: 'Ladders' },
+                                                    { key: 'scaffold', label: 'Scaffold' },
+                                                    { key: 'cherry_picker', label: 'Cherry Picker' },
+                                                ].map(tool => (
+                                                    <label key={tool.key} className="flex items-center gap-2 text-[10px] sm:text-xs cursor-pointer">
+                                                        <input type="checkbox" checked={!!jobcard.install_tools_json?.[tool.key]} onChange={() => handleToolToggle(tool.key)} className="text-aloe-green" /> {tool.label}
+                                                    </label>
+                                                ))}
                                             </div>
                                         </div>
                                         <div className="mt-2 border-t border-gray-200 pt-2 flex items-center gap-4 text-[11px] sm:text-xs font-bold text-gray-700">

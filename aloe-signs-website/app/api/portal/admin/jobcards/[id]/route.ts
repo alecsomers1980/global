@@ -128,6 +128,10 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 applicate_details_json = ${body.applicate_details_json ? JSON.stringify(body.applicate_details_json) : null},
                 digital_details_json = ${body.digital_details_json ? JSON.stringify(body.digital_details_json) : null},
                 department_completion_json = ${body.department_completion_json ? JSON.stringify(body.department_completion_json) : null},
+                quote_number = ${body.quote_number ?? null},
+                purchase_order_number = ${body.purchase_order_number ?? null},
+                outsource_details_json = ${body.outsource_details_json ? JSON.stringify(body.outsource_details_json) : null},
+                install_tools_json = ${body.install_tools_json ? JSON.stringify(body.install_tools_json) : null},
                 materials_other_text = ${body.materials_other_text ?? null}
             WHERE id = ${id}
             RETURNING *

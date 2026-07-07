@@ -39,9 +39,7 @@ export function getVinylCutMaterials(settings: any): { name: string; price600: n
 
 export function getArtworkRate(jobcard: any, settings: any): number {
   const stored = parseFloat(jobcard?.artwork_details_json?.rate);
-  if (Number.isFinite(stored) && stored > 0) {
-    return stored;
-  }
+  if (Number.isFinite(stored) && stored > 0) { return stored; }
   return Number(settings?.artwork_hourly_rate) || 250;
 }
 
@@ -53,9 +51,7 @@ export function computeArtworkCharge(jobcard: any, settings: any): number {
 export function computeHpLatexRate(jobcard: any, settings: any): number {
   const list = getHpLatexMaterials(settings);
   const selected: string[] = Array.isArray(jobcard?.materials_json) ? jobcard.materials_json : [];
-  return list
-    .filter(m => selected.includes(m.name))
-    .reduce((a, m) => a + (Number(m.price) || 0), 0);
+  return list.filter(m => selected.includes(m.name)).reduce((a, m) => a + (Number(m.price) || 0), 0);
 }
 
 export function getSelectedHpLatexNames(jobcard: any, settings: any): string[] {
@@ -64,9 +60,46 @@ export function getSelectedHpLatexNames(jobcard: any, settings: any): string[] {
   return list.filter(m => selected.includes(m.name)).map(m => m.name);
 }
 
+// HP Latex now supports multiple product rows: [{ material, meters, type_other?, custom_price? }].
+export function getHpLatexRows(jobcard: any): any[] {
+  // Use new multi-row format if available and non-empty
+  if (jobcard?.digital_details_json?.rows && Array.isArray(jobcard.digital_details_json.rows) && jobcard.digital_details_json.rows.length > 0) {
+    return jobcard.digital_details_json.rows;
+  }
+
+  // Back-compat: synthesize from old running_meters / materials_json
+  const runningMeters = jobcard?.digital_details_json?.running_meters;
+  if (!runningMeters && runningMeters !== 0) return []; // falsy and not zero -> empty
+
+  // Find first selected material that exists in the hard-coded fallback list
+  const selected: string[] = Array.isArray(jobcard?.materials_json) ? jobcard.materials_json : [];
+  const found = selected.find((name: string) => HP_LATEX_FALLBACK.some(m => m.name === name)) || '';
+
+  return [
+    {
+      material: found,
+      meters: runningMeters,
+    },
+  ];
+}
+
+export function getHpLatexRowRate(row: any, settings: any): number {
+  if (!row) return 0;
+  const materials = getHpLatexMaterials(settings);
+  if (row.material === 'Other') return parseFloat(row.custom_price) || 0;
+  const found = materials.find(m => m.name === row.material);
+  return Number(found?.price) || 0;
+}
+
 export function computeHpLatexCharge(jobcard: any, settings: any): number {
-  const meters = parseFloat(jobcard?.digital_details_json?.running_meters) || 0;
-  return meters * computeHpLatexRate(jobcard, settings);
+  const rows = getHpLatexRows(jobcard);
+  let total = 0;
+  for (const row of rows) {
+    const meters = parseFloat(row.meters) || 0;
+    const rate = getHpLatexRowRate(row, settings);
+    total += meters * rate;
+  }
+  return total;
 }
 
 // Per-meter rate for a single vinyl-cut row, based on its material + width.
@@ -92,13 +125,8 @@ export function computeVinylCutCharge(jobcard: any, settings: any): number {
   return sum;
 }
 
-export function syncAutoLines(jobcard: any, settings: any): {
-  items_json: any[];
-  sub_total: string;
-  vat_total: string;
-  total: string;
-} {
-  let items = (Array.isArray(jobcard?.items_json) ? jobcard.items_json : []).filter(
+export function syncAutoLines(jobcard: any, settings: any): { items_json: any[]; sub_total: string; vat_total: string; total: string; } {
+  const items = (Array.isArray(jobcard?.items_json) ? jobcard.items_json : []).filter(
     (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex' && it._auto !== 'vinyl_cut'
   );
 
@@ -120,24 +148,23 @@ export function syncAutoLines(jobcard: any, settings: any): {
     }
   }
 
-  // HP Latex line — show the material name in the Item column (itemCustom so it isn't
-  // hidden by the dropdown, which only lists JOBCARD_ITEM_OPTIONS).
+  // HP Latex — one line per product row.
   if (jobcard?.prod_digital) {
-    const meters = parseFloat(jobcard?.digital_details_json?.running_meters) || 0;
-    if (meters > 0) {
-      const rate = computeHpLatexRate(jobcard, settings);
-      if (rate > 0) {
-        const names = getSelectedHpLatexNames(jobcard, settings);
-        const charge = meters * rate;
+    const hpRows = getHpLatexRows(jobcard);
+    for (const row of hpRows) {
+      const meters = parseFloat(row.meters) || 0;
+      const rate = getHpLatexRowRate(row, settings);
+      if (meters > 0 && rate > 0) {
+        const matName = row.material === 'Other' ? (row.type_other || 'Other') : row.material;
         items.push({
           _auto: 'hp_latex',
-          item: names.length ? `HP Latex — ${names.join(', ')}` : 'HP Latex Print',
+          item: `HP Latex — ${matName}`,
           itemCustom: 'true',
-          quantity: String(jobcard.digital_details_json?.running_meters ?? ''),
+          quantity: String(row.meters),
           size: '',
           description: 'HP Latex print',
           price: String(rate),
-          total: charge.toFixed(2),
+          total: (meters * rate).toFixed(2),
         });
       }
     }
@@ -181,11 +208,5 @@ export function syncAutoLines(jobcard: any, settings: any): {
   const subtotal = items.reduce((a: number, it: any) => a + (parseFloat(it.total) || 0), 0);
   const vat = subtotal * 0.15;
   const total = subtotal + vat;
-
-  return {
-    items_json: items,
-    sub_total: subtotal.toFixed(2),
-    vat_total: vat.toFixed(2),
-    total: total.toFixed(2),
-  };
+  return { items_json: items, sub_total: subtotal.toFixed(2), vat_total: vat.toFixed(2), total: total.toFixed(2) };
 }
