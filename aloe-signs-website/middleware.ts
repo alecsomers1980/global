@@ -12,10 +12,22 @@ export async function middleware(request: NextRequest) {
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => request.cookies.getAll().map(c => ({ name: c.name, value: c.value })), setAll: (cookies) => { cookies.forEach(({ name, value, options }) => { res.cookies.set(name, value, options); }); } } }
+    {
+      cookies: {
+        getAll: () =>
+          request.cookies.getAll().map((c) => ({ name: c.name, value: c.value })),
+        setAll: (cookies) => {
+          cookies.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL('/portal/login', request.url));
 
   const userEmail = user.email || '';
@@ -23,6 +35,20 @@ export async function middleware(request: NextRequest) {
   // Only allow staff emails to access admin
   if (userEmail === 'view@aloesigns.co.za') {
     return NextResponse.redirect(new URL('/portal/', request.url));
+  }
+
+  const isAdmin =
+    user.app_metadata?.role === 'admin' || userEmail === 'andre@aloesigns.co.za';
+
+  // Force password change before accessing admin
+  if (user.app_metadata?.must_change_password) {
+    return NextResponse.redirect(new URL('/portal/change-password', request.url));
+  }
+
+  // Restrict sensitive admin routes to admins only
+  const restrictedPattern = /^\/portal\/admin\/(settings|users|logs)/;
+  if (restrictedPattern.test(pathname) && !isAdmin) {
+    return NextResponse.redirect(new URL('/portal/admin', request.url));
   }
 
   return res;

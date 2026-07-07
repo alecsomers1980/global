@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import { createServerSupabase } from '@/lib/supabase-server';
+import { logAudit } from '@/lib/audit';
 
 export async function GET() {
     try {
@@ -45,6 +46,15 @@ export async function POST(req: Request) {
                 ''
             ) RETURNING id
         `;
+
+        await logAudit({
+            actorEmail: user.email,
+            actorCode: (user.app_metadata as any)?.short_code ?? null,
+            action: 'jobcard.create',
+            entityType: 'jobcard',
+            entityId: rows[0].id,
+            summary: `Created jobcard${body.company ? ` for ${body.company}` : ''}`,
+        });
 
         return NextResponse.json({ id: rows[0].id });
     } catch (error) {

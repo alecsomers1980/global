@@ -48,7 +48,7 @@ export default function PortalLogin() {
 
         if (userEmail === 'view@aloesigns.co.za') {
             router.push('/');
-        } else if (userEmail?.endsWith('@aloesigns.co.za') || userEmail?.startsWith('info@') || userEmail === 'admin@rvr.co.za') {
+        } else if (data.user?.app_metadata?.role || userEmail?.endsWith('@aloesigns.co.za') || userEmail?.startsWith('info@') || userEmail === 'admin@rvr.co.za') {
             router.push('/portal/admin');
         } else {
             router.push('/portal/');

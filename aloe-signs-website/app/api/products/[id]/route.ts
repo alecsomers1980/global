@@ -2,6 +2,7 @@ import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 import { rowToProduct, normalizeProductInput } from '@/lib/product-mapper';
 import { createServerSupabase } from '@/lib/supabase-server';
+import { logAudit } from '@/lib/audit';
 
 export async function GET(
   req: Request,
@@ -91,6 +92,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
+    await logAudit({
+      actorEmail: user.email,
+      actorCode: (user.app_metadata as any)?.short_code ?? null,
+      action: 'product.update',
+      entityType: 'product',
+      entityId: id,
+      summary: `Updated product ${name}`,
+    });
+
     return NextResponse.json({ product: rowToProduct(rows[0]) });
   } catch {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -110,6 +120,15 @@ export async function DELETE(
 
     const { id } = await context.params;
     await sql.query('DELETE FROM products WHERE id = $1', [id]);
+
+    await logAudit({
+      actorEmail: user.email,
+      actorCode: (user.app_metadata as any)?.short_code ?? null,
+      action: 'product.delete',
+      entityType: 'product',
+      entityId: id,
+      summary: `Deleted product ${id}`,
+    });
 
     return NextResponse.json({ success: true });
   } catch {

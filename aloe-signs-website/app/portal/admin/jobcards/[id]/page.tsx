@@ -152,8 +152,8 @@ const Toggle = ({ label, name, jobcard, handleChange }: { label: string; name: s
     </label>
 );
 
-const DeptCompleted = ({ deptKey, jobcard, setJobcard }: { deptKey: string; jobcard: any; setJobcard: any }) => {
-    const completion = jobcard.department_completion_json?.[deptKey] || { completed: false, completed_at: null };
+const DeptRow = ({ label, name, deptKey, jobcard, handleChange, setJobcard, me }: { label: string; name: string; deptKey: string; jobcard: any; handleChange: any; setJobcard: any; me: string | null }) => {
+    const completion = jobcard.department_completion_json?.[deptKey] || { completed: false, completed_at: null, completed_by: null };
 
     const handleCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const checked = e.target.checked;
@@ -164,7 +164,8 @@ const DeptCompleted = ({ deptKey, jobcard, setJobcard }: { deptKey: string; jobc
                 [deptKey]: {
                     ...completion,
                     completed: checked,
-                    completed_at: checked ? new Date().toISOString() : completion.completed_at,
+                    completed_at: checked ? (completion.completed_at || new Date().toISOString()) : completion.completed_at,
+                    completed_by: checked ? (completion.completed_by || me) : completion.completed_by,
                 },
             },
         }));
@@ -180,28 +181,42 @@ const DeptCompleted = ({ deptKey, jobcard, setJobcard }: { deptKey: string; jobc
                     ...completion,
                     completed: true,
                     completed_at: newDate ? new Date(newDate).toISOString() : completion.completed_at,
+                    completed_by: completion.completed_by || me,
                 },
             },
         }));
     };
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1 bg-gray-50/80 border-b border-gray-200">
-            <label className="text-[10px] uppercase font-bold text-gray-500">Completed</label>
-            <input
-                type="checkbox"
-                className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
-                checked={completion.completed}
-                onChange={handleCheckedChange}
-            />
-            {completion.completed && (
+        <div className="flex items-center justify-between gap-2 px-3 py-1.5 border-b border-gray-200 hover:bg-gray-50">
+            <label className="flex items-center gap-2 cursor-pointer flex-shrink-0">
+                <input type="checkbox" name={name} checked={!!jobcard[name]} onChange={handleChange} className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 focus:ring-aloe-green cursor-pointer" />
+                <span className="text-sm font-medium text-gray-700">{label}</span>
+            </label>
+            <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-bold text-gray-400">Completed</span>
                 <input
-                    type="date"
-                    className="text-[10px] text-gray-600 border border-gray-200 rounded px-1 py-0.5 focus:outline-none"
-                    value={completion.completed_at ? completion.completed_at.slice(0, 10) : ''}
-                    onChange={handleDateChange}
+                    type="checkbox"
+                    className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
+                    checked={!!completion.completed}
+                    onChange={handleCheckedChange}
                 />
-            )}
+                {completion.completed && (
+                    <>
+                        {completion.completed_by && (
+                            <span className="text-[10px] font-bold text-[#5f8c0b] bg-[#84cc16]/10 border border-[#84cc16]/30 px-1.5 py-0.5 rounded">
+                                ✓ {completion.completed_by}
+                            </span>
+                        )}
+                        <input
+                            type="date"
+                            className="text-[10px] text-gray-600 border border-gray-200 rounded px-1 py-0.5 focus:outline-none"
+                            value={completion.completed_at ? completion.completed_at.slice(0, 10) : ''}
+                            onChange={handleDateChange}
+                        />
+                    </>
+                )}
+            </div>
         </div>
     );
 };
@@ -226,6 +241,13 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
 
     const [companySuggestions, setCompanySuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [me, setMe] = useState<string | null>(null);
+
+    useEffect(() => {
+        createClientSupabase().auth.getUser().then(({ data }) => {
+            setMe((data.user?.app_metadata as any)?.short_code ?? null);
+        });
+    }, []);
 
     const loadJobcard = useCallback(async () => {
         try {
@@ -1044,8 +1066,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                     <span className="text-xs font-bold text-gray-700 uppercase">Department</span>
                                 </div>
                                 <div className="grid grid-cols-1 gap-x-2">
-                                    <Toggle label="Artwork" name="prod_artwork" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="artwork" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="Artwork" name="prod_artwork" deptKey="artwork" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_artwork && (
                                         <div className="p-3 bg-gray-50 border-b border-gray-300 text-sm flex flex-col gap-2">
                                             {/* Sign-off milestones */}
@@ -1113,8 +1134,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="UV Flatbed" name="prod_flatbed" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="flatbed" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="UV Flatbed" name="prod_flatbed" deptKey="flatbed" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_flatbed && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 gap-2">
                                             <div className="grid grid-cols-2 gap-2">
@@ -1189,8 +1209,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="HP Latex" name="prod_digital" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="digital" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="HP Latex" name="prod_digital" deptKey="digital" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_digital && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50">
                                             <div className="grid grid-cols-2 gap-x-2 py-2">
@@ -1248,8 +1267,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="HP Vinyl Cut" name="prod_vinyl_cut" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="vinyl_cut" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="HP Vinyl Cut" name="prod_vinyl_cut" deptKey="vinyl_cut" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_vinyl_cut && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-2 text-xs overflow-x-auto">
                                             <label className="flex items-center justify-between px-1 py-1 mb-1 cursor-pointer">
@@ -1304,8 +1322,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="Screen" name="prod_screen" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="screen" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="Screen" name="prod_screen" deptKey="screen" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_screen && (
                                         <div className="flex flex-col border-b border-gray-300 bg-orange-50/50 p-3 text-xs gap-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1371,8 +1388,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="Application" name="prod_applicate" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="applicate" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="Application" name="prod_applicate" deptKey="applicate" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_applicate && (
                                         <div className="flex flex-col border-b border-gray-300 bg-green-50/50 p-3 text-xs gap-3">
                                             <div className="flex flex-wrap gap-6">
@@ -1416,8 +1432,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="Engineer" name="prod_engineer" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="engineer" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="Engineer" name="prod_engineer" deptKey="engineer" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_engineer && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 text-xs gap-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
@@ -1521,8 +1536,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <Toggle label="Outsource" name="prod_outsource" jobcard={jobcard} handleChange={handleChange} />
-                                    <DeptCompleted deptKey="outsource" jobcard={jobcard} setJobcard={setJobcard} />
+                                    <DeptRow label="Outsource" name="prod_outsource" deptKey="outsource" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                 </div>
                             </div>
 

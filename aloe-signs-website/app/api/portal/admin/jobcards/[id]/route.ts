@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import { createServerSupabase } from '@/lib/supabase-server';
+import { logAudit } from '@/lib/audit';
+
+const DEPT_LABELS: Record<string, string> = {
+    artwork: 'Artwork', flatbed: 'UV Flatbed', digital: 'Digital', vinyl_cut: 'Vinyl Cut',
+    screen: 'Screen', applicate: 'Application', engineer: 'Engineering', outsource: 'Outsource',
+};
 
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
     try {
@@ -30,6 +36,9 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
         const { id } = await context.params;
         const body = await req.json();
+
+        const { rows: oldRows } = await sql`SELECT status, department_completion_json FROM jobcards WHERE id = ${id}`;
+        const oldRow = oldRows[0];
 
         const { rows } = await sql`
             UPDATE jobcards SET
@@ -124,6 +133,38 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
             RETURNING *
         `;
 
+        // Audit: record department completions and the save event
+        const actorCode = (user.app_metadata as any)?.short_code ?? null;
+        const oldDept = oldRow?.department_completion_json || {};
+        const newDept = body.department_completion_json || {};
+        const parts: string[] = [];
+        if (oldRow && oldRow.status !== body.status) {
+            parts.push(`Status: ${oldRow.status || '—'} → ${body.status || '—'}`);
+        }
+        for (const key of Object.keys(newDept)) {
+            const wasDone = oldDept[key]?.completed;
+            const nowDone = newDept[key]?.completed;
+            if (nowDone && !wasDone) {
+                const by = newDept[key]?.completed_by || actorCode;
+                const label = `${DEPT_LABELS[key] || key} completed${by ? ` by ${by}` : ''}`;
+                parts.push(label);
+                await logAudit({
+                    actorEmail: user.email, actorCode,
+                    action: 'jobcard.department_completed',
+                    entityType: 'jobcard', entityId: id,
+                    summary: label,
+                    meta: { dept: key, code: by },
+                });
+            }
+        }
+        await logAudit({
+            actorEmail: user.email, actorCode,
+            action: 'jobcard.update',
+            entityType: 'jobcard', entityId: id,
+            summary: parts.length ? parts.join('; ') : 'Updated jobcard',
+            meta: { company: body.company ?? null, invoice: body.invoice ?? null },
+        });
+
         return NextResponse.json({ jobcard: rows[0] });
     } catch (error) {
         return NextResponse.json({ error: (error as Error).message }, { status: 500 });
@@ -140,6 +181,15 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
 
         const { id } = await context.params;
         await sql`DELETE FROM jobcards WHERE id = ${id}`;
+
+        await logAudit({
+            actorEmail: user.email,
+            actorCode: (user.app_metadata as any)?.short_code ?? null,
+            action: 'jobcard.delete',
+            entityType: 'jobcard',
+            entityId: id,
+            summary: 'Deleted jobcard',
+        });
 
         return NextResponse.json({ success: true });
     } catch (error) {

@@ -2,6 +2,7 @@ import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
 import { rowToProduct, normalizeProductInput } from '@/lib/product-mapper';
 import { createServerSupabase } from '@/lib/supabase-server';
+import { logAudit } from '@/lib/audit';
 
 export async function GET() {
   try {
@@ -57,6 +58,15 @@ export async function POST(req: Request) {
         r.sort_order,
       ]
     );
+
+    await logAudit({
+      actorEmail: user.email,
+      actorCode: (user.app_metadata as any)?.short_code ?? null,
+      action: 'product.create',
+      entityType: 'product',
+      entityId: r.id,
+      summary: `Created product ${r.name}`,
+    });
 
     return NextResponse.json({ product: rowToProduct(rows[0]) });
   } catch (error) {

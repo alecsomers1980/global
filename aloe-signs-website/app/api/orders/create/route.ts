@@ -4,6 +4,7 @@ import { sql } from '@vercel/postgres';
 import { sendAdminOrderNotification } from '@/lib/email';
 import { payfast } from '@/lib/payfast';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { logAudit } from '@/lib/audit';
 
 export async function POST(request: NextRequest) {
     try {
@@ -83,6 +84,16 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('Order created:', order.orderNumber);
+
+        await logAudit({
+            actorEmail: order.customerEmail,
+            actorCode: null,
+            action: 'sale.order',
+            entityType: 'order',
+            entityId: order.orderNumber,
+            summary: `Shop order ${order.orderNumber} — R ${Number(order.total).toFixed(2)} (${items.length} item${items.length === 1 ? '' : 's'})`,
+            meta: { orderNumber: order.orderNumber, total: order.total, items: items.length },
+        });
 
         // Generate PayFast data
         const [firstName, ...lastNameParts] = customerName.split(' ');
