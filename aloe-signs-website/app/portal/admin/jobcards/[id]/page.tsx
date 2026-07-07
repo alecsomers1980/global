@@ -216,6 +216,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+    const [lightboxPath, setLightboxPath] = useState<string | null>(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [uploadEntries, setUploadEntries] = useState<FileEntry[]>([createEntry()]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
@@ -538,8 +539,17 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
 
     const openLightbox = async (storagePath: string) => {
         const url = await getSignedUrl(storagePath);
-        if (url) setLightboxUrl(url);
+        if (url) { setLightboxUrl(url); setLightboxPath(storagePath); }
         else alert('Could not load file. Please check the storage bucket.');
+    };
+
+    const rotateLightbox = (delta: number) => {
+        if (!lightboxPath) return;
+        setJobcard((prev: any) => {
+            const current = prev.file_rotations_json?.[lightboxPath] || 0;
+            const next = (((current + delta) % 360) + 360) % 360;
+            return { ...prev, file_rotations_json: { ...(prev.file_rotations_json || {}), [lightboxPath]: next } };
+        });
     };
 
     const downloadFile = async (storagePath: string, displayName: string) => {
@@ -1725,30 +1735,51 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* LIGHTBOX */}
-            {lightboxUrl && (
-                <div
-                    onClick={() => setLightboxUrl(null)}
-                    className="fixed inset-0 bg-black/85 z-[60] flex items-center justify-center p-4 cursor-pointer"
-                >
-                    <div onClick={e => e.stopPropagation()} className="relative max-w-[90vw] max-h-[90vh]">
-                        <button
-                            onClick={() => setLightboxUrl(null)}
-                            className="absolute -top-10 right-0 text-white text-2xl font-bold hover:text-gray-300 bg-transparent border-none cursor-pointer"
-                        >✕</button>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={lightboxUrl}
-                            alt="File preview"
-                            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: '8px' }}
-                            onError={() => {
-                                // Not an image — open in new tab instead
-                                window.open(lightboxUrl, '_blank');
-                                setLightboxUrl(null);
-                            }}
-                        />
+            {lightboxUrl && (() => {
+                const rotation = (lightboxPath && jobcard.file_rotations_json?.[lightboxPath]) || 0;
+                return (
+                    <div
+                        onClick={() => { setLightboxUrl(null); setLightboxPath(null); }}
+                        className="fixed inset-0 bg-black/85 z-[60] flex items-center justify-center p-4 cursor-pointer"
+                    >
+                        <div onClick={e => e.stopPropagation()} className="relative max-w-[90vw] max-h-[90vh]">
+                            <button
+                                onClick={() => { setLightboxUrl(null); setLightboxPath(null); }}
+                                className="absolute -top-10 right-0 text-white text-2xl font-bold hover:text-gray-300 bg-transparent border-none cursor-pointer"
+                            >✕</button>
+                            <button
+                                onClick={() => rotateLightbox(-90)}
+                                title="Rotate left"
+                                className="absolute -top-10 right-8 text-white text-2xl font-bold hover:text-gray-300 bg-transparent border-none cursor-pointer"
+                            >↺</button>
+                            <button
+                                onClick={() => rotateLightbox(90)}
+                                title="Rotate right"
+                                className="absolute -top-10 right-16 text-white text-2xl font-bold hover:text-gray-300 bg-transparent border-none cursor-pointer"
+                            >↻</button>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={lightboxUrl}
+                                alt="File preview"
+                                style={{
+                                    maxWidth: rotation % 180 !== 0 ? '85vh' : '90vw',
+                                    maxHeight: rotation % 180 !== 0 ? '90vw' : '85vh',
+                                    objectFit: 'contain',
+                                    borderRadius: '8px',
+                                    transform: `rotate(${rotation}deg)`,
+                                    transition: 'transform 0.2s'
+                                }}
+                                onError={() => {
+                                    // Not an image — open in new tab instead
+                                    window.open(lightboxUrl, '_blank');
+                                    setLightboxUrl(null);
+                                    setLightboxPath(null);
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* ARTWORK UPLOAD MODAL */}
             {showUploadModal && (
