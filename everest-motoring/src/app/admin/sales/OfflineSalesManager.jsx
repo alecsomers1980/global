@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { addOffInventorySale, addDeliveryPhotoToSale } from "../inventory/sale_actions";
+import { addOffInventorySale, addDeliveryPhotoToSale, setSaleSkipSocial } from "../inventory/sale_actions";
 import SaleVideoPicker from "../inventory/SaleVideoPicker";
 
 // Upload an image straight to Supabase storage from the browser so large photos
@@ -209,7 +209,7 @@ function AddSaleModal({ onClose }) {
                     <label className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-lg p-4 cursor-pointer">
                         <input type="checkbox" name="skip_social" className="mt-1 h-4 w-4" />
                         <span>
-                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to social media</span>
+                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to Facebook / Instagram</span>
                             <span className="block text-xs text-slate-500 mt-0.5">
                                 Skip the &ldquo;Just Sold&rdquo; celebration post. The review email won&apos;t mention
                                 Facebook, but the customer still gets their downloadable video.
@@ -256,6 +256,16 @@ function ManageSaleModal({ sale: initialSale, onClose }) {
         }
     }
 
+    async function handleToggleSkipSocial(checked) {
+        const previous = sale.skip_social;
+        setSale((s) => ({ ...s, skip_social: checked }));
+        const res = await setSaleSkipSocial(sale.id, checked);
+        if (res?.error) {
+            setSale((s) => ({ ...s, skip_social: previous }));
+            alert(res.error);
+        }
+    }
+
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -279,8 +289,21 @@ function ManageSaleModal({ sale: initialSale, onClose }) {
                         ) : (
                             <div className="text-amber-700">No review email scheduled (no buyer email captured).</div>
                         )}
-                        {sale.skip_social && <div><strong>Social posting:</strong> disabled for this sale</div>}
                     </div>
+                    <label className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-lg p-4 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={!!sale.skip_social}
+                            onChange={(e) => handleToggleSkipSocial(e.target.checked)}
+                            className="mt-1 h-4 w-4"
+                        />
+                        <span>
+                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to Facebook / Instagram</span>
+                            <span className="block text-xs text-slate-500 mt-0.5">
+                                Skips the &ldquo;Just Sold&rdquo; celebration post. Set this before the video finishes (~2 min) to reliably stop it.
+                            </span>
+                        </span>
+                    </label>
 
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Delivery Photo</label>

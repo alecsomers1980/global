@@ -6,6 +6,7 @@ import { createAdminClient } from "@/utils/supabase/server";
 import { pollSeedanceClip } from "@/utils/ai/seedanceService";
 import { addCongratsVoiceover } from "@/utils/ai/congratsVoiceover";
 import { postSoldVideoToEmber } from "@/app/admin/inventory/socialAction";
+import { rescheduleReviewEmailWithVideo } from "@/utils/reviewEmail";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -27,7 +28,7 @@ export async function GET(request) {
     // Find the oldest sale still generating a video
     const { data: sale } = await admin
       .from("sales")
-      .select("id, car_id, buyer_name, sale_video_task_id, sale_video_status")
+      .select("id, car_id, buyer_name, sale_video_task_id, sale_video_status, buyer_email, delivery_photo_url, vehicle_year, vehicle_make, vehicle_model, vehicle_image_url, skip_social, review_email_id, review_email_sent_at, review_email_scheduled_for")
       .eq("sale_video_status", "generating")
       .not("sale_video_task_id", "is", null)
       .order("sale_video_started_at", { ascending: true })
@@ -49,18 +50,31 @@ export async function GET(request) {
         .eq("id", sale.id);
 
       let finalUrl = poll.videoUrl;
-      try {
-        // Get car details for the voiceover label
+
+      // Resolve vehicle label + image from the inventory car or, for off-inventory
+      // sales (car_id null), the fields stored on the sale itself.
+      let vehicleLabel;
+      let carImageUrl;
+      if (sale.car_id) {
         const { data: car } = await admin
           .from("cars")
-          .select("make, model, year")
+          .select("make, model, year, main_image_url")
           .eq("id", sale.car_id)
           .single();
+        vehicleLabel = car
+          ? `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim()
+          : "";
+        carImageUrl = car?.main_image_url || null;
+      } else {
+        vehicleLabel = [sale.vehicle_year, sale.vehicle_make, sale.vehicle_model]
+          .filter(Boolean)
+          .join(" ");
+        carImageUrl = sale.vehicle_image_url || null;
+      }
 
-        const carLabel = car
-          ? `${car.year || ""} ${car.make || ""} ${car.model || ""}`.trim() || "vehicle"
-          : "vehicle";
+      const carLabel = vehicleLabel || "vehicle";
 
+      try {
         finalUrl = await addCongratsVoiceover(poll.videoUrl, {
           fullName: sale.buyer_name,
           carLabel,
@@ -82,6 +96,39 @@ export async function GET(request) {
           sale_video_completed_at: new Date().toISOString(),
         })
         .eq("id", sale.id);
+
+      // Re-embed the finished video into the still-scheduled review email (the
+      // client-poll path does this too; here it covers videos finalized while the
+      // admin dialog is closed — the common case now that videos auto-start).
+      if (
+        sale.review_email_id &&
+        !sale.review_email_sent_at &&
+        sale.review_email_scheduled_for &&
+        sale.buyer_email
+      ) {
+        const scheduledDate = new Date(sale.review_email_scheduled_for);
+        if (scheduledDate > new Date(Date.now() + 60_000)) {
+          try {
+            await rescheduleReviewEmailWithVideo({
+              saleId: sale.id,
+              oldEmailId: sale.review_email_id,
+              buyerEmail: sale.buyer_email,
+              buyerName: sale.buyer_name,
+              vehicleModel: vehicleLabel || "your new vehicle",
+              carImageUrl,
+              deliveryPhotoUrl: sale.delivery_photo_url,
+              videoUrl: finalUrl,
+              postedToSocial: !sale.skip_social,
+              scheduledFor: scheduledDate,
+            });
+          } catch (e) {
+            console.warn(
+              "[advance-sale-video] failed to re-embed video into review email:",
+              e.message
+            );
+          }
+        }
+      }
 
       // Queue the celebration video to Everest's social pages (pending approval
       // in ember-social), scheduled for the morning of the review-email day.

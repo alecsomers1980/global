@@ -4,8 +4,8 @@ import * as React from "react";
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendEmail } from "@/lib/resend";
-import { Resend } from "resend";
 import { PostSaleReviewEmail } from "@/emails/PostSaleReview";
+import { rescheduleReviewEmailWithVideo } from "@/utils/reviewEmail";
 import {
     startSeedanceClip,
     pollSeedanceClip,
@@ -111,6 +111,24 @@ export async function addDeliveryPhotoToSale(formData) {
 
     revalidatePath("/admin/inventory");
     return { success: true, url };
+}
+
+// Toggle whether this sale posts to social media (the Facebook/Instagram "Just
+// Sold" celebration). Exposed at the video step so posting can be opted out of
+// after the sale is recorded. postSoldVideoToEmber only claims sales where
+// skip_social is false, so this must be set before the video finalizes (~2 min)
+// to reliably block the post.
+export async function setSaleSkipSocial(saleId, skip) {
+    await requireAdmin();
+    const admin = await createAdminClient();
+    const { error } = await admin
+        .from("sales")
+        .update({ skip_social: !!skip })
+        .eq("id", saleId);
+    if (error) return { error: error.message };
+    revalidatePath("/admin/inventory");
+    revalidatePath("/admin/sales");
+    return { success: true, skip_social: !!skip };
 }
 
 export async function markCarAsSold(formData) {
@@ -267,6 +285,15 @@ async function markCarAsSoldInner(formData) {
         }
     }
 
+    // Kick off the celebration/handover video automatically. Uses the delivery
+    // photo if one was attached, otherwise the vehicle image. The advance-sale-video
+    // cron finalizes it in the background.
+    try {
+        await startSaleVideo(sale.id, "pixel_build");
+    } catch (vidErr) {
+        console.warn("Auto-start sale video failed (sale still recorded):", vidErr?.message || vidErr);
+    }
+
     revalidatePath("/admin/inventory");
     revalidatePath("/inventory");
 
@@ -362,6 +389,15 @@ export async function addOffInventorySale(formData) {
             }
         }
 
+        // Kick off the celebration/handover video automatically. Uses the delivery
+        // photo if one was attached, otherwise the vehicle image. The advance-sale-video
+        // cron finalizes it in the background.
+        try {
+            await startSaleVideo(sale.id, "pixel_build");
+        } catch (vidErr) {
+            console.warn("Auto-start sale video failed (sale still recorded):", vidErr?.message || vidErr);
+        }
+
         revalidatePath("/admin/sales");
         return { success: true, saleId: sale.id };
     } catch (err) {
@@ -370,7 +406,7 @@ export async function addOffInventorySale(formData) {
     }
 }
 
-export async function startSaleVideo(saleId, styleKey) {
+export async function startSaleVideo(saleId, styleKey, options = {}) {
     await requireAdmin();
     const admin = await createAdminClient();
 
@@ -389,22 +425,42 @@ export async function startSaleVideo(saleId, styleKey) {
     // people added). For off-inventory sales (no car_id) the vehicle image stored
     // on the sale stands in for the car's main image. Either way the clip is
     // generated silently and a congratulations voiceover is added once it's ready.
+    const revealFromCover = !!options.revealFromCover;
     let imageUrl = sale.delivery_photo_url;
+    let imageUrls = null;
     let promptStyle;
-    if (imageUrl) {
-        promptStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
-    } else {
-        if (sale.car_id) {
-            const { data: car } = await admin
-                .from("cars")
-                .select("main_image_url")
-                .eq("id", sale.car_id)
-                .single();
-            imageUrl = car?.main_image_url || null;
-        } else {
-            imageUrl = sale.vehicle_image_url || null;
+
+    // Covered-car reveal: keep the cloth/handover photo as the scene but pass the
+    // car's clean inventory image as a second reference so the revealed car is the
+    // real one, not an AI invention. Only for inventory cars that have both.
+    if (revealFromCover && sale.delivery_photo_url && sale.car_id) {
+        const { data: car } = await admin
+            .from("cars")
+            .select("main_image_url")
+            .eq("id", sale.car_id)
+            .single();
+        if (car?.main_image_url) {
+            imageUrls = [sale.delivery_photo_url, car.main_image_url];
+            promptStyle = "pixel_build_reveal";
         }
-        promptStyle = "pixel_build_car_only";
+    }
+
+    if (!promptStyle) {
+        if (imageUrl) {
+            promptStyle = SEEDANCE_STYLE_PROMPTS[styleKey] ? styleKey : "pixel_build";
+        } else {
+            if (sale.car_id) {
+                const { data: car } = await admin
+                    .from("cars")
+                    .select("main_image_url")
+                    .eq("id", sale.car_id)
+                    .single();
+                imageUrl = car?.main_image_url || null;
+            } else {
+                imageUrl = sale.vehicle_image_url || null;
+            }
+            promptStyle = "pixel_build_car_only";
+        }
     }
     if (!imageUrl) {
         return { error: "No delivery photo, and this vehicle has no image to use." };
@@ -412,13 +468,14 @@ export async function startSaleVideo(saleId, styleKey) {
 
     const prompt = buildSeedancePrompt(promptStyle, { buyerName: sale.buyer_name });
     // The sales.sale_video_style DB check constraint only allows the original
-    // style keys, so store the base "pixel_build" for the car-only variant —
-    // the prompt is what actually differs, not the stored label.
-    const storedStyle = promptStyle === "pixel_build_car_only" ? "pixel_build" : promptStyle;
+    // style keys, so store the base "pixel_build" for the car-only or reveal
+    // variants — the prompt is what actually differs, not the stored label.
+    const storedStyle = (promptStyle === "pixel_build_car_only" || promptStyle === "pixel_build_reveal") ? "pixel_build" : promptStyle;
 
     try {
         const { taskId } = await startSeedanceClip({
             imageUrl,
+            imageUrls,
             prompt,
             durationSeconds: 8,
             aspectRatio: "16:9",
@@ -564,44 +621,4 @@ export async function pollSaleVideo(saleId) {
     }
 
     return { status: "generating" };
-}
-
-async function rescheduleReviewEmailWithVideo({ saleId, oldEmailId, buyerEmail, buyerName, vehicleModel, carImageUrl, deliveryPhotoUrl, videoUrl, postedToSocial = true, scheduledFor }) {
-    const admin = await createAdminClient();
-
-    // Cancel the old scheduled email — Resend doesn't allow content updates on scheduled mail.
-    try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.cancel(oldEmailId);
-    } catch (err) {
-        console.warn("Failed to cancel previous review email (continuing to schedule new):", err);
-    }
-
-    const reviewUrl =
-        process.env.GOOGLE_REVIEW_URL ||
-        "https://www.google.com/search?q=Everest+Motoring+White+River";
-
-    const result = await sendEmail({
-        to: buyerEmail,
-        subject: `Congratulations on your ${vehicleModel}`,
-        react: React.createElement(PostSaleReviewEmail, {
-            customerName: buyerName,
-            vehicleModel,
-            carImageUrl,
-            deliveryPhotoUrl,
-            videoUrl,
-            reviewUrl,
-            postedToSocial,
-        }),
-        scheduledAt: scheduledFor.toISOString(),
-    });
-
-    if (result.success && result.data?.id) {
-        await admin
-            .from("sales")
-            .update({ review_email_id: result.data.id })
-            .eq("id", saleId);
-    } else if (!result.success) {
-        console.warn("Re-schedule with video failed:", result.error);
-    }
 }

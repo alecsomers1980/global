@@ -17,6 +17,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
     const [previousStyle, setPreviousStyle] = useState(null);
     const [error, setError] = useState(null);
     const [starting, setStarting] = useState(false);
+    const [revealFromCover, setRevealFromCover] = useState(false);
     const pollRef = useRef(null);
 
     useEffect(() => {
@@ -49,7 +50,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
         setSelectedStyle(styleKey);
         setStatus("generating");
         try {
-            const res = await startSaleVideo(sale.id, styleKey);
+            const res = await startSaleVideo(sale.id, styleKey, { revealFromCover });
             if (res.error) {
                 setError(res.error);
                 setStatus("failed");
@@ -127,12 +128,28 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
             {sale?.delivery_photo_url ? (
                 <div className="rounded-xl border-2 border-slate-200 p-4">
                     <div className="font-bold text-slate-900 mb-1">Pixel Build</div>
-                    <div className="text-xs uppercase tracking-wide text-primary mb-2">Handover video</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500 mb-2">Handover video</div>
                     <div className="text-sm text-slate-600 mb-4">
                         The car assembles itself from glowing voxels right next to the buyer — on the
                         exact background of the delivery photo — with everyone smiling at camera as it
                         completes.
                     </div>
+                    {sale?.car_id && (
+                        <label className="flex items-start gap-2.5 bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={revealFromCover}
+                                onChange={(e) => setRevealFromCover(e.target.checked)}
+                                className="mt-0.5 h-4 w-4"
+                            />
+                            <span>
+                                <span className="block text-sm font-bold text-slate-700">Photo shows the car under a cover</span>
+                                <span className="block text-xs text-slate-500 mt-0.5">
+                                    Reveal the real car from the vehicle&apos;s main inventory photo instead of letting the AI guess what&apos;s under the cover.
+                                </span>
+                            </span>
+                        </label>
+                    )}
                     <button
                         type="button"
                         disabled={starting}
@@ -146,7 +163,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
             ) : (
                 <div className="rounded-xl border-2 border-slate-200 p-4">
                     <div className="font-bold text-slate-900 mb-1">Pixel Build (from car image)</div>
-                    <div className="text-xs uppercase tracking-wide text-primary mb-2">No delivery photo</div>
+                    <div className="text-xs uppercase tracking-wide text-slate-500 mb-2">No delivery photo</div>
                     <div className="text-sm text-slate-600 mb-4">
                         No delivery photo on file, so we'll use the vehicle's main image for the Pixel
                         Build animation, with a congratulations voiceover for{" "}

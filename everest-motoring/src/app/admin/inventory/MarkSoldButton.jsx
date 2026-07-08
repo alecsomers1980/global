@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getLeadsForCar, markCarAsSold, getSaleForCar, addDeliveryPhotoToSale } from "./sale_actions";
+import { getLeadsForCar, markCarAsSold, getSaleForCar, addDeliveryPhotoToSale, setSaleSkipSocial } from "./sale_actions";
 import SaleVideoPicker from "./SaleVideoPicker";
 import { trackEvent } from "@/lib/gtag";
 
@@ -122,6 +122,16 @@ export default function MarkSoldButton({ car }) {
             alert("Upload failed: " + (err?.message || err));
         } finally {
             setPhotoUploading(false);
+        }
+    }
+
+    async function handleToggleSkipSocial(checked) {
+        const previous = existingSale.skip_social;
+        setExistingSale((s) => ({ ...s, skip_social: checked }));
+        const res = await setSaleSkipSocial(existingSale.id, checked);
+        if (res?.error) {
+            setExistingSale((s) => ({ ...s, skip_social: previous }));
+            alert(res.error);
         }
     }
 
@@ -350,7 +360,7 @@ export default function MarkSoldButton({ car }) {
                                     <label className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-lg p-4 cursor-pointer">
                                         <input type="checkbox" name="skip_social" className="mt-1 h-4 w-4" />
                                         <span>
-                                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to social media</span>
+                                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to Facebook / Instagram</span>
                                             <span className="block text-xs text-slate-500 mt-0.5">
                                                 Skip the &ldquo;Just Sold&rdquo; celebration post. The review email won&apos;t mention
                                                 Facebook, but the customer still gets their downloadable video.
@@ -359,10 +369,21 @@ export default function MarkSoldButton({ car }) {
                                     </label>
                                 )}
 
-                                {existingSale?.skip_social && (
-                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide bg-slate-50 border border-slate-200 rounded-lg p-3">
-                                        Social posting disabled for this sale
-                                    </div>
+                                {existingSale && (
+                                    <label className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-lg p-4 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={!!existingSale.skip_social}
+                                            onChange={(e) => handleToggleSkipSocial(e.target.checked)}
+                                            className="mt-1 h-4 w-4"
+                                        />
+                                        <span>
+                                            <span className="block text-sm font-bold text-slate-700">Don&apos;t post to Facebook / Instagram</span>
+                                            <span className="block text-xs text-slate-500 mt-0.5">
+                                                Skips the &ldquo;Just Sold&rdquo; celebration post. Set this before the video finishes (~2 min) to reliably stop it.
+                                            </span>
+                                        </span>
+                                    </label>
                                 )}
 
                                 <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">

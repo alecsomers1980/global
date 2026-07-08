@@ -23,6 +23,7 @@ function sleep(ms) {
 
 export async function startSeedanceClip({
     imageUrl,
+    imageUrls = null,
     prompt,
     durationSeconds = 8,
     aspectRatio = '9:16',
@@ -37,11 +38,13 @@ export async function startSeedanceClip({
 
     const apiKey = getApiKey();
 
+    const referenceImageUrls = Array.isArray(imageUrls) && imageUrls.length > 0 ? imageUrls : [imageUrl];
+
     const requestBody = {
         model,
         input: {
             prompt,
-            reference_image_urls: [imageUrl],
+            reference_image_urls: referenceImageUrls,
             duration: durationSeconds,
             aspect_ratio: aspectRatio,
             resolution,
@@ -212,6 +215,7 @@ export const SEEDANCE_STYLE_PROMPTS = {
     hero_orbit: `Dynamic 8-second horizontal sequence, 16:9 landscape framing, simulated drone sweep. The camera performs a smooth 180-degree 3D orbit around the client and the car, rising slightly on approach and descending on departure, keeping both in frame. Apply a stylized high-octane cinematic filter throughout: heightened contrast, saturated rim-lighting, subtle neon reflections on the paint, gentle chromatic aberration at frame edges, volumetric light rays. The client holds a confident, heroic pose. Wide-angle lens, graphic-novel color grade, cyberpunk-adjacent aesthetic.`,
     pixel_build: `Cinematic 8-second horizontal sequence, 16:9 landscape framing. IMPORTANT: preserve the exact background, environment, lighting, and all people from the input image unchanged — do not relocate or restyle the setting. Second 0-1: The person or people from the original photo stand in their same positions, visibly smiling and excited about their new car. If there are multiple people in the photo, keep every one of them in frame, all equally animated and excited — faces lit up, genuine smiles. Seconds 1-7: Thousands of glowing transparent digital voxels and bright cyan data streams rapidly materialize from the ground and the air around them, assembling the car piece-by-piece in an accelerated tech-forward construction sequence — wheels first, then chassis, then body panels, then glass, then headlights pulsing on with a satisfying snap. The people react with growing excitement as the car takes shape. Seconds 7-8: The car is fully solid, complete, and brand-new looking, parked beside the people; everyone smiles and shows real excitement directly at camera. The original background stays the same throughout. Hyper-realistic, futuristic, satisfying tech aesthetic, 4k. Audio: subtle ambient environment sound matching the original scene, rising synth swell during the build, soft mechanical clicks and energy whooshes as panels assemble, satisfying final 'snap' as the car completes.`,
     pixel_build_car_only: `Cinematic 8-second horizontal sequence, 16:9 landscape framing. IMPORTANT: preserve the exact background, environment, and lighting from the input image unchanged — do not relocate or restyle the setting. There are NO people in this video at any point — no humans, no figures, no hands, no reflections of people; the scene contains only the vehicle and its surroundings. Seconds 0-2: the vehicle sits in the scene. Seconds 2-6: thousands of glowing transparent digital voxels and bright cyan data streams sweep over the car and rapidly re-assemble it piece-by-piece in an accelerated tech-forward construction sequence — wheels, then chassis, then body panels, then glass, then headlights pulsing on with a satisfying snap. Seconds 6-8: the car settles fully solid, complete, brand-new and gleaming, parked in the scene. The original background stays the same throughout and no people ever appear. Hyper-realistic, futuristic, satisfying tech aesthetic, 4k.`,
+    pixel_build_reveal: `Cinematic 8-second horizontal sequence, 16:9 landscape framing. TWO reference images are provided: reference image 1 is the SCENE — a vehicle covered by a cloth car-cover in its setting, together with any people present; reference image 2 shows the ACTUAL uncovered vehicle. IMPORTANT: preserve the exact background, environment, lighting and every person from reference image 1 unchanged — do not relocate or restyle the setting. Seconds 0-2: the vehicle sits fully covered by the cloth exactly as in reference image 1; any people stand in their same positions, smiling. Seconds 2-6: the cloth is dramatically pulled away as thousands of glowing transparent cyan voxels and bright data streams sweep in and rapidly re-assemble the car piece-by-piece in an accelerated tech-forward reveal. CRITICAL: the revealed vehicle must EXACTLY match the car in reference image 2 — same make, model, body shape, colour, wheels, grille and details; never invent a different car. Seconds 6-8: the car stands fully revealed, solid, brand-new and gleaming beside the people in the original scene; everyone smiles at camera. Hyper-realistic, futuristic, satisfying tech aesthetic, 4k.`,
 };
 
 export function buildSeedancePrompt(styleKey, { buyerName } = {}) {
