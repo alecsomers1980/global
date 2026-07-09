@@ -45,7 +45,7 @@ export async function GET(request, { params }) {
     const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
     const isAvailable = car.status === "available";
 
-    const heroHeight = 400;
+    const heroHeight = 310;
 
     return new ImageResponse(
         (
@@ -160,54 +160,76 @@ export async function GET(request, { params }) {
                     </div>
                 )}
 
-                {/* 5. Bottom Panel */}
-                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden", minHeight: 360 }}>
-                    {/* Left column */}
-                    <div style={{ display: "flex", flex: 1, background: "#ffffff", padding: 32, flexDirection: "column" }}>
-                        <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 16, textTransform: "uppercase" }}>
-                            SPEAK TO OUR SALES TEAM
-                        </div>
-                        <div style={{ display: "flex", gap: 28 }}>
-                            {CONTACTS.map((contact, i) => (
-                                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                    <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
-                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 20, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
-                                            {contact.name}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: "flex", fontSize: 26, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
-                                        {contact.number}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", marginTop: 24 }}>
-                            <div style={{ display: "flex", fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>
-                                Interested in this car?
-                            </div>
-                            <div style={{ display: "flex", fontSize: 14, color: "#64748b", lineHeight: 1.5, maxWidth: 380 }}>
-                                Scan the code to view the full listing. Click &apos;Callback&apos; on the website — we&apos;ll link this to your enquiry and our team will get back to you.
-                            </div>
-                        </div>
-                        <div style={{ display: "flex", marginTop: 18, alignItems: "center", gap: 14 }}>
-                            <img
-                                src={qrDataUrl}
-                                style={{ width: 90, height: 90, borderRadius: 8, border: "3px solid #ffff01" }}
-                            />
-                            <div style={{ display: "flex", fontSize: 12, fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: 1, maxWidth: 120, lineHeight: 1.3 }}>
-                                SCAN TO VIEW &amp; ENQUIRE
-                            </div>
-                        </div>
+                {/* 4b. Interested CTA */}
+                <div style={{ display: "flex", flexDirection: "column", flexShrink: 0, padding: "18px 36px 0 36px" }}>
+                    <div style={{ display: "flex", fontSize: 18, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>
+                        Interested in this car?
                     </div>
+                    <div style={{ display: "flex", fontSize: 14, color: "#64748b", lineHeight: 1.4 }}>
+                        Scan the code to view the full listing. Click &apos;Callback&apos; on the site to link your enquiry to this affiliate — our team will be in touch.
+                    </div>
+                </div>
 
-                    {/* Right column */}
-                    <div style={{ display: "flex", width: 380, flexShrink: 0, background: "#000000", position: "relative", overflow: "hidden", flexDirection: "column", alignItems: "center", padding: 28, gap: 16 }}>
+                {/* 5. Bottom Panel */}
+                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden" }}>
+                    {/* Left column — Black with brand details */}
+                    <div
+                        style={{
+                            display: "flex",
+                            width: 380,
+                            flexShrink: 0,
+                            position: "relative",
+                            overflow: "hidden",
+                            background: "linear-gradient(90deg, #000000 0%, #000000 72%, rgba(0,0,0,0) 100%)",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            padding: 26,
+                        }}
+                    >
                         {/* Decorative circles */}
                         <div style={{ display: "flex", position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: 110, background: "#ffff01", opacity: 0.1 }} />
                         <div style={{ display: "flex", position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: 70, background: "#ffff01", opacity: 0.08 }} />
 
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, position: "relative", width: "100%" }}>
-                            <img src={LOGO_URL} style={{ width: 130, height: 102, objectFit: "contain" }} />
+                        {/* Halftone dot fade toward the seam */}
+                        <div style={{ display: "flex", position: "absolute", top: 0, right: 0, bottom: 0, width: 140, flexDirection: "row", justifyContent: "space-between", padding: "36px 8px" }}>
+                            {[0.9, 0.7, 0.5, 0.32, 0.18, 0.08].map((op, col) => (
+                                <div key={col} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
+                                    {[0, 1, 2, 3, 4].map((row) => (
+                                        <div
+                                            key={row}
+                                            style={{
+                                                display: "flex",
+                                                width: 10 - col,
+                                                height: 10 - col,
+                                                borderRadius: 10,
+                                                background: "#000000",
+                                                opacity: op,
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Main content */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, position: "relative", width: "100%" }}>
+                            <img src={LOGO_URL} style={{ width: 110, height: 86, objectFit: "contain" }} />
+                            <div style={{ display: "flex", fontSize: 11, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", textTransform: "uppercase" }}>
+                                SPEAK TO OUR SALES TEAM
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                {CONTACTS.map((contact, i) => (
+                                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 2 }}>
+                                            {contact.name}
+                                        </div>
+                                        <div style={{ display: "flex", color: "#ffffff", fontSize: 22, fontWeight: 800, letterSpacing: 0.5 }}>
+                                            {contact.number}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
                             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="12" cy="12" r="10" />
@@ -237,6 +259,19 @@ export async function GET(request, { params }) {
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                                 </svg>
                                 <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>013 854 0600</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right column — White with QR code */}
+                    <div style={{ display: "flex", flex: 1, background: "#ffffff", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                            <img
+                                src={qrDataUrl}
+                                style={{ width: 90, height: 90, borderRadius: 8, border: "3px solid #ffff01" }}
+                            />
+                            <div style={{ display: "flex", fontSize: 12, fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: 1, maxWidth: 120, lineHeight: 1.3 }}>
+                                SCAN TO VIEW &amp; ENQUIRE
                             </div>
                         </div>
                     </div>
