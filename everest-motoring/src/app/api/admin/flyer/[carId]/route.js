@@ -71,13 +71,9 @@ export async function GET(request, { params }) {
   ].filter(Boolean);
 
   const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
-  const thumbs = Array.isArray(car.gallery_urls) ? car.gallery_urls.slice(0, 3) : [];
   const isAvailable = car.status === "available";
 
-  const heroHeight = 474;
-  const heroGap = 6;
-  const mainWidth = 696;
-  const thumbsWidth = WIDTH - mainWidth - heroGap;
+  const heroHeight = 400;
 
   return new ImageResponse(
     (
@@ -106,28 +102,11 @@ export async function GET(request, { params }) {
         />
 
         {/* 1. Hero */}
-        <div
-          style={{
-            display: "flex",
-            flexShrink: 0,
-            height: heroHeight,
-            gap: heroGap,
-            background: "#000000",
-          }}
-        >
+        <div style={{ display: "flex", flexShrink: 0, height: heroHeight, background: "#000000" }}>
           <img
             src={car.main_image_url}
-            style={{ width: mainWidth, height: heroHeight, objectFit: "cover" }}
+            style={{ width: WIDTH, height: heroHeight, objectFit: "cover" }}
           />
-          <div style={{ width: thumbsWidth, display: "flex", flexDirection: "column", gap: heroGap }}>
-            {thumbs.map((url, i) => (
-              <img
-                key={i}
-                src={url}
-                style={{ width: thumbsWidth, flex: 1, objectFit: "cover" }}
-              />
-            ))}
-          </div>
         </div>
 
         {/* 2. Title / Price */}
@@ -349,266 +328,182 @@ export async function GET(request, { params }) {
           </div>
         )}
 
-        {/* 5. Premium full‑bleed black footer panel */}
+        {/* 5. Bottom Panel */}
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             flexShrink: 0,
             marginTop: "auto",
-            background: "#000000",
-            borderTop: "3px solid #ffff01",
+            width: "100%",
+            borderRadius: "32px 32px 0 0",
+            overflow: "hidden",
+            minHeight: 360,
           }}
         >
-          {/* ROW 1 – CTA + QR */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "26px 40px",
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 22,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  color: "#ffffff",
-                }}
-              >
+          {/* Left column */}
+          <div style={{ display: "flex", flex: 1, background: "#ffffff", padding: 32, flexDirection: "column" }}>
+            <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 16, textTransform: "uppercase" }}>
+              SPEAK TO OUR SALES TEAM
+            </div>
+            <div style={{ display: "flex", gap: 28 }}>
+              {CONTACTS.map((contact, i) => (
+                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                  <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
+                    <div style={{ display: "flex", color: "#ffff01", fontSize: 20, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
+                      {contact.name}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", fontSize: 26, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
+                    {contact.number}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", marginTop: 24 }}>
+              <div style={{ display: "flex", fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>
                 INTERESTED IN THIS CAR?
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 15,
-                  lineHeight: 1.5,
-                  maxWidth: 520,
-                  marginTop: 8,
-                  color: "#cbd5e1",
-                }}
-              >
+              <div style={{ display: "flex", fontSize: 14, color: "#64748b", lineHeight: 1.5, maxWidth: 380 }}>
                 Scan the code to view the full listing, or call our team directly.
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ display: "flex", marginTop: 18, alignItems: "center", gap: 14 }}>
               <img
                 src={qrDataUrl}
-                style={{
-                  width: 92,
-                  height: 92,
-                  borderRadius: 8,
-                  border: "3px solid #ffff01",
-                }}
+                style={{ width: 90, height: 90, borderRadius: 8, border: "3px solid #ffff01" }}
               />
-              <div
-                style={{
-                  display: "flex",
-                  color: "#ffff01",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  maxWidth: 70,
-                  lineHeight: 1.3,
-                }}
-              >
+              <div style={{ display: "flex", fontSize: 12, fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: 1, maxWidth: 120, lineHeight: 1.3 }}>
                 SCAN TO VIEW
               </div>
             </div>
           </div>
 
-          {/* Divider */}
+          {/* Right column */}
           <div
             style={{
               display: "flex",
+              width: 380,
               flexShrink: 0,
-              width: "100%",
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.10)",
-            }}
-          />
-
-          {/* ROW 2 – Sales contacts */}
-          <div
-            style={{
-              display: "flex",
+              background: "#000000",
+              position: "relative",
+              overflow: "hidden",
               flexDirection: "column",
               alignItems: "center",
-              padding: "22px 40px",
+              padding: 28,
+              gap: 16,
             }}
           >
+            {/* Decorative circles */}
             <div
               style={{
                 display: "flex",
-                color: "#64748b",
-                fontSize: 12,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: 3,
-                marginBottom: 16,
+                position: "absolute",
+                top: -60,
+                right: -60,
+                width: 220,
+                height: 220,
+                borderRadius: 110,
+                background: "#ffff01",
+                opacity: 0.1,
+              }}
+            />
+            <div
+              style={{
+                display: "flex",
+                position: "absolute",
+                bottom: -40,
+                left: -40,
+                width: 140,
+                height: 140,
+                borderRadius: 70,
+                background: "#ffff01",
+                opacity: 0.08,
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 16,
+                position: "relative",
+                width: "100%",
               }}
             >
-              SPEAK TO OUR SALES TEAM
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {CONTACTS.map((contact, idx) => (
-                <div key={idx} style={{ display: "flex", alignItems: "center" }}>
-                  {idx > 0 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        width: 1,
-                        height: 46,
-                        background: "rgba(255,255,255,0.14)",
-                        margin: "0 40px",
-                      }}
-                    />
-                  )}
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: 46,
-                        height: 46,
-                        borderRadius: 23,
-                        border: "1.5px solid rgba(255,255,1,0.45)",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#ffff01"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                      </svg>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          color: "#ffff01",
-                          fontSize: 12,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          letterSpacing: 3,
-                          marginBottom: 3,
-                        }}
-                      >
-                        {contact.name}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          fontSize: 24,
-                          fontWeight: 700,
-                          letterSpacing: 1,
-                          color: "#ffffff",
-                        }}
-                      >
-                        {contact.number}
-                      </div>
-                    </div>
-                  </div>
+              <img src={LOGO_URL} style={{ width: 130, height: 102, objectFit: "contain" }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#ffff01"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>
+                  everestmotoring.co.za
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{
-              display: "flex",
-              flexShrink: 0,
-              width: "100%",
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.10)",
-            }}
-          />
-
-          {/* ROW 3 – Brand strip */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "22px 40px",
-            }}
-          >
-            <img
-              src={LOGO_URL}
-              style={{ width: 120, height: 94, objectFit: "contain" }}
-            />
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
-              <div style={{ display: "flex", fontSize: 14, color: "#94a3b8" }}>
-                White River, Mpumalanga   •   013 854 0600
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
-                {/* Globe */}
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <svg
-                    width="19"
-                    height="19"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#ffff01"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                  </svg>
-                  <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>
-                    everestmotoring.co.za
-                  </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffff01">
+                  <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z" />
+                </svg>
+                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>
+                  /everestmotoring
                 </div>
-                {/* Facebook */}
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <svg
-                    width="19"
-                    height="19"
-                    viewBox="0 0 24 24"
-                    fill="#ffff01"
-                  >
-                    <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z" />
-                  </svg>
-                  <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>
-                    /everestmotoring
-                  </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#ffff01"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>
+                  @everestmotoring
                 </div>
-                {/* Instagram */}
-                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <svg
-                    width="19"
-                    height="19"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#ffff01"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                  <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>
-                    @everestmotoring
-                  </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  width: "60%",
+                  height: 1,
+                  background: "rgba(255,255,255,0.15)",
+                }}
+              />
+              <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>
+                White River, Mpumalanga
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#ffff01"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>
+                  013 854 0600
                 </div>
               </div>
             </div>
