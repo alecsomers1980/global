@@ -3,6 +3,10 @@ import QRCode from "qrcode";
 import { createAdminClient } from "@/utils/supabase/server";
 
 const LOGO_URL = "https://everestmotoring.co.za/images/logo.png";
+const CONTACTS = [
+    { name: "Anton", number: "078 893 8881" },
+    { name: "George", number: "082 478 7676" },
+];
 const WIDTH = 1000;
 const HEIGHT = 1414; // A4 portrait ratio (210mm x 297mm)
 
@@ -39,13 +43,9 @@ export async function GET(request, { params }) {
     ].filter(Boolean);
 
     const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
-    const thumbs = Array.isArray(car.gallery_urls) ? car.gallery_urls.slice(0, 3) : [];
     const isAvailable = car.status === "available";
 
-    const heroHeight = 474;
-    const heroGap = 6;
-    const mainWidth = 696;
-    const thumbsWidth = WIDTH - mainWidth - heroGap;
+    const heroHeight = 400;
 
     return new ImageResponse(
         (
@@ -74,16 +74,11 @@ export async function GET(request, { params }) {
                 />
 
                 {/* 1. Hero */}
-                <div style={{ display: "flex", flexShrink: 0, height: heroHeight, gap: heroGap, background: "#000000" }}>
+                <div style={{ display: "flex", flexShrink: 0, height: heroHeight, background: "#000000" }}>
                     <img
                         src={car.main_image_url}
-                        style={{ width: mainWidth, height: heroHeight, objectFit: "cover" }}
+                        style={{ width: WIDTH, height: heroHeight, objectFit: "cover" }}
                     />
-                    <div style={{ width: thumbsWidth, display: "flex", flexDirection: "column", gap: heroGap }}>
-                        {thumbs.map((url, i) => (
-                            <img key={i} src={url} style={{ width: thumbsWidth, flex: 1, objectFit: "cover" }} />
-                        ))}
-                    </div>
                 </div>
 
                 {/* 2. Title / Price */}
@@ -153,8 +148,10 @@ export async function GET(request, { params }) {
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 0" }}>
                             {features.map((feature, idx) => (
                                 <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, width: "33.33%" }}>
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 22, height: 22, borderRadius: 11, background: "#22c55e", color: "#ffffff", fontSize: 13, fontWeight: 900, flexShrink: 0 }}>
-                                        ✓
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 22, height: 22, borderRadius: 11, background: "#22c55e", flexShrink: 0 }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20 6L9 17l-5-5" />
+                                        </svg>
                                     </div>
                                     <div style={{ display: "flex", fontSize: 16, color: "#334155", fontWeight: 600 }}>{feature}</div>
                                 </div>
@@ -163,34 +160,84 @@ export async function GET(request, { params }) {
                     </div>
                 )}
 
-                {/* 5. CTA */}
-                <div style={{ display: "flex", flexShrink: 0, position: "relative", margin: "28px 36px 0 36px", background: "#000000", borderRadius: 18, padding: "30px 36px", overflow: "hidden" }}>
-                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 8, background: "#ffff01" }} />
-                    <div style={{ position: "absolute", top: -90, right: -90, width: 280, height: 280, borderRadius: 140, background: "#ffff01", opacity: 0.12 }} />
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ display: "flex", fontSize: 24, fontWeight: 800, color: "#ffffff", marginBottom: 8 }}>
-                            Interested in this car?
+                {/* 5. Bottom Panel */}
+                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden", minHeight: 360 }}>
+                    {/* Left column */}
+                    <div style={{ display: "flex", flex: 1, background: "#ffffff", padding: 32, flexDirection: "column" }}>
+                        <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 16, textTransform: "uppercase" }}>
+                            SPEAK TO OUR SALES TEAM
                         </div>
-                        <div style={{ display: "flex", fontSize: 16, color: "#cbd5e1", lineHeight: 1.5, maxWidth: 700 }}>
-                            Scan the code below to view the full listing. If you&apos;re interested, click the
-                            callback option on the website — this links the affiliate who shared this listing
-                            with you to your enquiry, so we know who referred you. One of our sales executives
-                            will be in touch as soon as possible.
+                        <div style={{ display: "flex", gap: 28 }}>
+                            {CONTACTS.map((contact, i) => (
+                                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                    <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
+                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 20, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
+                                            {contact.name}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "flex", fontSize: 26, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
+                                        {contact.number}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", marginTop: 24 }}>
+                            <div style={{ display: "flex", fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>
+                                Interested in this car?
+                            </div>
+                            <div style={{ display: "flex", fontSize: 14, color: "#64748b", lineHeight: 1.5, maxWidth: 380 }}>
+                                Scan the code to view the full listing. Click &apos;Callback&apos; on the website — we&apos;ll link this to your enquiry and our team will get back to you.
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", marginTop: 18, alignItems: "center", gap: 14 }}>
+                            <img
+                                src={qrDataUrl}
+                                style={{ width: 90, height: 90, borderRadius: 8, border: "3px solid #ffff01" }}
+                            />
+                            <div style={{ display: "flex", fontSize: 12, fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: 1, maxWidth: 120, lineHeight: 1.3 }}>
+                                SCAN TO VIEW &amp; ENQUIRE
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* 6. Footer */}
-                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", background: "#000000", padding: "28px 36px", alignItems: "center", justifyContent: "space-between" }}>
-                    <img src={LOGO_URL} style={{ width: 145, height: 113, objectFit: "contain" }} />
-                    <div style={{ display: "flex", flexDirection: "column", fontSize: 15, color: "#cbd5e1", lineHeight: 1.9 }}>
-                        <div style={{ display: "flex", color: "#ffffff", fontWeight: 700 }}>White River, Mpumalanga</div>
-                        <div style={{ display: "flex" }}>013 854 0600 &nbsp;|&nbsp; info@everestmotoring.co.za</div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        <img src={qrDataUrl} style={{ width: 100, height: 100, borderRadius: 8, border: "3px solid #ffff01" }} />
-                        <div style={{ display: "flex", fontSize: 14, color: "#ffff01", fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.5, maxWidth: 130, lineHeight: 1.4 }}>
-                            Scan to view &amp; enquire
+                    {/* Right column */}
+                    <div style={{ display: "flex", width: 380, flexShrink: 0, background: "#000000", position: "relative", overflow: "hidden", flexDirection: "column", alignItems: "center", padding: 28, gap: 16 }}>
+                        {/* Decorative circles */}
+                        <div style={{ display: "flex", position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: 110, background: "#ffff01", opacity: 0.1 }} />
+                        <div style={{ display: "flex", position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: 70, background: "#ffff01", opacity: 0.08 }} />
+
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, position: "relative", width: "100%" }}>
+                            <img src={LOGO_URL} style={{ width: 130, height: 102, objectFit: "contain" }} />
+                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                </svg>
+                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>everestmotoring.co.za</div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffff01">
+                                    <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z" />
+                                </svg>
+                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>/everestmotoring</div>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg>
+                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>@everestmotoring</div>
+                            </div>
+                            <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
+                            <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>White River, Mpumalanga</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>013 854 0600</div>
+                            </div>
                         </div>
                     </div>
                 </div>
