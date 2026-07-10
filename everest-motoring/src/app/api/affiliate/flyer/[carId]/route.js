@@ -45,9 +45,11 @@ export async function GET(request, { params }) {
     const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
     const isAvailable = car.status === "available";
 
-    const heroHeight = 400;
-    const panelBlackWidth = 460;
-    const panelWhitePadding = 32;
+    const heroHeight = 240;
+    const footerHeight = 460;
+    const footerBarHeight = 40;
+    const footerWedgeTopWidth = 460;
+    const footerWedgeBottomWidth = 250;
     const ctaSectionMargin = 36;
     const ctaCardPadding = 24;
     const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
@@ -197,89 +199,75 @@ export async function GET(request, { params }) {
                     </div>
                 </div>
 
-                {/* 5. Bottom Panel */}
-                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden", borderTop: "5px solid #ffff01" }}>
-                    {/* Left column — Black with brand details */}
-                    <div
-                        style={{
-                            display: "flex",
-                            width: panelBlackWidth,
-                            flexShrink: 0,
-                            position: "relative",
-                            overflow: "hidden",
-                            background: "#000000",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            padding: 26,
-                        }}
+                {/* 5. Bottom Panel — angled black wedge + full-width base bar */}
+                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", height: footerHeight, position: "relative" }}>
+                    {/* Black wedge (narrows going down) + full-width bar at the very bottom + yellow top border */}
+                    <svg
+                        width={WIDTH}
+                        height={footerHeight}
+                        viewBox={`0 0 ${WIDTH} ${footerHeight}`}
+                        style={{ position: "absolute", top: 0, left: 0 }}
                     >
-                        {/* Angled corner facet — premium detail, opaque near-black tone only */}
-                        <svg width="120" height="120" viewBox="0 0 120 120" style={{ position: "absolute", top: 0, left: 0 }}>
-                            <polygon points="0,0 120,0 0,120" fill="#15181e" />
-                        </svg>
+                        <polygon
+                            points={`0,0 ${footerWedgeTopWidth},0 ${footerWedgeBottomWidth},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight} 0,${footerHeight}`}
+                            fill="#000000"
+                        />
+                        <rect x="0" y="0" width={footerWedgeTopWidth} height="5" fill="#ffff01" />
+                    </svg>
 
-                        {/* Halftone dot fade toward the seam */}
-                        <div style={{ display: "flex", position: "absolute", top: 0, right: 0, bottom: 0, width: 140, flexDirection: "row", justifyContent: "space-between", padding: "36px 8px" }}>
-                            {[0.9, 0.7, 0.5, 0.32, 0.18, 0.08].map((op, col) => (
-                                <div key={col} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
-                                    {[0, 1, 2, 3, 4].map((row) => (
-                                        <div
-                                            key={row}
-                                            style={{
-                                                display: "flex",
-                                                width: 10 - col,
-                                                height: 10 - col,
-                                                borderRadius: 10,
-                                                background: "#000000",
-                                                opacity: op,
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            ))}
+                    {/* Black-area content — logo, socials, address, phone */}
+                    <div style={{ display: "flex", position: "absolute", top: 28, left: 20, width: 260, flexDirection: "column", alignItems: "center", gap: 11 }}>
+                        <img src={LOGO_URL} style={{ width: 100, height: 78, objectFit: "contain" }} />
+                        <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                            </svg>
+                            <div style={{ display: "flex", color: "#e2e8f0", fontSize: 12, fontWeight: 600 }}>everestmotoring.co.za</div>
                         </div>
-
-                        {/* Main content */}
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, position: "relative", width: "100%" }}>
-                            <img src={LOGO_URL} style={{ width: 110, height: 86, objectFit: "contain" }} />
-                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="2" y1="12" x2="22" y2="12" />
-                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                </svg>
-                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>everestmotoring.co.za</div>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#ffff01">
-                                    <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z" />
-                                </svg>
-                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>/everestmotoring</div>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                                </svg>
-                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>@everestmotoring</div>
-                            </div>
-                            <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>9 Chief Mgiyeni Khumalo Drive</div>
-                                <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>White River, Mpumalanga, 1240</div>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                                </svg>
-                                <div style={{ display: "flex", color: "#e2e8f0", fontSize: 14, fontWeight: 600 }}>013 854 0600</div>
-                            </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#ffff01">
+                                <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.88v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.1 24 18.1 24 12.07z" />
+                            </svg>
+                            <div style={{ display: "flex", color: "#e2e8f0", fontSize: 12, fontWeight: 600 }}>/everestmotoring</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                            </svg>
+                            <div style={{ display: "flex", color: "#e2e8f0", fontSize: 12, fontWeight: 600 }}>@everestmotoring</div>
+                        </div>
+                        <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div style={{ display: "flex", color: "#ffffff", fontSize: 13, fontWeight: 700, textAlign: "center" }}>9 Chief Mgiyeni Khumalo Drive</div>
+                            <div style={{ display: "flex", color: "#ffffff", fontSize: 13, fontWeight: 700, textAlign: "center" }}>White River, Mpumalanga, 1240</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>013 854 0600</div>
                         </div>
                     </div>
 
-                    {/* Right column — White with stacked sales contacts */}
-                    <div style={{ display: "flex", flex: 1, background: "#ffffff", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: panelWhitePadding, gap: 22 }}>
+                    {/* White-area content — sales contacts, sitting on the plain white page above the base bar */}
+                    <div
+                        style={{
+                            display: "flex",
+                            position: "absolute",
+                            top: 0,
+                            left: 500,
+                            width: WIDTH - 500 - 40,
+                            height: footerHeight - footerBarHeight,
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
                         <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 14, textTransform: "uppercase" }}>
                             SPEAK TO OUR SALES TEAM
                         </div>
