@@ -198,7 +198,7 @@ export async function GET(request, { params }) {
                 </div>
 
                 {/* 5. Bottom Panel */}
-                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden" }}>
+                <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden", borderTop: "5px solid #ffff01" }}>
                     {/* Left column — Black with brand details */}
                     <div
                         style={{
@@ -265,7 +265,10 @@ export async function GET(request, { params }) {
                                 <div style={{ display: "flex", color: "#e2e8f0", fontSize: 13, fontWeight: 600 }}>@everestmotoring</div>
                             </div>
                             <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
-                            <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>White River, Mpumalanga</div>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>9 Chief Mgiyeni Khumalo Drive</div>
+                                <div style={{ display: "flex", color: "#ffffff", fontSize: 14, fontWeight: 700 }}>White River, Mpumalanga, 1240</div>
+                            </div>
                             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffff01" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -276,19 +279,19 @@ export async function GET(request, { params }) {
                     </div>
 
                     {/* Right column — White with stacked sales contacts */}
-                    <div style={{ display: "flex", flex: 1, background: "#ffffff", flexDirection: "column", justifyContent: "center", padding: panelWhitePadding, gap: 22 }}>
+                    <div style={{ display: "flex", flex: 1, background: "#ffffff", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: panelWhitePadding, gap: 22 }}>
                         <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 14, textTransform: "uppercase" }}>
                             SPEAK TO OUR SALES TEAM
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
                             {CONTACTS.map((contact, i) => (
-                                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                    <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
-                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
+                                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                    <div style={{ display: "flex", background: "#0f172a", borderRadius: 24, padding: "8px 22px", marginBottom: 10 }}>
+                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 24, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
                                             {contact.name}
                                         </div>
                                     </div>
-                                    <div style={{ display: "flex", fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
+                                    <div style={{ display: "flex", fontSize: 28, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
                                         {contact.number}
                                     </div>
                                 </div>
