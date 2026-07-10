@@ -45,11 +45,11 @@ export async function GET(request, { params }) {
     const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
     const isAvailable = car.status === "available";
 
-    const heroHeight = 240;
-    const footerHeight = 460;
+    const heroHeight = 340;
+    const footerHeight = 360;
     const footerBarHeight = 40;
-    const footerWedgeTopWidth = 460;
-    const footerWedgeBottomWidth = 250;
+    const footerWedgeTopWidth = 290;
+    const footerWedgeBottomWidth = 460;
     const ctaSectionMargin = 36;
     const ctaCardPadding = 24;
     const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
@@ -216,7 +216,7 @@ export async function GET(request, { params }) {
                     </svg>
 
                     {/* Black-area content — logo, socials, address, phone */}
-                    <div style={{ display: "flex", position: "absolute", top: 28, left: 20, width: 260, flexDirection: "column", alignItems: "center", gap: 11 }}>
+                    <div style={{ display: "flex", position: "absolute", top: 28, left: 15, width: 260, flexDirection: "column", alignItems: "center", gap: 11 }}>
                         <img src={LOGO_URL} style={{ width: 100, height: 78, objectFit: "contain" }} />
                         <div style={{ display: "flex", width: "60%", height: 1, background: "rgba(255,255,255,0.15)" }} />
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

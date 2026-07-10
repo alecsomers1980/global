@@ -73,11 +73,11 @@ export async function GET(request, { params }) {
   const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
   const isAvailable = car.status === "available";
 
-  const heroHeight = 300;
-  const footerHeight = 460;
+  const heroHeight = 400;
+  const footerHeight = 360;
   const footerBarHeight = 40;
-  const footerWedgeTopWidth = 460;
-  const footerWedgeBottomWidth = 250;
+  const footerWedgeTopWidth = 290;
+  const footerWedgeBottomWidth = 460;
   const ctaSectionMargin = 36;
   const ctaCardPadding = 24;
   const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
@@ -398,7 +398,7 @@ export async function GET(request, { params }) {
               display: "flex",
               position: "absolute",
               top: 28,
-              left: 20,
+              left: 15,
               width: 260,
               flexDirection: "column",
               alignItems: "center",
