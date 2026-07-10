@@ -45,10 +45,15 @@ export async function GET(request, { params }) {
     const features = Array.isArray(car.features) ? car.features.slice(0, 9) : [];
     const isAvailable = car.status === "available";
 
-    const heroHeight = 470;
+    const heroHeight = 400;
     const panelBlackWidth = 460;
     const panelWhitePadding = 32;
-    const panelWhiteContentWidth = WIDTH - panelBlackWidth - panelWhitePadding * 2;
+    const ctaSectionMargin = 36;
+    const ctaCardPadding = 24;
+    const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
+    const ctaQrSize = 100;
+    const ctaGap = 24;
+    const ctaTextWidth = ctaCardWidth - ctaCardPadding * 2 - ctaQrSize - ctaGap - 2;
 
     return new ImageResponse(
         (
@@ -163,6 +168,35 @@ export async function GET(request, { params }) {
                     </div>
                 )}
 
+                {/* 4b. Interested + QR, full width */}
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexShrink: 0,
+                        gap: ctaGap,
+                        width: ctaCardWidth,
+                        margin: `20px ${ctaSectionMargin}px 0 ${ctaSectionMargin}px`,
+                        background: "#f8fafc",
+                        border: "1px solid #f1f5f9",
+                        borderRadius: 16,
+                        padding: ctaCardPadding,
+                    }}
+                >
+                    <img
+                        src={qrDataUrl}
+                        style={{ width: ctaQrSize, height: ctaQrSize, borderRadius: 10, border: "3px solid #ffff01", flexShrink: 0 }}
+                    />
+                    <div style={{ display: "flex", flexDirection: "column", width: ctaTextWidth }}>
+                        <div style={{ display: "flex", fontSize: 18, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>
+                            Interested in this car?
+                        </div>
+                        <div style={{ display: "flex", fontSize: 14, color: "#64748b", lineHeight: 1.4 }}>
+                            Scan the code to view the full listing. Click &apos;Callback&apos; on the site to link your enquiry to this affiliate — our team will be in touch.
+                        </div>
+                    </div>
+                </div>
+
                 {/* 5. Bottom Panel */}
                 <div style={{ display: "flex", flexShrink: 0, marginTop: "auto", width: "100%", borderRadius: "32px 32px 0 0", overflow: "hidden" }}>
                     {/* Left column — Black with brand details */}
@@ -173,12 +207,17 @@ export async function GET(request, { params }) {
                             flexShrink: 0,
                             position: "relative",
                             overflow: "hidden",
-                            background: "linear-gradient(90deg, #000000 0%, #000000 72%, rgba(0,0,0,0) 100%)",
+                            background: "#000000",
                             flexDirection: "column",
                             alignItems: "center",
                             padding: 26,
                         }}
                     >
+                        {/* Angled corner facet — premium detail, opaque near-black tone only */}
+                        <svg width="120" height="120" viewBox="0 0 120 120" style={{ position: "absolute", top: 0, left: 0 }}>
+                            <polygon points="0,0 120,0 0,120" fill="#15181e" />
+                        </svg>
+
                         {/* Halftone dot fade toward the seam */}
                         <div style={{ display: "flex", position: "absolute", top: 0, right: 0, bottom: 0, width: 140, flexDirection: "row", justifyContent: "space-between", padding: "36px 8px" }}>
                             {[0.9, 0.7, 0.5, 0.32, 0.18, 0.08].map((op, col) => (
@@ -236,43 +275,24 @@ export async function GET(request, { params }) {
                         </div>
                     </div>
 
-                    {/* Right column — White with QR code */}
+                    {/* Right column — White with stacked sales contacts */}
                     <div style={{ display: "flex", flex: 1, background: "#ffffff", flexDirection: "column", justifyContent: "center", padding: panelWhitePadding, gap: 22 }}>
-                        {/* Sales contacts moved here */}
-                        <div style={{ display: "flex", flexDirection: "column" }}>
-                            <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 12, textTransform: "uppercase" }}>
-                                SPEAK TO OUR SALES TEAM
-                            </div>
-                            <div style={{ display: "flex", gap: 28 }}>
-                                {CONTACTS.map((contact, i) => (
-                                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                        <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
-                                            <div style={{ display: "flex", color: "#ffff01", fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
-                                                {contact.name}
-                                            </div>
-                                        </div>
-                                        <div style={{ display: "flex", fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
-                                            {contact.number}
+                        <div style={{ display: "flex", fontSize: 12, fontWeight: 700, letterSpacing: 2.5, color: "#94a3b8", marginBottom: 14, textTransform: "uppercase" }}>
+                            SPEAK TO OUR SALES TEAM
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                            {CONTACTS.map((contact, i) => (
+                                <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                    <div style={{ display: "flex", background: "#0f172a", borderRadius: 20, padding: "6px 16px", marginBottom: 8 }}>
+                                        <div style={{ display: "flex", color: "#ffff01", fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1 }}>
+                                            {contact.name}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Interested card with QR merged */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 20, width: panelWhiteContentWidth - 40, background: "#f8fafc", border: "1px solid #f1f5f9", borderRadius: 16, padding: 20 }}>
-                            <img
-                                src={qrDataUrl}
-                                style={{ width: 88, height: 88, borderRadius: 8, border: "3px solid #ffff01", flexShrink: 0 }}
-                            />
-                            <div style={{ display: "flex", flexDirection: "column", width: panelWhiteContentWidth - 40 - 88 - 20 }}>
-                                <div style={{ display: "flex", fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>
-                                    Interested in this car?
+                                    <div style={{ display: "flex", fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: 0.5 }}>
+                                        {contact.number}
+                                    </div>
                                 </div>
-                                <div style={{ display: "flex", fontSize: 13, color: "#64748b", lineHeight: 1.4 }}>
-                                    Scan the code to view the full listing. Click &apos;Callback&apos; on the site to link your enquiry to this affiliate — our team will be in touch.
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
