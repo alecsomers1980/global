@@ -341,7 +341,7 @@ export default function VehicleForm({ initialData = null }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Year</label>
-                    <input type="number" name="year" defaultValue={initialData?.year} placeholder="2023" required min="1990" max="2025" className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
+                    <input type="number" name="year" defaultValue={initialData?.year} placeholder="2023" required min="1990" max={new Date().getFullYear() + 1} className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 outline-none" />
                 </div>
                 <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Price (ZAR)</label>
