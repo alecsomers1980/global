@@ -76,8 +76,9 @@ export async function GET(request, { params }) {
   const heroHeight = 400;
   const footerHeight = 360;
   const footerBarHeight = 40;
-  const footerWedgeTopWidth = 320;
-  const footerWedgeBottomWidth = 490;
+  const footerWedgeTopOffset = 24;
+  const footerWedgeTopWidth = 360;
+  const footerWedgeBottomWidth = 530;
   const ctaSectionMargin = 36;
   const ctaCardPadding = 24;
   const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
@@ -386,10 +387,10 @@ export async function GET(request, { params }) {
             style={{ position: "absolute", top: 0, left: 0 }}
           >
             <polygon
-              points={`0,0 ${footerWedgeTopWidth},0 ${footerWedgeBottomWidth},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight} 0,${footerHeight}`}
+              points={`0,${footerWedgeTopOffset} ${footerWedgeTopWidth},${footerWedgeTopOffset} ${footerWedgeBottomWidth},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight - footerBarHeight} ${WIDTH},${footerHeight} 0,${footerHeight}`}
               fill="#000000"
             />
-            <rect x="0" y="0" width={footerWedgeTopWidth} height="5" fill="#ffff01" />
+            <rect x="0" y={footerWedgeTopOffset} width={footerWedgeTopWidth} height="5" fill="#ffff01" />
           </svg>
 
           {/* Black-area content — logo, socials, address, phone */}
@@ -397,12 +398,12 @@ export async function GET(request, { params }) {
             style={{
               display: "flex",
               position: "absolute",
-              top: 28,
-              left: 15,
+              top: 52,
+              left: 50,
               width: 260,
               flexDirection: "column",
               alignItems: "center",
-              gap: 11,
+              gap: 8,
             }}
           >
             <img src={LOGO_URL} style={{ width: 100, height: 78, objectFit: "contain" }} />
@@ -452,8 +453,8 @@ export async function GET(request, { params }) {
               display: "flex",
               position: "absolute",
               top: 0,
-              left: 500,
-              width: WIDTH - 500 - 40,
+              left: 545,
+              width: WIDTH - 545 - 40,
               height: footerHeight - footerBarHeight,
               flexDirection: "column",
               alignItems: "center",
