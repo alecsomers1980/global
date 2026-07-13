@@ -37,8 +37,17 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
         const { id } = await context.params;
         const body = await req.json();
 
-        const { rows: oldRows } = await sql`SELECT status, department_completion_json FROM jobcards WHERE id = ${id}`;
+        const { rows: oldRows } = await sql`SELECT status, department_completion_json, track_approved, approved_at FROM jobcards WHERE id = ${id}`;
         const oldRow = oldRows[0];
+
+        // Stamp the approval date the first time a jobcard becomes approved — either via
+        // the Approved status (or a later stage) or the track_approved checkbox. Keep it once set.
+        const approvedStates = ['Approved', 'In Production', 'Completed'];
+        const approvedNow = body.track_approved === true || approvedStates.includes(body.status);
+        let approvedAt: string | null = oldRow?.approved_at ?? null;
+        if (approvedNow && !approvedAt) {
+            approvedAt = new Date().toISOString();
+        }
 
         const { rows } = await sql`
             UPDATE jobcards SET
@@ -103,6 +112,11 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 install_welder = ${body.install_welder ?? false},
                 install_shovels = ${body.install_shovels ?? false},
                 install_additional = ${body.install_additional ?? null},
+                install_drivers = ${body.install_drivers ?? null},
+                install_supervisors = ${body.install_supervisors ?? null},
+                install_travel_km = ${body.install_travel_km ?? null},
+                install_tools_cost = ${body.install_tools_cost ?? null},
+                approved_at = ${approvedAt},
                 track_collect = ${body.track_collect ?? false},
                 compiled_by = ${body.compiled_by ?? null},
                 mat_eng_tubing = ${body.mat_eng_tubing ?? null},

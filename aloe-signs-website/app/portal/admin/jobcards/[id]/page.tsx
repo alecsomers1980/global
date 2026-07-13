@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
-import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexCharge, getHpLatexRows, getHpLatexRowRate, getVinylCutMaterials, getVinylCutRowRate, computeVinylCutCharge, syncAutoLines } from '@/lib/jobcard-charges';
+import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexCharge, getHpLatexRows, getHpLatexRowRate, getVinylCutMaterials, getVinylCutRowRate, computeVinylCutCharge, computeInstallCharge, getInstallBreakdown, syncAutoLines } from '@/lib/jobcard-charges';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
@@ -1677,6 +1677,21 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                     <span>Minions</span>
                                                     <input type="text" name="install_minions" value={jobcard.install_minions || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
                                                 </div>
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Drivers</span>
+                                                    <input type="text" name="install_drivers" value={jobcard.install_drivers || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
+                                                <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                    <span>Supervisors</span>
+                                                    <input type="text" name="install_supervisors" value={jobcard.install_supervisors || ''} onChange={handleChange} className="w-12 border border-gray-300 p-0.5 text-center bg-white" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="border-t border-gray-200 pt-2">
+                                            <span className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Travel (for costing)</span>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                                                <span>Distance one-way (km)</span>
+                                                <input type="text" name="install_travel_km" value={jobcard.install_travel_km || ''} onChange={handleChange} className="w-16 border border-gray-300 p-0.5 text-center bg-white" />
                                             </div>
                                         </div>
                                         <div className="border-t border-gray-200 pt-2">
@@ -1698,6 +1713,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         <input type="checkbox" checked={!!jobcard.install_tools_json?.[tool.key]} onChange={() => handleToolToggle(tool.key)} className="text-aloe-green" /> {tool.label}
                                                     </label>
                                                 ))}
+                                            </div>
+                                            <div className="flex items-center justify-between text-[11px] sm:text-xs mt-2 pt-2 border-t border-gray-100">
+                                                <span>Tools total cost (R)</span>
+                                                <input type="text" name="install_tools_cost" value={jobcard.install_tools_cost || ''} onChange={handleChange} className="w-20 border border-gray-300 p-0.5 text-center bg-white" />
                                             </div>
                                         </div>
                                         <div className="mt-2 border-t border-gray-200 pt-2 flex items-center gap-4 text-[11px] sm:text-xs font-bold text-gray-700">
@@ -1722,6 +1741,33 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </label>
                                         </div>
                                     <textarea name="install_additional" value={jobcard.install_additional || ''} onChange={handleChange} placeholder="Additional equipment..." className="w-full border border-gray-300 p-2 text-xs mt-1 resize-none h-16"></textarea>
+                                    {(() => {
+                                        const rows = getInstallBreakdown(jobcard, settings);
+                                        return (
+                                            <div className="mt-2 border-t border-gray-200 pt-2 text-xs">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500 block mb-1">
+                                                    Installation cost
+                                                </span>
+                                                {rows.length === 0 ? (
+                                                    <div className="text-gray-400 italic">No installation costs yet.</div>
+                                                ) : (
+                                                    <>
+                                                        {rows.map((l, i) => (
+                                                            <div key={i} className="flex items-center justify-between text-gray-600 py-0.5">
+                                                                <span>{l.label}{l.detail ? ' — ' + l.detail : ''}</span>
+                                                                <span className="font-medium">R {l.amount.toFixed(2)}</span>
+                                                            </div>
+                                                        ))}
+                                                        <div className="flex items-center justify-end border-t border-gray-200 mt-1 pt-1">
+                                                            <span className="font-bold text-gray-700">
+                                                                Charge: R {computeInstallCharge(jobcard, settings).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             )}
                             

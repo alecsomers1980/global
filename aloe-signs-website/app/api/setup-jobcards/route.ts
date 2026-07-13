@@ -100,6 +100,13 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'install_shovels', type: 'BOOLEAN DEFAULT false' },
     { name: 'install_additional', type: 'TEXT' },
     { name: 'installation_address', type: 'TEXT' },
+    { name: 'install_drivers', type: 'TEXT' },
+    { name: 'install_supervisors', type: 'TEXT' },
+    { name: 'install_travel_km', type: 'TEXT' },
+    { name: 'install_tools_cost', type: 'TEXT' },
+
+    // Report / approval tracking
+    { name: 'approved_at', type: 'TIMESTAMP WITH TIME ZONE' },
 
     // Engineering / civil material sections
     { name: 'mat_section_digital', type: 'BOOLEAN DEFAULT false' },
@@ -142,6 +149,14 @@ export async function GET() {
         for (const col of COLUMNS) {
             await sql.query(`ALTER TABLE jobcards ADD COLUMN IF NOT EXISTS ${col.name} ${col.type}`);
         }
+
+        // One-time (idempotent) backfill: give already-approved jobcards an approval date
+        // so the report can display one. updated_at is the best available proxy for
+        // records approved before approval-date tracking existed.
+        await sql`
+            UPDATE jobcards SET approved_at = updated_at
+            WHERE approved_at IS NULL AND status IN ('Approved', 'In Production', 'Completed')
+        `;
 
         return NextResponse.json({
             success: true,

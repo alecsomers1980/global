@@ -28,8 +28,33 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        
-        // Setup empty default values
+
+        // Resolve entry_number — auto-generate JC{YEAR}.{MM}.{NNN} unless one was supplied.
+        let entryNumber: string;
+        if (typeof body.entry_number === 'string' && body.entry_number.trim().length > 0) {
+            entryNumber = body.entry_number;
+        } else {
+            const now = new Date();
+            const year = now.getFullYear().toString();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const prefix = `JC${year}.${month}.`;
+
+            const { rows: existing } = await sql`SELECT entry_number FROM jobcards WHERE entry_number LIKE ${prefix + '%'}`;
+
+            let maxSeq = 0;
+            for (const row of existing) {
+                const afterDot = String(row.entry_number).substring(String(row.entry_number).lastIndexOf('.') + 1);
+                const n = parseInt(afterDot, 10);
+                if (!isNaN(n) && n > maxSeq) maxSeq = n;
+            }
+
+            entryNumber = `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
+        }
+
+        // Default the date to today (editable later on the jobcard).
+        const todayISO = new Date().toISOString().slice(0, 10);
+        const jobDate = (typeof body.date === 'string' && body.date.trim().length > 0) ? body.date : todayISO;
+
         const { rows } = await sql`
             INSERT INTO jobcards (
                 invoice, address, email, company, contact_name, contact_phone, entry_number, date, status, material
@@ -40,8 +65,8 @@ export async function POST(req: Request) {
                 ${body.company || ''},
                 ${body.contact_name || ''},
                 ${body.contact_phone || ''},
-                ${body.entry_number || ''},
-                ${body.date || ''},
+                ${entryNumber},
+                ${jobDate},
                 'Quoted',
                 ''
             ) RETURNING id

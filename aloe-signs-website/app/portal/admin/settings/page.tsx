@@ -19,7 +19,13 @@ interface Pricing {
   artwork_hourly_rate: number;
   hp_latex_materials: Material[];
   vinyl_cut_materials: VinylMaterial[];
+  install_rates?: Record<string, number>;
 }
+
+const INSTALL_DEFAULTS: Record<string, number> = {
+  bakkie: 750, truck: 1500, trailer: 400, rigger: 650, applicator: 650,
+  builder: 900, minion: 450, driver: 750, supervisor: 2000, travel_per_km: 20,
+};
 
 export default function AdminSettingsPage() {
   const [pricing, setPricing] = useState<Pricing | null>(null);
@@ -129,6 +135,17 @@ export default function AdminSettingsPage() {
       if (!prev) return prev;
       const list = (prev.vinyl_cut_materials || []).filter((_, i) => i !== index);
       return { ...prev, vinyl_cut_materials: list };
+    });
+  };
+
+  const updateInstallRate = (key: string, value: string) => {
+    setPricing(prev => {
+      if (prev === null) return prev;
+      const newInstallRates = {
+        ...(prev.install_rates ?? INSTALL_DEFAULTS),
+        [key]: parseFloat(value) || 0,
+      };
+      return { ...prev, install_rates: newInstallRates };
     });
   };
 
@@ -280,6 +297,53 @@ export default function AdminSettingsPage() {
         >
           <Plus size={16} /> Add material
         </button>
+      </section>
+
+      {/* Installation Rates Section */}
+      <section className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <h2 className="text-xl font-semibold mb-4">Installation Rates</h2>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Bakkie (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.bakkie ?? INSTALL_DEFAULTS.bakkie} onChange={e => updateInstallRate('bakkie', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Truck (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.truck ?? INSTALL_DEFAULTS.truck} onChange={e => updateInstallRate('truck', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Trailer (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.trailer ?? INSTALL_DEFAULTS.trailer} onChange={e => updateInstallRate('trailer', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Rigger — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.rigger ?? INSTALL_DEFAULTS.rigger} onChange={e => updateInstallRate('rigger', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Applicator — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.applicator ?? INSTALL_DEFAULTS.applicator} onChange={e => updateInstallRate('applicator', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Builder — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.builder ?? INSTALL_DEFAULTS.builder} onChange={e => updateInstallRate('builder', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Minion — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.minion ?? INSTALL_DEFAULTS.minion} onChange={e => updateInstallRate('minion', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Driver — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.driver ?? INSTALL_DEFAULTS.driver} onChange={e => updateInstallRate('driver', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Supervisor — each (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.supervisor ?? INSTALL_DEFAULTS.supervisor} onChange={e => updateInstallRate('supervisor', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <label className="text-white/80 text-sm">Travel — per km (R)</label>
+            <input type="number" step="0.01" min="0" value={pricing.install_rates?.travel_per_km ?? INSTALL_DEFAULTS.travel_per_km} onChange={e => updateInstallRate('travel_per_km', e.target.value)} className="w-32 bg-black/30 border border-white/10 rounded px-3 py-2 text-white" />
+          </div>
+        </div>
       </section>
 
       {/* Save button & messages */}

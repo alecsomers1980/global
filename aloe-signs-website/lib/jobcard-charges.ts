@@ -127,7 +127,7 @@ export function computeVinylCutCharge(jobcard: any, settings: any): number {
 
 export function syncAutoLines(jobcard: any, settings: any): { items_json: any[]; sub_total: string; vat_total: string; total: string; } {
   const items = (Array.isArray(jobcard?.items_json) ? jobcard.items_json : []).filter(
-    (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex' && it._auto !== 'vinyl_cut'
+    (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex' && it._auto !== 'vinyl_cut' && it._auto !== 'install'
   );
 
   // Artwork line ('ARTWORK / LAYOUT' is a real dropdown option, so it displays fine)
@@ -205,8 +205,85 @@ export function syncAutoLines(jobcard: any, settings: any): { items_json: any[];
     }
   }
 
+  // Installation — one line carrying the computed on-site cost.
+  if (jobcard?.track_installation) {
+    const installCharge = computeInstallCharge(jobcard, settings);
+    if (installCharge > 0) {
+      items.push({
+        _auto: 'install',
+        item: 'INSTALLATION',
+        quantity: '1',
+        size: '',
+        description: 'On-site installation',
+        price: installCharge.toFixed(2),
+        total: installCharge.toFixed(2),
+      });
+    }
+  }
+
   const subtotal = items.reduce((a: number, it: any) => a + (parseFloat(it.total) || 0), 0);
   const vat = subtotal * 0.15;
   const total = subtotal + vat;
   return { items_json: items, sub_total: subtotal.toFixed(2), vat_total: vat.toFixed(2), total: total.toFixed(2) };
+}
+
+export const INSTALL_RATES_FALLBACK = {
+  bakkie: 750,
+  truck: 1500,
+  trailer: 400,
+  rigger: 650,
+  applicator: 650,
+  builder: 900,
+  minion: 450,
+  driver: 750,
+  supervisor: 2000,
+  travel_per_km: 20,
+};
+
+export function getInstallRates(settings: any): Record<string, number> {
+  const rates = settings?.install_rates ?? {};
+  const result: Record<string, number> = {};
+
+  for (const key of Object.keys(INSTALL_RATES_FALLBACK)) {
+    const fallback = (INSTALL_RATES_FALLBACK as any)[key];
+    const raw = rates[key];
+    const num = Number(raw);
+    result[key] = Number.isNaN(num) ? fallback : num;
+  }
+
+  return result;
+}
+
+export function getInstallBreakdown(jobcard: any, settings: any): { label: string; detail: string; amount: number }[] {
+  if (!jobcard?.track_installation) return [];
+  const r = getInstallRates(settings);
+  const lines: { label: string; detail: string; amount: number }[] = [];
+  const addQty = (label: string, qty: number, rate: number) => {
+    if (qty > 0) lines.push({ label, detail: qty + ' × R' + rate, amount: qty * rate });
+  };
+  if (jobcard.install_bakkie) lines.push({ label: 'Bakkie', detail: '', amount: r.bakkie });
+  if (jobcard.install_truck) lines.push({ label: 'Truck', detail: '', amount: r.truck });
+  if (jobcard.install_trailer) lines.push({ label: 'Trailer', detail: '', amount: r.trailer });
+  addQty('Riggers', parseFloat(jobcard.install_riggers) || 0, r.rigger);
+  addQty('Applicators', parseFloat(jobcard.install_applicators) || 0, r.applicator);
+  addQty('Builders', parseFloat(jobcard.install_builders) || 0, r.builder);
+  addQty('Minions', parseFloat(jobcard.install_minions) || 0, r.minion);
+  addQty('Drivers', parseFloat(jobcard.install_drivers) || 0, r.driver);
+  addQty('Supervisors', parseFloat(jobcard.install_supervisors) || 0, r.supervisor);
+  addQty('Travel (km)', parseFloat(jobcard.install_travel_km) || 0, r.travel_per_km);
+  const tools = parseFloat(jobcard.install_tools_cost) || 0;
+  if (tools > 0) lines.push({ label: 'Tools', detail: '', amount: tools });
+  return lines;
+}
+
+export function computeInstallCharge(jobcard: any, settings: any): number {
+  return getInstallBreakdown(jobcard, settings).reduce((a, l) => a + l.amount, 0);
+}
+
+export function computeDigitalCharge(jobcard: any, settings: any): number {
+  return (
+    computeArtworkCharge(jobcard, settings) +
+    computeHpLatexCharge(jobcard, settings) +
+    computeVinylCutCharge(jobcard, settings)
+  );
 }
