@@ -48,8 +48,8 @@ export async function GET(request, { params }) {
     const heroHeight = 340;
     const footerHeight = 360;
     const footerBarHeight = 40;
-    const footerWedgeTopWidth = 290;
-    const footerWedgeBottomWidth = 460;
+    const footerWedgeTopWidth = 320;
+    const footerWedgeBottomWidth = 490;
     const ctaSectionMargin = 36;
     const ctaCardPadding = 24;
     const ctaCardWidth = WIDTH - ctaSectionMargin * 2;
