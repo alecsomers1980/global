@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getAllServiceSlugs } from '@/lib/services';
+import { sql } from '@vercel/postgres';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://aloesigns.co.za';
 
   // Static pages
@@ -29,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/news`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/get-quote`,
@@ -65,5 +72,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...servicePages];
+  // Published news / blog articles
+  let newsPages: MetadataRoute.Sitemap = [];
+  try {
+    const { rows } = await sql`
+      SELECT slug, COALESCE(published_at, updated_at) AS last_modified
+      FROM news_posts
+      WHERE status = 'PUBLISHED'
+    `;
+    newsPages = rows.map((post) => ({
+      url: `${baseUrl}/news/${post.slug}`,
+      lastModified: post.last_modified ? new Date(post.last_modified) : new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // news_posts table may not exist yet on first deploy — skip gracefully
+  }
+
+  return [...staticPages, ...servicePages, ...newsPages];
 }

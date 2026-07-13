@@ -27,6 +27,7 @@ export default function Header() {
         { name: 'Home', href: '/' },
         { name: 'About', href: '/about' },
         { name: 'Shop', href: '/shop' },
+        { name: 'News', href: '/news' },
         { name: 'Track Order', href: '/order/track' },
         { name: 'Contact', href: '/contact' },
     ];
@@ -96,6 +97,10 @@ export default function Header() {
 
                     <Link href="/shop" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         SHOP
+                    </Link>
+
+                    <Link href="/news" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
+                        NEWS
                     </Link>
                 </nav>
 
