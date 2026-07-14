@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, Trash2, Check, X, Newspaper, Eye } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Check, X, Newspaper, Eye, Plus } from 'lucide-react';
 
 type NewsPost = {
   id: string;
@@ -111,9 +111,18 @@ export default function NewsListPage() {
             </h1>
             <p className="text-white/60 mt-1">Review, approve and publish articles.</p>
           </div>
-          <p className="text-xs text-white/50 max-w-xs sm:text-right">
-            Drafts are generated automatically on the 1st of each month and emailed for approval.
-          </p>
+          <div className="flex flex-col sm:items-end gap-3">
+            <Link
+              href="/portal/admin/news/new"
+              className="inline-flex items-center gap-2 bg-[#84cc16] hover:bg-[#a3e635] text-black font-medium px-4 py-2 rounded-xl transition-colors self-start sm:self-auto"
+            >
+              <Plus className="w-4 h-4" />
+              New Article
+            </Link>
+            <p className="text-xs text-white/50 max-w-xs sm:text-right">
+              Drafts are generated automatically on the 1st of each month and emailed for approval.
+            </p>
+          </div>
         </div>
 
         {/* Loading */}
