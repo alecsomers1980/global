@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, Trash2, Check, X, Newspaper, Eye, Plus } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Check, X, Newspaper, Eye, Plus, Sparkles, Loader2 } from 'lucide-react';
+import { NEWS_CATEGORIES } from '@/lib/news-categories';
 
 type NewsPost = {
   id: string;
@@ -37,9 +39,30 @@ const STATUS_BADGES: Record<string, { classes: string; label: string }> = {
 };
 
 export default function NewsListPage() {
+  const router = useRouter();
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [genCategory, setGenCategory] = useState('');
+
+  const generateWithAI = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch('/api/portal/admin/news/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(genCategory ? { category: genCategory } : {}),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Generation failed');
+      // Land in the editor to review the fresh draft
+      router.push(`/portal/admin/news/${data.post.id}`);
+    } catch (err: any) {
+      alert(err.message);
+      setGenerating(false);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -112,15 +135,39 @@ export default function NewsListPage() {
             <p className="text-white/60 mt-1">Review, approve and publish articles.</p>
           </div>
           <div className="flex flex-col sm:items-end gap-3">
-            <Link
-              href="/portal/admin/news/new"
-              className="inline-flex items-center gap-2 bg-[#84cc16] hover:bg-[#a3e635] text-black font-medium px-4 py-2 rounded-xl transition-colors self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4" />
-              New Article
-            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={genCategory}
+                onChange={(e) => setGenCategory(e.target.value)}
+                disabled={generating}
+                title="Topic for AI generation"
+                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#84cc16] disabled:opacity-50"
+              >
+                <option value="" className="bg-[#0a0a0a]">Auto topic</option>
+                {NEWS_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat} className="bg-[#0a0a0a]">
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={generateWithAI}
+                disabled={generating}
+                className="inline-flex items-center gap-2 bg-white/5 border border-[#84cc16]/40 text-[#84cc16] hover:bg-[#84cc16]/10 font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-60"
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {generating ? 'Generating…' : 'Generate with AI'}
+              </button>
+              <Link
+                href="/portal/admin/news/new"
+                className="inline-flex items-center gap-2 bg-[#84cc16] hover:bg-[#a3e635] text-black font-medium px-4 py-2 rounded-xl transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                New Article
+              </Link>
+            </div>
             <p className="text-xs text-white/50 max-w-xs sm:text-right">
-              Drafts are generated automatically on the 1st of each month and emailed for approval.
+              Drafts are also generated automatically on the 1st of each month and emailed for approval.
             </p>
           </div>
         </div>

@@ -88,6 +88,12 @@ export async function PATCH(
       setClauses.push(`published_at = COALESCE(published_at, NOW())`);
     }
 
+    // Approving a draft with no schedule (manual / AI-generated posts) must get a
+    // scheduled_for, otherwise the daily publish cron (scheduled_for <= NOW()) skips it forever.
+    if (body.status === 'APPROVED') {
+      setClauses.push(`scheduled_for = COALESCE(scheduled_for, NOW())`);
+    }
+
     values.push(id);
     const query = `UPDATE news_posts SET ${setClauses.join(', ')} WHERE id = $${paramCount} RETURNING *`;
     const { rows } = await sql.query(query, values);
