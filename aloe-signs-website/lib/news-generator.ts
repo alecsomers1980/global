@@ -153,11 +153,16 @@ The article category is: ${opts.category}. ${
       : ""
   }`;
 
-  const userPrompt = `Write an expert, SEO-optimised blog article for the category "${opts.category}". Follow all the system instructions carefully. Output ONLY valid JSON (no markdown fences, no extra text) with exactly these keys: "title", "slug", "excerpt", "meta_title", "meta_description", "body_md".`;
+  const userPrompt = `Write an expert, SEO-optimised blog article for the category "${opts.category}". Follow all the system instructions carefully.
+
+Return your response in EXACTLY this format, with nothing before or after it:
+1. A single-line JSON object (no code fences) containing ONLY these keys: "title" (max 70 chars), "slug" (url-safe, lowercase, hyphens only), "excerpt" (max 200 chars), "meta_title" (max 60 chars, include "Aloe Signs"), "meta_description" (max 160 chars). Do NOT put the article body in the JSON.
+2. On its own line, the exact delimiter: ===BODY===
+3. After the delimiter, the full article in GitHub-flavoured Markdown (600-900 words, use ## headings and bullet points, ending with the "## Get a Quote from Aloe Signs" section).`;
 
   const response = await client.messages.create({
     model: "claude-sonnet-5",
-    max_tokens: 2048,
+    max_tokens: 4096,
     system: systemPrompt,
     messages: [{ role: "user", content: userPrompt }],
   });
@@ -169,16 +174,37 @@ The article category is: ${opts.category}. ${
     throw new Error("No text content returned from Claude.");
   }
 
-  let jsonText = textBlock.text;
-  // Strip markdown code fences if present
-  jsonText = jsonText.replace(/^\s*```json\s*/i, "").replace(/\s*```\s*$/, "");
+  // Strip any wrapping code fences the model may add.
+  let raw = textBlock.text.trim();
+  raw = raw.replace(/^```(?:json|markdown)?\s*/i, "").replace(/```\s*$/i, "").trim();
+
+  // Preferred format: single-line JSON metadata, then "===BODY===", then raw markdown.
+  // Keeping the large body OUT of the JSON avoids truncation / control-char / unescaped-quote
+  // parse failures — a cut-off response just yields a shorter body, never a broken parse.
+  const delimiter = "===BODY===";
+  const delimiterIndex = raw.indexOf(delimiter);
+
+  let metaRaw = raw;
+  let extractedBody = "";
+  if (delimiterIndex !== -1) {
+    metaRaw = raw.slice(0, delimiterIndex);
+    extractedBody = raw.slice(delimiterIndex + delimiter.length).trim();
+  }
+
+  // Isolate the JSON object within the metadata portion (first { to last }).
+  const firstBrace = metaRaw.indexOf("{");
+  const lastBrace = metaRaw.lastIndexOf("}");
+  const jsonSlice =
+    firstBrace !== -1 && lastBrace > firstBrace
+      ? metaRaw.slice(firstBrace, lastBrace + 1)
+      : metaRaw;
 
   let parsed: any;
   try {
-    parsed = JSON.parse(jsonText);
+    parsed = JSON.parse(jsonSlice);
   } catch {
     // Retry after escaping raw control characters inside string literals.
-    parsed = JSON.parse(escapeJsonControlChars(jsonText));
+    parsed = JSON.parse(escapeJsonControlChars(jsonSlice));
   }
 
   // Build article with safe defaults
@@ -190,7 +216,7 @@ The article category is: ${opts.category}. ${
   const excerpt = String(parsed.excerpt ?? "").slice(0, 200);
   const meta_title = String(parsed.meta_title ?? title).slice(0, 60);
   const meta_description = String(parsed.meta_description ?? excerpt).slice(0, 160);
-  const body_md = String(parsed.body_md ?? "");
+  const body_md = extractedBody || String(parsed.body_md ?? "");
 
   // Ensure CTA is present (basic check, but trust the AI mostly)
   const ctaHeading = "## Get a Quote from Aloe Signs";
