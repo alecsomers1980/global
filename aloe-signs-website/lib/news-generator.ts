@@ -84,6 +84,46 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/**
+ * Models sometimes emit raw newlines/tabs inside JSON string values (e.g. the
+ * markdown body_md), which is invalid JSON and makes JSON.parse throw
+ * "Bad control character in string literal". Walk the text and escape any
+ * control character (< 0x20) that appears inside a string literal.
+ */
+function escapeJsonControlChars(raw: string): string {
+  let out = "";
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (escaped) {
+      out += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === "\\") {
+      out += ch;
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      out += ch;
+      continue;
+    }
+    const code = raw.charCodeAt(i);
+    if (inString && code < 0x20) {
+      if (ch === "\n") out += "\\n";
+      else if (ch === "\r") out += "\\r";
+      else if (ch === "\t") out += "\\t";
+      else out += "\\u" + code.toString(16).padStart(4, "0");
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
+
 export interface NewsArticle {
   title: string;
   slug: string;
@@ -133,7 +173,13 @@ The article category is: ${opts.category}. ${
   // Strip markdown code fences if present
   jsonText = jsonText.replace(/^\s*```json\s*/i, "").replace(/\s*```\s*$/, "");
 
-  const parsed = JSON.parse(jsonText);
+  let parsed: any;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    // Retry after escaping raw control characters inside string literals.
+    parsed = JSON.parse(escapeJsonControlChars(jsonText));
+  }
 
   // Build article with safe defaults
   const title = String(parsed.title ?? "Untitled").trim().slice(0, 70);
