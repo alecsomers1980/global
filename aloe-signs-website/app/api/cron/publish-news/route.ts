@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
+import { revalidatePath } from 'next/cache';
 
 export const runtime = 'nodejs';
 
@@ -17,8 +18,14 @@ export async function GET(request: NextRequest) {
       UPDATE news_posts
       SET status = 'PUBLISHED', published_at = NOW(), updated_at = NOW()
       WHERE status = 'APPROVED' AND scheduled_for <= NOW()
-      RETURNING id
+      RETURNING id, slug
     `;
+
+    // Refresh the public pages for anything newly published.
+    if (rows.length > 0) {
+      revalidatePath('/news');
+      for (const r of rows) revalidatePath(`/news/${r.slug}`);
+    }
 
     return NextResponse.json({
       published: rows.length,

@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { logAudit } from '@/lib/audit';
 
@@ -118,6 +119,12 @@ export async function PATCH(
       entityId: id,
       summary: rows[0].title,
     });
+
+    // Refresh the public pages immediately when a live post changes.
+    if (rows[0].status === 'PUBLISHED') {
+      revalidatePath('/news');
+      revalidatePath(`/news/${rows[0].slug}`);
+    }
 
     return NextResponse.json({ post: rows[0] });
   } catch (error: any) {

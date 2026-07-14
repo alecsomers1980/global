@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Send, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Send, Loader2, Upload } from 'lucide-react';
 import { NEWS_CATEGORIES } from '@/lib/news-categories';
+import { uploadNewsImage } from '@/lib/news-image-upload';
 
 interface NewArticleForm {
   title: string;
@@ -30,7 +31,24 @@ export default function NewArticlePage() {
     category: '',
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function onImageFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const url = await uploadNewsImage(file);
+      setForm((prev) => ({ ...prev, image_url: url }));
+    } catch (err: any) {
+      setError(err.message || 'Image upload failed');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -186,10 +204,10 @@ export default function NewArticlePage() {
             />
           </div>
 
-          {/* Image URL */}
+          {/* Image */}
           <div>
             <label htmlFor="image_url" className="block text-sm font-medium text-white/70 mb-1">
-              Image URL
+              Image
             </label>
             <input
               id="image_url"
@@ -198,10 +216,23 @@ export default function NewArticlePage() {
               value={form.image_url}
               onChange={handleChange}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#84cc16]"
-              placeholder="https://example.com/image.jpg"
+              placeholder="Paste an image URL, or upload below"
             />
+            <div className="mt-2">
+              <label className="inline-flex items-center gap-2 cursor-pointer bg-white/5 border border-white/10 hover:border-[#84cc16]/40 text-white/80 rounded-xl px-3 py-2 text-sm transition-colors">
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploading ? 'Uploading…' : 'Upload image'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onImageFile}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
             <p className="text-xs text-white/40 mt-1">
-              Optional. Paste an image URL for the hero image.
+              Optional hero image — paste a URL or upload a file.
             </p>
             {form.image_url && (
               <img

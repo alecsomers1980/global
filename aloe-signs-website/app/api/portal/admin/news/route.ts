@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { logAudit } from '@/lib/audit';
 
@@ -87,6 +88,12 @@ export async function POST(req: Request) {
       entityId: rows[0].id,
       summary: title,
     });
+
+    // Refresh the public list immediately when created as published.
+    if (status === 'PUBLISHED') {
+      revalidatePath('/news');
+      revalidatePath(`/news/${slug}`);
+    }
 
     return NextResponse.json({ post: rows[0] }, { status: 201 });
   } catch (error: any) {

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Check, X, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Check, X, Trash2, Loader2, Upload, Send } from 'lucide-react';
 import { NEWS_CATEGORIES } from '@/lib/news-categories';
+import { uploadNewsImage } from '@/lib/news-image-upload';
 
 interface PostForm {
   title: string;
@@ -44,6 +45,7 @@ export default function NewsEditPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -128,6 +130,38 @@ export default function NewsEditPage() {
       router.push('/portal/admin/news');
     } catch (err: any) {
       alert(err.message || 'Error during approval');
+    }
+  };
+
+  const publish = async () => {
+    try {
+      await save();
+      const res = await fetch(`/api/portal/admin/news/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'PUBLISHED' }),
+      });
+      if (!res.ok) throw new Error('Failed to publish');
+      router.push('/portal/admin/news');
+    } catch (err: any) {
+      alert(err.message || 'Error during publishing');
+    }
+  };
+
+  const onImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const url = await uploadNewsImage(file);
+      setForm((prev) => ({ ...prev, image_url: url }));
+      setSaved(false);
+    } catch (err: any) {
+      setError(err.message || 'Image upload failed');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -304,16 +338,30 @@ export default function NewsEditPage() {
             />
           </div>
 
-          {/* Image URL */}
+          {/* Image */}
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-1">Image URL</label>
+            <label className="block text-sm font-medium text-white/70 mb-1">Image</label>
             <input
               type="text"
               name="image_url"
               value={form.image_url}
               onChange={handleChange}
+              placeholder="Paste an image URL, or upload below"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#84cc16]"
             />
+            <div className="mt-2">
+              <label className="inline-flex items-center gap-2 cursor-pointer bg-white/5 border border-white/10 hover:border-[#84cc16]/40 text-white/80 rounded-xl px-3 py-2 text-sm transition-colors">
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploading ? 'Uploading…' : 'Upload image'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onImageFile}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
 
           {/* Content (Markdown) */}
@@ -350,14 +398,24 @@ export default function NewsEditPage() {
 
             <div className="flex-1" />
 
-            {/* Approve */}
+            {/* Publish immediately */}
+            <button
+              type="button"
+              onClick={publish}
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-green-500 hover:bg-green-400 text-black font-medium transition-colors"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Publish Now
+            </button>
+
+            {/* Approve (schedule) */}
             <button
               type="button"
               onClick={approve}
               className="inline-flex items-center px-4 py-2 rounded-xl border border-green-400 text-green-400 hover:bg-green-400/10 transition-colors"
             >
               <Check className="w-4 h-4 mr-2" />
-              Approve for Publishing
+              Approve &amp; Schedule
             </button>
 
             {/* Discard */}
