@@ -18,10 +18,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { sql } from '@vercel/postgres';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import dotenv from 'dotenv';
+import { pickMusic } from './music-picker.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(HERE, '.env') });
@@ -36,8 +37,6 @@ const BUCKET = 'project-media';
 const LOGO = existsSync(path.join(HERE, 'assets', 'aloe-logo.png'))
   ? path.join(HERE, 'assets', 'aloe-logo.png')
   : path.join(HERE, '..', '..', 'public', 'aloe-logo.png');
-const MUSIC_DIR = path.join(HERE, 'music');
-const USED_LOG = path.join(HERE, 'music', '.used.json');
 const WORK = path.join(HERE, '.work');
 
 const D = 2.0;          // seconds kept per normal clip
@@ -67,24 +66,18 @@ function probeDuration(file) {
   return parseFloat(String(out).replace(/[^0-9.]/g, '')) || D;
 }
 
-// Pick a music track that hasn't been used recently (rotate through the pool).
-function pickMusic() {
-  const tracks = readdirSync(MUSIC_DIR).filter((f) => /\.(mp3|m4a|aac|wav)$/i.test(f));
-  if (tracks.length === 0) throw new Error(`No music in ${MUSIC_DIR} — add royalty-free tracks.`);
-  let used = [];
-  try { used = JSON.parse(readFileSync(USED_LOG, 'utf8')); } catch {}
-  const fresh = tracks.filter((t) => !used.includes(t));
-  const pool = fresh.length ? fresh : tracks;
-  const chosen = pool[Math.floor(Math.random() * pool.length)];
-  used = [...used.filter((t) => tracks.includes(t) && t !== chosen), chosen].slice(-Math.max(1, tracks.length - 1));
-  try { writeFileSync(USED_LOG, JSON.stringify(used)); } catch {}
-  return path.join(MUSIC_DIR, chosen);
-}
-
-async function download(url, dest) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`download ${url} -> ${res.status}`);
-  writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+async function download(url, dest, attempts = 3) {
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`download ${url} -> ${res.status}`);
+      writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+      return;
+    } catch (err) {
+      if (i === attempts) throw new Error(`download ${url} failed after ${attempts} attempts: ${err.message}`);
+      console.log(`\n  ⚠ download retry ${i}/${attempts - 1} (${err.message})`);
+    }
+  }
 }
 
 const NORMALISE =

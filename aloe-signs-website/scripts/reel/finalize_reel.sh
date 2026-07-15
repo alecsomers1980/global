@@ -8,8 +8,13 @@ FFMPEG="C:/Users/info/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Micros
 FFPROBE="C:/Users/info/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.2-full_build/bin/ffprobe.exe"
 WORK="C:/Users/info/AppData/Local/Temp/claude/c--Users-info-OneDrive-Documents-Antigravity/7a9d8d65-82e9-416a-9446-b485d53e50d6/scratchpad/reel_work"
 LOGO="c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website/public/aloe-logo.png"
-MUSIC="c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website/scripts/reel/music/motivation-epic-rock.mp3"
+SELF_DIR="c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website/scripts/reel"
 OUT="c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website/public/images/Projects/Genises/_reel_v3.mp4"
+
+# Draw from the same rotating pool as render-project.mjs (won't repeat a track
+# until MUSIC_HISTORY other renders have used something else).
+MUSIC=$(node "$SELF_DIR/pick-music.mjs")
+echo ">> music: $(basename "$MUSIC")"
 
 CF=0.4
 

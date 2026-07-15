@@ -44,12 +44,18 @@ Tune via `N_LONG` / `D_LONG` / `D_SECOND_LAST` / `D_LAST` in `render-project.mjs
 
 ## Music — IMPORTANT
 
-- Put several tracks in `music/`. The script picks one at random and **rotates so the same
-  track isn't reused** back-to-back (tracked in `music/.used.json`).
-- For construction / installation footage use **upbeat, masculine** music (energetic /
-  sport / epic rock, driving percussion) — not soft corporate.
-- Pixabay music is free for commercial use, no attribution. Seeded with "Motivation Epic
-  Rock" (alexgrohl); add more so reels vary.
+- Every project must get **different background music** — never the same track twice in a
+  row. The pool currently has **10 tracks** in `music/` (1 Pixabay + 9 Mixkit, all upbeat /
+  masculine — rock, metal, orchestral-hybrid, march & military, trailer, film score).
+- The picker (`music-picker.mjs`, shared by `render-project.mjs` and the standalone
+  `render_reel.sh`/`finalize_reel.sh` via `pick-music.mjs`) **excludes the last 9 tracks
+  used** (`MUSIC_HISTORY` in `music-picker.mjs`) — so with a 10-track pool, a track can
+  only repeat once every ~10 renders. History is logged in `music/.used.json`.
+- **Add more tracks over time** rather than reusing — bigger pool = less chance of a near
+  repeat. For construction/installation footage keep to upbeat, masculine music (energetic
+  / sport / epic rock, driving percussion), not soft corporate.
+- Mixkit (mixkit.co) music is free for commercial use, no attribution required. Pixabay is
+  the same. Both are safe to keep adding from.
 
 ---
 
