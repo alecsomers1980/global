@@ -8,10 +8,11 @@ FFPROBE="C:/Users/info/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Micro
 SRC="c:/Users/info/OneDrive/Documents/Antigravity/aloe-signs-website/public/images/Projects/Genises"
 WORK="C:/Users/info/AppData/Local/Temp/claude/c--Users-info-OneDrive-Documents-Antigravity/7a9d8d65-82e9-416a-9446-b485d53e50d6/scratchpad/reel_work"
 
-D=2.0        # seconds kept per normal clip
-D_LONG=3.5   # last N_LONG clips run longer to show the finished product
+D=2.0             # seconds kept per normal clip
+D_LONG=3.5        # last N_LONG clips run longer to show the finished product
 N_LONG=4
-D_LAST=4.5   # the very last clip (final reveal) is held longest
+D_SECOND_LAST=6.0 # second-to-last clip
+D_LAST=10.0       # the very last clip (final reveal) is held longest
 
 # Order: landscape establishing (1), portraits, landscape closers (22,23)
 ORDER="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23"
@@ -27,6 +28,7 @@ i=0
 for n in $ORDER; do
   keep=$D
   if [ "$i" -ge "$((N - N_LONG))" ]; then keep=$D_LONG; fi
+  if [ "$i" -eq "$((N - 2))" ]; then keep=$D_SECOND_LAST; fi
   if [ "$i" -eq "$((N - 1))" ]; then keep=$D_LAST; fi
   f="$SRC/$n.mp4"
   dur=$("$FFPROBE" -v error -select_streams v:0 -show_entries stream=duration -of default=nokey=1:noprint_wrappers=1 "$f" | tr -d '\r,\n ')

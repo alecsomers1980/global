@@ -35,10 +35,12 @@ cross-dissolves, fade in/out, **Aloe logo bottom-left** (no glow/line), a random
 track, **clip audio stripped**, web-optimised, plus a cover frame. Then `reel_url` is set
 in the database and the reel appears on the live project page.
 
-**Pacing:** the **last 4 clips are held longer** (3.5s vs 2.0s), and the **very last clip
-longer still** (4.5s) — these are the finished-product / final-reveal shots, so they get
-more screen time. Upload the finished-product clips last, with the best reveal last of all.
-Tune via `N_LONG` / `D_LONG` / `D_LAST` in `render-project.mjs` (and `render_reel.sh`).
+**Pacing:** the **last 4 clips are held longer** (3.5s vs 2.0s), the **second-to-last
+clip longer still** (6s), and the **very last clip longest of all** (10s) — these are the
+finished-product / final-reveal shots, so they get much more screen time. Upload the
+finished-product clips last, with the best reveal last of all.
+Tune via `N_LONG` / `D_LONG` / `D_SECOND_LAST` / `D_LAST` in `render-project.mjs` (and
+`render_reel.sh`).
 
 ## Music — IMPORTANT
 
