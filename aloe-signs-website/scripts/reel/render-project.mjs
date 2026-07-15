@@ -43,6 +43,7 @@ const WORK = path.join(HERE, '.work');
 const D = 2.0;        // seconds kept per normal clip
 const D_LONG = 3.5;   // the last N_LONG clips (finished-product shots) run longer
 const N_LONG = 4;
+const D_LAST = 4.5;   // the very last clip (final reveal) is held longest
 const CF = 0.4;       // crossfade length
 
 const admin = createClient(
@@ -104,7 +105,9 @@ async function renderProject(project) {
   const segs = [];
   const lens = [];
   for (let i = 0; i < clips.length; i++) {
-    const keep = i >= clips.length - N_LONG ? D_LONG : D;
+    const keep = i === clips.length - 1 ? D_LAST
+      : i >= clips.length - N_LONG ? D_LONG
+      : D;
     const raw = path.join(dir, `raw_${i}.mp4`);
     await download(clips[i], raw);
     const dur = probeDuration(raw);

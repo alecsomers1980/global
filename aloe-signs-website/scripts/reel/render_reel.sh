@@ -11,6 +11,7 @@ WORK="C:/Users/info/AppData/Local/Temp/claude/c--Users-info-OneDrive-Documents-A
 D=2.0        # seconds kept per normal clip
 D_LONG=3.5   # last N_LONG clips run longer to show the finished product
 N_LONG=4
+D_LAST=4.5   # the very last clip (final reveal) is held longest
 
 # Order: landscape establishing (1), portraits, landscape closers (22,23)
 ORDER="1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23"
@@ -26,6 +27,7 @@ i=0
 for n in $ORDER; do
   keep=$D
   if [ "$i" -ge "$((N - N_LONG))" ]; then keep=$D_LONG; fi
+  if [ "$i" -eq "$((N - 1))" ]; then keep=$D_LAST; fi
   f="$SRC/$n.mp4"
   dur=$("$FFPROBE" -v error -select_streams v:0 -show_entries stream=duration -of default=nokey=1:noprint_wrappers=1 "$f" | tr -d '\r,\n ')
   start=$(awk "BEGIN{s=($dur-$keep)/2; if(s<0)s=0; printf \"%.2f\", s}")
