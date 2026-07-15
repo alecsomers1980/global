@@ -1189,81 +1189,6 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                         </div>
                                     )}
-                                    <DeptRow label="UV Flatbed" name="prod_flatbed" deptKey="flatbed" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
-                                    {jobcard.prod_flatbed && (
-                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 gap-2">
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <div>
-                                                    <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Qty</label>
-                                                    <input type="number" min="0" value={jobcard.flatbed_details_json?.qty || ''} onChange={e => handleFlatbedChange('qty', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none bg-white text-gray-800" />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Size</label>
-                                                    <input type="text" value={jobcard.flatbed_details_json?.size || ''} onChange={e => handleFlatbedChange('size', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none bg-white text-gray-800" />
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Type</label>
-                                                <div className="flex gap-4">
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_type" checked={jobcard.flatbed_details_json?.type === 'SINGLE'} onChange={() => handleFlatbedChange('type', 'SINGLE')} className="text-aloe-green" /> Single
-                                                    </label>
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_type" checked={jobcard.flatbed_details_json?.type === 'DOUBLE'} onChange={() => handleFlatbedChange('type', 'DOUBLE')} className="text-aloe-green" /> Double
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Shape</label>
-                                                <div className="flex gap-4">
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_shape" checked={jobcard.flatbed_details_json?.shape === 'RECTANGLE'} onChange={() => handleFlatbedChange('shape', 'RECTANGLE')} className="text-aloe-green" /> Rectangle
-                                                    </label>
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_shape" checked={jobcard.flatbed_details_json?.shape === 'CUT OUT'} onChange={() => handleFlatbedChange('shape', 'CUT OUT')} className="text-aloe-green" /> Cut Out
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Mirror</label>
-                                                <div className="flex gap-4">
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_mirror" checked={jobcard.flatbed_details_json?.mirror === 'YES'} onChange={() => handleFlatbedChange('mirror', 'YES')} className="text-aloe-green" /> Yes
-                                                    </label>
-                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
-                                                        <input type="radio" name="flatbed_mirror" checked={jobcard.flatbed_details_json?.mirror === 'NO'} onChange={() => handleFlatbedChange('mirror', 'NO')} className="text-aloe-green" /> No
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="mt-2 border-t border-gray-200 pt-2">
-                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-2">Material</label>
-                                                <div className="grid grid-cols-2 gap-x-2 gap-y-1">
-                                                    {FLATBED_MATERIALS.map(m => (
-                                                        <label key={m} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 cursor-pointer border border-gray-100 rounded bg-white">
-                                                            <span className="text-[10px] font-medium text-gray-700">{m}</span>
-                                                            <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                                {Array.isArray(jobcard.materials_json) && (jobcard.materials_json.includes('Other') || jobcard.materials_json.includes('OTHER')) && (
-                                                    <div className="mt-2">
-                                                        <input 
-                                                            type="text" 
-                                                            name="materials_other_text"
-                                                            value={jobcard.materials_other_text || ''} 
-                                                            onChange={handleChange}
-                                                            placeholder="Specify other material..."
-                                                            className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
                                     <DeptRow label="HP Latex" name="prod_digital" deptKey="digital" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
                                     {jobcard.prod_digital && (
                                         <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-2 text-xs overflow-x-auto">
@@ -1377,6 +1302,81 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                             </div>
                                             <div className="px-1 pt-2 text-xs flex items-center justify-end border-t border-gray-200 mt-2">
                                                 <span className="font-bold text-gray-700">Charge: R {computeVinylCutCharge(jobcard, settings).toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <DeptRow label="UV Flatbed" name="prod_flatbed" deptKey="flatbed" jobcard={jobcard} handleChange={handleChange} setJobcard={setJobcard} me={me} />
+                                    {jobcard.prod_flatbed && (
+                                        <div className="flex flex-col border-b border-gray-300 bg-blue-50/50 p-3 gap-2">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Qty</label>
+                                                    <input type="number" min="0" value={jobcard.flatbed_details_json?.qty || ''} onChange={e => handleFlatbedChange('qty', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none bg-white text-gray-800" />
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Size</label>
+                                                    <input type="text" value={jobcard.flatbed_details_json?.size || ''} onChange={e => handleFlatbedChange('size', e.target.value)} className="w-full border border-gray-300 p-1 text-xs focus:outline-none bg-white text-gray-800" />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Type</label>
+                                                <div className="flex gap-4">
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_type" checked={jobcard.flatbed_details_json?.type === 'SINGLE'} onChange={() => handleFlatbedChange('type', 'SINGLE')} className="text-aloe-green" /> Single
+                                                    </label>
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_type" checked={jobcard.flatbed_details_json?.type === 'DOUBLE'} onChange={() => handleFlatbedChange('type', 'DOUBLE')} className="text-aloe-green" /> Double
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Shape</label>
+                                                <div className="flex gap-4">
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_shape" checked={jobcard.flatbed_details_json?.shape === 'RECTANGLE'} onChange={() => handleFlatbedChange('shape', 'RECTANGLE')} className="text-aloe-green" /> Rectangle
+                                                    </label>
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_shape" checked={jobcard.flatbed_details_json?.shape === 'CUT OUT'} onChange={() => handleFlatbedChange('shape', 'CUT OUT')} className="text-aloe-green" /> Cut Out
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1 mt-1">Mirror</label>
+                                                <div className="flex gap-4">
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_mirror" checked={jobcard.flatbed_details_json?.mirror === 'YES'} onChange={() => handleFlatbedChange('mirror', 'YES')} className="text-aloe-green" /> Yes
+                                                    </label>
+                                                    <label className="flex items-center gap-1 cursor-pointer text-xs">
+                                                        <input type="radio" name="flatbed_mirror" checked={jobcard.flatbed_details_json?.mirror === 'NO'} onChange={() => handleFlatbedChange('mirror', 'NO')} className="text-aloe-green" /> No
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-2 border-t border-gray-200 pt-2">
+                                                <label className="text-[10px] uppercase font-bold text-gray-500 block mb-2">Material</label>
+                                                <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                                                    {FLATBED_MATERIALS.map(m => (
+                                                        <label key={m} className="flex items-center justify-between px-2 py-1 hover:bg-gray-50 cursor-pointer border border-gray-100 rounded bg-white">
+                                                            <span className="text-[10px] font-medium text-gray-700">{m}</span>
+                                                            <input type="checkbox" checked={Array.isArray(jobcard.materials_json) && jobcard.materials_json.includes(m)} onChange={() => handleMaterialToggle(m)} className="w-3 h-3 text-aloe-green/80 rounded border-gray-300 cursor-pointer" />
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                                {Array.isArray(jobcard.materials_json) && (jobcard.materials_json.includes('Other') || jobcard.materials_json.includes('OTHER')) && (
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            name="materials_other_text"
+                                                            value={jobcard.materials_other_text || ''}
+                                                            onChange={handleChange}
+                                                            placeholder="Specify other material..."
+                                                            className="w-full border border-gray-300 p-1.5 text-xs bg-white text-gray-800 focus:outline-none focus:border-aloe-green/50"
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )}

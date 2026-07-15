@@ -108,15 +108,15 @@ export default function JobcardsListPage() {
             });
     };
 
-    // Client total, computed live so it always includes the Digital and Install columns
-    // (the stored `total` can lag until a jobcard is re-saved). Mirrors syncAutoLines:
-    // manual line items + digital + install, plus 15% VAT.
+    // Client total = client-facing pricing only: manual line items + installation, plus 15% VAT.
+    // Artwork / HP Latex / Vinyl Cut are Aloe's internal costs (shown in the Digital column)
+    // and are deliberately excluded from what the client pays.
     const AUTO_LINES = ['artwork', 'hp_latex', 'vinyl_cut', 'install'];
     const clientTotal = (jc: any): number => {
         const manual = (Array.isArray(jc.items_json) ? jc.items_json : [])
             .filter((it: any) => !AUTO_LINES.includes(it?._auto))
             .reduce((a: number, it: any) => a + (parseFloat(it.total) || 0), 0);
-        const subtotal = manual + computeDigitalCharge(jc, pricing || {}) + computeInstallCharge(jc, pricing || {});
+        const subtotal = manual + computeInstallCharge(jc, pricing || {});
         return subtotal * 1.15;
     };
 

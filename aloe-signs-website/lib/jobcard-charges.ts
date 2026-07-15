@@ -130,80 +130,9 @@ export function syncAutoLines(jobcard: any, settings: any): { items_json: any[];
     (it: any) => it && it._auto !== 'artwork' && it._auto !== 'hp_latex' && it._auto !== 'vinyl_cut' && it._auto !== 'install'
   );
 
-  // Artwork line ('ARTWORK / LAYOUT' is a real dropdown option, so it displays fine)
-  if (jobcard?.prod_artwork) {
-    const hours = parseFloat(jobcard?.artwork_details_json?.hours) || 0;
-    if (hours > 0) {
-      const rate = getArtworkRate(jobcard, settings);
-      const charge = hours * rate;
-      items.push({
-        _auto: 'artwork',
-        item: 'ARTWORK / LAYOUT',
-        quantity: String(jobcard.artwork_details_json?.hours ?? ''),
-        size: '',
-        description: 'Design time',
-        price: String(rate),
-        total: charge.toFixed(2),
-      });
-    }
-  }
-
-  // HP Latex — one line per product row.
-  if (jobcard?.prod_digital) {
-    const hpRows = getHpLatexRows(jobcard);
-    for (const row of hpRows) {
-      const meters = parseFloat(row.meters) || 0;
-      const rate = getHpLatexRowRate(row, settings);
-      if (meters > 0 && rate > 0) {
-        const matName = row.material === 'Other' ? (row.type_other || 'Other') : row.material;
-        items.push({
-          _auto: 'hp_latex',
-          item: `HP Latex — ${matName}`,
-          itemCustom: 'true',
-          quantity: String(row.meters),
-          size: '',
-          description: 'HP Latex print',
-          price: String(rate),
-          total: (meters * rate).toFixed(2),
-        });
-      }
-    }
-  }
-
-  // HP Vinyl Cut — one line per row (running meters × per-meter rate), material shown.
-  if (jobcard?.prod_vinyl_cut) {
-    const rows = Array.isArray(jobcard.vinyl_cut_details_json) ? jobcard.vinyl_cut_details_json : [];
-    rows.forEach((row: any) => {
-      const meters = parseFloat(row?.qty) || 0;
-      const rate = getVinylCutRowRate(row, settings);
-      if (meters > 0 && rate > 0) {
-        const matName = row.type === 'Other' ? (row.type_other || 'Other') : row.type;
-        const width = String(row.width || '600');
-        items.push({
-          _auto: 'vinyl_cut',
-          item: `Vinyl Cut — ${matName} (${width}mm)`,
-          itemCustom: 'true',
-          quantity: String(row.qty ?? ''),
-          size: '',
-          description: 'HP vinyl cut',
-          price: String(rate),
-          total: (meters * rate).toFixed(2),
-        });
-      }
-    });
-    if (jobcard.vinyl_cut_printcut) {
-      items.push({
-        _auto: 'vinyl_cut',
-        item: 'Vinyl Cut — Print & Cut setup',
-        itemCustom: 'true',
-        quantity: '1',
-        size: '',
-        description: '',
-        price: '200',
-        total: '200.00',
-      });
-    }
-  }
+  // Artwork, HP Latex and HP Vinyl Cut are Aloe Signs' internal costs — they show in
+  // their department panels and on the jobcards list, but are NOT added as item rows.
+  // The Items table is the client-facing pricing (manual entries + installation only).
 
   // Installation — one line carrying the computed on-site cost.
   if (jobcard?.track_installation) {
