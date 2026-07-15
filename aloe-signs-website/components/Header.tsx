@@ -26,6 +26,7 @@ export default function Header() {
     const navLinks = [
         { name: 'Home', href: '/' },
         { name: 'About', href: '/about' },
+        { name: 'Projects', href: '/projects' },
         { name: 'Shop', href: '/shop' },
         { name: 'News', href: '/news' },
         { name: 'Track Order', href: '/order/track' },
@@ -94,6 +95,10 @@ export default function Header() {
                             </div>
                         </div>
                     </div>
+
+                    <Link href="/projects" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
+                        PROJECTS
+                    </Link>
 
                     <Link href="/shop" className={`text-sm font-semibold tracking-wide hover:text-aloe-green hover:scale-105 transition-all ${isScrolled ? 'text-charcoal' : 'text-white/80'}`}>
                         SHOP

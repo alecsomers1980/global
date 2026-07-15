@@ -38,6 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/projects`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/get-quote`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
@@ -90,5 +96,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // news_posts table may not exist yet on first deploy — skip gracefully
   }
 
-  return [...staticPages, ...servicePages, ...newsPages];
+  // Published projects
+  let projectPages: MetadataRoute.Sitemap = [];
+  try {
+    const { rows } = await sql`
+      SELECT slug, COALESCE(published_at, updated_at) AS last_modified
+      FROM projects
+      WHERE status = 'PUBLISHED'
+    `;
+    projectPages = rows.map((project) => ({
+      url: `${baseUrl}/projects/${project.slug}`,
+      lastModified: project.last_modified ? new Date(project.last_modified) : new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // projects table may not exist yet on first deploy — skip gracefully
+  }
+
+  return [...staticPages, ...servicePages, ...newsPages, ...projectPages];
 }

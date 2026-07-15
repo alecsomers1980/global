@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
-import { Palette, FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper } from 'lucide-react';
+import { Palette, FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper, FolderKanban } from 'lucide-react';
 
 export default function AdminHubPage() {
     const router = useRouter();
@@ -113,6 +113,23 @@ export default function AdminHubPage() {
                         </h3>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             Review, approve and publish the AI-drafted blog articles created each month.
+                        </p>
+                    </Link>
+
+                    {/* Projects */}
+                    <Link
+                        href="/portal/admin/projects"
+                        className="group p-8 bg-white/3 backdrop-blur-md border border-white/10 hover:border-[#84cc16]/40 hover:bg-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 text-left relative overflow-hidden flex flex-col items-start"
+                    >
+                        <div className="w-14 h-14 bg-[#84cc16]/10 text-[#84cc16] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <FolderKanban size={28} />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2 text-white group-hover:text-[#84cc16] transition-colors">
+                            Projects
+                            <ArrowRight size={20} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Showcase completed work — cinematic reels, galleries and SEO case studies.
                         </p>
                     </Link>
 

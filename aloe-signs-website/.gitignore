@@ -44,4 +44,7 @@ next-env.d.ts
 .env*.local
 /public/backup*
 
+# Large project source clips / rendered reels — hosted on Supabase, never commit
+/public/images/Projects/
+
 .vercel
