@@ -283,7 +283,9 @@ export default function CheckoutPage() {
                                         <div className="bg-white rounded p-4 text-sm text-medium-grey">
                                             <p className="font-medium text-charcoal mb-2">Payment Method</p>
                                             <p>Secure payment via PayFast</p>
-                                            <p className="text-xs mt-2 text-aloe-green">✓ Sandbox mode (test payments)</p>
+                                            {process.env.NEXT_PUBLIC_PAYFAST_MODE !== 'production' && (
+                                                <p className="text-xs mt-2 text-aloe-green">✓ Sandbox mode (test payments)</p>
+                                            )}
                                         </div>
 
                                         {/* Place Order Button */}
