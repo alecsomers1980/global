@@ -40,9 +40,10 @@ const MUSIC_DIR = path.join(HERE, 'music');
 const USED_LOG = path.join(HERE, 'music', '.used.json');
 const WORK = path.join(HERE, '.work');
 
-const D = 2.0;   // seconds kept per clip
-const CF = 0.4;  // crossfade length
-const STEP = D - CF;
+const D = 2.0;        // seconds kept per normal clip
+const D_LONG = 3.5;   // the last N_LONG clips (finished-product shots) run longer
+const N_LONG = 4;
+const CF = 0.4;       // crossfade length
 
 const admin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -98,26 +99,32 @@ async function renderProject(project) {
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
 
-  // 1. Download + normalise each clip into an equal-length graded segment.
+  // 1. Download + normalise each clip into a graded segment. The last N_LONG
+  //    clips are kept longer so the finished-product shots get more dwell time.
   const segs = [];
+  const lens = [];
   for (let i = 0; i < clips.length; i++) {
+    const keep = i >= clips.length - N_LONG ? D_LONG : D;
     const raw = path.join(dir, `raw_${i}.mp4`);
     await download(clips[i], raw);
     const dur = probeDuration(raw);
-    const start = Math.max(0, (dur - D) / 2);
+    const start = Math.max(0, (dur - keep) / 2);
     const seg = path.join(dir, `seg_${String(i).padStart(2, '0')}.mp4`);
-    run(FFMPEG, ['-y', '-loglevel', 'error', '-ss', String(start), '-t', String(D), '-i', raw,
+    run(FFMPEG, ['-y', '-loglevel', 'error', '-ss', String(start), '-t', String(keep), '-i', raw,
       '-filter_complex', `[0:v]${NORMALISE}[v]`, '-map', '[v]', '-an',
       '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', seg]);
     segs.push(seg);
+    lens.push(keep);
     process.stdout.write(`  · segment ${i + 1}/${clips.length}\r`);
   }
 
-  // 2. Build the xfade chain + fades + logo + music.
+  // 2. Build the xfade chain + fades + logo + music. Segments have varying
+  //    lengths, so each xfade offset is the running total minus k*CF.
   const N = segs.length;
-  const total = (N * D - (N - 1) * CF).toFixed(2);
-  const fadeOut = (total - 0.6).toFixed(2);
-  const aFadeOut = (total - 1.2).toFixed(2);
+  const totalNum = lens.reduce((a, b) => a + b, 0) - (N - 1) * CF;
+  const total = totalNum.toFixed(2);
+  const fadeOut = (totalNum - 0.6).toFixed(2);
+  const aFadeOut = (totalNum - 1.2).toFixed(2);
   const music = pickMusic();
 
   const inputs = [];
@@ -126,12 +133,21 @@ async function renderProject(project) {
   const logoIdx = N;
   const musicIdx = N + 1;
 
-  let f = `[0][1]xfade=transition=fade:duration=${CF}:offset=${STEP}[x1]`;
-  for (let k = 2; k < N; k++) {
-    f += `;[x${k - 1}][${k}]xfade=transition=fade:duration=${CF}:offset=${(k * STEP).toFixed(2)}[x${k}]`;
+  let f;
+  if (N === 1) {
+    f = `[0]fade=t=in:st=0:d=0.6,fade=t=out:st=${fadeOut}:d=0.6,format=yuv420p[base]`;
+  } else {
+    f = '';
+    let s = lens[0]; // running sum of segment lengths already placed
+    for (let k = 1; k < N; k++) {
+      const off = (s - k * CF).toFixed(3);
+      f += k === 1
+        ? `[0][1]xfade=transition=fade:duration=${CF}:offset=${off}[x1]`
+        : `;[x${k - 1}][${k}]xfade=transition=fade:duration=${CF}:offset=${off}[x${k}]`;
+      s += lens[k];
+    }
+    f += `;[x${N - 1}]fade=t=in:st=0:d=0.6,fade=t=out:st=${fadeOut}:d=0.6,format=yuv420p[base]`;
   }
-  const last = N === 1 ? '0' : `x${N - 1}`;
-  f += `;[${last}]fade=t=in:st=0:d=0.6,fade=t=out:st=${fadeOut}:d=0.6,format=yuv420p[base]`;
   f += `;[${logoIdx}:v]scale=200:-1[logo];[base][logo]overlay=x=50:y=H-h-50[vout]`;
   f += `;[${musicIdx}:a]atrim=0:${total},asetpts=PTS-STARTPTS,afade=t=in:st=0:d=1.2,afade=t=out:st=${aFadeOut}:d=1.2,volume=0.9[aout]`;
 
