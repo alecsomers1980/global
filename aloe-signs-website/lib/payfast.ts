@@ -57,19 +57,33 @@ export class PayFastService {
      * Generate MD5 signature for PayFast
      */
     generateSignature(data: Record<string, string>, passphrase?: string): string {
-        // Create parameter string
+        // Create parameter string — PayFast requires the field order as documented
+        // (insertion order here), NOT alphabetical. Alphabetical ordering is only
+        // for the separate API signature format (e.g. subscriptions API).
+        // Blank values are excluded, matching PayFast's own reference implementation.
         const pfParamString = Object.keys(data)
-            .sort()
-            .map(key => `${key}=${encodeURIComponent(data[key]).replace(/%20/g, '+')}`)
+            .filter(key => data[key] !== '' && data[key] !== undefined && data[key] !== null)
+            .map(key => `${key}=${this.pfUrlEncode(String(data[key]).trim())}`)
             .join('&');
 
         // Append passphrase if provided
         const stringToHash = passphrase
-            ? `${pfParamString}&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, '+')}`
+            ? `${pfParamString}&passphrase=${this.pfUrlEncode(passphrase.trim())}`
             : pfParamString;
 
         // Generate MD5 hash
         return crypto.createHash('md5').update(stringToHash).digest('hex');
+    }
+
+    /**
+     * URL-encode a value to match PHP's urlencode() exactly, since PayFast's
+     * reference signature implementation is PHP-based. encodeURIComponent leaves
+     * ! ~ * ' ( ) unescaped, which PHP's urlencode does not.
+     */
+    private pfUrlEncode(value: string): string {
+        return encodeURIComponent(value)
+            .replace(/[!'()*~]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+            .replace(/%20/g, '+');
     }
 
     /**
@@ -102,15 +116,17 @@ export class PayFastService {
             name_first: params.customerFirstName,
             name_last: params.customerLastName,
             email_address: params.customerEmail,
-            m_payment_id: params.orderId,
-            amount: params.amount.toFixed(2),
-            item_name: params.itemName,
         };
 
-        // Add optional fields
+        // cell_number must appear here (buyer details) per PayFast's documented field order
         if (params.customerPhone) {
             data.cell_number = params.customerPhone;
         }
+
+        data.m_payment_id = params.orderId;
+        data.amount = params.amount.toFixed(2);
+        data.item_name = params.itemName;
+
         if (params.itemDescription) {
             data.item_description = params.itemDescription;
         }
