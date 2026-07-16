@@ -190,6 +190,70 @@ export default function FrameBuiltPage() {
         </div>
       </section>
 
+      {/* Floor plans */}
+      <section className="bg-white py-20" id="layouts">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="font-display text-3xl font-bold text-ink mb-4">The layouts</h2>
+          <p className="text-gray-600 max-w-2xl mb-10">
+            Every chalet is drawn before it is built. These are the actual floor plans — room
+            sizes included — so you know exactly what you are getting before you commit.
+          </p>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            {FRAME_BUILT.map((model) => {
+              const from = [model.log, model.chromadek, model.nutec].filter(
+                (p): p is number => p !== null
+              );
+              return (
+                <article
+                  key={model.slug}
+                  className="rounded-card border border-gray-200 bg-white overflow-hidden flex flex-col"
+                >
+                  <div className="relative aspect-[4/3] bg-white border-b border-gray-100">
+                    <Image
+                      src={model.plan}
+                      alt={`Floor plan — ${model.size} ${model.area}m² ${model.name}`}
+                      fill
+                      className="object-contain p-4"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-display text-xl font-semibold text-ink">
+                      {model.size} · {model.area}m² {model.name}
+                    </h3>
+                    <ul className="mt-3 flex flex-wrap gap-2">
+                      {model.rooms.map((room) => (
+                        <li
+                          key={room}
+                          className="rounded-full bg-timber/10 text-timber text-xs font-medium px-3 py-1"
+                        >
+                          {room}
+                        </li>
+                      ))}
+                    </ul>
+                    {from.length > 0 && (
+                      <p className="mt-4 text-sm text-gray-700">
+                        From{" "}
+                        <span className="font-semibold text-timber">
+                          {formatRand(Math.min(...from))}
+                        </span>{" "}
+                        <span className="text-gray-500">(log home, incl. VAT)</span>
+                      </p>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <p className="mt-8 text-sm text-gray-500">
+            Furniture, fittings and sanitary ware on the plans are shown for illustration only
+            and are not included. Electrics and plumbing are excluded.
+          </p>
+        </div>
+      </section>
+
       {/* Spec */}
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12">

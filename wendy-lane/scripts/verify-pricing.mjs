@@ -2,7 +2,7 @@
  * Sanity-checks the price data against the client's published PDF price list.
  * Run: node scripts/verify-pricing.mjs
  */
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 
 // Cheap TS-to-JS shim: the data module is plain declarations, so strip types and eval.
 const src = readFileSync(new URL("../src/data/pricing.ts", import.meta.url), "utf8");
@@ -77,8 +77,10 @@ check("serving flap = R770", extras["serving-flap"], "770");
 check("termite poison is NOT an extra (it's standard)", "termite" in extras, false);
 
 console.log("\n--- Frame Built (no gaps remain) ---");
-const fbBlock = src.slice(src.indexOf("export const FRAME_BUILT:"), src.indexOf("export const FRAME_BUILT_PLANS"));
-const fbRows = [...fbBlock.matchAll(/slug:\s*"([^"]+)"[^}]*?log:\s*([^,]+),\s*chromadek:\s*([^,]+),\s*nutec:\s*([^\s}]+)/g)];
+const fbBlock = src.slice(src.indexOf("export const FRAME_BUILT:"), src.indexOf("FRAME_BUILT_INCLUSIONS"));
+const fbRows = [...fbBlock.matchAll(
+  /slug:\s*"([^"]+)"[\s\S]*?log:\s*([^\s,]+),\s*chromadek:\s*([^\s,]+),\s*nutec:\s*([^\s,]+),/g
+)];
 check("6 frame-built models", fbRows.length, 6);
 check("no null prices left in FRAME_BUILT", fbRows.some((r) => [r[2], r[3], r[4]].includes("null")), false);
 const fb6x12 = fbRows.find((r) => r[1] === "6x12-three-bedroom");
@@ -101,6 +103,23 @@ check(
   lls.every((m) => +m[2] < +m[3] && +m[3] < +m[4]),
   true
 );
+
+// Every floor plan referenced in the data must exist on disk AND be rendered by a page,
+// otherwise it's an orphaned asset nobody ever sees.
+console.log("\n--- Floor plans ---");
+const planPaths = [...src.matchAll(/plan:\s*"(\/images\/plans\/[^"]+)"/g)].map((m) => m[1]);
+check("10 plans referenced in data", planPaths.length, 10);
+const missing = planPaths.filter(
+  (p) => !existsSync(new URL(`../public${p}`, import.meta.url))
+);
+check("every referenced plan exists in public/", missing.length, 0);
+if (missing.length) missing.forEach((m) => console.log(`      missing: ${m}`));
+
+const pages = ["../src/app/frame-built/page.tsx", "../src/app/wendy-houses/page.tsx"]
+  .map((p) => readFileSync(new URL(p, import.meta.url), "utf8"))
+  .join("\n");
+check("frame-built page renders model.plan", /src=\{model\.plan\}/.test(pages), true);
+check("wendy-houses page renders layout plan", /src=\{l\.plan\}/.test(pages), true);
 
 console.log(`\n${fail === 0 ? "ALL PASS" : "FAILURES PRESENT"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);

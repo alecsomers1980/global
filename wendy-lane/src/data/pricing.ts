@@ -117,32 +117,57 @@ export type FrameBuiltModel = {
   chromadek: number | null;
   /** Nutec cladding with dry walling. */
   nutec: number | null;
+  /** As named on the PDF, e.g. "One Bedroom Chalet". */
+  name: string;
+  /** Floor-plan drawing, rendered from the source PDF. */
+  plan: string;
+  /** Room breakdown printed on the plan. */
+  rooms: string[];
 };
 
 /**
  * Frame-Built.pdf (dated 01/02/2026). Prices include VAT @ 15% and construction;
  * delivery quoted by site. Building only — electrics and plumbing excluded.
- *
- * Every figure read off the rendered PDF pages. `plan` is the floor-plan drawing.
+ * Every figure and room breakdown read off the rendered PDF pages.
  */
 export const FRAME_BUILT: FrameBuiltModel[] = [
-  { slug: "6x6-one-bedroom", size: "6 × 6 m", area: 36, bedrooms: 1, log: 168668, chromadek: 183286, nutec: 209899 },
-  { slug: "6x7-2-one-bedroom", size: "6 × 7.2 m", area: 43.2, bedrooms: 1, log: 201355, chromadek: 219560, nutec: 251601 },
-  { slug: "6x9-two-bedroom", size: "6 × 9 m", area: 54, bedrooms: 2, log: 243870, chromadek: 265525, nutec: 301930 },
-  { slug: "7-6x7-6-two-bedroom", size: "7.6 × 7.6 m", area: 57.76, bedrooms: 2, log: 253873, chromadek: 276698, nutec: 315170 },
-  { slug: "6x12-three-bedroom", size: "6 × 12 m", area: 72, bedrooms: 3, log: 313480, chromadek: 341950, nutec: 388455 },
-  { slug: "7-6x12-three-bedroom", size: "7.6 × 12 m", area: 91.2, bedrooms: 3, log: 386979, chromadek: 422767, nutec: 479037 },
+  {
+    slug: "6x6-one-bedroom", name: "One Bedroom Chalet", size: "6 × 6 m", area: 36, bedrooms: 1,
+    log: 168668, chromadek: 183286, nutec: 209899,
+    plan: "/images/plans/frame-6x6-one-bedroom.png",
+    rooms: ["Kitchen 8m²", "Living 7.5m²", "Bedroom 12m²", "Bathroom 4m²", "Covered veranda 4.5m²"],
+  },
+  {
+    slug: "6x7-2-one-bedroom", name: "One Bedroom Chalet", size: "6 × 7.2 m", area: 43.2, bedrooms: 1,
+    log: 201355, chromadek: 219560, nutec: 251601,
+    plan: "/images/plans/frame-6x7-2-one-bedroom.png",
+    rooms: ["Kitchen 7.2m²", "Living 14.76m²", "Bedroom 12.6m²", "Bathroom 5.28m²", "Covered veranda 5.76m²"],
+  },
+  {
+    slug: "6x9-two-bedroom", name: "Two Bedroom Chalet", size: "6 × 9 m", area: 54, bedrooms: 2,
+    log: 243870, chromadek: 265525, nutec: 301930,
+    plan: "/images/plans/frame-6x9-two-bedroom.png",
+    rooms: ["Kitchen 7.28m²", "Living 17.36m²", "2 × Bedroom 10.2m²", "Bathroom 5.04m²", "Covered veranda 3.92m²"],
+  },
+  {
+    slug: "7-6x7-6-two-bedroom", name: "Two Bedroom Chalet", size: "7.6 × 7.6 m", area: 57.76, bedrooms: 2,
+    log: 253873, chromadek: 276698, nutec: 315170,
+    plan: "/images/plans/frame-7-6x7-6-two-bedroom.png",
+    rooms: ["Kitchen 10.64m²", "Living 12.62m²", "Bedroom 11.4m²", "Bedroom 10.64m²", "Bathroom 4.86m²", "Covered veranda 7.6m²"],
+  },
+  {
+    slug: "6x12-three-bedroom", name: "Three Bedroom Chalet", size: "6 × 12 m", area: 72, bedrooms: 3,
+    log: 313480, chromadek: 341950, nutec: 388455,
+    plan: "/images/plans/frame-6x12-three-bedroom.png",
+    rooms: ["Living 12.62m²", "2 × Bedroom 9m²", "Bedroom 14m²", "Bathroom 4.8m²", "Covered veranda 3m²"],
+  },
+  {
+    slug: "7-6x12-three-bedroom", name: "Three Bedroom Chalet", size: "7.6 × 12 m", area: 91.2, bedrooms: 3,
+    log: 386979, chromadek: 422767, nutec: 479037,
+    plan: "/images/plans/frame-7-6x12-three-bedroom.png",
+    rooms: ["Kitchen & dining 20.88m²", "Living 18m²", "Bedroom 14m²", "2 × Bedroom 11.4m²", "2 × Bathroom", "Dressing area 3.6m²", "Covered veranda 4m²"],
+  },
 ];
-
-/** Frame Built floor plans, rendered from the source PDF. Keyed by model slug. */
-export const FRAME_BUILT_PLANS: Record<string, string> = {
-  "6x6-one-bedroom": "/images/plans/frame-6x6-one-bedroom.png",
-  "6x7-2-one-bedroom": "/images/plans/frame-6x7-2-one-bedroom.png",
-  "6x9-two-bedroom": "/images/plans/frame-6x9-two-bedroom.png",
-  "7-6x7-6-two-bedroom": "/images/plans/frame-7-6x7-6-two-bedroom.png",
-  "6x12-three-bedroom": "/images/plans/frame-6x12-three-bedroom.png",
-  "7-6x12-three-bedroom": "/images/plans/frame-7-6x12-three-bedroom.png",
-};
 
 /** Frame-Built.pdf — standard inclusions, shared across every model. */
 export const FRAME_BUILT_INCLUSIONS: string[] = [
