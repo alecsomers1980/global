@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Light-only brand site: colours come from the Tailwind theme (brand/leaf/timber/cream/ink),
+ * and fonts from the CSS variables set by next/font in layout.tsx.
+ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

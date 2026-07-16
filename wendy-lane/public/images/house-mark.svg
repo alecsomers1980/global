@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 67" fill="none"
+     stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+     role="img" aria-label="Wendy Lane house mark">
+  <!-- Traced from the house glyph in the client logo (intake/logo.png, x307-373 y25-83). -->
+  <!-- Roof: overhanging eaves, apex centred -->
+  <path d="M3 30 L37.5 4 L72 30" />
+  <!-- Walls -->
+  <path d="M11 28.5 V62.5 H64 V28.5" />
+  <!-- Base -->
+  <path d="M11 62.5 H64" />
+  <!-- Door -->
+  <path d="M28 62.5 V39 H46 V62.5" />
+</svg>
