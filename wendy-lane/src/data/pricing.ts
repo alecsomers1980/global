@@ -66,24 +66,41 @@ export const VERANDAS: Veranda[] = [
 export type Extra = {
   id: string;
   label: string;
-  /** null = price not yet confirmed by the client; show as POA. */
+  /** null = price not confirmed; show as POA and exclude from totals. */
   price: number | null;
   note?: string;
 };
 
 /**
  * Wendy-House.pdf — "EXTRAS & OPTIONS".
- * The option names are confirmed; the price column did not survive PDF extraction.
- * Every price is intentionally null pending confirmation from Linda (083 647 0473).
+ * Read directly off the rendered price-list artwork (the PDF has no text layer).
  */
 export const EXTRAS: Extra[] = [
-  { id: "termite", label: "Termite poison applied under the Wendy at construction", price: null },
-  { id: "window-nd2", label: "Additional ND2 pine window (1112w × 808h)", price: null },
-  { id: "burglar-bars", label: "Burglar bars for ND windows", price: null, note: "Per opening" },
-  { id: "extra-door", label: "Additional Wendy-style door in panel", price: null },
-  { id: "serving-flap", label: "Serving flap — front panel opens to a serving counter", price: null },
-  { id: "stable-door", label: "Convert Wendy-style door to a stable door", price: null },
+  { id: "window-nd1", label: "ND1 pine window", price: 880, note: "568w × 808h" },
+  { id: "window-nd2", label: "ND2 pine window", price: 1650, note: "1112w × 808h" },
+  { id: "burglar-bars", label: "Burglar bars for ND windows", price: 430, note: "Per opening" },
+  { id: "extra-door", label: "Additional Wendy-style door in panel", price: 490 },
+  { id: "stable-door", label: "Convert Wendy-style door to a stable door", price: 300 },
+  {
+    id: "serving-flap",
+    label: "Serving flap",
+    price: 770,
+    note: "Wendy front with flap opening as a serving counter",
+  },
 ];
+
+/**
+ * Included in every Wendy House — these are selling points, not paid extras.
+ * (Termite poison sits in the price list's feature band, not the options table.)
+ */
+export const STANDARD_FEATURES: string[] = [
+  "All prices include VAT @ 15%",
+  "Termite poison applied under the Wendy at time of construction",
+  "Outside walls coated with wood sealant",
+];
+
+/** Stated on the price list — worth being upfront about. */
+export const MAINTENANCE_NOTE = "Annual re-coating required.";
 
 /** Delivery is quoted per site. Never estimate it. */
 export const DELIVERY_NOTE = "Delivery fee is quoted according to your area.";
@@ -103,19 +120,29 @@ export type FrameBuiltModel = {
 };
 
 /**
- * Frame-Built.pdf. Prices include VAT @ 15% and construction; delivery quoted by site.
- * Building only — electrics and plumbing excluded.
+ * Frame-Built.pdf (dated 01/02/2026). Prices include VAT @ 15% and construction;
+ * delivery quoted by site. Building only — electrics and plumbing excluded.
  *
- * Two rows have gaps the source PDF did not render cleanly. Left null deliberately.
+ * Every figure read off the rendered PDF pages. `plan` is the floor-plan drawing.
  */
 export const FRAME_BUILT: FrameBuiltModel[] = [
   { slug: "6x6-one-bedroom", size: "6 × 6 m", area: 36, bedrooms: 1, log: 168668, chromadek: 183286, nutec: 209899 },
   { slug: "6x7-2-one-bedroom", size: "6 × 7.2 m", area: 43.2, bedrooms: 1, log: 201355, chromadek: 219560, nutec: 251601 },
   { slug: "6x9-two-bedroom", size: "6 × 9 m", area: 54, bedrooms: 2, log: 243870, chromadek: 265525, nutec: 301930 },
   { slug: "7-6x7-6-two-bedroom", size: "7.6 × 7.6 m", area: 57.76, bedrooms: 2, log: 253873, chromadek: 276698, nutec: 315170 },
-  { slug: "6x12-three-bedroom", size: "6 × 12 m", area: 72, bedrooms: 3, log: 313480, chromadek: null, nutec: 388455 },
-  { slug: "7-6x12-three-bedroom", size: "7.6 × 12 m", area: 91.2, bedrooms: 3, log: null, chromadek: 422767, nutec: null },
+  { slug: "6x12-three-bedroom", size: "6 × 12 m", area: 72, bedrooms: 3, log: 313480, chromadek: 341950, nutec: 388455 },
+  { slug: "7-6x12-three-bedroom", size: "7.6 × 12 m", area: 91.2, bedrooms: 3, log: 386979, chromadek: 422767, nutec: 479037 },
 ];
+
+/** Frame Built floor plans, rendered from the source PDF. Keyed by model slug. */
+export const FRAME_BUILT_PLANS: Record<string, string> = {
+  "6x6-one-bedroom": "/images/plans/frame-6x6-one-bedroom.png",
+  "6x7-2-one-bedroom": "/images/plans/frame-6x7-2-one-bedroom.png",
+  "6x9-two-bedroom": "/images/plans/frame-6x9-two-bedroom.png",
+  "7-6x7-6-two-bedroom": "/images/plans/frame-7-6x7-6-two-bedroom.png",
+  "6x12-three-bedroom": "/images/plans/frame-6x12-three-bedroom.png",
+  "7-6x12-three-bedroom": "/images/plans/frame-7-6x12-three-bedroom.png",
+};
 
 /** Frame-Built.pdf — standard inclusions, shared across every model. */
 export const FRAME_BUILT_INCLUSIONS: string[] = [
@@ -136,13 +163,13 @@ export const FRAME_BUILT_EXCLUSIONS: string[] = [
 ];
 
 /**
- * Wendy-House-large-layout.pdf — the three build tiers.
+ * Wendy-House-large-layout.pdf — three build tiers across four layouts.
  *
- * ⚠ Prices are withheld on purpose. The source PDF's table lost the size↔price mapping,
- * so the four recovered price sets cannot be safely attributed to sizes:
- *   64610/89810/120240 · 71440/95640/135180 · 98805/131685/185350 · 124065/164625/224290
- * Publishing a guess here would misquote a customer. Confirm with the client, then add sizes.
- * See docs/PROJECT_PLAN.md §4e.
+ * The tier specs come from the PDF's text layer. The layout names, sizes and the
+ * size↔price mapping were read off the four floor-plan drawings, each of which sits
+ * directly above its own price row in the PDF's 2×2 grid:
+ *   top-left  Open work space / classroom  ·  top-right One bedroom unit
+ *   bottom-left Two bedroom unit           ·  bottom-right Three bedroom unit
  */
 export type LargeLayoutTier = {
   id: "standard" | "signature" | "premium";
@@ -190,6 +217,60 @@ export const LARGE_LAYOUT_TIERS: LargeLayoutTier[] = [
       "Heavy duty galvanised corrugated roof sheeting",
       "Barge boards to gable ends",
     ],
+  },
+];
+
+export type LargeLayout = {
+  slug: string;
+  name: string;
+  /** e.g. "6 x 6m" */
+  size: string;
+  /** Square metres. */
+  area: number;
+  /** Floor-plan drawing extracted from the source PDF. */
+  plan: string;
+  /** Notable features called out on the plan. */
+  features: string[];
+  prices: { standard: number; signature: number; premium: number };
+};
+
+/** Wendy-House-large-layout.pdf — the four layouts, each priced across all three tiers. */
+export const LARGE_LAYOUTS: LargeLayout[] = [
+  {
+    slug: "open-workspace-classroom",
+    name: "Open work space / classroom",
+    size: "6 x 6m",
+    area: 36,
+    plan: "/images/plans/open-workspace-classroom.png",
+    features: ["Single open span", "Roof gable support", "Double door", "3 × ND2 windows"],
+    prices: { standard: 64610, signature: 89810, premium: 120240 },
+  },
+  {
+    slug: "one-bedroom-unit",
+    name: "One bedroom unit",
+    size: "6 x 6m",
+    area: 36,
+    plan: "/images/plans/one-bedroom-unit.png",
+    features: ["One bedroom", "Covered veranda (3.0 × 1.86m)", "Wendy-style internal doors"],
+    prices: { standard: 71440, signature: 95640, premium: 135180 },
+  },
+  {
+    slug: "two-bedroom-unit",
+    name: "Two bedroom unit",
+    size: "6 x 8m",
+    area: 48,
+    plan: "/images/plans/two-bedroom-unit.png",
+    features: ["Two bedrooms", "Covered veranda (3.0 × 1.5m)", "Open living area"],
+    prices: { standard: 98805, signature: 131685, premium: 185350 },
+  },
+  {
+    slug: "three-bedroom-unit",
+    name: "Three bedroom unit",
+    size: "6 x 10m",
+    area: 60,
+    plan: "/images/plans/three-bedroom-unit.png",
+    features: ["Three bedrooms", "Covered veranda", "Open living area"],
+    prices: { standard: 124065, signature: 164625, premium: 224290 },
   },
 ];
 

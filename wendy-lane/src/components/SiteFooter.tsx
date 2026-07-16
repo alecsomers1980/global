@@ -105,7 +105,7 @@ export default function SiteFooter() {
                 >
                   {BUSINESS.sales.display}
                 </a>{" "}
-                (Linda Wagner)
+                ({BUSINESS.sales.name})
               </p>
               <p>
                 <a

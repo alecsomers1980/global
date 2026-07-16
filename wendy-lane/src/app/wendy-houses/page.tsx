@@ -5,8 +5,11 @@ import {
   WENDY_SIZES,
   VERANDAS,
   EXTRAS,
+  STANDARD_FEATURES,
+  MAINTENANCE_NOTE,
   PRICE_LIST_DATE,
   DELIVERY_NOTE,
+  LARGE_LAYOUTS,
   LARGE_LAYOUT_TIERS,
   formatRand,
   priceOrPOA,
@@ -246,22 +249,18 @@ export default function WendyHousesPage() {
           </div>
 
           <div className="border-l-4 border-leaf bg-leaf/10 p-4 rounded max-w-xl">
-            <p className="text-ink font-medium">
-              Extras are priced on application — call or WhatsApp us and we’ll confirm the cost for your build.
-            </p>
-            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-              <a href={`tel:${BUSINESS.phone.href}`} className="font-semibold underline text-brand">
-                {BUSINESS.phone.display}
-              </a>
-              <a
-                href={BUSINESS.whatsapp.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold underline text-brand"
-              >
-                WhatsApp
-              </a>
-            </div>
+            <p className="text-ink font-medium">Included in every Wendy, at no extra cost:</p>
+            <ul className="mt-2 space-y-1 text-sm text-ink/80">
+              {STANDARD_FEATURES.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <span aria-hidden="true" className="text-brand font-bold">
+                    ✓
+                  </span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-ink/60">{MAINTENANCE_NOTE}</p>
           </div>
         </div>
       </section>
@@ -272,17 +271,88 @@ export default function WendyHousesPage() {
           <h2 className="font-display text-3xl font-bold text-ink mb-4">
             Bigger layouts: Standard, Signature & Premium
           </h2>
-          <p className="text-gray-600 max-w-xl mb-10">
-            For larger Wendy houses we build three specification levels.
+          <p className="text-gray-600 max-w-2xl mb-10">
+            Need a room, not a shed? We build four larger layouts, each in three
+            specification levels. Every price below includes VAT @ 15%. {DELIVERY_NOTE}
           </p>
 
+          {/* Layout price matrix */}
+          <figure className="overflow-x-auto rounded-card border border-gray-200 mb-12">
+            <table className="w-full text-left">
+              <caption className="sr-only">
+                Large Wendy house layouts priced across the Standard, Signature and Premium ranges
+              </caption>
+              <thead className="bg-brand text-white">
+                <tr>
+                  <th scope="col" className="px-4 py-3 font-semibold">Layout</th>
+                  <th scope="col" className="px-4 py-3 font-semibold whitespace-nowrap">Size</th>
+                  <th scope="col" className="px-4 py-3 font-semibold text-right whitespace-nowrap">Standard</th>
+                  <th scope="col" className="px-4 py-3 font-semibold text-right whitespace-nowrap">Signature</th>
+                  <th scope="col" className="px-4 py-3 font-semibold text-right whitespace-nowrap">Premium</th>
+                </tr>
+              </thead>
+              <tbody>
+                {LARGE_LAYOUTS.map((l) => (
+                  <tr key={l.slug} className="even:bg-white odd:bg-brand-50/40 border-t border-gray-100">
+                    <th scope="row" className="px-4 py-3 font-medium text-ink text-left">{l.name}</th>
+                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                      {l.size} · {l.area}m²
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{formatRand(l.prices.standard)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{formatRand(l.prices.signature)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">{formatRand(l.prices.premium)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <figcaption className="px-4 py-3 text-sm text-gray-500 bg-white border-t border-gray-100">
+              Wendy Lane large layout price list — {PRICE_LIST_DATE}. All prices include VAT @ 15%.
+            </figcaption>
+          </figure>
+
+          {/* Floor plans */}
+          <h3 className="font-display text-2xl font-bold text-ink mb-6">The layouts</h3>
+          <div className="grid gap-8 sm:grid-cols-2 mb-14">
+            {LARGE_LAYOUTS.map((l) => (
+              <div key={l.slug} className="rounded-card border border-gray-200 bg-white overflow-hidden">
+                <div className="relative aspect-[4/3] bg-white">
+                  <Image
+                    src={l.plan}
+                    alt={`Floor plan — ${l.name}, ${l.size}`}
+                    fill
+                    className="object-contain p-4"
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                  />
+                </div>
+                <div className="p-5 border-t border-gray-100">
+                  <h4 className="font-display text-lg font-semibold text-ink">{l.name}</h4>
+                  <p className="text-sm text-gray-600">{l.size} · {l.area}m²</p>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {l.features.map((f) => (
+                      <li key={f} className="rounded-full bg-brand-50 text-brand text-xs font-medium px-3 py-1">
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 text-sm text-gray-700">
+                    From <span className="font-semibold text-brand">{formatRand(l.prices.standard)}</span>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tier specs */}
+          <h3 className="font-display text-2xl font-bold text-ink mb-6">
+            What each range gives you
+          </h3>
           <div className="grid gap-8 md:grid-cols-3">
             {LARGE_LAYOUT_TIERS.map((tier) => (
               <div
                 key={tier.id}
                 className="rounded-card border border-gray-200 p-6 flex flex-col bg-white shadow-sm"
               >
-                <h3 className="font-display text-xl font-bold text-ink">{tier.name}</h3>
+                <h4 className="font-display text-xl font-bold text-ink">{tier.name}</h4>
                 <ul className="mt-4 space-y-2 text-sm text-gray-700 flex-1">
                   {tier.spec.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -291,20 +361,9 @@ export default function WendyHousesPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6">
-                  <Link
-                    href="/contact"
-                    className="inline-block w-full text-center rounded-card border border-brand px-4 py-2.5 font-semibold text-brand hover:bg-brand-50 transition"
-                  >
-                    Request a price
-                  </Link>
-                </div>
               </div>
             ))}
           </div>
-          <p className="mt-6 text-gray-500 text-sm">
-            These layouts are quoted per build.
-          </p>
         </div>
       </section>
 
@@ -330,7 +389,7 @@ export default function WendyHousesPage() {
               WhatsApp {BUSINESS.whatsapp.display}
             </a>
             <a
-              href={`tel:${BUSINESS.phone.href}`}
+              href={BUSINESS.phone.href}
               className="inline-flex items-center gap-2 rounded-card bg-white/10 px-6 py-3 font-semibold hover:bg-white/20 transition"
             >
               {BUSINESS.phone.display}

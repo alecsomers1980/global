@@ -104,15 +104,22 @@ Wendy Lane genuinely has — and simply doesn't publish.
 | V48 | 4.8 | 1.2 | R9 100 |
 | V60 | 6.0 | 1.2 | R11 100 |
 
-### 4c. Extras — NAMES CONFIRMED, PRICES MISSING
-PDF lists these options but the price column did not parse:
-termite poison under the Wendy at construction · ND2 pine window 1112w × 808h ·
-burglar bars per ND opening · additional Wendy-style door in panel ·
-serving flap (front panel opening to serving counter) · convert Wendy door to stable door ·
-delivery fee subject to area.
-**→ Need prices from Linda.**
+### 4c. Extras — RESOLVED (read off the rendered artwork; the PDF has no text layer)
 
-### 4d. Frame Built Range — MOSTLY CONFIDENT
+| Option | Price |
+|---|---|
+| ND1 pine window (568w × 808h) | R880 |
+| ND2 pine window (1112w × 808h) | R1 650 |
+| Burglar bars for ND windows, per opening | R430 |
+| Additional Wendy-style door in panel | R490 |
+| Convert Wendy-style door to stable | R300 |
+| Serving flap — Wendy front, flap opens as serving counter | R770 |
+
+**Termite poison is NOT an extra** — it sits in the price list's feature band as standard,
+alongside "outside walls coated with wood sealant". Delivery remains "subject to area".
+Maintenance note stated on the list: **annual re-coating required**.
+
+### 4d. Frame Built Range — RESOLVED (PDF dated 01/02/2026)
 
 Standard inclusions: post & bearer base to max 1m off ground + one set of steps · 38/114 timber
 floor joists · 22mm T&G pine floor, 22mm veranda decking · 2.7m timber-frame walls · 30mm white
@@ -125,22 +132,31 @@ aluminium-framed windows. **Excludes electrics + plumbing.** Furniture/sanitaryw
 | 6 × 7.2 m | 43.2 m² | 1 | R201 355 | R219 560 | R251 601 |
 | 6 × 9 m | 54 m² | 2 | R243 870 | R265 525 | R301 930 |
 | 7.6 × 7.6 m | 57.76 m² | 2 | R253 873 | R276 698 | R315 170 |
-| 6 × 12 m | 72 m² | 3 | R313 480 | ⚠ **missing** | R388 455 |
-| 7.6 × 12 m | 91.2 m² | 3 | ⚠ **missing** | R422 767 | ⚠ **missing** |
+| 6 × 12 m | 72 m² | 3 | R313 480 | R341 950 | R388 455 |
+| 7.6 × 12 m | 91.2 m² | 3 | R386 979 | R422 767 | R479 037 |
 
-### 4e. Wendy Houses Large Layout — ⚠ BLOCKED, DO NOT PUBLISH
+Floor plans for all six were rendered from the PDF (vector) to `public/images/plans/frame-*.png`.
+They carry full room breakdowns (kitchen/living/bath/bed m² + veranda) — strong page content.
 
-Three tiers exist — **Standard / Signature / Premium**:
+### 4e. Wendy Houses Large Layout — RESOLVED
+
+Three tiers — **Standard / Signature / Premium**:
 - Standard: 2.1m walls, knotty pine T&G fixed vertically, Wendy-style doors, cottage-pane pine windows
 - Signature: 2.4m walls, knotty pine, cottage-pane pine windows, ceiling follows roof line
 - Premium: 2.4m walls **double skin**, hollow-core internal cottage doors, 1.8m aluminium sliding
   door, aluminium top-hung windows, ceiling follows roof line
 
-Price sets recovered, but **the PDF table lost the size↔price mapping**:
-`R64 610 / R89 810 / R120 240` · `R71 440 / R95 640 / R135 180` ·
-`R98 805 / R131 685 / R185 350` · `R124 065 / R164 625 / R224 290`
+The four layouts sit in a 2×2 grid, each floor plan directly above its own price row.
+Names/sizes were read off the plan drawings (they are raster, so absent from the text layer):
 
-**These four rows cannot be safely attributed to sizes. Confirm with Linda before publishing.**
+| Layout | Size | Standard | Signature | Premium |
+|---|---|---|---|---|
+| Open work space / classroom | 6 × 6m, 36m² | R64 610 | R89 810 | R120 240 |
+| One bedroom unit | 6 × 6m, 36m² | R71 440 | R95 640 | R135 180 |
+| Two bedroom unit | 6 × 8m, 48m² | R98 805 | R131 685 | R185 350 |
+| Three bedroom unit | 6 × 10m, 60m² | R124 065 | R164 625 | R224 290 |
+
+Plans extracted to `public/images/plans/{slug}.png`.
 
 ---
 
@@ -252,11 +268,23 @@ Resend keys, redirect map, DNS.
 
 ## 8. Open questions for the client
 
-1. **`wlcc.co.za`** — same business, old domain? Redirect into the new site, or cut the links?
-2. **Extras pricing** (§4c) — need the numbers.
-3. **Large Layout** (§4e) — need size↔price mapping for Standard/Signature/Premium.
-4. **Frame Built gaps** (§4d) — 6×12m Chromadek; 7.6×12m Log + Nutec.
-5. **Vector logo** — current asset is 500px raster.
-6. Playground equipment / kennels / furniture — still offered? Title tag claims them.
-7. Are the May 2026 prices still current for launch?
-8. Delivery: what's the radius and rate card?
+**Resolved (2026-07-16)** — all pricing was recovered from the source PDFs with PyMuPDF;
+nothing renders as POA any more:
+- ~~Extras pricing~~ → §4c
+- ~~Large Layout mapping~~ → §4e
+- ~~Frame Built gaps~~ → §4d
+- ~~`wlcc.co.za`~~ → **it already 301s correctly to wozawendylane.co.za, images included.
+  Keep renewing it — it is an old domain passing link equity. New site links internally.**
+- ~~Vector logo~~ → 500px raster is fine at the 200px header size; the house mark was traced
+  to SVG (`public/images/house-mark.svg`) so icons are crisp at any size.
+
+**Still open:**
+1. **Correct the current site's contact attribution.** The price list shows
+   **083 647 0473 = Sibusiso Mndawe** (call) and **071 469 6131 = Linda Wagner** (WhatsApp).
+   The live WP site's markup conflates them; we have it right in `business.ts`.
+2. Playground equipment / kennels / furniture — still offered? The old title tag claims them
+   and there's an orphan `/playground-equipment` page, but no content.
+3. Wendy list is dated **May 2026**, Frame Built **01/02/2026** — both current for launch?
+4. Delivery: what's the radius and rate card? Currently "quoted by area" everywhere.
+5. Do they want the Large Layout / Frame Built **floor plans** public? They're now on the site
+   (they're strong content), but confirm the client is happy publishing the drawings.

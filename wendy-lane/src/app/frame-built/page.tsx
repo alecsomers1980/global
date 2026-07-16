@@ -169,13 +169,12 @@ export default function FrameBuiltPage() {
             </figcaption>
           </figure>
           <p className="mt-6 text-center text-sm text-ink/80">
-            Prices marked <span className="italic text-gray-500">POA</span> are
-            quoted according to your specific build requirements. Please{" "}
+            Building something not on this list?{" "}
             <a
-              href={`tel:${BUSINESS.phone.href}`}
+              href={BUSINESS.phone.href}
               className="underline text-brand hover:text-brand-600"
             >
-              call us
+              Call us
             </a>{" "}
             or{" "}
             <a
@@ -186,7 +185,7 @@ export default function FrameBuiltPage() {
             >
               WhatsApp
             </a>{" "}
-            for a custom quote.
+            and we&apos;ll quote your layout.
           </p>
         </div>
       </section>
@@ -270,7 +269,7 @@ export default function FrameBuiltPage() {
               Request a quote
             </Link>
             <a
-              href={`tel:${BUSINESS.phone.href}`}
+              href={BUSINESS.phone.href}
               className="inline-flex items-center px-6 py-3 border border-white/30 text-base font-medium rounded-card text-white hover:bg-white/10 transition-colors"
             >
               {BUSINESS.phone.display}

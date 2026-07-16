@@ -10,6 +10,8 @@ export const BUSINESS = {
   established: 1993,
   owner: "Roy Wakefield",
   tagline: "Where there is a need for extra space, our products are of service",
+  /** Straight off the price-list artwork. */
+  strapline: "Quality Wendies, built to last!",
 
   address: {
     street: "Plot 52, Cairn Road",
@@ -22,8 +24,18 @@ export const BUSINESS = {
   geo: { lat: -25.449798, lng: 30.896869 },
 
   phone: { display: "013 755 2408", href: "tel:+27137552408" },
-  sales: { name: "Linda Wagner", display: "083 647 0473", href: "tel:+27836470473" },
-  whatsapp: { display: "071 469 6131", number: "27714696131", href: "https://wa.me/27714696131" },
+  /**
+   * Per the price-list artwork: 083 647 0473 is Sibusiso Mndawe (call),
+   * 071 469 6131 is Linda Wagner (WhatsApp). Do not swap these — the old
+   * site's OCR conflated the two names.
+   */
+  sales: { name: "Sibusiso Mndawe", display: "083 647 0473", href: "tel:+27836470473" },
+  whatsapp: {
+    name: "Linda Wagner",
+    display: "071 469 6131",
+    number: "27714696131",
+    href: "https://wa.me/27714696131",
+  },
   email: "sales@wozawendylane.co.za",
 
   hours: [

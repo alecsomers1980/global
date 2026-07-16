@@ -61,11 +61,46 @@ const ascending = sizeRows.every((s, i, a) => i === 0 || s.priceNoWindow > a[i -
 check("prices ascend with size", ascending, true);
 check("all verandas are 1.2m deep", verandaRows.every((v) => v.side === 1.2), true);
 
-// Every EXTRAS entry must currently be POA — guard against someone inventing a price.
-const extrasBlock = src.slice(src.indexOf("export const EXTRAS"), src.indexOf("export const DELIVERY_NOTE"));
-const extraPrices = [...extrasBlock.matchAll(/price:\s*([^,}]+)/g)].map((m) => m[1].trim());
-check("6 extras defined", extraPrices.length, 6);
-check("all extras are null (POA) pending client prices", extraPrices.every((p) => p === "null"), true);
+console.log("\n--- Extras (read off the price-list artwork) ---");
+const extrasBlock = src.slice(src.indexOf("export const EXTRAS"), src.indexOf("export const STANDARD_FEATURES"));
+const extras = Object.fromEntries(
+  [...extrasBlock.matchAll(/id:\s*"([^"]+)",\s*label:\s*"[^"]*",\s*price:\s*([^,\n}]+)/g)]
+    .map((m) => [m[1], m[2].trim()])
+);
+check("6 extras defined", Object.keys(extras).length, 6);
+check("ND1 pine window = R880", extras["window-nd1"], "880");
+check("ND2 pine window = R1 650", extras["window-nd2"], "1650");
+check("burglar bars = R430", extras["burglar-bars"], "430");
+check("additional door = R490", extras["extra-door"], "490");
+check("stable door conversion = R300", extras["stable-door"], "300");
+check("serving flap = R770", extras["serving-flap"], "770");
+check("termite poison is NOT an extra (it's standard)", "termite" in extras, false);
+
+console.log("\n--- Frame Built (no gaps remain) ---");
+const fbBlock = src.slice(src.indexOf("export const FRAME_BUILT:"), src.indexOf("export const FRAME_BUILT_PLANS"));
+const fbRows = [...fbBlock.matchAll(/slug:\s*"([^"]+)"[^}]*?log:\s*([^,]+),\s*chromadek:\s*([^,]+),\s*nutec:\s*([^\s}]+)/g)];
+check("6 frame-built models", fbRows.length, 6);
+check("no null prices left in FRAME_BUILT", fbRows.some((r) => [r[2], r[3], r[4]].includes("null")), false);
+const fb6x12 = fbRows.find((r) => r[1] === "6x12-three-bedroom");
+check("6x12 chromadek = R341 950 (was a gap)", fb6x12[3].trim(), "341950");
+const fb76x12 = fbRows.find((r) => r[1] === "7-6x12-three-bedroom");
+check("7.6x12 log = R386 979 (was a gap)", fb76x12[2].trim(), "386979");
+check("7.6x12 nutec = R479 037 (was a gap)", fb76x12[4].trim(), "479037");
+
+console.log("\n--- Large layouts (size↔price mapping verified from the PDF grid) ---");
+const llBlock = src.slice(src.indexOf("export const LARGE_LAYOUTS"));
+const lls = [...llBlock.matchAll(/slug:\s*"([^"]+)"[^}]*?standard:\s*(\d+),\s*signature:\s*(\d+),\s*premium:\s*(\d+)/g)];
+check("4 large layouts", lls.length, 4);
+const byslug = Object.fromEntries(lls.map((m) => [m[1], [+m[2], +m[3], +m[4]]]));
+check("open workspace/classroom standard = R64 610", byslug["open-workspace-classroom"][0], 64610);
+check("one bedroom premium = R135 180", byslug["one-bedroom-unit"][2], 135180);
+check("two bedroom signature = R131 685", byslug["two-bedroom-unit"][1], 131685);
+check("three bedroom premium = R224 290", byslug["three-bedroom-unit"][2], 224290);
+check(
+  "every tier ascends standard < signature < premium",
+  lls.every((m) => +m[2] < +m[3] && +m[3] < +m[4]),
+  true
+);
 
 console.log(`\n${fail === 0 ? "ALL PASS" : "FAILURES PRESENT"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
