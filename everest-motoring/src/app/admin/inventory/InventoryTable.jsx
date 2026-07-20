@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { Car, FileImage, Pencil, Search, Share2 } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 import AiVideoStatus from "./AiVideoStatus";
 import SocialPostButton from "./SocialPostButton";
 import MarkSoldButton from "./MarkSoldButton";
@@ -70,7 +73,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
             {/* Search and filters */}
             <Surface className="p-5 flex flex-col lg:flex-row gap-3 relative z-10">
                 <div className="flex-1 relative">
-                    <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-[20px] text-slate-400">search</span>
+                    <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                     <input
                         type="text"
                         placeholder="Search by model, year, or keyword"
@@ -116,7 +119,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                 <table className="w-full text-left border-collapse min-w-[860px]">
                     <thead>
                         <tr className="border-b border-hairline text-label font-semibold uppercase text-slate-500">
-                            <th className="py-4 px-6 w-[120px] font-semibold">Image</th>
+                            <th className="py-4 px-6 w-[188px] font-semibold">Image</th>
                             <th className="py-4 px-6 w-[32%] font-semibold">Vehicle</th>
                             <th className="py-4 px-6 w-[150px] whitespace-nowrap font-semibold">Price</th>
                             <th className="py-4 px-6 w-[170px] font-semibold">Status</th>
@@ -126,13 +129,19 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                     <tbody className="divide-y divide-hairline">
                         {(() => {
                             const renderRow = (car) => (
-                                <tr key={car.id} className="hover:bg-slate-50/70 transition-colors align-top">
+                                <tr key={car.id} className="group/row hover:bg-slate-50/70 transition-colors align-top">
                                     <td className="py-5 px-6">
                                         {car.main_image_url ? (
-                                            <img src={car.main_image_url} className="w-24 h-16 object-cover rounded-lg border border-hairline" alt={`${car.make} ${car.model}`} />
+                                            <div className="w-40 h-28 overflow-hidden rounded-xl border border-hairline">
+                                                <img
+                                                    src={car.main_image_url}
+                                                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover/row:scale-105"
+                                                    alt={`${car.make} ${car.model}`}
+                                                />
+                                            </div>
                                         ) : (
-                                            <div className="w-24 h-16 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
-                                                <span className="material-symbols-outlined text-2xl">directions_car</span>
+                                            <div className="w-40 h-28 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300">
+                                                <Car className="h-8 w-8" />
                                             </div>
                                         )}
                                     </td>
@@ -157,7 +166,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                             <AiVideoStatus carId={car.id} videoUrl={car.video_url} />
                                             {car.social_shared_at && (
                                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-label font-semibold uppercase rounded-md">
-                                                    <span className="material-symbols-outlined text-[12px]">share</span>
+                                                    <Share2 className="h-3 w-3" />
                                                     Shared
                                                 </span>
                                             )}
@@ -169,12 +178,12 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                             <SeoFixButton car={car} />
                                             <SocialPostButton car={car} />
                                             <MarkSoldButton car={car} />
-                                            <a href={`/api/admin/flyer/${car.id}`} download className="text-slate-400 hover:text-slate-900 transition-colors p-2" title="Download A4 Flyer">
-                                                <span className="material-symbols-outlined">wallpaper</span>
-                                            </a>
-                                            <a href={`/admin/inventory/edit/${car.id}`} className="text-slate-400 hover:text-slate-900 transition-colors p-2" title="Edit Vehicle">
-                                                <span className="material-symbols-outlined">edit</span>
-                                            </a>
+                                            <IconButton as="a" href={`/api/admin/flyer/${car.id}`} download aria-label="Download A4 flyer" title="Download A4 Flyer">
+                                                <FileImage className="h-[18px] w-[18px]" />
+                                            </IconButton>
+                                            <IconButton as={Link} href={`/admin/inventory/edit/${car.id}`} aria-label="Edit vehicle" title="Edit Vehicle">
+                                                <Pencil className="h-[18px] w-[18px]" />
+                                            </IconButton>
                                             <DeleteVehicleButton car={car} deleteCarAction={deleteCarAction} />
                                         </div>
                                     </td>
