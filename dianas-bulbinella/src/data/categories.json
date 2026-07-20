@@ -1,0 +1,191 @@
+[
+ {
+  "slug": "problem-skin",
+  "name": "Problem & Sensitive Skin",
+  "blurb": "Gentle botanical care for blemish-prone and reactive skin.",
+  "kind": "concern",
+  "sort": 0
+ },
+ {
+  "slug": "anti-ageing",
+  "name": "Anti-Ageing",
+  "blurb": "Myrrh, neroli, collagen and saffron lines for firmer-feeling skin.",
+  "kind": "concern",
+  "sort": 1
+ },
+ {
+  "slug": "weight-metabolism",
+  "name": "Weight & Metabolism",
+  "blurb": "Botanical support for a balanced, active lifestyle.",
+  "kind": "concern",
+  "sort": 2
+ },
+ {
+  "slug": "cellulite-body",
+  "name": "Cellulite & Body",
+  "blurb": "Toning and smoothing body-care rituals.",
+  "kind": "concern",
+  "sort": 3
+ },
+ {
+  "slug": "stress-hormones",
+  "name": "Stress, Sleep & Balance",
+  "blurb": "Calming blends for everyday wellbeing.",
+  "kind": "concern",
+  "sort": 4
+ },
+ {
+  "slug": "detox-digestion",
+  "name": "Digestion & Detox",
+  "blurb": "Traditional resins and botanicals for daily wellness.",
+  "kind": "concern",
+  "sort": 5
+ },
+ {
+  "slug": "baby-family",
+  "name": "Baby & Family",
+  "blurb": "Mild, kind formulations for the whole family.",
+  "kind": "concern",
+  "sort": 6
+ },
+ {
+  "slug": "hair-nails",
+  "name": "Hair, Nails & Lashes",
+  "blurb": "Nourishing oils and serums from root to tip.",
+  "kind": "concern",
+  "sort": 7
+ },
+ {
+  "slug": "mens",
+  "name": "Men's Care",
+  "blurb": "Beard, skin and vitality essentials for men.",
+  "kind": "concern",
+  "sort": 8
+ },
+ {
+  "slug": "bulbinella",
+  "name": "Bulbinella",
+  "blurb": "",
+  "kind": "range",
+  "sort": 0
+ },
+ {
+  "slug": "mastic-gum",
+  "name": "Mastic Gum",
+  "blurb": "",
+  "kind": "range",
+  "sort": 1
+ },
+ {
+  "slug": "argan",
+  "name": "Argan Oil",
+  "blurb": "",
+  "kind": "range",
+  "sort": 2
+ },
+ {
+  "slug": "collagen",
+  "name": "Collagen",
+  "blurb": "",
+  "kind": "range",
+  "sort": 3
+ },
+ {
+  "slug": "myrrh",
+  "name": "Myrrh",
+  "blurb": "",
+  "kind": "range",
+  "sort": 4
+ },
+ {
+  "slug": "neroli",
+  "name": "Neroli",
+  "blurb": "",
+  "kind": "range",
+  "sort": 5
+ },
+ {
+  "slug": "lotus",
+  "name": "Lotus",
+  "blurb": "",
+  "kind": "range",
+  "sort": 6
+ },
+ {
+  "slug": "saffron",
+  "name": "Saffron",
+  "blurb": "",
+  "kind": "range",
+  "sort": 7
+ },
+ {
+  "slug": "royal-jelly",
+  "name": "Royal Jelly",
+  "blurb": "",
+  "kind": "range",
+  "sort": 8
+ },
+ {
+  "slug": "vitamin-e",
+  "name": "Vitamin E",
+  "blurb": "",
+  "kind": "range",
+  "sort": 9
+ },
+ {
+  "slug": "charcoal",
+  "name": "Charcoal",
+  "blurb": "",
+  "kind": "range",
+  "sort": 10
+ },
+ {
+  "slug": "coffee",
+  "name": "Coffee",
+  "blurb": "",
+  "kind": "range",
+  "sort": 11
+ },
+ {
+  "slug": "shilajit",
+  "name": "Shilajit",
+  "blurb": "",
+  "kind": "range",
+  "sort": 12
+ },
+ {
+  "slug": "spekboom",
+  "name": "Spekboom",
+  "blurb": "",
+  "kind": "range",
+  "sort": 13
+ },
+ {
+  "slug": "honey-bee",
+  "name": "Honey-Bee",
+  "blurb": "",
+  "kind": "range",
+  "sort": 14
+ },
+ {
+  "slug": "bee-pink",
+  "name": "Bee-Pink",
+  "blurb": "",
+  "kind": "range",
+  "sort": 15
+ },
+ {
+  "slug": "bee-flawless",
+  "name": "Bee-Flawless",
+  "blurb": "",
+  "kind": "range",
+  "sort": 16
+ },
+ {
+  "slug": "hemp-skincare",
+  "name": "Hemp Botanicals",
+  "blurb": "",
+  "kind": "range",
+  "sort": 17
+ }
+]

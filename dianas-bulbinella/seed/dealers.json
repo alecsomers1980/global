@@ -1,0 +1,2325 @@
+[
+ {
+  "name": "Rosalien",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Despatch",
+   "Uitenhage",
+   "PE",
+   "P.E. (Korsten)"
+  ],
+  "phone": "083 701 6264",
+  "phone_alt": "",
+  "email": "rosalien.smith@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Beverley",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "East London"
+  ],
+  "phone": "078 854 3486",
+  "phone_alt": "",
+  "email": "rodgers.beverley13@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lizette Eloff",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "East London: Gonubie"
+  ],
+  "phone": "060 818 6138",
+  "phone_alt": "",
+  "email": "lizetteeloff@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Pete Delport",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Grahamstown"
+  ],
+  "phone": "083 648 9522",
+  "phone_alt": "",
+  "email": "delportpa@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Kotie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Jeffreys Bay",
+   "Humansdorp",
+   "Kareedouw",
+   "Tsitsikamma"
+  ],
+  "phone": "072 156 7326",
+  "phone_alt": "",
+  "email": "wkotie@ymail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Marelize Slabbert",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Kirkwood"
+  ],
+  "phone": "072 256 1269",
+  "phone_alt": "",
+  "email": "marelizeslabbert8@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Marlize",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "P.E. (Kabega Park)"
+  ],
+  "phone": "072 390 3606",
+  "phone_alt": "",
+  "email": "marlize.greyling@hotmail.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Michelle",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "P.E. (Lorraine)"
+  ],
+  "phone": "083 275 2511",
+  "phone_alt": "",
+  "email": "michellejansenvanvuuren263@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Elsie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "St Francis Bay"
+  ],
+  "phone": "082 338 2218",
+  "phone_alt": "",
+  "email": "elsiefoley@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Karin Bosch",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Steynsburg"
+  ],
+  "phone": "062 852 0996",
+  "phone_alt": "",
+  "email": "ruthiesblessings@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Wilma Barnard",
+  "business": "",
+  "country": "South Africa",
+  "province": "Eastern Cape",
+  "region": null,
+  "areas": [
+   "Uitenhage"
+  ],
+  "phone": "084 250 5238",
+  "phone_alt": "",
+  "email": "wbarnard@mastheadfp.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Bernadette",
+  "business": "Gentleman's Barbershop, Village Square Centre",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Bethlehem"
+  ],
+  "phone": "083 434 9245",
+  "phone_alt": "",
+  "email": "",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anna",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Bethlehem"
+  ],
+  "phone": "082 550 2284",
+  "phone_alt": "",
+  "email": "annasmith067@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Johannet",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Bloemfontein"
+  ],
+  "phone": "083 388 0178",
+  "phone_alt": "",
+  "email": "johannet.maritz@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Bertha",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Ficksburg"
+  ],
+  "phone": "073 475 0407",
+  "phone_alt": "",
+  "email": "berthamyburg@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lizanne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Odendaalsrus",
+   "Welkom"
+  ],
+  "phone": "072 476 1937",
+  "phone_alt": "",
+  "email": "lizanne.kruger20@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Nadine Olivier",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Parys"
+  ],
+  "phone": "082 859 2499",
+  "phone_alt": "",
+  "email": "nadinejolivier@hotmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Debbie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Petrus Steyn"
+  ],
+  "phone": "072 377 9611",
+  "phone_alt": "",
+  "email": "debbie@containersitesolutions.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Natasha",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Reddersburg"
+  ],
+  "phone": "067 742 5506",
+  "phone_alt": "",
+  "email": "natashahen01@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Elize",
+  "business": "",
+  "country": "South Africa",
+  "province": "Free State",
+  "region": null,
+  "areas": [
+   "Sasolburg"
+  ],
+  "phone": "071 503 2575",
+  "phone_alt": "",
+  "email": "elizeaucamp48@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Leynette",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – Central",
+  "areas": [
+   "Jhb City Centre",
+   "Bedfordview",
+   "Germiston",
+   "Edenvale",
+   "Homestead"
+  ],
+  "phone": "060 533 2105",
+  "phone_alt": "",
+  "email": "ltaljaard@gpl.gov.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Carika",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – East Rand",
+  "areas": [
+   "Benoni"
+  ],
+  "phone": "083 649 2396",
+  "phone_alt": "",
+  "email": "carikag66@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Wilma",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – East Rand",
+  "areas": [
+   "Boksburg"
+  ],
+  "phone": "082 923 9719",
+  "phone_alt": "",
+  "email": "wilmah.dianas@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hannelie Weitsz",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – East Rand",
+  "areas": [
+   "Kempton Park"
+  ],
+  "phone": "082 374 8029",
+  "phone_alt": "",
+  "email": "hannelieweitsz@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Magda",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – East Rand",
+  "areas": [
+   "Springs",
+   "Sundra"
+  ],
+  "phone": "076 314 4679",
+  "phone_alt": "",
+  "email": "magdad1218@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Janelle de Beer",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – East Rand",
+  "areas": [
+   "Springs"
+  ],
+  "phone": "083 701 4905",
+  "phone_alt": "",
+  "email": "janelle.debeer@ekurhuleni.gov.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lourentia Tonkin",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – Northern Suburbs",
+  "areas": [
+   "Douglasdale"
+  ],
+  "phone": "079 577 8038",
+  "phone_alt": "",
+  "email": "lourentiat@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Miemie Brough",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – Northern Suburbs",
+  "areas": [
+   "Sandton",
+   "Florida Glen",
+   "Northcliff",
+   "Roodepoort"
+  ],
+  "phone": "082 557 4611",
+  "phone_alt": "",
+  "email": "broughm@vodamail.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Ria",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – South Eastern",
+  "areas": [
+   "Nigel",
+   "Heidelberg"
+  ],
+  "phone": "082 783 3920",
+  "phone_alt": "",
+  "email": "rialewis@lantic.net",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Penny Rielly",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – West Rand",
+  "areas": [
+   "Allen's Nek",
+   "Sundowner",
+   "Roodepoort"
+  ],
+  "phone": "084 699 8680",
+  "phone_alt": "",
+  "email": "penelopeheuer0@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Janie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – West Rand",
+  "areas": [
+   "Krugersdorp",
+   "Lewisham"
+  ],
+  "phone": "082 376 6874",
+  "phone_alt": "",
+  "email": "janiebritz@netactive.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lauretta",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – West Rand",
+  "areas": [
+   "Krugersdorp-North",
+   "Randfontein"
+  ],
+  "phone": "079 496 5562",
+  "phone_alt": "",
+  "email": "l99359648@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hanelie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Johannesburg – West Rand",
+  "areas": [
+   "Roodepoort",
+   "Krugersdorp"
+  ],
+  "phone": "084 708 0240",
+  "phone_alt": "",
+  "email": "hanelievandermerwe@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Magda",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Akasia",
+   "Strydfontein",
+   "Pretoria North"
+  ],
+  "phone": "083 742 0460",
+  "phone_alt": "",
+  "email": "magda.human1960@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Elarne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Bronkhorstspruit"
+  ],
+  "phone": "084 644 4622",
+  "phone_alt": "",
+  "email": "elarnek@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Mirrie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Bronkhorstspruit"
+  ],
+  "phone": "076 633 2647",
+  "phone_alt": "",
+  "email": "mirrie.ok@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Louise Bezuidenhout",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Centurion (Clubview",
+   "Eldoraigne)"
+  ],
+  "phone": "065 801 2993",
+  "phone_alt": "",
+  "email": "lulubee656@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hendrik",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Centurion (Wierdapark)"
+  ],
+  "phone": "082 572 9187",
+  "phone_alt": "",
+  "email": "ha.grobbelaar@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Juanita",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Cullinan",
+   "Pretoria-East",
+   "Meyerspark",
+   "Rayton"
+  ],
+  "phone": "082 490 4128",
+  "phone_alt": "",
+  "email": "boshoff.juanita@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Louise Kuiper",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "MOOT",
+   "Wonderboom-South",
+   "Montana",
+   "Pretoria North"
+  ],
+  "phone": "071 178 7988",
+  "phone_alt": "",
+  "email": "kuiper.popko@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Irma Brummer – Montana Tuine",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Montana"
+  ],
+  "phone": "061 546 2782",
+  "phone_alt": "",
+  "email": "higorgeous20@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anzia Bayliss",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Montana Park",
+   "Soshanguve"
+  ],
+  "phone": "084 602 2170",
+  "phone_alt": "",
+  "email": "anziabayliss@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Natasha",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Pretoria",
+  "areas": [
+   "Pretoria-East: Moreleta Park",
+   "Moreleta Park"
+  ],
+  "phone": "067 403 1280",
+  "phone_alt": "",
+  "email": "natashaventer8@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Amanda Cloete",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Drumblade"
+  ],
+  "phone": "083 539 3203",
+  "phone_alt": "",
+  "email": "acloete089@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hannetjie Rossouw",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Meyerton"
+  ],
+  "phone": "083 642 6514",
+  "phone_alt": "",
+  "email": "hannetjiejj@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Talita Jonker",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Meyerton"
+  ],
+  "phone": "082 687 7527",
+  "phone_alt": "",
+  "email": "talitamiles@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Elize Aucamp",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Sasolburg (Vaalpark)"
+  ],
+  "phone": "071 503 2575",
+  "phone_alt": "",
+  "email": "elizeaucamp48@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Ria Coleske",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Vanderbijlpark"
+  ],
+  "phone": "072 904 6323",
+  "phone_alt": "",
+  "email": "riagermishuizen@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Paul & Corné Smith",
+  "business": "",
+  "country": "South Africa",
+  "province": "Gauteng",
+  "region": "Vaal Triangle",
+  "areas": [
+   "Vanderbijlpark"
+  ],
+  "phone": "084 738 1548",
+  "phone_alt": "079 057 0100",
+  "email": "pcsmithef@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Diane Smith",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Durban (Glenwood)"
+  ],
+  "phone": "074 189 6089",
+  "phone_alt": "",
+  "email": "fth.creations@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anne Maw",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Durban North",
+   "La Lucia",
+   "Umhlanga"
+  ],
+  "phone": "083 777 8770",
+  "phone_alt": "",
+  "email": "annemaw@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lahni",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Kloof"
+  ],
+  "phone": "083 496 8141",
+  "phone_alt": "",
+  "email": "lahni.dillon04@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Marie",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Margate"
+  ],
+  "phone": "082 823 8133",
+  "phone_alt": "",
+  "email": "gawien@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Toya",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Newcastle"
+  ],
+  "phone": "083 320 8984",
+  "phone_alt": "",
+  "email": "toya@crazyweb.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Sharon Howard",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Pietermaritzburg"
+  ],
+  "phone": "072 217 3559",
+  "phone_alt": "",
+  "email": "sharon.sag@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Gardenia",
+  "business": "",
+  "country": "South Africa",
+  "province": "KwaZulu-Natal",
+  "region": null,
+  "areas": [
+   "Port Edward",
+   "Palm beach",
+   "South Broom"
+  ],
+  "phone": "072 807 7018",
+  "phone_alt": "",
+  "email": "gardenian1958@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Delmarie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Alldays"
+  ],
+  "phone": "082 551 9524",
+  "phone_alt": "",
+  "email": "landsdownbdy@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Charmagne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Burgersfort",
+   "Steelpoort"
+  ],
+  "phone": "082 811 1776",
+  "phone_alt": "",
+  "email": "charmie7602@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lauri-Anne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Hoedspruit"
+  ],
+  "phone": "084 550 4112",
+  "phone_alt": "",
+  "email": "laurianneharding@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Erna Ruthven",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Kranspoort",
+   "Groblersdal"
+  ],
+  "phone": "082 521 3275",
+  "phone_alt": "",
+  "email": "erna.ruthven@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Mari",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Lephalale",
+   "Ellisras"
+  ],
+  "phone": "084 675 7160",
+  "phone_alt": "",
+  "email": "krafftmari@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Susara",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Lephalale",
+   "Ellisras"
+  ],
+  "phone": "081 829 6937",
+  "phone_alt": "",
+  "email": "susaraventer.sv1@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Susan",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Makhado",
+   "Louis Trichardt"
+  ],
+  "phone": "062 314 5227",
+  "phone_alt": "",
+  "email": "lsvdmerwe23@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Dalene Kriel",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Modimolle"
+  ],
+  "phone": "082 620 7639",
+  "phone_alt": "",
+  "email": "dalene.kriel56@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Annette",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Mokopane"
+  ],
+  "phone": "071 363 1695",
+  "phone_alt": "",
+  "email": "witbank.bulbinella@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Liesl Molter",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Musina"
+  ],
+  "phone": "084 445 6037",
+  "phone_alt": "",
+  "email": "liesl.molter2@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Titia",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Phalaborwa"
+  ],
+  "phone": "082 784 3164",
+  "phone_alt": "",
+  "email": "titiadebruin8@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lianie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Polokwane"
+  ],
+  "phone": "072 102 1029",
+  "phone_alt": "",
+  "email": "plk.dianas@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Wilana",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Thabazimbi"
+  ],
+  "phone": "072 519 6365",
+  "phone_alt": "",
+  "email": "wilanavos@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Salomien",
+  "business": "",
+  "country": "South Africa",
+  "province": "Limpopo",
+  "region": null,
+  "areas": [
+   "Tzaneen"
+  ],
+  "phone": "076 424 3326",
+  "phone_alt": "",
+  "email": "tznnatural@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Marlien",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Amersfoort"
+  ],
+  "phone": "074 426 5551",
+  "phone_alt": "",
+  "email": "marlien.smith@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Arina Wolhuter",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Barberton"
+  ],
+  "phone": "083 521 7383",
+  "phone_alt": "",
+  "email": "arinawolhuter10@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Tina",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Bethal"
+  ],
+  "phone": "076 421 3665",
+  "phone_alt": "",
+  "email": "fenh4@lantic.net",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Charmagne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Burgersfort",
+   "Steelpoort"
+  ],
+  "phone": "082 811 1776",
+  "phone_alt": "",
+  "email": "charmie7602@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Yolandi Fourie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Ermelo"
+  ],
+  "phone": "082 572 7136",
+  "phone_alt": "",
+  "email": "yolandifourie1968@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Charlene",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Hendrina"
+  ],
+  "phone": "082 855 7934",
+  "phone_alt": "",
+  "email": "salonchezcharlene@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Christelle",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Kriel",
+   "Secunda"
+  ],
+  "phone": "076 778 1309",
+  "phone_alt": "",
+  "email": "christellevdb12@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Elarne",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Lydenburg",
+   "Middelburg"
+  ],
+  "phone": "084 644 4622",
+  "phone_alt": "",
+  "email": "elarnek@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Judik / Frik",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Nelspruit",
+   "White River"
+  ],
+  "phone": "072 113 0129",
+  "phone_alt": "081 010 4059",
+  "email": "",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Letitia Entres",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Nelspruit"
+  ],
+  "phone": "061 494 5223",
+  "phone_alt": "",
+  "email": "tisha.entres@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Sonja",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Nelspruit",
+   "White River"
+  ],
+  "phone": "082 258 8682",
+  "phone_alt": "",
+  "email": "sons.vdheever@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Nomvula Magagula",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Nelspruit"
+  ],
+  "phone": "062 332 7807",
+  "phone_alt": "",
+  "email": "temagagu@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Liezl Hanekom",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Secunda"
+  ],
+  "phone": "082 926 2211",
+  "phone_alt": "",
+  "email": "liezl2214@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Cornel",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Standerton"
+  ],
+  "phone": "082 712 2280",
+  "phone_alt": "",
+  "email": "gercor001@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Diana",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "White River"
+  ],
+  "phone": "074 111 0315",
+  "phone_alt": "",
+  "email": "diana.dhd@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Yollie Muller",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Witbank"
+  ],
+  "phone": "072 450 9591",
+  "phone_alt": "",
+  "email": "lollipopboutiquesa@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Annette Schutte",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Witbank"
+  ],
+  "phone": "071 363 1695",
+  "phone_alt": "",
+  "email": "witbank.bulbinella@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Linda Uys",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Witbank"
+  ],
+  "phone": "084 589 2093",
+  "phone_alt": "",
+  "email": "lindauys@ymail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Heila Prinsloo",
+  "business": "",
+  "country": "South Africa",
+  "province": "Mpumalanga",
+  "region": null,
+  "areas": [
+   "Witbank"
+  ],
+  "phone": "082 458 6568",
+  "phone_alt": "",
+  "email": "a3heila@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Santie",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Brits",
+   "Hartbeespoort"
+  ],
+  "phone": "072 797 4302",
+  "phone_alt": "",
+  "email": "santieleroux@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Annette",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Brits"
+  ],
+  "phone": "071 363 1695",
+  "phone_alt": "",
+  "email": "witbank.bulbinella@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lucy Bronkhorst",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Christiana"
+  ],
+  "phone": "082 940 2634",
+  "phone_alt": "",
+  "email": "lucybronkhorst@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Delrie",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Klerksdorp"
+  ],
+  "phone": "082 874 7548",
+  "phone_alt": "",
+  "email": "delriet@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anne-Marlé de Klerk",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Klerksdorp",
+   "Stilfontein"
+  ],
+  "phone": "072 978 0952",
+  "phone_alt": "",
+  "email": "deklerk3@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Carina Nel",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Lichtenburg"
+  ],
+  "phone": "082 888 7831",
+  "phone_alt": "",
+  "email": "carina.fourie123@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Cheryl",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Makwassie",
+   "Wolmaransstad"
+  ],
+  "phone": "081 270 6808",
+  "phone_alt": "018 597 4002",
+  "email": "barcheryl@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Pieta Du Preez",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Potchefstroom"
+  ],
+  "phone": "072 490 3866",
+  "phone_alt": "",
+  "email": "pietadp@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hannelie Loots",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Potchefstroom"
+  ],
+  "phone": "084 523 8547",
+  "phone_alt": "",
+  "email": "hannelie.loots5@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Sandra",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Rustenburg"
+  ],
+  "phone": "082 449 0148",
+  "phone_alt": "",
+  "email": "sandraneuhoff@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Betsie",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Schweizer-Reneke"
+  ],
+  "phone": "079 700 3276",
+  "phone_alt": "",
+  "email": "betsie@milnex-sa.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Bianca Coetzee",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Ventersdorp"
+  ],
+  "phone": "063 773 4035",
+  "phone_alt": "",
+  "email": "biancaserf123@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lizelle Coetsee",
+  "business": "Kudu Slaghuis",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Vryburg"
+  ],
+  "phone": "084 556 8337",
+  "phone_alt": "",
+  "email": "",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Jackie",
+  "business": "",
+  "country": "South Africa",
+  "province": "North West",
+  "region": null,
+  "areas": [
+   "Zeerust"
+  ],
+  "phone": "076 475 1354",
+  "phone_alt": "",
+  "email": "jackietheuns@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lucy Bronkhorst",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Christiana"
+  ],
+  "phone": "082 940 2634",
+  "phone_alt": "",
+  "email": "lucybronkhorst@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Mimi",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Colesberg"
+  ],
+  "phone": "082 784 5132",
+  "phone_alt": "",
+  "email": "edlmannmimi@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Cecilia",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Douglas"
+  ],
+  "phone": "071 606 9555",
+  "phone_alt": "",
+  "email": "5cvdh5@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Carla Schrage",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Hartswater",
+   "Jan Kempdorp"
+  ],
+  "phone": "082 906 9002",
+  "phone_alt": "",
+  "email": "carlafourie1@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Nadine van Eck",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Hopetown"
+  ],
+  "phone": "072 297 8933",
+  "phone_alt": "",
+  "email": "nadine.vaneck86@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Charmaine",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Kathu"
+  ],
+  "phone": "067 748 7147",
+  "phone_alt": "",
+  "email": "charmaine141970@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Cornél",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Kimberley"
+  ],
+  "phone": "082 788 2823",
+  "phone_alt": "",
+  "email": "cornel7807@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Zelna",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Kuruman"
+  ],
+  "phone": "083 268 2413",
+  "phone_alt": "",
+  "email": "zelnalucia@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lia",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Orania"
+  ],
+  "phone": "079 684 8422",
+  "phone_alt": "",
+  "email": "liabez08@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Marié Botha",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Port Nolloth"
+  ],
+  "phone": "072 213 3714",
+  "phone_alt": "",
+  "email": "myseedbooks@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Louise Viljoen",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Postmasburg"
+  ],
+  "phone": "082 888 9547",
+  "phone_alt": "",
+  "email": "louise@soetfontein.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Tinka Meyer",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Prieska"
+  ],
+  "phone": "082 229 8953",
+  "phone_alt": "",
+  "email": "tinkameyermme@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Louise",
+  "business": "",
+  "country": "South Africa",
+  "province": "Northern Cape",
+  "region": null,
+  "areas": [
+   "Upington"
+  ],
+  "phone": "083 791 4743",
+  "phone_alt": "",
+  "email": "uptonderwys@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Chantel",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Beaufort-Wes"
+  ],
+  "phone": "083 372 4159",
+  "phone_alt": "",
+  "email": "chantel.augustyn@yahoo.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Heletha",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Citrusdal"
+  ],
+  "phone": "082 604 7651",
+  "phone_alt": "",
+  "email": "heletha@mweb.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Stephanus",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "George",
+   "Mossel Bay"
+  ],
+  "phone": "081 335 7085",
+  "phone_alt": "",
+  "email": "scfcloete@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anna",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "George",
+   "Groot Brakrivier",
+   "Knysna"
+  ],
+  "phone": "082 550 2284",
+  "phone_alt": "",
+  "email": "annasmith067@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anila",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Gordon's Bay",
+   "Strand"
+  ],
+  "phone": "084 620 0234",
+  "phone_alt": "",
+  "email": "vonvollenstein@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Kotie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Jeffrey's Bay",
+   "Humansdorp",
+   "Kareedouw",
+   "Tsitsikamma"
+  ],
+  "phone": "072 156 7326",
+  "phone_alt": "",
+  "email": "wkotie@ymail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Annalize",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Langebaan"
+  ],
+  "phone": "082 374 9156",
+  "phone_alt": "",
+  "email": "annalize.naturalhealth@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Anzelle van Wyk",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Malmesbury"
+  ],
+  "phone": "072 576 8722",
+  "phone_alt": "",
+  "email": "anzellevanwyk@hotmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Karin",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Montagu"
+  ],
+  "phone": "072 101 6689",
+  "phone_alt": "",
+  "email": "marykarin1@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Denise Kröhn",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Paarl",
+   "Wellington"
+  ],
+  "phone": "079 878 3163",
+  "phone_alt": "",
+  "email": "bulbinellalady@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Joyce Gerhard",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Plettenberg Bay"
+  ],
+  "phone": "071 371 0548",
+  "phone_alt": "",
+  "email": "joycegerhard2022@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Esmé",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Porterville"
+  ],
+  "phone": "083 661 1337",
+  "phone_alt": "",
+  "email": "esme.kotze25@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Melany le Roux",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Stellenbosch"
+  ],
+  "phone": "082 304 7827",
+  "phone_alt": "",
+  "email": "melsemarkie@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Stephanie",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Stilbaai",
+   "Albertinia",
+   "Riversdal"
+  ],
+  "phone": "083 544 8366",
+  "phone_alt": "",
+  "email": "stephanievisser1201@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Erieka",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Vredenburg"
+  ],
+  "phone": "083 214 5391",
+  "phone_alt": "022 713 5599",
+  "email": "erieka@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "André Louw",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Vredendal"
+  ],
+  "phone": "082 926 6457",
+  "phone_alt": "",
+  "email": "louw.andre1958@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Surita",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": null,
+  "areas": [
+   "Worcester"
+  ],
+  "phone": "083 375 0796",
+  "phone_alt": "",
+  "email": "surita.r@hotmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Martie van Zyl",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Bellville",
+   "Sanlam"
+  ],
+  "phone": "072 857 6469",
+  "phone_alt": "",
+  "email": "ann-mare.greeff@sanlam.co.za",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Santie Ellis",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Bloubergstrand",
+   "Milnerton"
+  ],
+  "phone": "084 550 6661",
+  "phone_alt": "",
+  "email": "santie.dianaproducts@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Karin van Rooyen",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Brackenfell"
+  ],
+  "phone": "083 481 1936",
+  "phone_alt": "",
+  "email": "karinvr321@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Louise Groenewald",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Cape Town",
+   "Goodwood",
+   "Edgemead"
+  ],
+  "phone": "076 876 1962",
+  "phone_alt": "",
+  "email": "itsasign@mweb.co.za",
+  "notes": "",
+  "is_depot": true
+ },
+ {
+  "name": "Ella",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Durbanville"
+  ],
+  "phone": "081 548 9926",
+  "phone_alt": "",
+  "email": "justbella03@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Bridgette Carastathis",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Durbanville"
+  ],
+  "phone": "083 277 6433",
+  "phone_alt": "",
+  "email": "bridgette.carastathis@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Loretta Williams",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Eerste River",
+   "Kuilsrivier"
+  ],
+  "phone": "084 261 3986",
+  "phone_alt": "",
+  "email": "lorettadeovolente77@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hayley Lakey",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Helderberg"
+  ],
+  "phone": "079 680 1982",
+  "phone_alt": "",
+  "email": "hayleykagerer@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Hennie van der Sandt",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Kraaifontein",
+   "Vredekloof",
+   "Vredekloof-Noord"
+  ],
+  "phone": "082 650 3277",
+  "phone_alt": "",
+  "email": "hennievandersandt7279@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lydia",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Kuilsrivier"
+  ],
+  "phone": "074 111 2011",
+  "phone_alt": "",
+  "email": "simmons.lydia@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Darelle Uys",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Melkbosstrand",
+   "Van Riebeeckstrand",
+   "Duynefontein",
+   "Philadelphia"
+  ],
+  "phone": "082 839 0817",
+  "phone_alt": "",
+  "email": "dloots7@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Rodger Fry",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Northpine"
+  ],
+  "phone": "084 409 3107",
+  "phone_alt": "",
+  "email": "rfry286@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Sunitha Bissoon",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Pinelands",
+   "Thornton"
+  ],
+  "phone": "071 863 4537",
+  "phone_alt": "",
+  "email": "",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Charmaine du Toit",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Plattekloof",
+   "Edgemead"
+  ],
+  "phone": "084 909 9004",
+  "phone_alt": "",
+  "email": "dutoitcharmaine9@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Lesley Rae Busch",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Southern Suburbs",
+   "Delft"
+  ],
+  "phone": "072 111 9473",
+  "phone_alt": "",
+  "email": "lesley.busch1224253016@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Thaaniyah Chellan",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Southern Suburbs (Athlone)"
+  ],
+  "phone": "082 306 2411",
+  "phone_alt": "",
+  "email": "amazingbulbinella@gmail.com",
+  "notes": "",
+  "is_depot": false
+ },
+ {
+  "name": "Liza Rodrigues",
+  "business": "",
+  "country": "South Africa",
+  "province": "Western Cape",
+  "region": "Cape Town",
+  "areas": [
+   "Welgedacht"
+  ],
+  "phone": "073 605 2567",
+  "phone_alt": "",
+  "email": "Liza.rod111@gmail.com",
+  "notes": "",
+  "is_depot": false
+ }
+]
