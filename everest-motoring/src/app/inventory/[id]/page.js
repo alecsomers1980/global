@@ -154,37 +154,71 @@ export default async function CarDetailsPage({ params }) {
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                             <div className="lg:col-span-2">
-                                {/* Make/model/year live in the heading above, so they are
-                                    not repeated here. Hairline rows rather than filled
-                                    tiles — quieter and easier to scan. */}
                                 <Label as="h2" className="mb-5">Specification</Label>
-                                <dl className="mb-14 border-t border-hairline">
-                                    {[
-                                        ["Mileage", `${new Intl.NumberFormat('en-ZA').format(car.mileage)} km`],
-                                        ["Transmission", car.transmission],
-                                        ["Fuel type", car.fuel_type],
-                                        ["Drivetrain", car.drivetrain],
-                                        ["Condition", car.condition_rating],
-                                        [
-                                            "Colour",
-                                            car.manufacturer_colour && car.colour && car.manufacturer_colour !== car.colour
-                                                ? `${car.manufacturer_colour} (${car.colour})`
-                                                : car.manufacturer_colour || car.colour,
-                                        ],
-                                        ["Service history", car.service_history ? (SERVICE_HISTORY_LABELS[car.service_history] || car.service_history) : null],
-                                        ["Warranty", formatWarranty(car)],
-                                    ]
-                                        .filter(([, value]) => value)
-                                        .map(([term, value]) => (
-                                            <div
-                                                key={term}
-                                                className="flex items-baseline justify-between gap-6 border-b border-hairline py-4"
-                                            >
-                                                <dt className="text-sm text-slate-500">{term}</dt>
-                                                <dd className="text-sm font-medium text-slate-900 text-right">{value}</dd>
-                                            </div>
-                                        ))}
-                                </dl>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Make</p>
+                                        <p className="font-semibold text-slate-900">{car.make}</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Model</p>
+                                        <p className="font-semibold text-slate-900">{car.model}</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Year</p>
+                                        <p className="font-semibold text-slate-900">{car.year}</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Mileage</p>
+                                        <p className="font-semibold text-slate-900">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Transmission</p>
+                                        <p className="font-semibold text-slate-900">{car.transmission || 'N/A'}</p>
+                                    </div>
+                                    <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                        <p className="text-sm text-slate-500 mb-1">Fuel Type</p>
+                                        <p className="font-semibold text-slate-900">{car.fuel_type || 'N/A'}</p>
+                                    </div>
+                                    {car.drivetrain && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                            <p className="text-sm text-slate-500 mb-1">Drivetrain</p>
+                                            <p className="font-semibold text-slate-900">{car.drivetrain}</p>
+                                        </div>
+                                    )}
+                                    {car.condition_rating && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                            <p className="text-sm text-slate-500 mb-1">Condition</p>
+                                            <p className="font-semibold text-slate-900">{car.condition_rating}</p>
+                                        </div>
+                                    )}
+                                    {(car.colour || car.manufacturer_colour) && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                            <p className="text-sm text-slate-500 mb-1">Colour</p>
+                                            <p className="font-semibold text-slate-900">
+                                                {car.manufacturer_colour || car.colour}
+                                                {car.manufacturer_colour && car.colour && car.manufacturer_colour !== car.colour && (
+                                                    <span className="block text-xs font-medium text-slate-500 mt-0.5">{car.colour}</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {car.service_history && (
+                                        <div className="bg-slate-50 p-4 rounded-xl border border-hairline">
+                                            <p className="text-sm text-slate-500 mb-1">Service History</p>
+                                            <p className="font-semibold text-slate-900">{SERVICE_HISTORY_LABELS[car.service_history] || car.service_history}</p>
+                                        </div>
+                                    )}
+                                    {formatWarranty(car) && (
+                                        <div className={`p-4 rounded-xl border ${car.has_warranty ? 'bg-green-50 border-green-100' : 'bg-slate-50 border-hairline'}`}>
+                                            <p className="text-sm text-slate-500 mb-1 flex items-center gap-1">
+                                                {car.has_warranty && <Icon name="verified" className="text-green-600 text-[16px]" />}
+                                                Warranty
+                                            </p>
+                                            <p className={`font-semibold ${car.has_warranty ? 'text-green-800' : 'text-slate-900'}`}>{formatWarranty(car)}</p>
+                                        </div>
+                                    )}
+                                </div>
 
                                 {car.features && car.features.length > 0 && (
                                     <>
