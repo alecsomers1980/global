@@ -6,6 +6,7 @@ import TrackedLink from "@/components/TrackedLink";
 import { createClient } from "@/utils/supabase/server";
 import { getVehiclePath } from "@/utils/url/vehicleUrl";
 import { calculateMonthly, formatRand } from "@/utils/finance/calculator";
+import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/Icon";
 
 export default async function Home() {
@@ -80,10 +81,10 @@ export default async function Home() {
       <section className="bg-white py-24 px-4 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <div className="mb-12 flex items-end justify-between">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-slate-900">Featured Vehicles</h2>
+            <Reveal>
+              <h2 className="text-display-sm font-semibold text-slate-900">Featured Vehicles</h2>
               <p className="mt-2 text-slate-500">Hand-picked premium cars just for you.</p>
-            </div>
+            </Reveal>
             <a className="hidden items-center gap-1 font-bold text-black hover:underline md:flex" href="/inventory">
               View Inventory <Icon name="arrow_forward" className="text-sm" />
             </a>
@@ -164,10 +165,10 @@ export default async function Home() {
       {/* Why Choose Us */}
       <section className="bg-background-alt py-24 px-4 lg:px-12">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">The Everest Advantage</h2>
+          <Reveal className="mb-16 text-center">
+            <h2 className="text-display-sm md:text-display-md font-semibold text-slate-900">The Everest Advantage</h2>
             <p className="mt-4 text-lg text-slate-500">We&apos;re fundamentally changing the way people view and buy used cars across South Africa.</p>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             <div className="flex flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm transition-shadow hover:shadow-md border-t-4 border-primary">
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-black">
@@ -196,8 +197,8 @@ export default async function Home() {
 
       {/* Value My Car Lead Magnet */}
       <section className="bg-slate-50 py-24 px-4 lg:px-12">
-        <div className="mx-auto max-w-5xl rounded-2xl bg-white p-8 shadow-hover md:p-12 border border-slate-100 text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl uppercase">Trade in or Sell your car today</h2>
+        <Reveal className="mx-auto max-w-5xl rounded-2xl bg-white p-8 md:p-14 border border-hairline text-center">
+          <h2 className="mb-4 text-display-sm md:text-display-md font-semibold text-slate-900">Trade in or sell your car today</h2>
           <p className="mb-8 text-lg text-slate-600">Get an instant, obligation-free valuation for your vehicle. We pay top market rates.</p>
           <div className="mx-auto flex justify-center mt-6">
             <Link href="/value-my-car" className="rounded-lg bg-primary px-12 py-5 text-lg font-bold text-black transition-all hover:bg-primary-dark hover:-translate-y-1 shadow-lg shadow-primary/30 flex items-center gap-3">
@@ -205,8 +206,8 @@ export default async function Home() {
               <Icon name="arrow_forward" className="text-xl" />
             </Link>
           </div>
-          <p className="mt-8 text-sm text-slate-500 uppercase tracking-wider font-bold">Safe • Secure • Instant Cash</p>
-        </div>
+          <p className="mt-8 text-label font-semibold uppercase text-slate-400">Safe · Secure · Instant cash</p>
+        </Reveal>
       </section>
 
       {/* Newsletter CTA */}

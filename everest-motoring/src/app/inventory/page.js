@@ -105,7 +105,7 @@ export default async function InventoryPage({ searchParams }) {
                                 <Link
                                     key={car.id}
                                     href={getVehiclePath(car)}
-                                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col"
+                                    className="group bg-white rounded-2xl overflow-hidden border border-hairline hover:border-slate-300 transition-colors duration-300 flex flex-col"
                                 >
                                     {/* Thumbnail Area */}
                                     <div className="relative aspect-[4/3] bg-black overflow-hidden">
@@ -132,7 +132,7 @@ export default async function InventoryPage({ searchParams }) {
                                             </div>
                                         ) : (
                                             <div className="absolute top-4 left-4">
-                                                <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-green-700 font-bold text-xs uppercase tracking-wider rounded-md border border-white/20 shadow-lg">
+                                                <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm text-slate-700 text-label font-semibold uppercase rounded-md">
                                                     {car.status === 'available' ? 'Available' : 'Reserved'}
                                                 </span>
                                             </div>
@@ -141,58 +141,33 @@ export default async function InventoryPage({ searchParams }) {
 
                                     {/* Details Area */}
                                     <div className="p-6 flex flex-col flex-1">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div>
-                                                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                                                    {car.year} {car.make}
-                                                </p>
-                                                <h2 className="text-lg font-bold leading-snug text-slate-900 transition-colors">
-                                                    {car.model}
-                                                </h2>
-                                            </div>
+                                        <div className="mb-5">
+                                            <p className="text-label font-semibold uppercase text-slate-400 mb-1.5">
+                                                {car.year} {car.make}
+                                            </p>
+                                            <h2 className="text-lg font-semibold leading-snug text-slate-900">
+                                                {car.model}
+                                            </h2>
                                         </div>
 
                                         <div className="mt-auto">
-                                            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-slate-400 mb-6 pb-6 border-b border-slate-100">
-                                                <span className="flex items-center gap-1">
-                                                    <Icon name="speed" className="text-[16px]" />
-                                                    {new Intl.NumberFormat('en-ZA').format(car.mileage)} km
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Icon name="local_gas_station" className="text-[16px]" />
-                                                    {car.fuel_type || 'Fuel'}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Icon name="settings" className="text-[16px]" />
-                                                    {car.transmission === 'Automatic' ? 'Auto' : 'Manual'}
-                                                </span>
-                                                {car.drivetrain && (
-                                                    <span className="flex items-center gap-1">
-                                                        <Icon name="settings_input_component" className="text-[16px]" />
-                                                        {car.drivetrain}
-                                                    </span>
-                                                )}
-                                                {car.colour && (
-                                                    <span className="flex items-center gap-1">
-                                                        <Icon name="palette" className="text-[16px]" />
-                                                        {car.colour}
-                                                    </span>
-                                                )}
-                                                {car.has_warranty && (
-                                                    <span className="flex items-center gap-1 text-green-600">
-                                                        <Icon name="verified" className="text-[16px]" />
-                                                        Warranty
-                                                    </span>
-                                                )}
-                                            </div>
+                                            {/* Three facts, plain text. Drivetrain, colour and
+                                                warranty live on the detail page. */}
+                                            <p className="text-sm text-slate-500 mb-5 pb-5 border-b border-hairline">
+                                                {[
+                                                    `${new Intl.NumberFormat('en-ZA').format(car.mileage)} km`,
+                                                    car.transmission === 'Automatic' ? 'Auto' : 'Manual',
+                                                    car.fuel_type,
+                                                ].filter(Boolean).join(' · ')}
+                                            </p>
 
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <div className="font-bold text-2xl text-slate-900 tracking-tight whitespace-nowrap">
+                                                    <div className="font-semibold text-2xl text-slate-900 tracking-display whitespace-nowrap">
                                                         R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                                     </div>
                                                     {car.status === 'available' && (
-                                                        <div className="mt-0.5 text-xs font-medium text-slate-500">
+                                                        <div className="mt-1 text-sm text-slate-500">
                                                             from {formatRand(calculateMonthly({ price: Number(car.price) || 0 }).monthly)} p/m
                                                         </div>
                                                     )}

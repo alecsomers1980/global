@@ -15,6 +15,8 @@ import {
     computeFallbackMetaDescription,
 } from "@/utils/ai/seoGenerator";
 import Icon from "@/components/Icon";
+import { Label } from "@/components/ui/Surface";
+import { calculateMonthly, formatRand } from "@/utils/finance/calculator";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 
@@ -121,117 +123,87 @@ export default async function CarDetailsPage({ params }) {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ViewItemTracker car={car} />
-        <div className="bg-background-alt min-h-screen py-12 px-4 lg:px-12">
+        <div className="bg-background-alt min-h-screen py-10 px-4 lg:px-10">
             <div className="max-w-7xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-2xl border border-hairline overflow-hidden">
 
                     <VehicleGallery car={car} />
 
                     {/* Details Content */}
-                    <div className="p-8 md:p-12">
-                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8 pb-8 border-b border-slate-100">
+                    <div className="px-6 py-12 md:px-14 md:py-16">
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-14 pb-10 border-b border-hairline">
                             <div>
-                                <div className="inline-block px-3 py-1 bg-green-50 text-green-700 font-bold text-xs uppercase tracking-wider rounded-md mb-4 border border-green-200">
-                                    {car.status === 'available' ? 'Available Now' : 'Reserved'}
-                                </div>
-                                <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
-                                    {car.year} {car.make} {car.model}
+                                <Label className="mb-3">
+                                    {car.status === 'available' ? 'Available now' : 'Reserved'}
+                                </Label>
+                                <p className="text-lg text-slate-500">{car.year} {car.make}</p>
+                                <h1 className="text-display-md font-semibold text-slate-900 mt-1">
+                                    {car.model}
                                 </h1>
                             </div>
-                            <div className="text-left md:text-right">
-                                <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">Retail Price</p>
-                                <div className="text-4xl lg:text-5xl font-bold text-black whitespace-nowrap">
+                            <div className="md:text-right shrink-0">
+                                <Label className="mb-2">Retail price</Label>
+                                <div className="text-display-md font-semibold text-slate-900 whitespace-nowrap">
                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                 </div>
+                                <p className="text-sm text-slate-500 mt-2">
+                                    from {formatRand(calculateMonthly({ price: Number(car.price) || 0 }).monthly)} p/m
+                                </p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                             <div className="lg:col-span-2">
-                                <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Vehicle Specifications</h2>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Make</p>
-                                        <p className="font-bold text-slate-900">{car.make}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Model</p>
-                                        <p className="font-bold text-slate-900">{car.model}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Year</p>
-                                        <p className="font-bold text-slate-900">{car.year}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Mileage</p>
-                                        <p className="font-bold text-slate-900">{new Intl.NumberFormat('en-ZA').format(car.mileage)} km</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Transmission</p>
-                                        <p className="font-bold text-slate-900">{car.transmission || 'N/A'}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                        <p className="text-sm text-slate-500 mb-1">Fuel Type</p>
-                                        <p className="font-bold text-slate-900">{car.fuel_type || 'N/A'}</p>
-                                    </div>
-                                    {car.drivetrain && (
-                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            <p className="text-sm text-slate-500 mb-1">Drivetrain</p>
-                                            <p className="font-bold text-slate-900">{car.drivetrain}</p>
-                                        </div>
-                                    )}
-                                    {car.condition_rating && (
-                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            <p className="text-sm text-slate-500 mb-1">Condition</p>
-                                            <p className="font-bold text-slate-900">{car.condition_rating}</p>
-                                        </div>
-                                    )}
-                                    {(car.colour || car.manufacturer_colour) && (
-                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            <p className="text-sm text-slate-500 mb-1">Colour</p>
-                                            <p className="font-bold text-slate-900">
-                                                {car.manufacturer_colour || car.colour}
-                                                {car.manufacturer_colour && car.colour && car.manufacturer_colour !== car.colour && (
-                                                    <span className="block text-xs font-medium text-slate-500 mt-0.5">{car.colour}</span>
-                                                )}
-                                            </p>
-                                        </div>
-                                    )}
-                                    {car.service_history && (
-                                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                            <p className="text-sm text-slate-500 mb-1">Service History</p>
-                                            <p className="font-bold text-slate-900">{SERVICE_HISTORY_LABELS[car.service_history] || car.service_history}</p>
-                                        </div>
-                                    )}
-                                    {formatWarranty(car) && (
-                                        <div className={`p-4 rounded-xl border ${car.has_warranty ? 'bg-green-50 border-green-100' : 'bg-slate-50 border-slate-100'}`}>
-                                            <p className="text-sm text-slate-500 mb-1 flex items-center gap-1">
-                                                {car.has_warranty && <Icon name="verified" className="text-green-600 text-[16px]" />}
-                                                Warranty
-                                            </p>
-                                            <p className={`font-bold ${car.has_warranty ? 'text-green-800' : 'text-slate-900'}`}>{formatWarranty(car)}</p>
-                                        </div>
-                                    )}
-                                </div>
+                                {/* Make/model/year live in the heading above, so they are
+                                    not repeated here. Hairline rows rather than filled
+                                    tiles — quieter and easier to scan. */}
+                                <Label as="h2" className="mb-5">Specification</Label>
+                                <dl className="mb-14 border-t border-hairline">
+                                    {[
+                                        ["Mileage", `${new Intl.NumberFormat('en-ZA').format(car.mileage)} km`],
+                                        ["Transmission", car.transmission],
+                                        ["Fuel type", car.fuel_type],
+                                        ["Drivetrain", car.drivetrain],
+                                        ["Condition", car.condition_rating],
+                                        [
+                                            "Colour",
+                                            car.manufacturer_colour && car.colour && car.manufacturer_colour !== car.colour
+                                                ? `${car.manufacturer_colour} (${car.colour})`
+                                                : car.manufacturer_colour || car.colour,
+                                        ],
+                                        ["Service history", car.service_history ? (SERVICE_HISTORY_LABELS[car.service_history] || car.service_history) : null],
+                                        ["Warranty", formatWarranty(car)],
+                                    ]
+                                        .filter(([, value]) => value)
+                                        .map(([term, value]) => (
+                                            <div
+                                                key={term}
+                                                className="flex items-baseline justify-between gap-6 border-b border-hairline py-4"
+                                            >
+                                                <dt className="text-sm text-slate-500">{term}</dt>
+                                                <dd className="text-sm font-medium text-slate-900 text-right">{value}</dd>
+                                            </div>
+                                        ))}
+                                </dl>
 
                                 {car.features && car.features.length > 0 && (
                                     <>
-                                        <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Premium Features</h2>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 mb-12">
+                                        <Label as="h2" className="mb-5">Features</Label>
+                                        <ul className="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6 mb-14">
                                             {car.features.map((feature, idx) => (
-                                                <div key={idx} className="flex items-center gap-2 text-slate-700">
-                                                    <Icon name="check_circle" className="text-green-500 text-[20px]" />
-                                                    <span className="font-medium text-sm">{feature}</span>
-                                                </div>
+                                                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700">
+                                                    <Icon name="check" className="text-primary-ink text-[16px] mt-0.5" />
+                                                    <span>{feature}</span>
+                                                </li>
                                             ))}
-                                        </div>
+                                        </ul>
                                     </>
                                 )}
 
                                 {car.description && (
                                     <>
-                                        <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Description</h2>
-                                        <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line mb-12">
+                                        <Label as="h2" className="mb-5">About this vehicle</Label>
+                                        <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line mb-4">
                                             {car.description}
                                         </div>
                                     </>
@@ -239,11 +211,11 @@ export default async function CarDetailsPage({ params }) {
                             </div>
 
                             {/* CRM Lead Generation Sidebar */}
-                            <div className="h-fit space-y-8">
-                            <div className="bg-black rounded-2xl p-8 text-white shadow-xl">
-                                <h3 className="text-xl font-bold mb-6 border-b border-white/10 pb-4">Interested in this car?</h3>
+                            <div className="h-fit space-y-6">
+                            <div className="bg-black rounded-2xl p-8 text-white">
+                                <h2 className="text-xl font-semibold mb-3">Interested in this car?</h2>
                                 <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                                    Leave your details below and a dedicated sales executive will contact you to arrange a viewing or discuss finance options.
+                                    Leave your details and a sales executive will contact you to arrange a viewing or discuss finance.
                                 </p>
 
                                 <LeadForm carId={car.id} />
@@ -263,10 +235,10 @@ export default async function CarDetailsPage({ params }) {
                                     </a>
                                 </div>
 
-                                <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-400">
-                                    <Icon name="lock" className="text-green-500" />
-                                    Secure Lead System
-                                </div>
+                                <p className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+                                    <Icon name="lock" className="text-[14px]" />
+                                    Your details are kept private
+                                </p>
                             </div>
 
                             <FinanceCalculator price={Number(car.price) || 0} />

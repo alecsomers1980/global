@@ -21,7 +21,7 @@ export default function VehicleGallery({ car }) {
     return (
         <div>
             {/* Top Gallery / Main Video Hero */}
-            <div className="relative h-[400px] md:h-[600px] bg-black overflow-hidden">
+            <div className="relative h-[440px] md:h-[680px] bg-black overflow-hidden">
                 {activeMedia === 'video' ? (
                     car.video_url.startsWith('cf:') ? (
                         <iframe
@@ -69,39 +69,55 @@ export default function VehicleGallery({ car }) {
                 )}
             </div>
 
-            {/* Secondary Image Gallery */}
+            {/* Thumbnails. Buttons, not divs — these were previously unreachable by
+                keyboard. Selection is a single yellow underline rather than a
+                border + ring + scale bounce. */}
             {((allImages.length > 0) || hasValidVideo) && (
-                <div className="flex overflow-x-auto gap-4 p-4 md:p-6 bg-slate-50 border-b border-slate-100 snap-x">
-
-                    {/* Add Video Option to Gallery if it exists */}
+                <div
+                    role="tablist"
+                    aria-label="Vehicle media"
+                    className="flex overflow-x-auto gap-3 px-6 py-5 bg-white border-b border-hairline snap-x"
+                >
                     {hasValidVideo && (
-                        <div
+                        <button
+                            type="button"
+                            role="tab"
+                            aria-selected={activeMedia === 'video'}
                             onClick={() => setActiveMedia('video')}
-                            className={`relative w-32 h-20 md:w-40 md:h-28 flex-shrink-0 snap-start rounded-lg overflow-hidden border-2 shadow-sm cursor-pointer transition-all ${activeMedia === 'video' ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-slate-200 hover:border-primary/50'}`}
+                            className={`group relative w-32 h-20 md:w-36 md:h-24 flex-shrink-0 snap-start overflow-hidden rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 ${activeMedia === 'video' ? 'border-slate-900' : 'border-hairline hover:border-slate-400'}`}
                         >
-                            <div className="absolute inset-0 bg-slate-800 flex items-center justify-center flex-col gap-2 group">
-                                <Icon name="play_circle" className="text-3xl md:text-4xl text-white group-hover:scale-110 transition-transform" />
-                                <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-wider">Play Video</span>
-                            </div>
-                        </div>
+                            <span className="absolute inset-0 bg-slate-900 flex items-center justify-center flex-col gap-1.5">
+                                <Icon name="play_circle" className="text-2xl text-white" />
+                                <span className="text-white text-label font-semibold uppercase">Video</span>
+                            </span>
+                            {activeMedia === 'video' && (
+                                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+                            )}
+                        </button>
                     )}
 
-                    {/* Image Thumbnails */}
                     {allImages.map((url, idx) => (
-                        <div
+                        <button
                             key={idx}
+                            type="button"
+                            role="tab"
+                            aria-selected={activeMedia === idx}
+                            aria-label={`View image ${idx + 1} of ${allImages.length}`}
                             onClick={() => setActiveMedia(idx)}
-                            className={`relative w-32 h-20 md:w-40 md:h-28 flex-shrink-0 snap-start rounded-lg overflow-hidden border-2 shadow-sm cursor-pointer transition-all ${activeMedia === idx ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-slate-200 hover:border-primary/50 hover:scale-105'}`}
+                            className={`relative w-32 h-20 md:w-36 md:h-24 flex-shrink-0 snap-start overflow-hidden rounded-lg border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 ${activeMedia === idx ? 'border-slate-900' : 'border-hairline hover:border-slate-400'}`}
                         >
                             <Image
                                 src={url}
                                 alt={altForImage(car, url, idx, allImages.length)}
                                 fill
-                                sizes="(max-width: 768px) 128px, 160px"
+                                sizes="(max-width: 768px) 128px, 144px"
                                 loading="lazy"
                                 className="object-cover"
                             />
-                        </div>
+                            {activeMedia === idx && (
+                                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+                            )}
+                        </button>
                     ))}
                 </div>
             )}

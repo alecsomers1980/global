@@ -56,6 +56,11 @@ export default function RootLayout({ children }) {
         {/* Public pages use Lucide (see components/Icon.jsx) and load no icon font.
             The Material Symbols stylesheet is scoped to the admin/affiliate/portal
             layouts, which still use it. */}
+        {/* Scroll-reveal sections render at opacity:0 until Motion animates them in.
+            Without JS that would hide real content, so force them visible. */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
       </head>
       <body className={`${microgramme.variable} ${inter.variable} bg-background-light text-slate-900 font-body antialiased selection:bg-slate-800 selection:text-white`}>
         <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
