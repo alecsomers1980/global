@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Icon from "@/components/Icon";
 
 export default function HomeSearchWidget({
     makes = ["BMW", "Mercedes-Benz", "Audi", "Toyota", "Volkswagen", "Ford", "Porsche"]
@@ -39,7 +40,7 @@ export default function HomeSearchWidget({
                     {makes.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
                 <div className="pointer-events-none absolute bottom-3.5 right-3 text-slate-400">
-                    <span className="material-symbols-outlined text-lg">expand_more</span>
+                    <Icon name="expand_more" className="text-lg" />
                 </div>
             </div>
             <div className="relative">
@@ -68,12 +69,12 @@ export default function HomeSearchWidget({
                     <option value="R 2,000,000">R 2,000,000</option>
                 </select>
                 <div className="pointer-events-none absolute bottom-3.5 right-3 text-slate-400">
-                    <span className="material-symbols-outlined text-lg">expand_more</span>
+                    <Icon name="expand_more" className="text-lg" />
                 </div>
             </div>
             <div className="flex items-end">
                 <button type="submit" className="flex h-[50px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-bold text-black shadow-lg shadow-primary/25 transition-colors hover:bg-primary-dark">
-                    <span className="material-symbols-outlined">search</span> Search Vehicles
+                    <Icon name="search" /> Search Vehicles
                 </button>
             </div>
         </form>

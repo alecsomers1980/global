@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { submitValueMyCar } from "./actions";
 import { trackEvent } from "@/lib/gtag";
+import Icon from "@/components/Icon";
 
 export default function ValueMyCarForm() {
     const [step, setStep] = useState(1);
@@ -147,7 +148,7 @@ export default function ValueMyCarForm() {
     if (status === "success") {
         return (
             <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-12 text-center my-8">
-                <span className="material-symbols-outlined text-green-500 text-6xl mb-4">task_alt</span>
+                <Icon name="task_alt" className="text-green-500 text-6xl mb-4" />
                 <h2 className="text-3xl font-bold text-slate-900 mb-4">Request Received!</h2>
                 <p className="text-slate-600 text-lg max-w-lg mx-auto mb-8">
                     Thank you for submitting your details. Our procurement team will review your information and contact you shortly with an indicative offer.
@@ -185,14 +186,14 @@ export default function ValueMyCarForm() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left md:text-center">
                     <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 1 ? 'border-primary bg-primary/5 shadow-sm' : step > 1 ? 'border-green-500/30 bg-green-500/5' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
                         <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
-                            {step > 1 && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                            {step > 1 && <Icon name="check_circle" className="text-green-500 text-sm" />}
                             1. Vehicle Details
                         </div>
                         <div className="text-xs text-slate-500">Make, model, year, and condition.</div>
                     </div>
                     <div className={`p-4 rounded-xl border transition-all duration-300 ${step === 2 ? 'border-primary bg-primary/5 shadow-sm' : step > 2 ? 'border-green-500/30 bg-green-500/5' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
                         <div className="font-bold text-slate-900 mb-1 flex items-center md:justify-center gap-2">
-                            {step > 2 && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                            {step > 2 && <Icon name="check_circle" className="text-green-500 text-sm" />}
                             2. Upload Photos
                         </div>
                         <div className="text-xs text-slate-500">Exterior &amp; interior photos of your car.</div>
@@ -300,7 +301,7 @@ export default function ValueMyCarForm() {
 
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
                         <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
-                            Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            Continue <Icon name="arrow_forward" className="text-sm" />
                         </button>
                     </div>
                 </div>
@@ -318,56 +319,56 @@ export default function ValueMyCarForm() {
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front View *</label>
                             <input id="vmc-image_front" type="file" name="image_front" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_front')}`} />
-                            {files.image_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_front && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Left Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Left Side *</label>
                             <input id="vmc-image_left" type="file" name="image_left" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_left')}`} />
-                            {files.image_left && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_left && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Right Side */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Right Side *</label>
                             <input id="vmc-image_right" type="file" name="image_right" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_right')}`} />
-                            {files.image_right && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_right && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Back View */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back View *</label>
                             <input id="vmc-image_back" type="file" name="image_back" accept="image/*" onChange={handleFileChange} required className={`block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50${errRing('image_back')}`} />
-                            {files.image_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_back && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Roof */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Roof (Optional)</label>
                             <input type="file" name="image_roof" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
-                            {files.image_roof && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_roof && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Front Interior */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Front Interior (Optional)</label>
                             <input type="file" name="image_interior_front" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
-                            {files.image_interior_front && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_interior_front && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
 
                         {/* Back Interior */}
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">Back Interior (Optional)</label>
                             <input type="file" name="image_interior_back" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-black hover:file:bg-primary/20 outline-none p-2 border border-slate-200 rounded-lg bg-slate-50" />
-                            {files.image_interior_back && <div className="text-xs text-green-600 mt-2 font-bold"><span className="material-symbols-outlined text-[14px] align-middle pb-[2px]">check_circle</span> Attached</div>}
+                            {files.image_interior_back && <div className="text-xs text-green-600 mt-2 font-bold"><Icon name="check_circle" className="text-[14px] align-middle pb-[2px]" /> Attached</div>}
                         </div>
                     </div>
 
                     <div className="flex gap-4 pt-4 border-t border-slate-100">
                         <button type="button" onClick={prevStep} className="px-8 py-4 rounded-lg font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">Back</button>
                         <button type="button" onClick={nextStep} className="flex-1 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2">
-                            Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            Continue <Icon name="arrow_forward" className="text-sm" />
                         </button>
                     </div>
                 </div>
@@ -424,11 +425,11 @@ export default function ValueMyCarForm() {
                         >
                             {status === "submitting" ? (
                                 <>
-                                    <span className="material-symbols-outlined animate-spin">refresh</span>
+                                    <Icon name="refresh" className="animate-spin" />
                                     Submitting… {Math.round(progress)}%
                                 </>
                             ) : (
-                                <>Submit for Free Valuation <span className="material-symbols-outlined text-sm">check_circle</span></>
+                                <>Submit for Free Valuation <Icon name="check_circle" className="text-sm" /></>
                             )}
                         </button>
                     </div>

@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import MaterialSymbolsStylesheet from "@/components/MaterialSymbolsStylesheet";
 
 export default async function AffiliateLayout({ children }) {
     const supabase = await createClient();
@@ -22,6 +23,7 @@ export default async function AffiliateLayout({ children }) {
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
+            <MaterialSymbolsStylesheet />
             {/* Affiliate Portal Header */}
             <div className="w-full bg-slate-900 px-6 py-4 flex justify-between items-center text-white border-b-4 border-amber-500 shadow-sm">
                 <div className="flex items-center gap-4">

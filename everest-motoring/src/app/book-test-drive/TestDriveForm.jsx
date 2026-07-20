@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { submitContactForm } from "./actions";
 import { trackEvent } from "@/lib/gtag";
+import Icon from "@/components/Icon";
 
 export default function TestDriveForm({ availableCars }) {
     const [status, setStatus] = useState("idle");
@@ -26,7 +27,7 @@ export default function TestDriveForm({ availableCars }) {
     if (status === "success") {
         return (
             <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-8 text-center h-full flex flex-col justify-center items-center">
-                <span className="material-symbols-outlined text-green-500 text-6xl mb-4">check_circle</span>
+                <Icon name="check_circle" className="text-green-500 text-6xl mb-4" />
                 <h4 className="text-green-600 text-xl font-bold mb-2">Message Sent!</h4>
                 <p className="text-green-700/80">Thank you for getting in touch. One of our sales executives will contact you shortly.</p>
                 <button
@@ -60,7 +61,7 @@ export default function TestDriveForm({ availableCars }) {
                         </optgroup>
                     </select>
                     <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
-                        <span className="material-symbols-outlined text-lg">expand_more</span>
+                        <Icon name="expand_more" className="text-lg" />
                     </div>
                 </div>
             </div>
@@ -155,7 +156,7 @@ export default function TestDriveForm({ availableCars }) {
             >
                 {status === "submitting" ? (
                     <>
-                        <span className="material-symbols-outlined animate-spin">refresh</span>
+                        <Icon name="refresh" className="animate-spin" />
                         Sending...
                     </>
                 ) : (

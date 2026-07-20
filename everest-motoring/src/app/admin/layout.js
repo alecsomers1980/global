@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import VideoRenderManager from "@/components/VideoRenderManager";
+import MaterialSymbolsStylesheet from "@/components/MaterialSymbolsStylesheet";
 
 // Server Actions inherit the route segment config of the page that
 // dispatches them. The AI walkaround pipeline (ai_actions.js) runs the
@@ -43,6 +44,7 @@ export default async function AdminLayout({ children }) {
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col relative">
+            <MaterialSymbolsStylesheet />
             {/* Unified Admin Header */}
             <div 
                 className="w-full px-6 py-6 flex justify-between items-center text-white border-b border-primary/30 relative z-30 shadow-2xl"

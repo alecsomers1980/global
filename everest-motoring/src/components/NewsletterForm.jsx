@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { subscribeToNewsletter } from "@/app/actions/newsletter";
+import Icon from "@/components/Icon";
 
 export default function NewsletterForm({ variant = "footer" }) {
     const [status, setStatus] = useState("idle"); // idle, loading, success, error
@@ -56,11 +57,11 @@ export default function NewsletterForm({ variant = "footer" }) {
                     }
                 >
                     {status === "loading" ? (
-                        <span className="material-symbols-outlined text-current text-[20px] animate-spin">autorenew</span>
+                        <Icon name="autorenew" className="text-current text-[20px] animate-spin" />
                     ) : status === "success" ? (
-                        <span className="material-symbols-outlined text-current text-[20px]">check</span>
+                        <Icon name="check" className="text-current text-[20px]" />
                     ) : (
-                        isHome ? "Subscribe" : <span className="material-symbols-outlined text-current text-[20px]">arrow_forward</span>
+                        isHome ? "Subscribe" : <Icon name="arrow_forward" className="text-current text-[20px]" />
                     )}
                 </button>
             </div>

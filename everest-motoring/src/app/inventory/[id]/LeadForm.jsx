@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { submitLead } from "./actions";
 import { trackEvent } from "@/lib/gtag";
+import Icon from "@/components/Icon";
 
 export default function LeadForm({ carId }) {
     const [status, setStatus] = useState("idle"); // idle, submitting, success, error
@@ -27,7 +28,7 @@ export default function LeadForm({ carId }) {
     if (status === "success") {
         return (
             <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 text-center">
-                <span className="material-symbols-outlined text-green-500 text-4xl mb-2">check_circle</span>
+                <Icon name="check_circle" className="text-green-500 text-4xl mb-2" />
                 <h4 className="text-green-500 font-bold mb-2">Inquiry Sent!</h4>
                 <p className="text-green-400 text-sm">One of our sales executives will be in touch with you shortly.</p>
                 <button
@@ -81,7 +82,7 @@ export default function LeadForm({ carId }) {
             >
                 {status === "submitting" ? (
                     <>
-                        <span className="material-symbols-outlined animate-spin">refresh</span>
+                        <Icon name="refresh" className="animate-spin" />
                         Sending...
                     </>
                 ) : (

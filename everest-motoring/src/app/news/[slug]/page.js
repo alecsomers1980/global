@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { createClient } from "@/utils/supabase/server";
+import Icon from "@/components/Icon";
 
 const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
@@ -202,18 +203,14 @@ export default async function NewsPostPage({ params }) {
                         >
                             Home
                         </Link>
-                        <span className="material-symbols-outlined text-xs text-slate-600">
-                            chevron_right
-                        </span>
+                        <Icon name="chevron_right" className="text-xs text-slate-600" />
                         <Link
                             href="/news"
                             className="hover:text-white transition-colors"
                         >
                             News
                         </Link>
-                        <span className="material-symbols-outlined text-xs text-slate-600">
-                            chevron_right
-                        </span>
+                        <Icon name="chevron_right" className="text-xs text-slate-600" />
                         <span className="text-slate-500 truncate max-w-[200px]">
                             {post.title}
                         </span>
@@ -221,9 +218,7 @@ export default async function NewsPostPage({ params }) {
 
                     {/* Category Badge */}
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30 mb-6">
-                        <span className="material-symbols-outlined text-sm">
-                            {CATEGORY_ICON[post.category] || "article"}
-                        </span>
+                        <Icon name={CATEGORY_ICON[post.category] || "article"} className="text-sm" />
                         {CATEGORY_LABEL[post.category] || "News"}
                     </span>
 
@@ -235,27 +230,21 @@ export default async function NewsPostPage({ params }) {
                     {/* Meta row */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
                         <span className="flex items-center gap-1.5">
-                            <span className="material-symbols-outlined text-base text-primary">
-                                calendar_today
-                            </span>
+                            <Icon name="calendar_today" className="text-base text-primary" />
                             {formatDate(post.published_at)}
                         </span>
                         {readTime && (
                             <>
                                 <span className="w-1 h-1 rounded-full bg-slate-600" />
                                 <span className="flex items-center gap-1.5">
-                                    <span className="material-symbols-outlined text-base text-primary">
-                                        schedule
-                                    </span>
+                                    <Icon name="schedule" className="text-base text-primary" />
                                     {readTime} min read
                                 </span>
                             </>
                         )}
                         <span className="w-1 h-1 rounded-full bg-slate-600" />
                         <span className="flex items-center gap-1.5">
-                            <span className="material-symbols-outlined text-base text-primary">
-                                business
-                            </span>
+                            <Icon name="business" className="text-base text-primary" />
                             Everest Motoring
                         </span>
                     </div>
@@ -298,9 +287,7 @@ export default async function NewsPostPage({ params }) {
                 {featuredCar && (
                     <div className="mt-10 bg-white rounded-2xl border border-slate-100 shadow-sm p-8 overflow-hidden">
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
-                            <span className="material-symbols-outlined text-primary text-base">
-                                directions_car
-                            </span>
+                            <Icon name="directions_car" className="text-primary text-base" />
                             Featured Vehicle
                         </div>
                         <Link
@@ -341,9 +328,7 @@ export default async function NewsPostPage({ params }) {
                                 </p>
                                 <span className="mt-4 inline-flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
                                     View Vehicle{" "}
-                                    <span className="material-symbols-outlined text-sm">
-                                        arrow_forward
-                                    </span>
+                                    <Icon name="arrow_forward" className="text-sm" />
                                 </span>
                             </div>
                         </Link>
@@ -356,9 +341,7 @@ export default async function NewsPostPage({ params }) {
                     <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-primary/20 blur-[60px]" />
                     <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-secondary/15 blur-[50px]" />
                     <div className="relative z-10">
-                        <span className="material-symbols-outlined text-4xl text-primary mb-4 block">
-                            directions_car
-                        </span>
+                        <Icon name="directions_car" className="text-4xl text-primary mb-4 block" />
                         <h3 className="text-2xl md:text-3xl font-display font-bold mb-3">
                             Looking for your next vehicle?
                         </h3>
@@ -372,9 +355,7 @@ export default async function NewsPostPage({ params }) {
                             className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold px-8 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-lg shadow-primary/30"
                         >
                             Browse Inventory{" "}
-                            <span className="material-symbols-outlined">
-                                arrow_forward
-                            </span>
+                            <Icon name="arrow_forward" />
                         </Link>
                     </div>
                 </div>
@@ -397,9 +378,7 @@ export default async function NewsPostPage({ params }) {
                             className="hidden md:inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
                         >
                             View all articles{" "}
-                            <span className="material-symbols-outlined text-sm">
-                                arrow_forward
-                            </span>
+                            <Icon name="arrow_forward" className="text-sm" />
                         </Link>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -420,18 +399,13 @@ export default async function NewsPostPage({ params }) {
                                         />
                                     ) : (
                                         <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-800 to-slate-900">
-                                            <span className="material-symbols-outlined text-4xl text-slate-700">
-                                                newspaper
-                                            </span>
+                                            <Icon name="newspaper" className="text-4xl text-slate-700" />
                                         </div>
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                                     <div className="absolute top-4 left-4">
                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-black font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
-                                            <span className="material-symbols-outlined text-xs">
-                                                {CATEGORY_ICON[p.category] ||
-                                                    "article"}
-                                            </span>
+                                            <Icon name={CATEGORY_ICON[p.category] || "article"} className="text-xs" />
                                             {CATEGORY_LABEL[p.category] ||
                                                 "News"}
                                         </span>
@@ -439,9 +413,7 @@ export default async function NewsPostPage({ params }) {
                                 </div>
                                 <div className="flex flex-1 flex-col p-6">
                                     <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                                        <span className="material-symbols-outlined text-sm">
-                                            calendar_today
-                                        </span>
+                                        <Icon name="calendar_today" className="text-sm" />
                                         {formatDate(p.published_at)}
                                         {(p.reading_minutes || estimateReadTime(p.body_md)) && (
                                             <>
@@ -461,9 +433,7 @@ export default async function NewsPostPage({ params }) {
                                     <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                                         <span className="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
                                             Read more{" "}
-                                            <span className="material-symbols-outlined text-sm">
-                                                arrow_forward
-                                            </span>
+                                            <Icon name="arrow_forward" className="text-sm" />
                                         </span>
                                     </div>
                                 </div>
@@ -476,9 +446,7 @@ export default async function NewsPostPage({ params }) {
                             className="inline-flex items-center gap-2 text-sm font-bold text-primary"
                         >
                             View all articles{" "}
-                            <span className="material-symbols-outlined text-sm">
-                                arrow_forward
-                            </span>
+                            <Icon name="arrow_forward" className="text-sm" />
                         </Link>
                     </div>
                 </section>

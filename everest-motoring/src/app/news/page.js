@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import NewsletterForm from "@/components/NewsletterForm";
+import Icon from "@/components/Icon";
 
 export const metadata = {
     title: "Latest News & Guides | Everest Motoring",
@@ -85,9 +86,7 @@ export default async function NewsIndexPage() {
                                     key={key}
                                     className="flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-sm text-slate-300 backdrop-blur-sm"
                                 >
-                                    <span className="material-symbols-outlined text-base text-primary">
-                                        {CATEGORY_ICON[key]}
-                                    </span>
+                                    <Icon name={CATEGORY_ICON[key]} className="text-base text-primary" />
                                     <span className="font-medium">{label}</span>
                                     <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-xs font-bold">
                                         {count}
@@ -123,9 +122,7 @@ export default async function NewsIndexPage() {
                                     />
                                 ) : (
                                     <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-800 to-slate-900">
-                                        <span className="material-symbols-outlined text-6xl text-slate-700">
-                                            newspaper
-                                        </span>
+                                        <Icon name="newspaper" className="text-6xl text-slate-700" />
                                     </div>
                                 )}
                                 {/* Gradient overlay */}
@@ -133,16 +130,14 @@ export default async function NewsIndexPage() {
                                 {/* Category badge */}
                                 <div className="absolute top-6 left-6">
                                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-primary/30">
-                                        <span className="material-symbols-outlined text-sm">
-                                            {CATEGORY_ICON[featured.category] || "article"}
-                                        </span>
+                                        <Icon name={CATEGORY_ICON[featured.category] || "article"} className="text-sm" />
                                         {CATEGORY_LABEL[featured.category] || "News"}
                                     </span>
                                 </div>
                                 {/* Featured badge */}
                                 <div className="absolute top-6 right-6">
                                     <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-slate-900 font-bold text-xs uppercase tracking-wider rounded-lg">
-                                        <span className="material-symbols-outlined text-sm text-amber-500">star</span>
+                                        <Icon name="star" className="text-sm text-amber-500" />
                                         Latest
                                     </span>
                                 </div>
@@ -152,14 +147,14 @@ export default async function NewsIndexPage() {
                             <div className="flex flex-col justify-center p-8 lg:p-12">
                                 <div className="flex items-center gap-3 text-xs text-slate-400 mb-4">
                                     <span className="flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">calendar_today</span>
+                                        <Icon name="calendar_today" className="text-sm" />
                                         {formatDate(featured.published_at)}
                                     </span>
                                     {(featured.reading_minutes || estimateReadTime(featured.body_md)) && (
                                         <>
                                             <span className="w-1 h-1 rounded-full bg-slate-300" />
                                             <span className="flex items-center gap-1">
-                                                <span className="material-symbols-outlined text-sm">schedule</span>
+                                                <Icon name="schedule" className="text-sm" />
                                                 {featured.reading_minutes || estimateReadTime(featured.body_md)} min read
                                             </span>
                                         </>
@@ -176,9 +171,7 @@ export default async function NewsIndexPage() {
                                 <div className="mt-8 flex items-center gap-3">
                                     <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-black font-bold text-sm rounded-lg group-hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
                                         Read Article
-                                        <span className="material-symbols-outlined text-sm group-hover:translate-x-0.5 transition-transform">
-                                            arrow_forward
-                                        </span>
+                                        <Icon name="arrow_forward" className="text-sm group-hover:translate-x-0.5 transition-transform" />
                                     </span>
                                 </div>
                             </div>
@@ -201,7 +194,7 @@ export default async function NewsIndexPage() {
                                 </p>
                             </div>
                             <div className="hidden md:flex items-center gap-2 text-sm text-slate-500">
-                                <span className="material-symbols-outlined text-base">article</span>
+                                <Icon name="article" className="text-base" />
                                 {allPosts.length} article{allPosts.length !== 1 ? "s" : ""}
                             </div>
                         </div>
@@ -226,9 +219,7 @@ export default async function NewsIndexPage() {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full bg-gradient-to-br from-slate-800 to-slate-900">
-                                                <span className="material-symbols-outlined text-4xl text-slate-700">
-                                                    newspaper
-                                                </span>
+                                                <Icon name="newspaper" className="text-4xl text-slate-700" />
                                             </div>
                                         )}
                                         {/* Top gradient overlay */}
@@ -236,16 +227,14 @@ export default async function NewsIndexPage() {
                                         {/* Category badge */}
                                         <div className="absolute top-4 left-4">
                                             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/90 backdrop-blur-sm text-black font-bold text-xs uppercase tracking-wider rounded-md shadow-lg">
-                                                <span className="material-symbols-outlined text-xs">
-                                                    {CATEGORY_ICON[post.category] || "article"}
-                                                </span>
+                                                <Icon name={CATEGORY_ICON[post.category] || "article"} className="text-xs" />
                                                 {CATEGORY_LABEL[post.category] || "News"}
                                             </span>
                                         </div>
                                         {/* Reading time */}
                                         <div className="absolute bottom-4 right-4">
                                             <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm text-white/90 text-xs rounded-md font-medium">
-                                                <span className="material-symbols-outlined text-xs">schedule</span>
+                                                <Icon name="schedule" className="text-xs" />
                                                 {post.reading_minutes || estimateReadTime(post.body_md) || "3"} min
                                             </span>
                                         </div>
@@ -254,7 +243,7 @@ export default async function NewsIndexPage() {
                                     {/* Card body */}
                                     <div className="flex flex-1 flex-col p-6">
                                         <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
-                                            <span className="material-symbols-outlined text-sm">calendar_today</span>
+                                            <Icon name="calendar_today" className="text-sm" />
                                             {formatDate(post.published_at)}
                                         </div>
                                         <h3 className="text-lg font-bold text-slate-900 leading-snug transition-colors duration-300 mb-3">
@@ -268,7 +257,7 @@ export default async function NewsIndexPage() {
                                         <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
                                             <span className="text-sm font-bold text-black uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
                                                 Read Article
-                                                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                                <Icon name="arrow_forward" className="text-sm" />
                                             </span>
                                         </div>
                                     </div>
@@ -280,9 +269,7 @@ export default async function NewsIndexPage() {
                     /* Empty state — no articles at all */
                     <div className="py-24 text-center">
                         <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-slate-100">
-                            <span className="material-symbols-outlined text-5xl text-slate-300">
-                                newspaper
-                            </span>
+                            <Icon name="newspaper" className="text-5xl text-slate-300" />
                         </div>
                         <h2 className="text-2xl font-bold text-slate-900 mb-2">
                             Articles Coming Soon
@@ -303,7 +290,7 @@ export default async function NewsIndexPage() {
                 </div>
                 <div className="relative z-10 mx-auto max-w-3xl text-center">
                     <div className="inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary mb-6  backdrop-blur-sm border border-white/10">
-                        <span className="material-symbols-outlined text-sm mr-2">mail</span>
+                        <Icon name="mail" className="text-sm mr-2" />
                         Stay Updated
                     </div>
                     <h2 className="text-3xl font-bold md:text-4xl">

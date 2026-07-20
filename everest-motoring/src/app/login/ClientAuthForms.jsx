@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/lib/gtag";
+import Icon from "@/components/Icon";
 
 export default function ClientAuthForms({ initialIsRegisteringClient, carId, initialError, initialMessage }) {
     const [isRegisteringClient, setIsRegisteringClient] = useState(initialIsRegisteringClient);
@@ -88,14 +89,14 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
             <div className="p-8 md:p-10">
                 {error && (
                     <div className="animate-in fade-in slide-in-from-top-4 mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3 shadow-sm">
-                        <span className="material-symbols-outlined shrink-0 text-red-500">error</span>
+                        <Icon name="error" className="shrink-0 text-red-500" />
                         <p className="text-sm font-medium">{error}</p>
                     </div>
                 )}
 
                 {message && (
                     <div className="animate-in fade-in slide-in-from-top-4 mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3 shadow-sm">
-                        <span className="material-symbols-outlined shrink-0 text-green-500">check_circle</span>
+                        <Icon name="check_circle" className="shrink-0 text-green-500" />
                         <p className="text-sm font-medium">{message}</p>
                     </div>
                 )}
@@ -138,7 +139,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
                             <div className="pt-6">
                                 <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-lg shadow-md transition-all text-lg flex items-center justify-center gap-2 disabled:opacity-70">
                                     {loading ? 'Processing...' : 'Create Account'}
-                                    {!loading && <span className="material-symbols-outlined">arrow_forward</span>}
+                                    {!loading && <Icon name="arrow_forward" />}
                                 </button>
                             </div>
                         </form>

@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import MaterialSymbolsStylesheet from "@/components/MaterialSymbolsStylesheet";
 
 export default async function PortalLayout({ children }) {
     const supabase = await createClient();
@@ -22,6 +23,7 @@ export default async function PortalLayout({ children }) {
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
+            <MaterialSymbolsStylesheet />
             {/* Client Portal Header */}
             <div className="w-full bg-slate-950 px-6 py-4 flex justify-between items-center text-white border-b-4 border-indigo-500 shadow-sm">
                 <div className="flex items-center gap-4">

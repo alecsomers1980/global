@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import MuxPlayer from "@mux/mux-player-react";
 import { altForImage } from "@/utils/ai/seoGenerator";
+import Icon from "@/components/Icon";
 
 export default function VehicleGallery({ car }) {
     const allImages = [];
@@ -63,7 +64,7 @@ export default function VehicleGallery({ car }) {
                     />
                 ) : (
                     <div className="flex items-center justify-center h-full text-slate-700">
-                        <span className="material-symbols-outlined text-6xl">directions_car</span>
+                        <Icon name="directions_car" className="text-6xl" />
                     </div>
                 )}
             </div>
@@ -79,7 +80,7 @@ export default function VehicleGallery({ car }) {
                             className={`relative w-32 h-20 md:w-40 md:h-28 flex-shrink-0 snap-start rounded-lg overflow-hidden border-2 shadow-sm cursor-pointer transition-all ${activeMedia === 'video' ? 'border-primary ring-2 ring-primary/20 scale-[1.02]' : 'border-slate-200 hover:border-primary/50'}`}
                         >
                             <div className="absolute inset-0 bg-slate-800 flex items-center justify-center flex-col gap-2 group">
-                                <span className="material-symbols-outlined text-3xl md:text-4xl text-white group-hover:scale-110 transition-transform">play_circle</span>
+                                <Icon name="play_circle" className="text-3xl md:text-4xl text-white group-hover:scale-110 transition-transform" />
                                 <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-wider">Play Video</span>
                             </div>
                         </div>

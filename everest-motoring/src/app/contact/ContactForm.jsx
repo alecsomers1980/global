@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { submitContactForm } from "./actions";
+import Icon from "@/components/Icon";
 
 const inputClass =
     "w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900";
@@ -31,7 +32,7 @@ export default function ContactForm() {
     if (status === "success") {
         return (
             <div className="mt-8 rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
-                <span className="material-symbols-outlined text-4xl text-green-600">check_circle</span>
+                <Icon name="check_circle" className="text-4xl text-green-600" />
                 <h3 className="mt-2 text-lg font-bold text-slate-900">Message sent!</h3>
                 <p className="mt-1 text-sm text-slate-600">
                     Thanks for reaching out — one of our team will get back to you shortly.
