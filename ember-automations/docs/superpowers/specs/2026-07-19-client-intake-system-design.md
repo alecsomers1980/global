@@ -173,7 +173,7 @@ an **admin submission export** (not only a pasted Tally email) as a valid input 
 
 - **AI-suggest in admin** — optional; confirm in/out during planning based on build cost.
 - **Admin auth** — Supabase Auth single-email allow-list; confirm exact mechanism in planning.
-- **Domain** — assumed `emberautomations.co.za` (or similar); confirm before deploy.
+- **Domain** — **`emb3r.co.za`** (confirmed 2026-07-20). The domain is just the domain; the company remains **Ember Automations**. Path-namespaced: `/` marketing (later), `/intake/<slug>` questionnaires, `/admin`, and later `/changes`, `/quotes`, `/portal` — one Next.js app, one Vercel project.
 - **Repo shape** — `ember-automations/` currently holds `brand/`, `documents/`, `tindlovu-questionnaire/`.
   Planning must decide: scaffold the Next.js app at the `ember-automations/` root vs a subfolder, without
   clobbering existing brand assets. The Tindlovu HTML becomes a design reference, not part of the app.

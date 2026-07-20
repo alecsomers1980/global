@@ -6,7 +6,9 @@
 
 **Architecture:** A Next.js (App Router) + TypeScript app in `ember-automations/`, backed by Supabase (Postgres + Storage) and Resend for email. Pure logic (question bank, slug, gap detection, markdown export) is TDD-tested with Vitest; UI/DB/email flows are verified by driving them against the success criteria. No LLM runs inside the app.
 
-**Tech Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS, Supabase (`@supabase/supabase-js`, `@supabase/ssr`), Resend, Vitest, Vercel.
+**Tech Stack:** Next.js 15 (App Router), TypeScript, Tailwind CSS, Supabase (`@supabase/supabase-js`, `@supabase/ssr`), Resend, Vitest, Vercel.
+
+> **Amendment (2026-07-19, during execution):** Pin **Next 15**, not 14 — Next 14's `require-hook.js` crashes on Node 24 (`Cannot read properties of undefined (reading 'endsWith')`). Next 15 makes `params`, `cookies()`, and `headers()` **async** — Tasks 7/10/11/13/14 must `await` them (route/page signatures take `params: Promise<{…}>`). Also set `outputFileTracingRoot` in `next.config.mjs` so Next doesn't infer the parent monorepo as the workspace root.
 
 ## Global Constraints
 
@@ -1046,7 +1048,7 @@ export async function notifySubmission(qn: { client_name: string; project_name: 
   const resend = new Resend(key);
   const url = `${process.env.NEXT_PUBLIC_SITE_URL}/admin/${qn.id ?? ""}`;
   await resend.emails.send({
-    from: "Ember Automations <intake@emberautomations.co.za>",
+    from: process.env.RESEND_FROM || "Ember Automations <intake@emb3r.co.za>",
     to,
     subject: `New intake: ${qn.client_name} — ${qn.project_name}`,
     text: `${qn.client_name} submitted the "${qn.project_name}" questionnaire.\n\nReview: ${url}`,
