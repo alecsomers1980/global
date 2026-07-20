@@ -3,8 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import PageBanner from "@/components/PageBanner";
 import InventoryFilter from "./InventoryFilter";
+import InventorySort from "./InventorySort";
 import { altForImage } from "@/utils/ai/seoGenerator";
 import { getVehiclePath } from "@/utils/url/vehicleUrl";
+import { calculateMonthly, formatRand } from "@/utils/finance/calculator";
+import Icon from "@/components/Icon";
 
 export const metadata = {
     title: "Inventory | Everest Motoring",
@@ -53,7 +56,7 @@ export default async function InventoryPage({ searchParams }) {
     const twoWeeksAgo = new Date();
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
-    const cars = (allCars || []).filter(car => {
+    const filteredCars = (allCars || []).filter(car => {
         if (car.status === "available") return true;
         if (car.status === "sold") {
             const soldAtStr = car.sales?.[0]?.sold_at;
@@ -64,6 +67,20 @@ export default async function InventoryPage({ searchParams }) {
         return false;
     });
 
+    // Available stock always ranks above the recently-sold cars we keep on show.
+    const SORTERS = {
+        price_asc: (a, b) => (a.price || 0) - (b.price || 0),
+        price_desc: (a, b) => (b.price || 0) - (a.price || 0),
+        mileage_asc: (a, b) => (a.mileage || 0) - (b.mileage || 0),
+        year_desc: (a, b) => (b.year || 0) - (a.year || 0),
+    };
+    const sorter = SORTERS[params.sort];
+    const cars = sorter
+        ? [...filteredCars].sort((a, b) => {
+            if (a.status !== b.status) return a.status === "available" ? -1 : 1;
+            return sorter(a, b);
+        })
+        : filteredCars;
 
     return (
         <div className="bg-background-alt min-h-screen">
@@ -81,7 +98,8 @@ export default async function InventoryPage({ searchParams }) {
 
                     {/* Main Content Grid */}
                     <div className="w-full flex-1 flex flex-col min-w-0">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                        <InventorySort count={cars.length} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
                             {cars && cars.map((car) => (
                                 <Link
@@ -101,7 +119,7 @@ export default async function InventoryPage({ searchParams }) {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full text-slate-700">
-                                                <span className="material-symbols-outlined text-4xl">directions_car</span>
+                                                <Icon name="directions_car" className="text-4xl" />
                                             </div>
                                         )}
 
@@ -125,53 +143,62 @@ export default async function InventoryPage({ searchParams }) {
                                     <div className="p-6 flex flex-col flex-1">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h2 className="text-base font-bold text-slate-900 transition-colors">
+                                                <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                                                     {car.year} {car.make}
+                                                </p>
+                                                <h2 className="text-lg font-bold leading-snug text-slate-900 transition-colors">
+                                                    {car.model}
                                                 </h2>
-                                                <p className="text-xs font-medium text-slate-500">{car.model}</p>
                                             </div>
                                         </div>
 
                                         <div className="mt-auto">
                                             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-slate-400 mb-6 pb-6 border-b border-slate-100">
                                                 <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">speed</span>
+                                                    <Icon name="speed" className="text-[16px]" />
                                                     {new Intl.NumberFormat('en-ZA').format(car.mileage)} km
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">local_gas_station</span>
+                                                    <Icon name="local_gas_station" className="text-[16px]" />
                                                     {car.fuel_type || 'Fuel'}
                                                 </span>
                                                 <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">settings</span>
+                                                    <Icon name="settings" className="text-[16px]" />
                                                     {car.transmission === 'Automatic' ? 'Auto' : 'Manual'}
                                                 </span>
                                                 {car.drivetrain && (
                                                     <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-[16px]">settings_input_component</span>
+                                                        <Icon name="settings_input_component" className="text-[16px]" />
                                                         {car.drivetrain}
                                                     </span>
                                                 )}
                                                 {car.colour && (
                                                     <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-[16px]">palette</span>
+                                                        <Icon name="palette" className="text-[16px]" />
                                                         {car.colour}
                                                     </span>
                                                 )}
                                                 {car.has_warranty && (
                                                     <span className="flex items-center gap-1 text-green-600">
-                                                        <span className="material-symbols-outlined text-[16px]">verified</span>
+                                                        <Icon name="verified" className="text-[16px]" />
                                                         Warranty
                                                     </span>
                                                 )}
                                             </div>
 
                                             <div className="flex items-center justify-between">
-                                                <div className="font-bold text-lg text-slate-900 tracking-tight whitespace-nowrap">
-                                                    R {new Intl.NumberFormat('en-ZA').format(car.price)}
+                                                <div>
+                                                    <div className="font-bold text-2xl text-slate-900 tracking-tight whitespace-nowrap">
+                                                        R {new Intl.NumberFormat('en-ZA').format(car.price)}
+                                                    </div>
+                                                    {car.status === 'available' && (
+                                                        <div className="mt-0.5 text-xs font-medium text-slate-500">
+                                                            from {formatRand(calculateMonthly({ price: Number(car.price) || 0 }).monthly)} p/m
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-colors text-slate-400">
-                                                    <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                                                    <Icon name="arrow_forward" className="text-[20px]" />
                                                 </div>
                                             </div>
                                         </div>
@@ -181,7 +208,7 @@ export default async function InventoryPage({ searchParams }) {
 
                             {(!cars || cars.length === 0) && (
                                 <div className="col-span-full py-24 text-center">
-                                    <span className="material-symbols-outlined text-6xl text-slate-300 mb-4 block">inventory_2</span>
+                                    <Icon name="inventory_2" className="text-6xl text-slate-300 mb-4 block" />
                                     <p className="text-slate-500 text-lg">Our showroom is currently being updated with new premium stock.</p>
                                     <p className="text-slate-400">Please check back again soon.</p>
                                 </div>

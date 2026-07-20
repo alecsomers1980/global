@@ -1,6 +1,6 @@
 export default function PageBanner({ title, subtitle, bgImageUrl, overlayOpacity = "opacity-40" }) {
     return (
-        <section className="bg-black py-24 px-4 text-center lg:px-12 relative overflow-hidden flex items-center justify-center min-h-[350px]">
+        <section className="bg-black py-16 px-4 text-center lg:px-12 relative overflow-hidden flex items-center justify-center min-h-[240px]">
             {/* Background Image / Gradient */}
             {bgImageUrl ? (
                 <div className="absolute inset-0 z-0">
@@ -17,14 +17,11 @@ export default function PageBanner({ title, subtitle, bgImageUrl, overlayOpacity
                 </div>
             )}
 
-            {/* Yellow Accent Elements */}
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-            
+            {/* Single yellow accent: a hairline along the top edge. */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
+
             <div className="relative z-10 max-w-4xl mx-auto animate-fade-in-up flex flex-col items-center">
-                {/* Yellow Bar Accent */}
-                <div className="w-12 h-1 bg-primary mb-8 rounded-full shadow-[0_0_15px_rgba(255,255,1,0.5)]" />
-                
-                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 uppercase tracking-tight leading-none drop-shadow-2xl">
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-white mb-5 uppercase tracking-tight leading-none drop-shadow-2xl">
                     {title}
                 </h1>
                 
@@ -35,8 +32,6 @@ export default function PageBanner({ title, subtitle, bgImageUrl, overlayOpacity
                 )}
             </div>
             
-            {/* Bottom Edge Accent */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-primary/30 rounded-t-full" />
         </section>
     );
 }

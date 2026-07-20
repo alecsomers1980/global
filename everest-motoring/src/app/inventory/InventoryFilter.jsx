@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+import Icon from "@/components/Icon";
 
 const CAR_FEATURES = {
     "Safety & Security": ["ABS", "Airbags", "Alarm System", "ISOFIX", "Rear Camera", "Parking Sensors", "Lane Assist", "Blind Spot Monitor"],
@@ -86,12 +87,12 @@ export default function InventoryFilter() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[22px]">filter_alt</span>
+                    <Icon name="filter_alt" className="text-[22px]" />
                     Filters
                 </h2>
                 <button
                     onClick={handleClearFilters}
-                    className="text-sm font-bold text-primary hover:text-primary-dark transition-colors"
+                    className="text-sm font-bold text-primary-ink hover:text-slate-900 transition-colors"
                 >
                     Clear All
                 </button>
@@ -147,7 +148,7 @@ export default function InventoryFilter() {
                                         onChange={() => handleCheckboxChange('transmission', t, transmission, setTransmission)}
                                         className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                     />
-                                    <span className="material-symbols-outlined absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                    <Icon name="check" className="absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" />
                                 </div>
                                 <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{t}</span>
                             </label>
@@ -170,7 +171,7 @@ export default function InventoryFilter() {
                                         onChange={() => handleCheckboxChange('fuel_type', f, fuelType, setFuelType)}
                                         className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                     />
-                                    <span className="material-symbols-outlined absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                    <Icon name="check" className="absolute text-black text-[16px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" />
                                 </div>
                                 <span className="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{f}</span>
                             </label>
@@ -197,7 +198,7 @@ export default function InventoryFilter() {
                                                     onChange={() => handleCheckboxChange('features', feature, features, setFeatures)}
                                                     className="peer appearance-none w-4 h-4 border-2 border-slate-300 rounded cursor-pointer checked:bg-primary checked:border-primary transition-colors focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white"
                                                 />
-                                                <span className="material-symbols-outlined absolute text-black text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                                                <Icon name="check" className="absolute text-black text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" />
                                             </div>
                                             <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{feature}</span>
                                         </label>

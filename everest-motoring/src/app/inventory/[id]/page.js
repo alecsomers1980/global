@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import LeadForm from "./LeadForm";
 import VehicleGallery from "./VehicleGallery";
+import FinanceCalculator from "@/components/FinanceCalculator";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { vehicleEnquiryMessage } from "@/utils/whatsapp";
+import { siteConfig } from "@/app/layout";
 import ViewItemTracker from "@/components/ViewItemTracker";
 import { buildVehicleJsonLd } from "@/utils/seo/vehicleSchema";
 import { getVehicleUrl } from "@/utils/url/vehicleUrl";
@@ -10,6 +14,7 @@ import {
     computeFallbackMetaTitle,
     computeFallbackMetaDescription,
 } from "@/utils/ai/seoGenerator";
+import Icon from "@/components/Icon";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 
@@ -129,13 +134,13 @@ export default async function CarDetailsPage({ params }) {
                                 <div className="inline-block px-3 py-1 bg-green-50 text-green-700 font-bold text-xs uppercase tracking-wider rounded-md mb-4 border border-green-200">
                                     {car.status === 'available' ? 'Available Now' : 'Reserved'}
                                 </div>
-                                <h1 className="text-xl lg:text-2xl font-bold text-slate-900">
+                                <h1 className="text-2xl lg:text-3xl font-bold text-slate-900">
                                     {car.year} {car.make} {car.model}
                                 </h1>
                             </div>
                             <div className="text-left md:text-right">
                                 <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">Retail Price</p>
-                                <div className="text-xl font-bold text-black whitespace-nowrap">
+                                <div className="text-4xl lg:text-5xl font-bold text-black whitespace-nowrap">
                                     R {new Intl.NumberFormat('en-ZA').format(car.price)}
                                 </div>
                             </div>
@@ -201,7 +206,7 @@ export default async function CarDetailsPage({ params }) {
                                     {formatWarranty(car) && (
                                         <div className={`p-4 rounded-xl border ${car.has_warranty ? 'bg-green-50 border-green-100' : 'bg-slate-50 border-slate-100'}`}>
                                             <p className="text-sm text-slate-500 mb-1 flex items-center gap-1">
-                                                {car.has_warranty && <span className="material-symbols-outlined text-green-600 text-[16px]">verified</span>}
+                                                {car.has_warranty && <Icon name="verified" className="text-green-600 text-[16px]" />}
                                                 Warranty
                                             </p>
                                             <p className={`font-bold ${car.has_warranty ? 'text-green-800' : 'text-slate-900'}`}>{formatWarranty(car)}</p>
@@ -215,7 +220,7 @@ export default async function CarDetailsPage({ params }) {
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 mb-12">
                                             {car.features.map((feature, idx) => (
                                                 <div key={idx} className="flex items-center gap-2 text-slate-700">
-                                                    <span className="material-symbols-outlined text-green-500 text-[20px]">check_circle</span>
+                                                    <Icon name="check_circle" className="text-green-500 text-[20px]" />
                                                     <span className="font-medium text-sm">{feature}</span>
                                                 </div>
                                             ))}
@@ -223,16 +228,19 @@ export default async function CarDetailsPage({ params }) {
                                     </>
                                 )}
 
-                                <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Description</h2>
-                                <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
-                                    {car.description || (
-                                        <p className="italic text-slate-400">Detailed overview of this vehicle's pristine condition, 100-point check results, and extra features will be populated here.</p>
-                                    )}
-                                </div>
+                                {car.description && (
+                                    <>
+                                        <h2 className="text-2xl font-bold text-slate-900 mb-6 border-b border-slate-100 pb-4">Description</h2>
+                                        <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line mb-12">
+                                            {car.description}
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* CRM Lead Generation Sidebar */}
-                            <div className="bg-black rounded-2xl p-8 text-white h-fit sticky top-24 shadow-xl">
+                            <div className="h-fit space-y-8">
+                            <div className="bg-black rounded-2xl p-8 text-white shadow-xl">
                                 <h3 className="text-xl font-bold mb-6 border-b border-white/10 pb-4">Interested in this car?</h3>
                                 <p className="text-slate-400 text-sm mb-6 leading-relaxed">
                                     Leave your details below and a dedicated sales executive will contact you to arrange a viewing or discuss finance options.
@@ -240,10 +248,28 @@ export default async function CarDetailsPage({ params }) {
 
                                 <LeadForm carId={car.id} />
 
+                                <div className="mt-6 space-y-3">
+                                    <WhatsAppButton
+                                        number={siteConfig.whatsapp}
+                                        message={vehicleEnquiryMessage(car)}
+                                        label="WhatsApp about this car"
+                                    />
+                                    <a
+                                        href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
+                                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-black transition-colors hover:bg-primary-dark"
+                                    >
+                                        <Icon name="call" className="text-[20px]" />
+                                        Call {siteConfig.phone}
+                                    </a>
+                                </div>
+
                                 <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-400">
-                                    <span className="material-symbols-outlined text-green-500">lock</span>
+                                    <Icon name="lock" className="text-green-500" />
                                     Secure Lead System
                                 </div>
+                            </div>
+
+                            <FinanceCalculator price={Number(car.price) || 0} />
                             </div>
                         </div>
                     </div>
