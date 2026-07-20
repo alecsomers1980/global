@@ -25,7 +25,7 @@ export default function FinancingDetailsForm({ leadId }) {
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
             <div className="bg-slate-950 p-6 flex items-center gap-3 text-white">
-                <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
+                <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary-ink">
                     <span className="material-symbols-outlined">assignment</span>
                 </div>
                 <div>

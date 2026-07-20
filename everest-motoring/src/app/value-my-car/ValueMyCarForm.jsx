@@ -157,7 +157,7 @@ export default function ValueMyCarForm() {
                     onClick={() => {
                         window.location.reload();
                     }}
-                    className="text-primary font-bold hover:text-primary-dark transition-colors"
+                    className="text-primary-ink font-bold hover:text-slate-900 transition-colors"
                 >
                     Submit another vehicle
                 </button>

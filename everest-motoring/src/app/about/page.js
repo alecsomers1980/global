@@ -58,7 +58,7 @@ export default function AboutPage() {
                             </div>
                             <div className="mt-6 text-center">
                                 <h3 className="text-2xl font-bold text-slate-900">Christo Pieterse</h3>
-                                <p className="text-primary font-semibold tracking-wide uppercase text-sm mt-1">Director & Founder</p>
+                                <p className="text-primary-ink font-semibold tracking-wide uppercase text-sm mt-1">Director & Founder</p>
                             </div>
                         </div>
 
@@ -80,7 +80,7 @@ export default function AboutPage() {
                                 </p>
                             </div>
                             <div className="bg-white rounded-2xl p-8 mt-8 shadow-sm border border-slate-100 relative">
-                                <div className="absolute -top-4 -left-2 text-6xl text-primary/20 font-serif leading-none">"</div>
+                                <div className="absolute -top-4 -left-2 text-6xl text-primary-ink/20 font-serif leading-none">"</div>
                                 <p className="text-slate-800 font-medium italic text-lg leading-relaxed relative z-10 pl-4 border-l-4 border-primary">
                                     Quality isn&apos;t just a promise; it&apos;s a guaranteed standard. We are changing the way South Africans buy pre-owned vehicles through absolute transparency and an uncompromising commitment to our clients.
                                 </p>

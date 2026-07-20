@@ -13,7 +13,11 @@ export default {
       colors: {
         "primary": "#ffff01",      // Everest Yellow — backgrounds only (fails contrast as text on white)
         "primary-dark": "#e6e600", // Darker Yellow for hover
-        "primary-ink": "#8a7a00",  // Readable yellow for text on light backgrounds
+        // Readable gold for text/icons on light surfaces. Passes WCAG AA (>=4.5:1)
+        // on white, on slate-50, and on the primary/10 and /20 tints. Never use
+        // `primary` or `primary-dark` as a foreground on light — they fail badly
+        // (#ffff01 on white is 1.07:1).
+        "primary-ink": "#7d6e00",
         "secondary": "#000000",    // Black
         "accent": "#ffffff",       // White
         "neutral-light": "#f3f4f6",

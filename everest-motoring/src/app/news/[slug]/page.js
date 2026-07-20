@@ -230,21 +230,21 @@ export default async function NewsPostPage({ params }) {
                     {/* Meta row */}
                     <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
                         <span className="flex items-center gap-1.5">
-                            <Icon name="calendar_today" className="text-base text-primary" />
+                            <Icon name="calendar_today" className="text-base text-primary-ink" />
                             {formatDate(post.published_at)}
                         </span>
                         {readTime && (
                             <>
                                 <span className="w-1 h-1 rounded-full bg-slate-600" />
                                 <span className="flex items-center gap-1.5">
-                                    <Icon name="schedule" className="text-base text-primary" />
+                                    <Icon name="schedule" className="text-base text-primary-ink" />
                                     {readTime} min read
                                 </span>
                             </>
                         )}
                         <span className="w-1 h-1 rounded-full bg-slate-600" />
                         <span className="flex items-center gap-1.5">
-                            <Icon name="business" className="text-base text-primary" />
+                            <Icon name="business" className="text-base text-primary-ink" />
                             Everest Motoring
                         </span>
                     </div>
@@ -273,7 +273,7 @@ export default async function NewsPostPage({ params }) {
                             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
                             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
                             prose-p:text-slate-700 prose-p:leading-relaxed prose-p:text-[16px]
-                            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                            prose-a:text-primary-ink prose-a:no-underline hover:prose-a:underline
                             prose-strong:text-slate-900
                             prose-ul:text-slate-700 prose-ol:text-slate-700
                             prose-li:my-1
@@ -287,7 +287,7 @@ export default async function NewsPostPage({ params }) {
                 {featuredCar && (
                     <div className="mt-10 bg-white rounded-2xl border border-slate-100 shadow-sm p-8 overflow-hidden">
                         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
-                            <Icon name="directions_car" className="text-primary text-base" />
+                            <Icon name="directions_car" className="text-primary-ink text-base" />
                             Featured Vehicle
                         </div>
                         <Link
@@ -326,7 +326,7 @@ export default async function NewsPostPage({ params }) {
                                         "en-ZA"
                                     ).format(featuredCar.price)}
                                 </p>
-                                <span className="mt-4 inline-flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
+                                <span className="mt-4 inline-flex items-center gap-2 text-primary-ink font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
                                     View Vehicle{" "}
                                     <Icon name="arrow_forward" className="text-sm" />
                                 </span>
@@ -375,7 +375,7 @@ export default async function NewsPostPage({ params }) {
                         </div>
                         <Link
                             href="/news"
-                            className="hidden md:inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline"
+                            className="hidden md:inline-flex items-center gap-1 text-sm font-bold text-primary-ink hover:underline"
                         >
                             View all articles{" "}
                             <Icon name="arrow_forward" className="text-sm" />
@@ -431,7 +431,7 @@ export default async function NewsPostPage({ params }) {
                                         </p>
                                     )}
                                     <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-                                        <span className="text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
+                                        <span className="text-sm font-bold text-primary-ink uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all">
                                             Read more{" "}
                                             <Icon name="arrow_forward" className="text-sm" />
                                         </span>
@@ -443,7 +443,7 @@ export default async function NewsPostPage({ params }) {
                     <div className="mt-8 text-center md:hidden">
                         <Link
                             href="/news"
-                            className="inline-flex items-center gap-2 text-sm font-bold text-primary"
+                            className="inline-flex items-center gap-2 text-sm font-bold text-primary-ink"
                         >
                             View all articles{" "}
                             <Icon name="arrow_forward" className="text-sm" />

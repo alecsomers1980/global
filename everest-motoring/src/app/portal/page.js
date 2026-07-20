@@ -91,21 +91,21 @@ export default async function PortalDashboard() {
                         style={{ width: currentStep === 1 ? '0%' : currentStep === 2 && progressPercent < 100 ? '50%' : '100%' }}
                     ></div>
 
-                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 1 ? 'text-primary' : 'text-slate-400'}`}>
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 1 ? 'text-primary-ink' : 'text-slate-400'}`}>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${currentStep >= 1 ? 'border-primary' : 'border-slate-300'}`}>
                             {currentStep > 1 ? <span className="material-symbols-outlined">check</span> : '1'}
                         </div>
                         <span className="text-xs font-bold uppercase tracking-wider">Details</span>
                     </div>
 
-                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 2 ? 'text-primary' : 'text-slate-400'}`}>
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${currentStep >= 2 ? 'text-primary-ink' : 'text-slate-400'}`}>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${currentStep >= 2 ? 'border-primary' : 'border-slate-300'}`}>
                             {progressPercent === 100 ? <span className="material-symbols-outlined">check</span> : '2'}
                         </div>
                         <span className="text-xs font-bold uppercase tracking-wider">Documents</span>
                     </div>
 
-                    <div className={`relative z-10 flex flex-col items-center gap-2 ${progressPercent === 100 ? 'text-primary' : 'text-slate-400'}`}>
+                    <div className={`relative z-10 flex flex-col items-center gap-2 ${progressPercent === 100 ? 'text-primary-ink' : 'text-slate-400'}`}>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg border-2 bg-white ${progressPercent === 100 ? 'border-primary' : 'border-slate-300'}`}>
                             {progressPercent === 100 ? <span className="material-symbols-outlined">check</span> : '3'}
                         </div>
@@ -127,7 +127,7 @@ export default async function PortalDashboard() {
                 <div className="p-6 sm:p-8 flex-1 flex flex-col justify-center">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-4">
                         <div>
-                            <p className="text-xs font-bold text-primary uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                            <p className="text-xs font-bold text-primary-ink uppercase tracking-widest mb-1.5 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-[14px]">local_mall</span>
                                 Your Vehicle Deal
                             </p>
@@ -165,7 +165,7 @@ export default async function PortalDashboard() {
                     <div className="mt-auto">
                         <div className="flex justify-between text-sm font-bold mb-3">
                             <span className="text-slate-700 uppercase tracking-wider text-xs">Application Progress</span>
-                            <span className="text-primary">{progressPercent}%</span>
+                            <span className="text-primary-ink">{progressPercent}%</span>
                         </div>
                         <div className="w-full bg-slate-100 rounded-full h-3">
                             <div className="bg-primary h-3 rounded-full transition-all duration-1000 ease-out" style={{ width: `${progressPercent}%` }}></div>
@@ -187,7 +187,7 @@ export default async function PortalDashboard() {
             ) : (
                 <>
                     <div className="flex items-center gap-2 mb-6 mt-12 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary shrink-0">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary-ink shrink-0">
                             <span className="material-symbols-outlined">lock</span>
                         </div>
                         <div>

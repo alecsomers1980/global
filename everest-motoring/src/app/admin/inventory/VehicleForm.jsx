@@ -718,7 +718,7 @@ export default function VehicleForm({ initialData = null }) {
                     <p className="text-xs text-slate-500 mb-3">Optional. Verified third-party report — improves listing quality on AutoTrader.</p>
                     {inspectionReportUrl && (
                         <div className="flex items-center gap-3 mb-3 text-sm">
-                            <a href={inspectionReportUrl} target="_blank" rel="noopener noreferrer" className="text-primary-dark font-bold underline flex items-center gap-1">
+                            <a href={inspectionReportUrl} target="_blank" rel="noopener noreferrer" className="text-primary-ink font-bold underline flex items-center gap-1">
                                 <span className="material-symbols-outlined text-base">picture_as_pdf</span>
                                 View current report
                             </a>

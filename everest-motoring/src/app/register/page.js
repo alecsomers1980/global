@@ -122,7 +122,7 @@ export default async function RegisterPage({ searchParams }) {
 
                     <div className="mt-8 text-center bg-slate-50 p-4 rounded-lg border border-slate-100">
                         <p className="text-sm text-slate-500">
-                            Already have an account? <a href="/login" className="text-primary font-bold hover:underline">Sign In Instead</a>
+                            Already have an account? <a href="/login" className="text-primary-ink font-bold hover:underline">Sign In Instead</a>
                         </p>
                     </div>
                 </div>

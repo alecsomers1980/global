@@ -109,7 +109,7 @@ export default function SaleVideoPicker({ sale, onUpdated }) {
         const styleLabel = SEEDANCE_STYLES.find((s) => s.key === selectedStyle)?.label || "Video";
         return (
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 flex items-center gap-3">
-                <span className="material-symbols-outlined animate-spin text-primary">sync</span>
+                <span className="material-symbols-outlined animate-spin text-primary-ink">sync</span>
                 <div className="text-sm">
                     <div className="font-bold text-slate-800">Generating {styleLabel}…</div>
                     <div className="text-slate-600">Seedance 2 typically takes 1–3 minutes. You can close this dialog — we'll keep generating in the background.</div>

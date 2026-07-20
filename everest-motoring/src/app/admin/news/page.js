@@ -61,7 +61,7 @@ export default async function AdminNewsPage() {
                         {(posts || []).map((p) => (
                             <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                                 <td className="p-4">
-                                    <Link href={`/admin/news/${p.id}`} className="font-bold text-slate-900 hover:text-primary">
+                                    <Link href={`/admin/news/${p.id}`} className="font-bold text-slate-900 hover:text-primary-ink">
                                         {p.title}
                                     </Link>
                                     <p className="text-xs text-slate-400 mt-1">/news/{p.slug}</p>

@@ -98,13 +98,13 @@ export default function TradeInsTable({ initialRequests }) {
                                 <tr className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => toggleExpand(req.id)}>
                                     <td className="p-6">
                                         <p className="font-black text-slate-900 text-lg flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-[18px] text-primary">
+                                            <span className="material-symbols-outlined text-[18px] text-primary-ink">
                                                 {expandedRows.includes(req.id) ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}
                                             </span>
                                             {req.client_name}
                                         </p>
                                         <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 font-medium">
-                                            <span className="material-symbols-outlined text-[16px] text-primary ml-6">call</span>
+                                            <span className="material-symbols-outlined text-[16px] text-primary-ink ml-6">call</span>
                                             {req.client_phone}
                                         </p>
                                     </td>

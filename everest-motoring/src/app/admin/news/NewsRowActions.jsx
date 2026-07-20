@@ -33,7 +33,7 @@ export default function NewsRowActions({ post }) {
                     <Link
                         href={`/news/${post.slug}`}
                         target="_blank"
-                        className="p-2 text-slate-400 hover:text-primary"
+                        className="p-2 text-slate-400 hover:text-primary-ink"
                         title="View live"
                     >
                         <span className="material-symbols-outlined">open_in_new</span>
@@ -61,7 +61,7 @@ export default function NewsRowActions({ post }) {
             )}
             <Link
                 href={`/admin/news/${post.id}`}
-                className="p-2 text-slate-400 hover:text-primary"
+                className="p-2 text-slate-400 hover:text-primary-ink"
                 title="Edit"
             >
                 <span className="material-symbols-outlined">edit</span>

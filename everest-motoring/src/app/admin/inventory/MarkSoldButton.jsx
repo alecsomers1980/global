@@ -317,7 +317,7 @@ export default function MarkSoldButton({ car }) {
                                                 type="file"
                                                 name="delivery_photo"
                                                 accept="image/png, image/jpeg, image/webp"
-                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary-ink hover:file:bg-primary/20"
                                             />
                                             <p className="text-xs text-slate-500 mt-1">
                                                 Customer collecting their car. Will be reused for a video clip later.

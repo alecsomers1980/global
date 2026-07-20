@@ -42,7 +42,7 @@ export default async function DashboardPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-start gap-4">
-                        <Icon name="group" className="text-primary text-3xl bg-primary/10 p-3 rounded-lg" />
+                        <Icon name="group" className="text-primary-ink text-3xl bg-primary/10 p-3 rounded-lg" />
                         <div>
                             <h3 className="font-bold text-slate-900">Total Leads</h3>
                             <p className="text-2xl font-bold text-slate-700 mt-1">0</p>

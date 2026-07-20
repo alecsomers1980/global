@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
               <ul className="list-disc list-inside space-y-2 text-slate-700">
                 <li><strong>Information Officer:</strong> [Information Officer Name]</li>
                 <li><strong>Email:</strong> sales@everestmotoring.co.za</li>
-                <li><strong>PAIA Manual:</strong> <a href="#" className="text-primary hover:underline">[PAIA Manual Link]</a></li>
+                <li><strong>PAIA Manual:</strong> <a href="#" className="text-primary-ink hover:underline">[PAIA Manual Link]</a></li>
               </ul>
             </div>
 

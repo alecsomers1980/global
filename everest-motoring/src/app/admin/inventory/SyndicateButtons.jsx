@@ -46,7 +46,7 @@ export default function SyndicateButtons({ car }) {
       <button
         type="button"
         title="Fill this vehicle on cars.co.za (no submit)"
-        className="text-xs font-semibold px-2 py-1 rounded border border-slate-300 text-slate-600 hover:border-primary hover:text-primary disabled:opacity-50 transition-colors whitespace-nowrap"
+        className="text-xs font-semibold px-2 py-1 rounded border border-slate-300 text-slate-600 hover:border-primary hover:text-primary-ink disabled:opacity-50 transition-colors whitespace-nowrap"
         disabled={running !== null}
         onClick={() => syndicate("carscoza")}
       >
@@ -55,7 +55,7 @@ export default function SyndicateButtons({ car }) {
       <button
         type="button"
         title="Fill this vehicle on AutoTrader (no submit)"
-        className="text-xs font-semibold px-2 py-1 rounded border border-slate-300 text-slate-600 hover:border-primary hover:text-primary disabled:opacity-50 transition-colors whitespace-nowrap"
+        className="text-xs font-semibold px-2 py-1 rounded border border-slate-300 text-slate-600 hover:border-primary hover:text-primary-ink disabled:opacity-50 transition-colors whitespace-nowrap"
         disabled={running !== null}
         onClick={() => syndicate("autotrader")}
       >

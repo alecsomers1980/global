@@ -77,7 +77,7 @@ export default function AffiliateRow({ aff, affiliateLeads = [], isPending = fal
                             chevron_right
                         </span>
                         <div>
-                            <p className="font-bold text-slate-900 text-base group-hover:text-primary transition-colors">
+                            <p className="font-bold text-slate-900 text-base group-hover:text-primary-ink transition-colors">
                                 {aff.first_name} {aff.last_name}
                             </p>
                             <p className="text-xs text-slate-400 mt-0.5">
@@ -85,7 +85,7 @@ export default function AffiliateRow({ aff, affiliateLeads = [], isPending = fal
                             </p>
                         </div>
                         {affiliateLeads.length > 0 && (
-                            <span className="ml-1 text-xs bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">
+                            <span className="ml-1 text-xs bg-primary/10 text-primary-ink font-bold px-2 py-0.5 rounded-full">
                                 {affiliateLeads.length}
                             </span>
                         )}

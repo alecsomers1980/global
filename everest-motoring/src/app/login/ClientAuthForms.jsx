@@ -146,7 +146,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
 
                         <div className="mt-8 text-center bg-slate-50 p-4 rounded-lg border border-slate-100">
                             <p className="text-sm text-slate-500">
-                                Already have an account? <button type="button" onClick={() => setIsRegisteringClient(false)} className="text-primary font-bold hover:underline">Sign In Instead</button>
+                                Already have an account? <button type="button" onClick={() => setIsRegisteringClient(false)} className="text-primary-ink font-bold hover:underline">Sign In Instead</button>
                             </p>
                         </div>
                     </>
@@ -161,7 +161,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
                             <div>
                                 <div className="flex justify-between mb-2">
                                     <label className="block text-sm font-bold text-slate-700 uppercase tracking-wider">Password</label>
-                                    <a href="#" className="text-sm font-medium text-primary hover:underline">Forgot?</a>
+                                    <a href="#" className="text-sm font-medium text-primary-ink hover:underline">Forgot?</a>
                                 </div>
                                 <input type="password" name="password" required disabled={loading} className="w-full px-5 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-50" placeholder="••••••••" />
                             </div>
@@ -173,7 +173,7 @@ export default function ClientAuthForms({ initialIsRegisteringClient, carId, ini
 
                         <div className="mt-8 text-center bg-slate-50 p-4 rounded-lg border border-slate-100">
                             <p className="text-sm text-slate-500">
-                                New Client? <button type="button" onClick={() => setIsRegisteringClient(true)} className="text-primary font-bold hover:underline">Apply Here</button>
+                                New Client? <button type="button" onClick={() => setIsRegisteringClient(true)} className="text-primary-ink font-bold hover:underline">Apply Here</button>
                             </p>
                         </div>
                     </>

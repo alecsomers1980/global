@@ -92,12 +92,12 @@ export default function LeadsTable({ initialLeads }) {
                                     <td className="p-6">
                                         <p className="font-black text-slate-900 text-lg tracking-tight">{lead.client_name}</p>
                                         <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 font-medium">
-                                            <span className="material-symbols-outlined text-[16px] text-primary">call</span>
+                                            <span className="material-symbols-outlined text-[16px] text-primary-ink">call</span>
                                             {lead.client_phone}
                                         </p>
                                         {lead.client_email && (
                                             <p className="text-sm text-slate-500 flex items-center gap-1 mt-1 font-medium">
-                                                <span className="material-symbols-outlined text-[16px] text-primary">mail</span>
+                                                <span className="material-symbols-outlined text-[16px] text-primary-ink">mail</span>
                                                 {lead.client_email}
                                             </p>
                                         )}
@@ -126,7 +126,7 @@ export default function LeadsTable({ initialLeads }) {
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <a href={`/inventory/${lead.car_id}`} target="_blank" className="font-bold text-primary hover:underline block">
+                                                    <a href={`/inventory/${lead.car_id}`} target="_blank" className="font-bold text-primary-ink hover:underline block">
                                                         {lead.cars.year} {lead.cars.make} {lead.cars.model}
                                                     </a>
                                                     <p className="text-xs text-slate-500 font-medium mt-0.5">R {new Intl.NumberFormat('en-ZA').format(lead.cars.price)}</p>
@@ -168,7 +168,7 @@ export default function LeadsTable({ initialLeads }) {
                                             WhatsApp
                                         </a>
 
-                                        <a href={`tel:${lead.client_phone}`} className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1.5 rounded-md font-medium text-sm flex items-center justify-center gap-1 w-full max-w-[160px]">
+                                        <a href={`tel:${lead.client_phone}`} className="bg-primary/10 text-primary-ink hover:bg-primary/20 transition-colors px-3 py-1.5 rounded-md font-medium text-sm flex items-center justify-center gap-1 w-full max-w-[160px]">
                                             <span className="material-symbols-outlined text-[18px]">phone_in_talk</span>
                                             Call Client
                                         </a>
@@ -193,7 +193,7 @@ export default function LeadsTable({ initialLeads }) {
                                         <td colSpan="5" className="p-6">
                                             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
                                                 <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                                    <span className="material-symbols-outlined text-primary">folder_open</span>
+                                                    <span className="material-symbols-outlined text-primary-ink">folder_open</span>
                                                     Client Uploaded Documents ({lead.lead_documents.length})
                                                 </h4>
 
@@ -208,7 +208,7 @@ export default function LeadsTable({ initialLeads }) {
                                                                 href={fileUrl}
                                                                 target={doc.signedUrl ? "_blank" : "_self"}
                                                                 rel="noopener noreferrer"
-                                                                className="flex flex-col p-4 border border-slate-200 rounded-lg hover:border-primary hover:shadow-sm transition-all group bg-white relative overflow-hidden"
+                                                                className="flex flex-col p-4 border border-hairline rounded-lg hover:border-slate-400 hover:shadow-sm transition-all group bg-white relative overflow-hidden"
                                                             >
                                                                 {!doc.signedUrl && (
                                                                     <div className="absolute inset-0 bg-white/80 flex items-center justify-center p-4 text-center z-10">
@@ -216,7 +216,7 @@ export default function LeadsTable({ initialLeads }) {
                                                                     </div>
                                                                 )}
                                                                 <div className="flex items-start justify-between mb-2">
-                                                                    <span className="material-symbols-outlined text-3xl text-slate-400 group-hover:text-primary transition-colors">
+                                                                    <span className="material-symbols-outlined text-3xl text-slate-400 group-hover:text-primary-ink transition-colors">
                                                                         {doc.file_path.toLowerCase().endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
                                                                     </span>
                                                                     <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
