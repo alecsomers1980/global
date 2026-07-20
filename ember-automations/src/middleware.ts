@@ -15,10 +15,20 @@ export async function middleware(req: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (req.nextUrl.pathname.startsWith("/admin") && !user) {
+  const isAdmin = !!user && user.email === process.env.ADMIN_EMAIL;
+  const path = req.nextUrl.pathname;
+
+  // API routes answer with JSON, pages redirect to the login screen.
+  if (path.startsWith("/api/admin")) {
+    if (!isAdmin) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return res;
+  }
+
+  if (path.startsWith("/admin") && !isAdmin) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
+
   return res;
 }
 
-export const config = { matcher: ["/admin/:path*"] };
+export const config = { matcher: ["/admin/:path*", "/api/admin/:path*"] };

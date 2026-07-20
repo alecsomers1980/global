@@ -11,7 +11,7 @@ export async function notifySubmission(qn: {
   const url = `${process.env.NEXT_PUBLIC_SITE_URL}/admin/${qn.id ?? ""}`;
   try {
     await resend.emails.send({
-      from: process.env.RESEND_FROM || "Ember Automations <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM || "Ember Automations <intake@emb3r.co.za>",
       to,
       subject: `New intake: ${qn.client_name} — ${qn.project_name}`,
       text: `${qn.client_name} submitted the "${qn.project_name}" questionnaire.\n\nReview: ${url}`,
