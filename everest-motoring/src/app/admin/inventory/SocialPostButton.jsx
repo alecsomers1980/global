@@ -59,7 +59,7 @@ export default function SocialPostButton({ car }) {
             aria-label={title}
             title={title}
         >
-            <Glyph className="h-[18px] w-[18px]" />
+            <Glyph className="h-5 w-5" />
         </IconButton>
     );
 }

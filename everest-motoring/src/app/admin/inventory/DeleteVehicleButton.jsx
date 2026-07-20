@@ -33,7 +33,7 @@ export default function DeleteVehicleButton({ car, deleteCarAction }) {
                 aria-label={isPending ? "Deleting vehicle" : "Delete vehicle"}
                 title={isPending ? "Deleting..." : "Delete Vehicle"}
             >
-                {isPending ? <Loader2 className="h-[18px] w-[18px]" /> : <Trash2 className="h-[18px] w-[18px]" />}
+                {isPending ? <Loader2 className="h-5 w-5" /> : <Trash2 className="h-5 w-5" />}
             </IconButton>
             {errorMsg && (
                 <span className="hidden" data-delete-error={errorMsg} />

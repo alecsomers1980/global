@@ -146,7 +146,7 @@ export default function MarkSoldButton({ car }) {
                 aria-label={isSold ? "View sale details" : "Mark as sold"}
                 title={isSold ? "View Sale Details" : "Mark as Sold"}
             >
-                {isSold ? <Handshake className="h-[18px] w-[18px]" /> : <Tag className="h-[18px] w-[18px]" />}
+                {isSold ? <Handshake className="h-5 w-5" /> : <Tag className="h-5 w-5" />}
             </IconButton>
 
             {open && (
@@ -162,7 +162,7 @@ export default function MarkSoldButton({ car }) {
                                 </p>
                             </div>
                             <IconButton onClick={() => setOpen(false)} aria-label="Close">
-                                <X className="h-[18px] w-[18px]" />
+                                <X className="h-5 w-5" />
                             </IconButton>
                         </div>
 

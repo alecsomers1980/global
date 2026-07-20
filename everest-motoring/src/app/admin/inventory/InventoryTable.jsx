@@ -179,10 +179,10 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                             <SocialPostButton car={car} />
                                             <MarkSoldButton car={car} />
                                             <IconButton as="a" href={`/api/admin/flyer/${car.id}`} download aria-label="Download A4 flyer" title="Download A4 Flyer">
-                                                <FileImage className="h-[18px] w-[18px]" />
+                                                <FileImage className="h-5 w-5" />
                                             </IconButton>
                                             <IconButton as={Link} href={`/admin/inventory/edit/${car.id}`} aria-label="Edit vehicle" title="Edit Vehicle">
-                                                <Pencil className="h-[18px] w-[18px]" />
+                                                <Pencil className="h-5 w-5" />
                                             </IconButton>
                                             <DeleteVehicleButton car={car} deleteCarAction={deleteCarAction} />
                                         </div>

@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CookieConsent from "@/components/CookieConsent";
 import GoogleAnalyticsGate from "@/components/GoogleAnalyticsGate";
-import WhatsAppButton from "@/components/WhatsAppButton";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 // Self-hosted brand header font (Microgramma D Extended Bold).
 const microgramme = localFont({
@@ -68,10 +68,9 @@ export default function RootLayout({ children }) {
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer siteConfig={siteConfig} />
         </div>
-        <WhatsAppButton
+        <FloatingWhatsApp
           number={siteConfig.whatsapp}
           message="Hi Everest Motoring, I'd like to find out more about your vehicles."
-          variant="floating"
         />
         <GoogleAnalyticsGate gaId={gaId} />
         <CookieConsent />

@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+    CirclePlay, ChevronDown, RefreshCw, Volume2,
+    Clapperboard, TriangleAlert, Loader2,
+} from "lucide-react";
 import { checkHeyGenVideoStatus, queueAiWalkaround, requestSceneRegenerationAction, requestAudioRedoAction } from "./ai_actions";
 
 export default function AiVideoStatus({ carId, videoUrl }) {
@@ -9,6 +13,7 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     const [isActive, setIsActive] = useState(false);
     const [isError, setIsError] = useState(false);
     const [selectedScenes, setSelectedScenes] = useState([]);
+    const [panelOpen, setPanelOpen] = useState(false);
 
     // Initial load logic to determine what phase we are in
     useEffect(() => {
@@ -117,75 +122,106 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     };
 
     // If it's already safely hosted (Mux or Cloudflare):
+    // The regeneration controls used to sit open on every row, which made each
+    // row several hundred pixels tall. They now live behind a disclosure so the
+    // resting state is a single status chip.
     if (videoUrl && (videoUrl.startsWith('mux:') || videoUrl.startsWith('cf:'))) {
         return (
-            <div className="mt-2 flex flex-col gap-1.5 w-max">
-                <div className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200 text-xs font-bold flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px]">play_circle</span>
-                    AI Video Live
-                </div>
+            <div className="flex flex-col items-start gap-1.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-label font-semibold uppercase">
+                    <CirclePlay className="h-3.5 w-3.5" />
+                    Video live
+                </span>
+
                 <button
-                    onClick={handleRegenerate}
-                    disabled={isChecking}
-                    className="text-[11px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-slate-200 transition-colors disabled:opacity-70"
-                    title="Regenerate the walkaround video using the latest prompts"
+                    type="button"
+                    onClick={() => setPanelOpen((v) => !v)}
+                    aria-expanded={panelOpen}
+                    className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-900 transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
                 >
-                    <span className="material-symbols-outlined text-[12px]">refresh</span>
-                    {isChecking ? "Queuing..." : "Regenerate all"}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${panelOpen ? "rotate-180" : ""}`} />
+                    {panelOpen ? "Hide options" : "Video options"}
                 </button>
-                <div className="text-[10px] text-slate-500 font-medium mt-1 leading-tight">Or redo specific scenes:</div>
-                <div className="flex gap-1">
-                    {[1, 2, 3, 4].map((n) => {
-                        const on = selectedScenes.includes(n);
-                        return (
+
+                {panelOpen && (
+                    <div className="mt-1 w-full min-w-[210px] rounded-lg border border-hairline bg-slate-50 p-3 space-y-3">
+                        <button
+                            onClick={handleRegenerate}
+                            disabled={isChecking}
+                            className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-hairline bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-400 transition-colors disabled:opacity-50"
+                            title="Regenerate the walkaround video using the latest prompts"
+                        >
+                            <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
+                            {isChecking ? "Queuing..." : "Regenerate all"}
+                        </button>
+
+                        <div>
+                            <p className="text-label font-semibold uppercase text-slate-400 mb-1.5">Redo scenes</p>
+                            <div className="flex gap-1.5">
+                                {[1, 2, 3, 4].map((n) => {
+                                    const on = selectedScenes.includes(n);
+                                    return (
+                                        <button
+                                            key={n}
+                                            type="button"
+                                            onClick={() => toggleScene(n)}
+                                            disabled={isChecking}
+                                            aria-pressed={on}
+                                            className={`h-7 w-7 rounded-md border text-xs font-medium transition-all duration-150 active:scale-95 disabled:opacity-50 ${on
+                                                ? "bg-slate-900 text-white border-slate-900"
+                                                : "bg-white text-slate-600 border-hairline hover:border-slate-400"}`}
+                                            title={`Toggle scene ${n}`}
+                                        >
+                                            {n}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
                             <button
-                                key={n}
-                                type="button"
-                                onClick={() => toggleScene(n)}
-                                disabled={isChecking}
-                                className={`text-[11px] font-bold w-6 h-6 rounded-md border transition-colors disabled:opacity-70 ${on ? "bg-primary text-black border-primary" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"}`}
-                                title={`Toggle scene ${n}`}
+                                onClick={handleRedoSelectedScenes}
+                                disabled={isChecking || selectedScenes.length === 0}
+                                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-hairline bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Regenerate scenes ${selectedScenes.join(", ")} (video + audio)`}
                             >
-                                {n}
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                Redo video
                             </button>
-                        );
-                    })}
-                </div>
-                <button
-                    onClick={handleRedoSelectedScenes}
-                    disabled={isChecking || selectedScenes.length === 0}
-                    className="text-[11px] font-bold bg-slate-50 hover:bg-slate-100 text-slate-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Regenerate scenes ${selectedScenes.join(", ")} (video + audio)`}
-                >
-                    <span className="material-symbols-outlined text-[12px]">refresh</span>
-                    {isChecking ? "Queuing..." : "Regenerate selected (video)"}
-                </button>
-                <button
-                    onClick={handleRedoAudioScenes}
-                    disabled={isChecking || selectedScenes.length === 0}
-                    className="text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md flex items-center justify-center gap-1 border border-emerald-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                    title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Redo voiceover only for scenes ${selectedScenes.join(", ")} — no video credits`}
-                >
-                    <span className="material-symbols-outlined text-[12px]">volume_up</span>
-                    {isChecking ? "Queuing..." : "Redo audio only (free)"}
-                </button>
+                            <button
+                                onClick={handleRedoAudioScenes}
+                                disabled={isChecking || selectedScenes.length === 0}
+                                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                title={selectedScenes.length === 0 ? "Select one or more scenes first" : `Redo voiceover only for scenes ${selectedScenes.join(", ")} — no video credits`}
+                            >
+                                <Volume2 className="h-3.5 w-3.5" />
+                                Redo audio (free)
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
 
     if (isError) {
         return (
-            <div className="mt-3 flex flex-col gap-1.5">
-                <div className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded border border-red-200 w-full mb-1">
-                    Failed: {videoUrl.replace('error: ', '')}
-                </div>
+            <div className="flex flex-col items-start gap-1.5">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-50 text-red-700 rounded-md text-label font-semibold uppercase">
+                    <TriangleAlert className="h-3.5 w-3.5" />
+                    Video failed
+                </span>
+                <p className="text-xs text-slate-500 max-w-[210px] leading-snug">
+                    {videoUrl.replace('error: ', '')}
+                </p>
                 <button
                     onClick={handleRetry}
                     disabled={isChecking}
-                    className="text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 px-2 py-1.5 rounded-md flex items-center justify-center gap-1.5 border border-amber-200 transition-colors shadow-sm w-full disabled:opacity-70"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-400 transition-colors disabled:opacity-50"
                 >
-                    <span className="material-symbols-outlined text-[14px]">{isChecking ? 'sync' : 'refresh'}</span>
-                    {isChecking ? "Queuing..." : "Retry Genesis"}
+                    <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
+                    {isChecking ? "Queuing..." : "Retry"}
                 </button>
             </div>
         );
@@ -194,17 +230,15 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     // No video yet (never generated) — offer to kick off the AI walkaround.
     if (!videoUrl) {
         return (
-            <div className="mt-2">
-                <button
-                    onClick={handleGenerate}
-                    disabled={isChecking}
-                    className="text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1.5 rounded-md flex items-center justify-center gap-1.5 border border-indigo-200 transition-colors shadow-sm w-full disabled:opacity-70"
-                    title="Generate the AI walkaround video for this vehicle"
-                >
-                    <span className="material-symbols-outlined text-[14px]">smart_display</span>
-                    {isChecking ? "Queuing..." : "Generate AI Video"}
-                </button>
-            </div>
+            <button
+                onClick={handleGenerate}
+                disabled={isChecking}
+                className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-400 hover:text-slate-900 transition-colors disabled:opacity-50"
+                title="Generate the AI walkaround video for this vehicle"
+            >
+                <Clapperboard className="h-3.5 w-3.5" />
+                {isChecking ? "Queuing..." : "Generate video"}
+            </button>
         );
     }
 
@@ -233,20 +267,20 @@ export default function AiVideoStatus({ carId, videoUrl }) {
     };
 
     return (
-        <div className="mt-3 flex flex-col gap-1.5">
+        <div className="flex flex-col items-start gap-1.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-label font-semibold uppercase">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Rendering
+            </span>
             <button
                 onClick={handleCheckStatus}
                 disabled={isChecking}
-                className="text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1.5 rounded-md flex items-center justify-center gap-1.5 border border-indigo-200 transition-colors shadow-sm w-full disabled:opacity-70 animate-pulse"
+                className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-400 hover:text-slate-900 transition-colors disabled:opacity-50"
+                title="Takes around 3 minutes. Click to refresh the status."
             >
-                <span className={`material-symbols-outlined text-[14px] animate-spin`}>
-                    progress_activity
-                </span>
+                <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
                 {statusText}
             </button>
-            <span className="text-[10px] text-slate-500 font-medium text-center leading-tight">
-                This takes ~3 minutes.<br />Click to refresh status.
-            </span>
         </div>
     );
 }

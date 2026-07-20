@@ -52,7 +52,7 @@ export default function SeoFixButton({ car }) {
                     ? "Re-generate SEO (title + alts)"
                     : "Auto-Fix SEO (title + alts)"}
         >
-            {pending ? <Loader2 className="h-[18px] w-[18px]" /> : <Sparkles className="h-[18px] w-[18px]" />}
+            {pending ? <Loader2 className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
         </IconButton>
     );
 }
