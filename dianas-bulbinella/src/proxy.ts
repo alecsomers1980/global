@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { aalFromAccessToken, hasVerifiedFactor } from "@/lib/auth";
 
 /** Next 16 renamed `middleware.ts` → `proxy.ts`. Refreshes the Supabase auth
  *  session on every matched request and gates the /admin (staff-only) and
@@ -35,6 +36,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isAdmin = path.startsWith("/admin");
   const isAdminLogin = path === "/admin/login";
+  const isAdminVerify = path === "/admin/verify";
   const isAccount = path.startsWith("/account");
 
   const redirectTo = (pathname: string, withNext = false) => {
@@ -65,6 +67,24 @@ export async function proxy(request: NextRequest) {
   }
   // Already-authenticated staff shouldn't sit on the admin login page.
   if (isAdminLogin && user && isStaff) {
+    return redirectTo("/admin");
+  }
+
+  // Optional 2FA: once a staff member has enrolled a TOTP factor, every admin
+  // page (except the verify screen itself) requires a fresh aal2 session. The
+  // `aal` claim rides on the access token; user.factors comes from getUser().
+  if (isStaff && hasVerifiedFactor(user)) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const aal = aalFromAccessToken(session?.access_token);
+    if (isAdmin && !isAdminLogin && !isAdminVerify && aal !== "aal2") {
+      return redirectTo("/admin/verify");
+    }
+    // Nothing to verify (already aal2) — don't strand them on the verify page.
+    if (isAdminVerify && aal === "aal2") {
+      return redirectTo("/admin");
+    }
+  } else if (isAdminVerify && isStaff) {
+    // Staff with no factor has nothing to verify.
     return redirectTo("/admin");
   }
   // /account/* — any signed-in user.

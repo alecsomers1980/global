@@ -60,6 +60,9 @@ export default function AdminSidebar({ email }: { email?: string }) {
         <Link href="/admin/popup" className={linkClass("/admin/popup")}>
           Popup
         </Link>
+        <Link href="/admin/security" className={linkClass("/admin/security")}>
+          Security
+        </Link>
       </nav>
 
       <div className="mt-auto pt-4 border-t border-white/20">

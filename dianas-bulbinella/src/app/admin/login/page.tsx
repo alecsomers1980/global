@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +20,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
 
-    const supabase = createClient();
+    const supabase = createClient(keepSignedIn);
     const { error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -29,6 +32,14 @@ export default function AdminLoginPage() {
       return;
     }
 
+    // Password gets us to aal1. If this account has a TOTP factor we must still
+    // pass it before the admin area will let us in (proxy.ts enforces this too).
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    setLoading(false);
+    if (aal?.nextLevel === "aal2" && aal.currentLevel !== "aal2") {
+      router.push("/admin/verify");
+      return;
+    }
     router.push(searchParams.get("next") ?? "/admin");
     router.refresh();
   };
@@ -50,6 +61,7 @@ export default function AdminLoginPage() {
               id="email"
               type="email"
               required
+              autoComplete="username"
               className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-forest"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -59,15 +71,24 @@ export default function AdminLoginPage() {
             <label className="block text-sm text-ink mb-1" htmlFor="password">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              required
-              className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-forest"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <PasswordInput id="password" value={password} onChange={setPassword} />
           </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 text-muted cursor-pointer">
+              <input
+                type="checkbox"
+                className="accent-forest"
+                checked={keepSignedIn}
+                onChange={(e) => setKeepSignedIn(e.target.checked)}
+              />
+              Keep me signed in
+            </label>
+            <Link href="/forgot-password" className="text-forest hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+
           {error && (
             <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
               {error}
@@ -76,7 +97,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-full bg-forest text-white px-5 py-2.5 text-sm font-semibold hover:bg-moss transition-colors w-full"
+            className="rounded-full bg-forest text-white px-5 py-2.5 text-sm font-semibold hover:bg-moss transition-colors w-full disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
