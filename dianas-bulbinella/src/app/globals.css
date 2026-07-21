@@ -57,6 +57,99 @@ h1, h2, h3, h4 {
   color: var(--forest);
 }
 
+/* ── Premium Journal article typography ──
+   Bespoke prose (no typography plugin): Fraunces headings, generous rhythm,
+   comfortable measure. Applied to rendered markdown on /blog/[slug]. */
+.article-body {
+  font-size: 1.075rem;
+  line-height: 1.8;
+  color: var(--ink);
+  max-width: 42rem;
+}
+.article-body > p:first-of-type {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.article-body p {
+  margin: 0 0 1.5em;
+}
+.article-body h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  color: var(--forest);
+  font-size: 1.7rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 2.75rem 0 0.85rem;
+}
+.article-body h3 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1.25;
+  margin: 2rem 0 0.6rem;
+}
+.article-body h2 + p,
+.article-body h3 + p {
+  margin-top: 0;
+}
+.article-body strong {
+  color: var(--forest);
+  font-weight: 600;
+}
+.article-body em {
+  font-style: italic;
+}
+.article-body a {
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--forest) 35%, transparent);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.article-body a:hover {
+  color: var(--amber-deep);
+  text-decoration-color: var(--amber);
+}
+.article-body ul,
+.article-body ol {
+  margin: 0 0 1.5em;
+  padding-left: 1.4em;
+}
+.article-body li {
+  margin: 0.4em 0;
+  padding-left: 0.3em;
+}
+.article-body ul li::marker {
+  color: var(--amber);
+}
+.article-body ol li::marker {
+  color: var(--forest);
+  font-variant-numeric: tabular-nums;
+}
+.article-body blockquote {
+  margin: 1.75em 0;
+  padding: 0.25em 0 0.25em 1.25em;
+  border-left: 3px solid var(--amber);
+  color: var(--muted);
+  font-style: italic;
+}
+.article-body hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2.5rem 0;
+}
+.article-body img {
+  border-radius: 1rem;
+  margin: 2rem 0;
+}
+/* Tighten the first heading if the article opens with one. */
+.article-body > h2:first-child,
+.article-body > h3:first-child {
+  margin-top: 0;
+}
+
 /* ── Aurae Glow utilities ── */
 
 /* frosted glass card */

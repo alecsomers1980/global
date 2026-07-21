@@ -91,21 +91,22 @@ export default async function BlogArticlePage({ params }: Props) {
               ← Back to the Journal
             </Link>
 
-            <p className="text-xs uppercase tracking-widest text-aurora-gold">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-deep">
               {post.category}
             </p>
-            <h1 className="mt-2 text-3xl font-semibold text-forest md:text-4xl">
+            <h1 className="mt-3 text-3xl font-semibold leading-tight text-forest md:text-5xl">
               {post.title}
             </h1>
-            <time className="mt-3 block text-sm text-muted" dateTime={post.published_at}>
+            <time className="mt-4 block text-sm text-muted" dateTime={post.published_at}>
               {new Date(post.published_at!).toLocaleDateString("en-ZA", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               })}
             </time>
+            <div className="mt-8 h-px w-16 bg-amber/50" />
 
-            <div className="prose prose-neutral mt-10 max-w-none">
+            <div className="article-body mt-10">
               <ReactMarkdown>{post.content || ""}</ReactMarkdown>
             </div>
           </div>

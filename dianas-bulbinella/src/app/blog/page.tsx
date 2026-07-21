@@ -59,14 +59,14 @@ export default async function BlogPage() {
                       <div className="h-full w-full bg-gradient-to-br from-forest/10 to-aurora-gold/10" />
                     )}
                   </div>
-                  <div className="p-5">
-                    <p className="text-xs uppercase tracking-widest text-aurora-gold">
+                  <div className="p-6">
+                    <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-deep">
                       {post.category}
                     </p>
-                    <h2 className="mt-1 text-lg font-medium group-hover:text-forest">
+                    <h2 className="mt-2 text-xl font-semibold leading-snug text-ink transition-colors group-hover:text-forest">
                       {post.title}
                     </h2>
-                    <p className="mt-2 line-clamp-3 text-sm text-muted">
+                    <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-muted">
                       {post.excerpt}
                     </p>
                     <p className="mt-3 text-xs text-muted">
