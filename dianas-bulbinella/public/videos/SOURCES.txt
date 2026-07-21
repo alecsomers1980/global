@@ -1,0 +1,11 @@
+All assets from Pixabay (free for commercial use, no attribution required):
+videos/botanical-banner.mp4  = Pixabay video 120513 (fern macro)
+videos/flowers-banner.mp4    = Pixabay video 14244 (cosmos flowers in wind) - HOME banner
+videos/lavender-banner.mp4   = Pixabay video 205923 (lavender field) - secondary page banners
+images/flowers/marigold.jpg  = Pixabay photo 4361125
+images/flowers/lotus.jpg     = Pixabay photo 614421
+images/flowers/lavender.jpg  = Pixabay photo 894919
+spa-banner.mp4=Pixabay 200090; aloe-banner.mp4=Pixabay 217692 (aloe vera leaves)
+dew-banner.mp4    = Pexels 2383531 (water droplets on green leaves) - concern + faq banners
+leaves-banner.mp4 = Pexels 4508110 (tomato plants, sunrays through leaves) - range + contact banners
+(spa-banner.mp4 / aloe-banner.mp4 no longer used on pages)

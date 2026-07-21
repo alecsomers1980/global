@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ── Diana's Bulbinella design tokens — "Aurae Glow" ──
+   White ground with soft aurora gradients (sage→gold), glassmorphism,
+   deep botanical green + warm gold accents, italic serif accent words.
+   Token NAMES kept from v1 so all pages inherit the retheme.
+   See docs/PROJECT_PLAN.md (design direction updated 2026-07-14). */
+:root {
+  --paper: #ffffff;
+  --surface: #fafaf7;
+  --surface-2: #f1f1ea;
+  --ink: #14251a;
+  --muted: #5d6b5f;
+  --line: #e7e6dd;
+  --forest: #1f5c3d;
+  --moss: #2d7a50;
+  --amber: #c89a4b;
+  --amber-deep: #a87d33;
+  --amber-soft: #f5e9d2;
+  /* aurora palette */
+  --aurora-sage: #cbe7d0;
+  --aurora-gold: #f3dca8;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-forest: var(--forest);
+  --color-moss: var(--moss);
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-deep);
+  --color-amber-soft: var(--amber-soft);
+  --color-aurora-sage: var(--aurora-sage);
+  --color-aurora-gold: var(--aurora-gold);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-figtree);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-figtree), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--amber-soft);
+  color: var(--forest);
+}
+
+/* ── Aurae Glow utilities ── */
+
+/* frosted glass card */
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 32px -16px rgba(20, 37, 26, 0.18);
+}
+.glass-deep {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 40px -18px rgba(20, 37, 26, 0.22);
+}
+
+/* gradient text for the italic serif accent word */
+.text-glow-gradient {
+  background: linear-gradient(100deg, var(--forest) 10%, var(--moss) 40%, var(--amber) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* gradient pill button */
+.btn-glow {
+  background: linear-gradient(100deg, var(--forest), var(--moss) 55%, var(--amber));
+  color: #fff;
+  transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 10px 26px -12px rgba(31, 92, 61, 0.55);
+}
+.btn-glow:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px -12px rgba(31, 92, 61, 0.6);
+}
+
+/* soft glow ring behind floating products */
+.glow-ring {
+  background: radial-gradient(closest-side, rgba(243, 220, 168, 0.9), rgba(203, 231, 208, 0.45) 60%, transparent 100%);
+  filter: blur(2px);
+}
+
+/* marquee ticker (Flavoury element) */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee { animation: none; }
+}
+
+/* hide scrollbar on horizontal scrollers */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

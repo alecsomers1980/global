@@ -1,0 +1,71 @@
+old_path,new_path,status,type,note
+/catalogue/,/shop,301,page,main shop
+/agents,/dealers,301,page,dealer locator (was broken placeholder)
+/agents/,/dealers,301,page,dealer locator
+/whybulbinella/,/bulbinella,301,page,educational / E-E-A-T page
+/about-us/,/about,301,page,
+/contactus/,/contact,301,page,
+/downloads/Diana_Bulbinella_Price_List.pdf,/shop,301,asset,retire PDF price list
+/downloads/Dianas_Products_Information.pdf,/shop,301,asset,retire PDF
+/faq/,/faq,200,page,keep
+/disclaimer/,/disclaimer,200,page,keep (update wording per compliance-rules)
+/product-category/bulbinella/,/range/bulbinella,301,category,
+/product-category/mastic-gum-products/,/range/mastic-gum,301,category,
+/product-category/detox-health/,/shop/detox-digestion,301,category,
+/product-category/health-serums/,/shop,301,category,retired -> serums filter
+/product-category/other-soap-bars/,/shop,301,category,retired -> soaps filter
+/product-category/other-natural-products/,/shop,301,category,retired -> spread to concerns
+/product-category/acne-control/,/shop/problem-skin,301,category,
+/product-category/weight-loss/,/shop/weight-metabolism,301,category,
+/product-category/cellulite/,/shop/cellulite-body,301,category,
+/product-category/cortisol-reducing-c-r/,/shop/stress-hormones,301,category,
+/product-category/bulbi-baby/,/shop/baby-family,301,category,
+/product-category/absolute-anti-ageing/,/shop/anti-ageing,301,category,
+/product-category/myrrh-anti-ageing/,/range/myrrh,301,category,
+/product-category/neroli-anti-ageing/,/range/neroli,301,category,
+/product-category/lotus-anti-ageing/,/range/lotus,301,category,
+/product-category/natural-collagen-anti-ageing/,/range/collagen,301,category,
+/product-category/saffron-anti-ageing/,/range/saffron,301,category,
+/product-category/vitamin-e-anti-ageing/,/range/vitamin-e,301,category,
+/product-category/honey-bee-anti-ageing/,/range/honey-bee,301,category,
+/product-category/spekboom-anti-ageing-beauty/,/range/spekboom,301,category,
+/product-category/bee-flawless/,/range/bee-flawless,301,category,
+/product-category/bee-pink-products/,/range/bee-pink,301,category,
+/product-category/argan-oil-products/,/range/argan,301,category,
+/product-category/charcoal-products/,/range/charcoal,301,category,
+/product-category/coffee-products/,/range/coffee,301,category,
+/product-category/royal-jelly-products/,/range/royal-jelly,301,category,
+/product-category/shilajit-products/,/range/shilajit,301,category,
+/product-category/cannabs-skin-care/,/range/hemp-skincare,301,category,renamed - no medical claims
+/product-category/clearance-sale/,/specials,301,category,dynamic collection
+/product-category/new-products/,/new,301,category,dynamic collection
+/product-category/uncategorized/,/shop,301,category,
+/product/andropause-serum-100ml/,/product/mens-vitality-serum-100ml,301,product-rename,compliance rename
+/product/andropause-serum-10ml/,/product/mens-vitality-serum-10ml,301,product-rename,compliance rename
+/product/andropause-soap-bar-100g/,/product/mens-vitality-soap-100g,301,product-rename,compliance rename
+/product/anti-cancer-serum-100ml-2/,/product/botanical-skin-support-serum-100ml,301,product-rename,HIGH RISK reposition
+/product/anti-cancer-serum-10ml/,/product/botanical-skin-support-serum-10ml,301,product-rename,HIGH RISK reposition
+/product/arthritis-serum-100ml/,/product/joint-muscle-warming-serum-100ml,301,product-rename,compliance rename
+/product/arthritis-serum-10ml/,/product/joint-muscle-warming-serum-10ml,301,product-rename,compliance rename
+/product/asthma-serum-100ml/,/product/breathe-easy-chest-rub-100ml,301,product-rename,HIGHEST RISK - consider discontinuing
+/product/asthma-serum-10ml/,/product/breathe-easy-chest-rub-10ml,301,product-rename,HIGHEST RISK - consider discontinuing
+/product/canna-argan-skin-cancer-cream-100g/,/product/canna-argan-skin-repair-cream-100g,301,product-rename,HIGH RISK
+/product/canna-argan-skin-cancer-cream-250g/,/product/canna-argan-skin-repair-cream-250g,301,product-rename,HIGH RISK
+/product/canna-argan-skin-cancer-cream-500ml/,/product/canna-argan-skin-repair-cream-500ml,301,product-rename,HIGH RISK
+/product/canna-argan-skin-cancer-cream-50g/,/product/canna-argan-skin-repair-cream-50g,301,product-rename,HIGH RISK
+/product/canna-bee-royale-cancer-cream-100g/,/product/canna-bee-royale-repair-cream-100g,301,product-rename,HIGH RISK
+/product/canna-bee-royale-cancer-cream-500ml/,/product/canna-bee-royale-repair-cream-500ml,301,product-rename,HIGH RISK
+/product/canna-bee-royale-cancer-cream-50g/,/product/canna-bee-royale-repair-cream-50g,301,product-rename,HIGH RISK
+/product/canna-bee-royale-skin-cancer-cream-250g/,/product/canna-bee-royale-repair-cream-250g,301,product-rename,HIGH RISK
+/product/canna-skin-cancer-serum-100ml/,/product/canna-skin-comfort-serum-100ml,301,product-rename,HIGH RISK
+/product/canna-skin-cancer-serum-10ml/,/product/canna-skin-comfort-serum-10ml,301,product-rename,HIGH RISK
+/product/eczema-serum-100ml/,/product/soothing-skin-serum-100ml,301,product-rename,compliance rename
+/product/eczema-serum-10ml/,/product/soothing-skin-serum-10ml,301,product-rename,compliance rename
+/product/eczema-soap-bar-100g/,/product/soothing-skin-soap-100g,301,product-rename,compliance rename
+/product/herbal-skin-cancer-cream-100g/,/product/herbal-skin-repair-balm-100g,301,product-rename,HIGH RISK
+/product/herbal-skin-cancer-cream-250g/,/product/herbal-skin-repair-balm-250g,301,product-rename,HIGH RISK
+/product/herbal-skin-cancer-cream-500g/,/product/herbal-skin-repair-balm-500ml,301,product-rename,HIGH RISK
+/product/herbal-skin-cancer-cream-50g/,/product/herbal-skin-repair-balm-50g,301,product-rename,HIGH RISK
+/product/menopause-serum-100ml/,/product/meno-balance-serum-100ml,301,product-rename,confirm framing
+/product/menopause-serum-10ml/,/product/meno-balance-serum-10ml,301,product-rename,confirm framing
+/product/menopause-soap-bar-100g/,/product/meno-balance-soap-100g,301,product-rename,confirm framing
