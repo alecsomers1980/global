@@ -7,6 +7,7 @@ const productLinks = [
   { name: "Frame Built Range", path: "/frame-built" },
   { name: "Get a Quote", path: "/quote" },
   { name: "Gallery", path: "/gallery" },
+  { name: "Timber care guide", path: "/care" },
 ];
 
 export default function SiteFooter() {
@@ -104,8 +105,7 @@ export default function SiteFooter() {
                   className="hover:text-leaf transition-colors"
                 >
                   {BUSINESS.sales.display}
-                </a>{" "}
-                ({BUSINESS.sales.name})
+                </a>
               </p>
               <p>
                 <a

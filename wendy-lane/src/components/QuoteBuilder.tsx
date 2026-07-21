@@ -11,6 +11,7 @@ import {
   priceOrPOA,
 } from "@/data/pricing";
 import { BUSINESS } from "@/data/business";
+import LeadForm from "@/components/LeadForm";
 
 export default function QuoteBuilder() {
   // State
@@ -18,6 +19,7 @@ export default function QuoteBuilder() {
   const [withWindow, setWithWindow] = useState<boolean>(false);
   const [verandaCode, setVerandaCode] = useState<string | null>(null);
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+  const [town, setTown] = useState<string>("");
 
   // Derived data
   const currentSize = useMemo(
@@ -79,7 +81,11 @@ export default function QuoteBuilder() {
 
     const disclaimers: string[] = [];
     disclaimers.push("(All prices include VAT @ 15%)");
-    disclaimers.push("(Excludes delivery - please quote for my area.)");
+    disclaimers.push(
+      town
+        ? `(Excludes delivery - please quote delivery to ${town}.)`
+        : "(Excludes delivery - please quote for my area.)",
+    );
     if (hasPOAExtras) {
       disclaimers.push("Some items marked POA - please quote separately.");
     }
@@ -94,6 +100,7 @@ export default function QuoteBuilder() {
     selectedExtrasObjects,
     total,
     hasPOAExtras,
+    town,
   ]);
 
   const whatsappLink = `https://wa.me/${BUSINESS.whatsapp.number}?text=${encodeURIComponent(messageBody)}`;
@@ -110,7 +117,7 @@ export default function QuoteBuilder() {
     );
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-28 lg:py-12">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-12">
         {/* Left column – Options */}
         <div className="space-y-10">
@@ -128,7 +135,7 @@ export default function QuoteBuilder() {
                     ${
                       sizeCode === size.code
                         ? "border-brand ring-2 ring-brand/30 bg-brand-50"
-                        : "border-gray-200 hover:border-brand-300"
+                        : "border-ink/10 hover:border-brand-300"
                     }
                   `}
                 >
@@ -165,7 +172,7 @@ export default function QuoteBuilder() {
                   ${
                     !withWindow
                       ? "border-brand ring-2 ring-brand/30 bg-brand-50"
-                      : "border-gray-200 hover:border-brand-300"
+                      : "border-ink/10 hover:border-brand-300"
                   }
                 `}
               >
@@ -191,7 +198,7 @@ export default function QuoteBuilder() {
                   ${
                     withWindow
                       ? "border-brand ring-2 ring-brand/30 bg-brand-50"
-                      : "border-gray-200 hover:border-brand-300"
+                      : "border-ink/10 hover:border-brand-300"
                   }
                 `}
               >
@@ -230,7 +237,7 @@ export default function QuoteBuilder() {
                   ${
                     verandaCode === null
                       ? "border-brand ring-2 ring-brand/30 bg-brand-50"
-                      : "border-gray-200 hover:border-brand-300"
+                      : "border-ink/10 hover:border-brand-300"
                   }
                 `}
               >
@@ -254,7 +261,7 @@ export default function QuoteBuilder() {
                     ${
                       verandaCode === veranda.code
                         ? "border-brand ring-2 ring-brand/30 bg-brand-50"
-                        : "border-gray-200 hover:border-brand-300"
+                        : "border-ink/10 hover:border-brand-300"
                     }
                   `}
                 >
@@ -289,7 +296,7 @@ export default function QuoteBuilder() {
               {EXTRAS.map((extra) => (
                 <label
                   key={extra.id}
-                  className="flex items-center gap-4 rounded-card border border-gray-200 p-4 cursor-pointer hover:border-brand-300 transition-colors"
+                  className="flex items-center gap-4 rounded-card border border-ink/10 p-4 cursor-pointer hover:border-brand-300 transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -321,7 +328,7 @@ export default function QuoteBuilder() {
                     className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       selectedExtras.includes(extra.id)
                         ? "border-brand bg-brand text-white"
-                        : "border-gray-300 bg-white"
+                        : "border-ink/20 bg-white"
                     }`}
                     aria-hidden="true"
                   >
@@ -345,11 +352,36 @@ export default function QuoteBuilder() {
               ))}
             </div>
           </fieldset>
+
+          {/* 5. Delivery area */}
+          <fieldset>
+            <legend className="text-xl font-semibold text-ink mb-4">
+              5. Where are we delivering?
+            </legend>
+            <p className="mb-4 text-sm text-ink/60">
+              {DELIVERY_NOTE} Pick your area and we&rsquo;ll include the delivery
+              cost when we come back to you — no second round of questions.
+            </p>
+            <select
+              value={town}
+              onChange={(e) => setTown(e.target.value)}
+              aria-label="Delivery area"
+              className="w-full max-w-sm rounded-card border border-ink/10 bg-white px-4 py-3 text-ink transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            >
+              <option value="">Select your area…</option>
+              {BUSINESS.serviceAreas.map((area) => (
+                <option key={area} value={area}>
+                  {area}
+                </option>
+              ))}
+              <option value="Somewhere else">Somewhere else</option>
+            </select>
+          </fieldset>
         </div>
 
         {/* Right column – Summary */}
         <div className="lg:sticky lg:top-24 self-start">
-          <div className="rounded-card border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="rounded-card border border-ink/10 bg-white p-6 shadow-soft">
             <h2 className="text-xl font-semibold text-ink mb-4">Your quote</h2>
 
             <div className="space-y-3 text-sm text-ink/80">
@@ -401,10 +433,19 @@ export default function QuoteBuilder() {
                   </span>
                 </div>
               ))}
+
+              {/* Delivery — never priced into the total, always shown so it
+                  can't come as a surprise later. */}
+              <div className="flex justify-between">
+                <span>Delivery{town ? ` to ${town}` : ""}</span>
+                <span className="font-medium text-ink/50 italic">
+                  {town ? "we'll quote" : "select area"}
+                </span>
+              </div>
             </div>
 
             {/* Divider */}
-            <div className="my-4 border-t border-gray-200" />
+            <div className="my-4 border-t border-ink/10" />
 
             {/* Total */}
             <div className="flex justify-between items-baseline">
@@ -444,6 +485,38 @@ export default function QuoteBuilder() {
               </a>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Lead capture — so the enquiry reaches Wendy Lane even if the customer
+          never actually sends the WhatsApp/email draft above. */}
+      <section id="enquiry" className="scroll-mt-24 mt-16 border-t border-ink/10 pt-12">
+        <div className="mx-auto max-w-3xl">
+          <LeadForm
+            quoteSummary={messageBody}
+            heading="Prefer we call you back?"
+            intro="Send us your quote and details — we'll come back to you, usually the same working day."
+          />
+        </div>
+      </section>
+
+      {/* Mobile sticky total — keeps price + send action in reach while choosing */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-ink/10 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-2px_10px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs text-ink/50 leading-none">Your total</p>
+            <p className="text-xl font-bold text-brand leading-tight">
+              {formatRand(total)}
+            </p>
+          </div>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors"
+          >
+            Send on WhatsApp
+          </a>
         </div>
       </div>
     </div>

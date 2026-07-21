@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Bitter } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { BUSINESS, SITE_URL } from "@/data/business";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const display = Bitter({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+/** Fraunces — a warm, slightly "wonky" modern serif. Carries the crafted-timber
+ *  feel far better than a utilitarian slab, and reads premium at display sizes. */
+const display = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  axes: ["SOFT", "WONK", "opsz"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -79,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         {children}
         <SiteFooter />
+        <FloatingWhatsApp />
       </body>
     </html>
   );

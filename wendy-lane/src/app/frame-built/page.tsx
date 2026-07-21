@@ -11,6 +11,7 @@ import {
   priceOrPOA,
 } from "@/data/pricing";
 import { BUSINESS } from "@/data/business";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
   title: "Frame Built Timber Cabins & Chalet Prices | Wendy Lane Nelspruit",
@@ -29,59 +30,52 @@ export default function FrameBuiltPage() {
   return (
     <>
       {/* Header */}
-      <section className="bg-timber text-white py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
-            Frame Built Range
-          </h1>
-          <p className="mt-6 max-w-3xl mx-auto text-white/90 leading-relaxed">
-            A timber frame structure is a different building system — it follows
-            formal building regulations and performs like a conventional
-            brick-and-mortar building. More than half the residential homes in
-            the developed world are timber frame. These bear no resemblance to a
-            Wendy House other than the timber in the structure.
-          </p>
-          <span className="mt-8 inline-block bg-white/20 text-white px-5 py-2 rounded-full text-lg font-medium backdrop-blur-sm">
-            {fromLogBadge}
-          </span>
+      <PageHeader
+        eyebrow="The range"
+        title="Frame Built Range"
+        intro="A timber frame structure is a different building system — it follows formal building regulations and performs like a conventional brick-and-mortar building. More than half the residential homes in the developed world are timber frame. These bear no resemblance to a Wendy House other than the timber in the structure."
+      >
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur">
+          <span className="h-1.5 w-1.5 rounded-full bg-leaf" />
+          {fromLogBadge}
         </div>
-      </section>
+      </PageHeader>
 
       {/* Uses */}
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl font-bold text-ink text-center">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink text-center">
             What we build
           </h2>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
-                href: "/frame-built/getaway-cabins",
+                href: "/gallery#frame-built",
                 img: "/images/projects/getaway-cabin.jpg",
                 title: "Getaway cabins",
                 desc: "The affordable, attractive answer to a deep-in-nature getaway, erected just about anywhere.",
               },
               {
-                href: "/frame-built/holiday-cottages",
+                href: "/gallery#frame-built",
                 img: "/images/projects/holiday-cottage.jpg",
                 title: "Holiday cottages",
                 desc: "Simple, attractive, durable and quick to erect. An alternative to a long, expensive build.",
               },
               {
-                href: "/frame-built/general-accommodation",
+                href: "/gallery#frame-built",
                 img: "/images/projects/general-accommodation.jpg",
                 title: "General accommodation",
                 desc: "When you need more than a single room. Whether it's a farm manager or a family, our multi-roomed cabins do the job.",
               },
               {
-                href: "/frame-built/offices",
+                href: "/gallery#frame-built",
                 img: "/images/projects/office.jpg",
                 title: "Offices",
                 desc: "The perfect answer to an instant on-site office.",
               },
             ].map((card) => (
-              <Link key={card.href} href={card.href} className="group block">
-                <div className="overflow-hidden rounded-card bg-cream shadow-sm transition-shadow hover:shadow-md">
+              <Link key={card.title} href={card.href} className="group block">
+                <div className="overflow-hidden rounded-card bg-cream shadow-soft transition-shadow hover:shadow-md">
                   <div className="relative aspect-[4/3]">
                     <Image
                       src={card.img}
@@ -109,7 +103,7 @@ export default function FrameBuiltPage() {
       {/* Price List */}
       <section id="prices" className="bg-cream py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl font-bold text-ink text-center">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink text-center">
             Frame Built price list
           </h2>
           <div className="mt-10 overflow-x-auto rounded-card border border-ink/10">
@@ -193,7 +187,7 @@ export default function FrameBuiltPage() {
       {/* Floor plans */}
       <section className="bg-white py-20" id="layouts">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="font-display text-3xl font-bold text-ink mb-4">The layouts</h2>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink mb-4">The layouts</h2>
           <p className="text-gray-600 max-w-2xl mb-10">
             Every chalet is drawn before it is built. These are the actual floor plans — room
             sizes included — so you know exactly what you are getting before you commit.
@@ -207,9 +201,9 @@ export default function FrameBuiltPage() {
               return (
                 <article
                   key={model.slug}
-                  className="rounded-card border border-gray-200 bg-white overflow-hidden flex flex-col"
+                  className="rounded-card border border-ink/10 bg-white overflow-hidden flex flex-col"
                 >
-                  <div className="relative aspect-[4/3] bg-white border-b border-gray-100">
+                  <div className="relative aspect-[4/3] bg-white border-b border-ink/10">
                     <Image
                       src={model.plan}
                       alt={`Floor plan — ${model.size} ${model.area}m² ${model.name}`}
@@ -258,7 +252,7 @@ export default function FrameBuiltPage() {
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12">
           <div>
-            <h2 className="font-display text-2xl font-bold text-ink">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
               Standard in every building
             </h2>
             <ul className="mt-6 space-y-3">
@@ -284,7 +278,7 @@ export default function FrameBuiltPage() {
             </ul>
           </div>
           <div>
-            <h2 className="font-display text-2xl font-bold text-ink">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-ink">
               What&rsquo;s not included
             </h2>
             <ul className="mt-6 space-y-3">
@@ -317,7 +311,7 @@ export default function FrameBuiltPage() {
       </section>
 
       {/* CTA Band */}
-      <section className="bg-ink text-white py-16">
+      <section className="bg-gradient-to-br from-timber-dark via-timber to-timber-dark text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-display text-3xl font-bold">
             Ready to start your project?
@@ -328,7 +322,7 @@ export default function FrameBuiltPage() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/contact"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-card shadow-sm text-ink bg-white hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-card shadow-soft text-ink bg-white hover:bg-gray-100 transition-colors"
             >
               Request a quote
             </Link>

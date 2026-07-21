@@ -37,15 +37,26 @@ const config: Config = {
           light: "#8A5A2B",
           dark: "#3E2409",
         },
-        cream: "#FCFCFC",
-        ink: "#111111",
+        /* Warm neutrals — a warm off-white and a warm near-black read as
+           "crafted timber" where pure #FCFCFC / #111 read as generic template. */
+        cream: "#FAF7F2",
+        sand: "#F1E9DE",
+        ink: "#1A1714",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "Georgia", "serif"],
       },
       borderRadius: {
-        card: "0.75rem",
+        card: "1rem",
+      },
+      letterSpacing: {
+        tightest: "-0.035em",
+      },
+      boxShadow: {
+        /* Soft, layered depth — closer to real light than a single hard drop. */
+        soft: "0 1px 2px rgba(26,23,20,0.04), 0 8px 24px -12px rgba(26,23,20,0.12)",
+        lift: "0 2px 4px rgba(26,23,20,0.05), 0 18px 40px -16px rgba(26,23,20,0.22)",
       },
     },
   },

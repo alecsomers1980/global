@@ -34,21 +34,26 @@ export default function SiteHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-white border-b border-gray-200 transition-shadow duration-200 ${
-        scrolled ? "shadow-md" : ""
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-cream/85 backdrop-blur-md border-b border-ink/10 shadow-soft"
+          : "bg-cream border-b border-transparent"
       }`}
     >
       {/* Utility bar */}
-      <div className="hidden md:flex items-center justify-between bg-brand text-white text-sm px-4 py-1.5">
-        <div className="flex items-center gap-4">
-          <a href={BUSINESS.phone.href} className="hover:text-leaf-light transition-colors">
+      <div className="hidden md:flex items-center justify-between bg-ink text-white/70 text-xs tracking-wide px-6 py-2">
+        <div className="flex items-center gap-5">
+          <a href={BUSINESS.phone.href} className="hover:text-white transition-colors">
             {BUSINESS.phone.display}
           </a>
-          <a href={`mailto:${BUSINESS.email}`} className="hover:text-leaf-light transition-colors">
+          <span className="text-white/20">|</span>
+          <a href={`mailto:${BUSINESS.email}`} className="hover:text-white transition-colors">
             {BUSINESS.email}
           </a>
         </div>
-        <span>Mon–Thu 07:30–17:00</span>
+        <span className="uppercase tracking-[0.15em] text-white/50">
+          Est. 1993 · Nelspruit
+        </span>
       </div>
 
       {/* Main bar */}
@@ -66,15 +71,15 @@ export default function SiteHeader() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               href={link.path}
-              className={`transition-colors text-base ${
+              className={`relative py-1 text-[0.95rem] transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:bg-brand after:transition-transform after:duration-300 ${
                 isActive(link.path)
-                  ? "text-brand font-semibold"
-                  : "text-ink/70 hover:text-brand"
+                  ? "text-ink font-semibold after:scale-x-100"
+                  : "text-ink/60 hover:text-ink after:scale-x-0 hover:after:scale-x-100"
               }`}
             >
               {link.name}
@@ -87,7 +92,7 @@ export default function SiteHeader() {
           {/* CTA button – visible on sm+ */}
           <Link
             href="/quote"
-            className="hidden sm:inline-flex bg-brand hover:bg-brand-600 text-white rounded-card px-5 py-2.5 font-semibold transition-colors shadow-sm"
+            className="hidden sm:inline-flex rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-brand-600 hover:shadow-lift"
           >
             Get a Quote
           </Link>
@@ -149,9 +154,9 @@ export default function SiteHeader() {
       {menuOpen && (
         <div
           id="mobile-menu"
-          className="lg:hidden bg-white border-t border-gray-200 shadow-lg absolute left-0 w-full"
+          className="lg:hidden absolute left-0 w-full border-t border-ink/10 bg-cream/95 backdrop-blur-md shadow-lift"
         >
-          <div className="px-4 py-4 space-y-4">
+          <div className="px-4 py-5 space-y-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -166,7 +171,7 @@ export default function SiteHeader() {
                 {link.name}
               </Link>
             ))}
-            <hr className="border-gray-200" />
+            <hr className="border-ink/10" />
             <a
               href={BUSINESS.phone.href}
               className="block text-ink/70 hover:text-brand transition-colors"
@@ -183,7 +188,7 @@ export default function SiteHeader() {
             </a>
             <Link
               href="/quote"
-              className="inline-flex bg-brand hover:bg-brand-600 text-white rounded-card px-5 py-2.5 font-semibold transition-colors"
+              className="inline-flex rounded-full bg-brand px-6 py-2.5 font-semibold text-white transition-colors hover:bg-brand-600"
               onClick={() => setMenuOpen(false)}
             >
               Get a Quote

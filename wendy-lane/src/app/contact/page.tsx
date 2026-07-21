@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BUSINESS } from "@/data/business";
+import LeadForm from "@/components/LeadForm";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
   title: "Contact Wendy Lane | Wendy Houses in Nelspruit",
@@ -12,21 +14,18 @@ export default function ContactPage() {
   return (
     <>
       {/* Page header */}
-      <section className="bg-brand py-16 text-white lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <h1 className="font-display text-4xl lg:text-5xl">Talk to us</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90 lg:text-xl">
-            We’re in Nelspruit, and we build across the Lowveld.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Get in touch"
+        title="Talk to us"
+        intro="We’re in Nelspruit, and we build across the Lowveld."
+      />
 
       {/* Contact grid */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4">
           <div className="grid gap-8 lg:grid-cols-3">
             {/* Call us */}
-            <div className="rounded-card bg-white p-6 text-center shadow-sm">
+            <div className="rounded-card bg-white p-6 text-center shadow-soft">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +69,7 @@ export default function ContactPage() {
             </div>
 
             {/* WhatsApp */}
-            <div className="rounded-card bg-white p-6 text-center shadow-sm">
+            <div className="rounded-card bg-white p-6 text-center shadow-soft">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +103,7 @@ export default function ContactPage() {
             </div>
 
             {/* Email */}
-            <div className="rounded-card bg-white p-6 text-center shadow-sm">
+            <div className="rounded-card bg-white p-6 text-center shadow-soft">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-brand">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -135,11 +134,21 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* Enquiry form */}
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-3xl px-4">
+          <LeadForm
+            heading="Send us a message"
+            intro="Tell us what you're planning and we'll come back to you — usually the same working day."
+          />
+        </div>
+      </section>
+
       {/* Visit us + hours */}
       <section className="bg-cream py-16">
         <div className="mx-auto max-w-7xl px-4 lg:grid lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="font-display text-3xl text-ink">Find us</h2>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink">Find us</h2>
             <address className="mt-4 space-y-1 not-italic text-ink/80">
               <p>{BUSINESS.address.street}</p>
               <p>
@@ -152,14 +161,14 @@ export default function ContactPage() {
               href={`https://www.google.com/maps/search/?api=1&query=${BUSINESS.geo.lat},${BUSINESS.geo.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-card bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-600"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-600"
             >
               Get directions
             </a>
           </div>
 
           <div className="mt-10 lg:mt-0">
-            <h2 className="font-display text-3xl text-ink">Office hours</h2>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink">Office hours</h2>
             <dl className="mt-4 divide-y divide-ink/10">
               {BUSINESS.hours.map((slot) => (
                 <div
@@ -193,7 +202,7 @@ export default function ContactPage() {
       </section>
 
       {/* Quote CTA */}
-      <section className="bg-brand py-16 text-white">
+      <section className="bg-gradient-to-br from-timber-dark via-timber to-timber-dark py-16 text-white">
         <div className="mx-auto max-w-7xl px-4 text-center">
           <h2 className="font-display text-3xl lg:text-4xl">
             Would you rather just see the price?
@@ -203,7 +212,7 @@ export default function ContactPage() {
           </p>
           <Link
             href="/quote"
-            className="mt-6 inline-flex items-center gap-2 rounded-card bg-white px-8 py-3 font-semibold text-brand transition hover:bg-brand-50"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 font-semibold text-brand transition hover:bg-brand-50"
           >
             Build your quote
           </Link>

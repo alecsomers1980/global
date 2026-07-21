@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { BUSINESS } from "@/data/business";
+import PageHeader from "@/components/PageHeader";
 
 export const metadata: Metadata = {
   title: "About Wendy Lane | Building for the Lowveld since 1993",
@@ -15,16 +16,11 @@ export default function AboutPage() {
   return (
     <>
       {/* Page header */}
-      <section className="bg-brand py-16 text-white lg:py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center">
-          <h1 className="font-display text-4xl leading-tight lg:text-5xl">
-            Building for the Lowveld since 1993
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90 lg:text-xl">
-            {BUSINESS.tagline}
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow={`${yearsInBusiness} years in the Lowveld`}
+        title="Building for the Lowveld since 1993"
+        intro={BUSINESS.tagline}
+      />
 
       {/* The story */}
       <section className="py-20">
@@ -78,7 +74,7 @@ export default function AboutPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-card bg-white p-6 text-center shadow-sm"
+                className="rounded-card bg-white p-6 text-center shadow-soft"
               >
                 <div className="font-display text-4xl text-brand">
                   {stat.value}
@@ -93,7 +89,7 @@ export default function AboutPage() {
       {/* How we work */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <h2 className="font-display text-3xl text-ink lg:text-4xl">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tightest text-ink lg:text-4xl">
             From your enquiry to your door
           </h2>
           <ol className="mt-10 space-y-6">
@@ -119,7 +115,7 @@ export default function AboutPage() {
                 <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 font-display text-xl font-bold text-brand">
                   {idx + 1}
                 </span>
-                <div className="rounded-card bg-white p-5 shadow-sm">
+                <div className="rounded-card bg-white p-5 shadow-soft">
                   <h3 className="font-display text-lg font-semibold text-ink">
                     {step.heading}
                   </h3>
@@ -131,7 +127,7 @@ export default function AboutPage() {
           <div className="mt-8 text-center">
             <Link
               href="/quote"
-              className="inline-flex items-center gap-2 rounded-card bg-brand px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
             >
               Build your quote
             </Link>
@@ -140,7 +136,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA band */}
-      <section className="bg-ink py-16 text-white">
+      <section className="bg-gradient-to-br from-timber-dark via-timber to-timber-dark py-16 text-white">
         <div className="mx-auto max-w-7xl px-4 text-center">
           <h2 className="font-display text-3xl lg:text-4xl">
             Ready to get started?
@@ -152,7 +148,7 @@ export default function AboutPage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/quote"
-              className="inline-flex items-center gap-2 rounded-card bg-brand px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-white transition hover:bg-brand-600"
             >
               Build your quote
             </Link>
@@ -160,13 +156,13 @@ export default function AboutPage() {
               href={BUSINESS.whatsapp.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-card bg-white px-6 py-3 font-semibold text-brand transition hover:bg-brand-50"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-brand transition hover:bg-brand-50"
             >
               WhatsApp us
             </a>
             <a
               href={BUSINESS.phone.href}
-              className="inline-flex items-center gap-2 rounded-card border border-white px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full border border-white px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
               Call {BUSINESS.phone.display}
             </a>
