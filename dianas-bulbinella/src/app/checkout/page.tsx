@@ -32,7 +32,6 @@ function CheckoutForm() {
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [collectionPoint, setCollectionPoint] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +81,8 @@ function CheckoutForm() {
             method === "delivery"
               ? { line1, line2, city, province, postalCode }
               : null,
-          collectionPoint,
+          collectionPoint:
+            method === "collection" ? "White River, Mpumalanga" : "",
         }),
       });
 
@@ -209,7 +209,7 @@ function CheckoutForm() {
                 onChange={() => setMethod("collection")}
                 className="accent-forest"
               />
-              Collect
+              Collect from White River
             </label>
           </div>
 
@@ -281,21 +281,13 @@ function CheckoutForm() {
           )}
 
           {method === "collection" && (
-            <div>
-              <label
-                htmlFor="collectionPoint"
-                className="block text-sm text-ink mb-1"
-              >
-                Preferred collection point
-              </label>
-              <input
-                id="collectionPoint"
-                type="text"
-                placeholder="e.g. White River"
-                value={collectionPoint}
-                onChange={(e) => setCollectionPoint(e.target.value)}
-                className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-forest"
-              />
+            <div className="rounded-xl border border-line bg-paper px-4 py-3 text-sm text-muted">
+              <p className="text-ink font-medium">Collect from White River</p>
+              <p className="mt-1">
+                Pick up your order from our workshop in White River, Mpumalanga —
+                free of charge. We&apos;ll confirm collection details and let you
+                know by email as soon as your order is ready.
+              </p>
             </div>
           )}
         </div>
