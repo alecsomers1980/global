@@ -20,8 +20,11 @@ export {
 import type { Dealer } from "@/lib/dealer-types";
 import { PROVINCES, SOUTH_AFRICA } from "@/lib/dealer-types";
 
-const FIELDS =
-  "id, name, business, country, province, region, areas, phone, phone_alt, email, notes, is_depot, active";
+// "*" (not an explicit list) so the query keeps working whether or not
+// migration 0013 (latitude/longitude) has been applied yet — a missing column
+// in an explicit select would 42703 and blank the whole dealer list. toDealer
+// only reads the fields it needs; extra columns are ignored.
+const FIELDS = "*";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function toDealer(row: any): Dealer {
@@ -39,6 +42,8 @@ function toDealer(row: any): Dealer {
     notes: row.notes ?? "",
     isDepot: Boolean(row.is_depot),
     active: Boolean(row.active),
+    latitude: row.latitude ?? null,
+    longitude: row.longitude ?? null,
   };
 }
 

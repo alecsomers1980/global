@@ -10,6 +10,7 @@ import {
 } from "@/lib/dealers";
 import PageBanner from "@/components/site/PageBanner";
 import AuroraSquiggle from "@/components/motion/AuroraSquiggle";
+import DealerMapSection from "@/components/dealers/DealerMapSection";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -157,6 +158,9 @@ export default async function DealersPage({
             {total} agent{total !== 1 ? "s" : ""}{" "}
             {q ? `matching "${q}"` : locationLabel ? `in ${locationLabel}` : "across Southern Africa"}
           </p>
+
+          {/* Map — renders nothing until dealers are geocoded (npm run geocode-dealers:apply). */}
+          <DealerMapSection dealers={filtered} />
 
           {grouped.length === 0 ? (
             <div className="glass rounded-3xl p-8 text-center">

@@ -20,6 +20,8 @@ export type Dealer = {
   notes: string;
   isDepot: boolean;
   active: boolean;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 /** The nine provinces, in the order Diana's list uses. */
