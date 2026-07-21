@@ -33,6 +33,37 @@ const CATEGORY_IMAGE: Record<Category, string> = {
   "Behind the brand": "/images/flowers/marigold.jpg",
 };
 
+/**
+ * Real botanical photos of Diana's core ingredients (public/images/blog/…).
+ * The post declares its `image_subject`; we match it here so every ingredient
+ * article shows a photo of ITS OWN plant rather than a generic flower. Add a
+ * row here (with a correctly-identified, licensed image + SOURCES.txt entry)
+ * to cover a new ingredient. Unmatched subjects fall back to the category image
+ * — and Diana can always set a better one per post in /admin/blog.
+ */
+const CURATED_INGREDIENT_IMAGES: { keys: string[]; src: string }[] = [
+  { keys: ["bulbine", "bulbinella"], src: "/images/blog/bulbine-frutescens.jpg" },
+  { keys: ["argan"], src: "/images/blog/ingredients/argan.jpg" },
+  { keys: ["rooibos"], src: "/images/blog/ingredients/rooibos.jpg" },
+  { keys: ["marula"], src: "/images/blog/ingredients/marula.jpg" },
+  { keys: ["aloe"], src: "/images/blog/ingredients/aloe.jpg" },
+  { keys: ["lotus"], src: "/images/flowers/lotus.jpg" },
+  { keys: ["lavender"], src: "/images/flowers/lavender.jpg" },
+  { keys: ["marigold", "calendula"], src: "/images/flowers/marigold.jpg" },
+];
+
+/** Pick the most specific image we have: the post's ingredient first, else the
+ *  category default. */
+function imageForSubject(subject: string | undefined, category: Category): string {
+  const s = (subject ?? "").toLowerCase().trim();
+  if (s) {
+    for (const { keys, src } of CURATED_INGREDIENT_IMAGES) {
+      if (keys.some((k) => s.includes(k))) return src;
+    }
+  }
+  return CATEGORY_IMAGE[category];
+}
+
 const CATEGORY_BRIEF: Record<Category, string> = {
   "Ingredient spotlight":
     "Profile ONE botanical ingredient Diana works with (e.g. Bulbine frutescens, argan oil, myrrh, mastic gum, marula, rooibos, honeybush, saffron, lotus). Cover where it comes from, its heritage and traditional use, how it feels on the skin, and which of our products feature it. Cosmetic + traditional-use framing only.",
@@ -100,8 +131,9 @@ const SYSTEM_PROMPT = [
   "",
   "OUTPUT FORMAT:",
   "Respond with ONLY a valid JSON object (no markdown fences, no commentary) with exactly these keys:",
-  '"title","slug","excerpt","meta_title","meta_description","body_md"',
+  '"title","slug","excerpt","meta_title","meta_description","image_subject","body_md"',
   "Field rules:",
+  '- image_subject: the SINGLE main botanical ingredient/plant this article features, as a lowercase common name (e.g. "bulbine", "argan", "rooibos", "marula", "aloe", "lotus", "lavender"). Use "" only if the article is not about one specific ingredient.',
   "- title: compelling, max 70 characters, no disease words.",
   "- slug: url-safe, lowercase, hyphens only.",
   "- excerpt: 2-3 sentence summary, max 200 characters.",
@@ -175,7 +207,9 @@ export async function generateBlogPost({
     raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   }
 
-  const parsed = JSON.parse(raw) as Omit<BlogPayload, "image_url">;
+  const parsed = JSON.parse(raw) as Omit<BlogPayload, "image_url"> & {
+    image_subject?: string;
+  };
   const slug = parsed.slug ? slugify(parsed.slug) : slugify(parsed.title);
 
   return {
@@ -185,6 +219,6 @@ export async function generateBlogPost({
     meta_title: parsed.meta_title ?? parsed.title,
     meta_description: parsed.meta_description ?? parsed.excerpt ?? "",
     body_md: parsed.body_md,
-    image_url: CATEGORY_IMAGE[category],
+    image_url: imageForSubject(parsed.image_subject, category),
   };
 }
