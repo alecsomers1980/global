@@ -195,6 +195,12 @@ export default function Header() {
               >
                 Our Story
               </Link>
+              <Link
+                href="/blog"
+                className="px-3 py-2 hover:text-amber transition-colors rounded-full"
+              >
+                Journal
+              </Link>
             </nav>
 
             {/* Right actions */}
@@ -378,6 +384,13 @@ export default function Header() {
                   className="block text-lg font-medium text-ink hover:text-amber transition-colors"
                 >
                   Our Story
+                </Link>
+                <Link
+                  href="/blog"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="block text-lg font-medium text-ink hover:text-amber transition-colors"
+                >
+                  Journal
                 </Link>
                 <Link
                   href="/search"

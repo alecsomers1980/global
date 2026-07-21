@@ -26,6 +26,7 @@
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-markdown": "^9.1.0",
     "resend": "^6.17.2",
     "three": "^0.185.1",
     "zustand": "^5.0.14"

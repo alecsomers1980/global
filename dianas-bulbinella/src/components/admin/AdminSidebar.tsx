@@ -51,6 +51,9 @@ export default function AdminSidebar({ email }: { email?: string }) {
         <Link href="/admin/reviews" className={linkClass("/admin/reviews")}>
           Reviews
         </Link>
+        <Link href="/admin/blog" className={linkClass("/admin/blog")}>
+          Journal
+        </Link>
         <Link href="/admin/dealers" className={linkClass("/admin/dealers")}>
           Dealers
         </Link>
