@@ -2,7 +2,6 @@ export const revalidate = 3600;
 
 import { createPublicClient } from "@/lib/supabase/public";
 import PageBanner from "@/components/site/PageBanner";
-import AuroraSquiggle from "@/components/motion/AuroraSquiggle";
 import ReactMarkdown from "react-markdown";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -65,7 +64,6 @@ export default async function BlogArticlePage({ params }: Props) {
 
   return (
     <div className="relative">
-      <AuroraSquiggle variant="page" />
       <div className="relative z-10">
         {post.image_url ? (
           <section className="relative h-[40vh] md:h-[50vh] w-full overflow-hidden">
