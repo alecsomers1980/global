@@ -12,8 +12,16 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+function supabaseConfigured() {
+  return !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  if (!supabaseConfigured()) return { title: "Journal" };
   const supabase = createPublicClient();
   const { data: post, error } = await supabase
     .from("blog_posts")
@@ -35,6 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogArticlePage({ params }: Props) {
   const { slug } = await params;
+  if (!supabaseConfigured()) notFound();
   const supabase = createPublicClient();
   const { data: post, error } = await supabase
     .from("blog_posts")

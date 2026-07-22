@@ -11,15 +11,30 @@ export const metadata = {
 };
 
 export default async function BlogPage() {
-  const supabase = createPublicClient();
-  const { data: posts, error } = await supabase
-    .from("blog_posts")
-    .select("slug,title,excerpt,category,image_url,published_at")
-    .eq("status", "published")
-    .order("published_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching blog posts:", error);
+  // Degrade to empty rather than crash the build/page when Supabase isn't
+  // configured (same guard as getPublicDealers / catalog.ts).
+  let posts:
+    | {
+        slug: string;
+        title: string;
+        excerpt: string;
+        category: string;
+        image_url: string;
+        published_at: string | null;
+      }[]
+    | null = [];
+  if (
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("slug,title,excerpt,category,image_url,published_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    if (error) console.error("Error fetching blog posts:", error);
+    else posts = data;
   }
 
   return (
