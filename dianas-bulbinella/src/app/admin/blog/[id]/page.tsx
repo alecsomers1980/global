@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -96,6 +97,21 @@ export default async function AdminBlogEditorPage({ params }: Props) {
     if (error) {
       console.error("Discard failed:", error);
       throw new Error("Failed to discard post.");
+    }
+
+    revalidatePath("/admin/blog");
+    redirect("/admin/blog");
+  }
+
+  async function deletePost(formData: FormData) {
+    "use server";
+    const supabase = await createClient();
+    const postId = formData.get("id") as string;
+    const { error } = await supabase.from("blog_posts").delete().eq("id", postId);
+
+    if (error) {
+      console.error("Delete failed:", error);
+      throw new Error("Failed to delete post.");
     }
 
     revalidatePath("/admin/blog");
@@ -251,6 +267,13 @@ export default async function AdminBlogEditorPage({ params }: Props) {
                 Discard
               </button>
             )}
+            <ConfirmSubmitButton
+              action={deletePost}
+              confirmText="Permanently delete this post? This cannot be undone."
+              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 sm:ml-auto"
+            >
+              Delete
+            </ConfirmSubmitButton>
           </div>
         </form>
       </div>
