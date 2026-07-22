@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #B0A46E;
+  --gold-deep: #8D8358;
+  --maroon: #8D2B2E;
+  --paper: #FFFFFF;
+  --surface: #FAF9F6;
+  --ink: #2A2A2A;
+  --muted: #666666;
+  --line: #E3E3E3;
+}
+
+@theme inline {
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-maroon: var(--maroon);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --font-heading: var(--font-heading-family);
+  --font-body: var(--font-body-family);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body-family), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading-family), Georgia, serif;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--paper);
+}
