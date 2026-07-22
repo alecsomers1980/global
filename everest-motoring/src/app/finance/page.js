@@ -37,9 +37,14 @@ export default function FinancePage() {
                                     <span className="text-slate-700 font-medium">Trade-ins accepted to lower your deposit</span>
                                 </li>
                             </ul>
-                            <Link href="/contact" className="inline-block bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all">
-                                Apply for Pre-Approval
-                            </Link>
+                            <div className="flex flex-wrap gap-4">
+                                <Link href="/contact" className="inline-block bg-secondary hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all">
+                                    Apply for Pre-Approval
+                                </Link>
+                                <Link href="/finance-calculator" className="inline-block bg-primary hover:bg-primary/90 text-black font-bold py-3 px-8 rounded-lg shadow-md transition-all">
+                                    Estimate My Repayment
+                                </Link>
+                            </div>
                         </div>
                         <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 shadow-sm">
                             <h3 className="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Required Documents</h3>

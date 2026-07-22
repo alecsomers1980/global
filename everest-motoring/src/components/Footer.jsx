@@ -48,6 +48,7 @@ export default function Footer({ siteConfig }) {
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/about">About Us</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/about">Our Team</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/news">Latest News</Link></li>
+                            <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/finance-calculator">Finance Calculator</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/portal">Client Portal</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/affiliate">Affiliate Program</Link></li>
                             <li><Link className="text-sm text-slate-400 hover:text-primary transition-colors" href="/privacy">Privacy Policy</Link></li>
