@@ -18,6 +18,8 @@ const leadSchema = z.object({
   town: z.string().trim().max(80).optional(),
   message: z.string().trim().max(2000).optional(),
   quoteSummary: z.string().trim().max(4000).optional(),
+  /** Checkbox — present as the string "true" when ticked, absent otherwise. */
+  marketingConsent: z.string().optional(),
   /** Honeypot — real users never fill this; bots do. Accepted by the schema so
       the handler can silently drop it rather than telling the bot it was caught. */
   company: z.string().optional(),
@@ -49,6 +51,7 @@ export async function POST(req: NextRequest) {
     const result = await sendLeadEmail({
       ...lead,
       email: lead.email || undefined,
+      marketingConsent: lead.marketingConsent === "true",
     });
 
     if (!result.success) {

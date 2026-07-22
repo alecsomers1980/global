@@ -25,6 +25,8 @@ export type Lead = {
   message?: string;
   /** Pre-built summary from the quote calculator, when the lead came from /quote. */
   quoteSummary?: string;
+  /** Opted in to specials/updates — separate from the enquiry itself (POPIA: distinct consent for marketing). */
+  marketingConsent?: boolean;
 };
 
 function escapeHtml(value: string) {
@@ -66,6 +68,7 @@ function buildHtml(lead: Lead) {
       ${row("Phone", lead.phone)}
       ${row("Email", lead.email)}
       ${row("Town", lead.town)}
+      ${row("OK to send specials?", lead.marketingConsent ? "Yes, opted in" : "No")}
     </table>
     ${quoteBlock}
     ${messageBlock}
@@ -80,6 +83,7 @@ function buildText(lead: Lead) {
     `Phone: ${lead.phone}`,
     lead.email ? `Email: ${lead.email}` : null,
     lead.town ? `Town:  ${lead.town}` : null,
+    `OK to send specials?: ${lead.marketingConsent ? "Yes, opted in" : "No"}`,
     lead.quoteSummary ? `\nQuote they built:\n${lead.quoteSummary}` : null,
     lead.message ? `\nMessage:\n${lead.message}` : null,
   ]

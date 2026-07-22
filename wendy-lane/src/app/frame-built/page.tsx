@@ -12,6 +12,7 @@ import {
 } from "@/data/pricing";
 import { BUSINESS } from "@/data/business";
 import PageHeader from "@/components/PageHeader";
+import { frameBuiltProductSchema, jsonLdScriptProps } from "@/lib/productSchema";
 
 export const metadata: Metadata = {
   title: "Frame Built Timber Cabins & Chalet Prices | Wendy Lane Nelspruit",
@@ -29,6 +30,8 @@ export default function FrameBuiltPage() {
 
   return (
     <>
+      <script {...jsonLdScriptProps(frameBuiltProductSchema())} />
+
       {/* Header */}
       <PageHeader
         eyebrow="The range"

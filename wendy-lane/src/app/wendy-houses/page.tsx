@@ -16,6 +16,7 @@ import {
 } from '@/data/pricing';
 import { BUSINESS } from '@/data/business';
 import PageHeader from '@/components/PageHeader';
+import { wendyHousesProductSchema, jsonLdScriptProps } from '@/lib/productSchema';
 
 export const metadata: Metadata = {
   title: 'Wendy House Prices Nelspruit | Sizes & Price List | Wendy Lane',
@@ -73,6 +74,8 @@ const useCards = [
 export default function WendyHousesPage() {
   return (
     <>
+      <script {...jsonLdScriptProps(wendyHousesProductSchema())} />
+
       {/* Header */}
       <PageHeader
         eyebrow="The range"

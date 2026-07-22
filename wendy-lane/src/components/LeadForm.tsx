@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { BUSINESS } from "@/data/business";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -134,6 +135,19 @@ export default function LeadForm({
         />
       </label>
 
+      <label className="flex items-start gap-3 text-sm text-ink/70">
+        <input
+          type="checkbox"
+          name="marketingConsent"
+          value="true"
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-ink/20 text-brand focus:ring-brand/30"
+        />
+        <span>
+          Keep me updated on new products and specials (optional — we&rsquo;ll
+          only use this to reply to your enquiry either way).
+        </span>
+      </label>
+
       {quoteSummary && (
         <details className="rounded-lg border border-brand/20 bg-brand-50/60 p-4">
           <summary className="cursor-pointer text-sm font-semibold text-brand">
@@ -176,7 +190,11 @@ export default function LeadForm({
       </button>
 
       <p className="text-xs text-ink/45">
-        We use your details only to reply to this enquiry.
+        We use your details only to reply to this enquiry. See our{" "}
+        <Link href="/privacy" className="underline">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </form>
   );

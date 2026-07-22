@@ -52,8 +52,8 @@ export default function AboutPage() {
           </div>
           <div className="relative mt-10 aspect-[4/3] overflow-hidden rounded-card lg:mt-0">
             <Image
-              src="/images/about-factory.jpg"
-              alt="Wendy Lane factory outside Nelspruit"
+              src="/images/projects/site-office.jpg"
+              alt="Wendy Lane team delivering and assembling a site office"
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 100vw"
