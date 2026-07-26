@@ -65,3 +65,32 @@ export type Production = {
   notes: string | null
   isPremiere: boolean
 }
+
+export const TERRITORIES = [
+  'South Africa',
+  'Rest of Africa',
+  'United Kingdom',
+  'North America',
+  'Rest of World',
+] as const
+
+export type Territory = (typeof TERRITORIES)[number]
+
+export type LicenceTier = {
+  id: string
+  label: string
+  description: string | null
+  minFee: number | null
+  royaltyPct: number | null
+  sort: number
+}
+
+export type RightsRow = {
+  id: string
+  territory: string
+  tierId: string | null
+  status: AvailabilityStatus
+  restrictionNote: string | null
+  validFrom: string | null
+  validTo: string | null
+}
