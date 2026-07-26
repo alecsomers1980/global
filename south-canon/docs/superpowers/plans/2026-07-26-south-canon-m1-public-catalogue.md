@@ -1,8 +1,8 @@
-﻿# South Canon M1 â€” Public Catalogue Implementation Plan
+?# South Canon M1 — Public Catalogue Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship a public, SEO-indexed theatrical catalogue where a producer can find a play by title, genre or playwright, and read a complete Play Detail page â€” plus an admin where the client adds plays and playwrights without developer involvement.
+**Goal:** Ship a public, SEO-indexed theatrical catalogue where a producer can find a play by title, genre or playwright, and read a complete Play Detail page — plus an admin where the client adds plays and playwrights without developer involvement.
 
 **Architecture:** Next.js 15 App Router with static/ISR public pages and server-rendered admin. Supabase Postgres holds the catalogue; pure TypeScript modules (`lib/cast.ts`, `lib/availability.ts`, `lib/filters.ts`) hold all logic worth testing and are unit-tested first. Data access is isolated in `lib/plays.ts` and `lib/playwrights.ts` so pages never touch Supabase directly. Every Play Detail block returns `null` when its data is empty, so a thin title still renders as deliberate.
 
@@ -14,10 +14,10 @@
 - Branch: `feat/south-canon`. Commit after every task.
 - Spec of record: `docs/superpowers/specs/2026-07-26-south-canon-design.md`.
 - Node 20+. Package manager: `npm`.
-- Design tone is **editorial & literary**. Light theme only â€” no dark mode in M1 (the design is committed to warm paper; adding a dark variant is not requested).
+- Design tone is **editorial & literary**. Light theme only — no dark mode in M1 (the design is committed to warm paper; adding a dark variant is not requested).
 - Design tokens are fixed and used verbatim: ink `#14110F`, paper `#FAF7F2`, accent `#A6431C`, muted `#6B635C`, rule `#E3DCD2`; availability states available `#2F6B4F`, restricted `#B07A15`, unavailable `#6B635C`.
 - Fonts: **Fraunces** (display serif) and **Inter** (UI/body), both via `next/font/google`.
-- Availability is **never communicated by colour alone** â€” always colour plus label text.
+- Availability is **never communicated by colour alone** — always colour plus label text.
 - Database columns are `snake_case`; TypeScript is `camelCase`. Mapping happens only in `lib/plays.ts` and `lib/playwrights.ts`.
 - Currency is ZAR, formatted `en-ZA`. Use a plain space in formatted output, never a non-breaking space (it renders as tofu in some PDF/OG pipelines).
 - No payments, no checkout, no perusal delivery, no writer portal in M1. Those are M2/M3.
@@ -36,12 +36,12 @@
 | `supabase/migrations/0004_search.sql` | `pg_trgm`, search vector, indexes |
 | `supabase/migrations/0005_keepalive.sql` | `keep_alive` table |
 | `lib/types.ts` | Shared domain types. No logic. |
-| `lib/cast.ts` | `formatCastSize` â€” pure |
-| `lib/availability.ts` | `resolveAvailability` â€” pure |
-| `lib/filters.ts` | `parseFilters`, `filtersToSearchParams` â€” pure |
-| `lib/money.ts` | `formatZar` â€” pure |
+| `lib/cast.ts` | `formatCastSize` — pure |
+| `lib/availability.ts` | `resolveAvailability` — pure |
+| `lib/filters.ts` | `parseFilters`, `filtersToSearchParams` — pure |
+| `lib/money.ts` | `formatZar` — pure |
 | `lib/supabase/server.ts` | Server Supabase client (anon + service role) |
-| `lib/plays.ts` | All play queries + rowâ†’domain mapping |
+| `lib/plays.ts` | All play queries + row→domain mapping |
 | `lib/playwrights.ts` | All playwright queries + mapping |
 | `lib/seo.ts` | schema.org builders |
 | `app/layout.tsx`, `components/layout/*` | Shell, header, footer, fonts, tokens |
@@ -149,9 +149,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://southcanon.co.za'),
-  title: { default: 'South Canon', template: '%s Â· South Canon' },
+  title: { default: 'South Canon', template: '%s · South Canon' },
   description:
-    'Theatrical licensing for the global South. Licence plays by Africaâ€™s leading writers.',
+    'Theatrical licensing for the global South. Licence plays by Africa’s leading writers.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -180,7 +180,7 @@ git commit -m "chore(south-canon): scaffold Next.js app with design tokens and t
 
 ---
 
-## Task 2: Core schema â€” playwrights and plays
+## Task 2: Core schema — playwrights and plays
 
 **Files:**
 - Create: `supabase/migrations/0001_core.sql`, `lib/types.ts`, `lib/supabase/server.ts`, `.env.local.example`
@@ -288,7 +288,7 @@ export function createServerClient() {
   return createClient(url, anonKey, { auth: { persistSession: false } })
 }
 
-/** Service-role client. Bypasses RLS. Server-side admin only â€” never import into a client component. */
+/** Service-role client. Bypasses RLS. Server-side admin only — never import into a client component. */
 export function createServiceClient() {
   return createClient(url, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
@@ -339,7 +339,7 @@ git commit -m "feat(south-canon): add core schema for playwrights and plays"
 
 ---
 
-## Task 3: Detail schema â€” roles, media, press, productions
+## Task 3: Detail schema — roles, media, press, productions
 
 **Files:**
 - Create: `supabase/migrations/0002_detail.sql`
@@ -417,7 +417,7 @@ create policy "public reads press" on play_press for select using (true);
 create policy "public reads productions" on play_productions for select using (true);
 ```
 
-Note: these policies are permissive because the tables are only reachable via a published play â€” an unpublished play is filtered out by the `plays` policy before its children are ever requested.
+Note: these policies are permissive because the tables are only reachable via a published play — an unpublished play is filtered out by the `plays` policy before its children are ever requested.
 
 - [ ] **Step 2: Apply it**
 
@@ -479,7 +479,7 @@ git commit -m "feat(south-canon): add cast, media, press and production schema"
 
 ---
 
-## Task 4: Rights schema â€” licence tiers and territory availability
+## Task 4: Rights schema — licence tiers and territory availability
 
 **Files:**
 - Create: `supabase/migrations/0003_rights.sql`
@@ -532,7 +532,7 @@ create policy "public reads tiers" on licence_tiers for select using (true);
 create policy "public reads availability" on rights_availability for select using (true);
 ```
 
-`min_fee` and `royalty_pct` are deliberately left null. They are client-supplied and entered through the admin (spec Â§10).
+`min_fee` and `royalty_pct` are deliberately left null. They are client-supplied and entered through the admin (spec §10).
 
 - [ ] **Step 2: Apply and verify the seed**
 
@@ -583,7 +583,7 @@ git commit -m "feat(south-canon): add licence tiers and territory-scoped rights 
 
 ---
 
-## Task 5: `formatCastSize` â€” pure logic, test first
+## Task 5: `formatCastSize` — pure logic, test first
 
 **Files:**
 - Create: `tests/unit/cast.test.ts`, `lib/cast.ts`
@@ -651,7 +651,7 @@ describe('formatCastSize', () => {
 - [ ] **Step 2: Run it and confirm it fails**
 
 Run: `npm test -- cast`
-Expected: FAIL â€” `Failed to resolve import "@/lib/cast"`.
+Expected: FAIL — `Failed to resolve import "@/lib/cast"`.
 
 - [ ] **Step 3: Implement**
 
@@ -695,7 +695,7 @@ git commit -m "feat(south-canon): add cast size formatter"
 
 ---
 
-## Task 6: `resolveAvailability` â€” pure logic, test first
+## Task 6: `resolveAvailability` — pure logic, test first
 
 **Files:**
 - Create: `tests/unit/availability.test.ts`, `lib/availability.ts`
@@ -778,7 +778,7 @@ describe('resolveAvailability', () => {
 - [ ] **Step 2: Run it and confirm it fails**
 
 Run: `npm test -- availability`
-Expected: FAIL â€” cannot resolve `@/lib/availability`.
+Expected: FAIL — cannot resolve `@/lib/availability`.
 
 - [ ] **Step 3: Implement**
 
@@ -801,7 +801,7 @@ function isActive(r: RightsRow, on: Date): boolean {
 
 /**
  * Resolves a play's availability in one territory.
- * No covering row means unavailable â€” rights are opt-in, never assumed.
+ * No covering row means unavailable — rights are opt-in, never assumed.
  * When rows conflict, the most restrictive wins.
  */
 export function resolveAvailability(
@@ -831,7 +831,7 @@ git commit -m "feat(south-canon): add territory availability resolver"
 
 ---
 
-## Task 7: Catalogue filters and money formatting â€” pure logic, test first
+## Task 7: Catalogue filters and money formatting — pure logic, test first
 
 **Files:**
 - Create: `tests/unit/filters.test.ts`, `lib/filters.ts`, `tests/unit/money.test.ts`, `lib/money.ts`
@@ -908,7 +908,7 @@ describe('filtersToSearchParams', () => {
 - [ ] **Step 2: Run it and confirm it fails**
 
 Run: `npm test -- filters`
-Expected: FAIL â€” cannot resolve `@/lib/filters`.
+Expected: FAIL — cannot resolve `@/lib/filters`.
 
 - [ ] **Step 3: Implement the filters**
 
@@ -999,7 +999,7 @@ describe('formatZar', () => {
 - [ ] **Step 6: Run it and confirm it fails**
 
 Run: `npm test -- money`
-Expected: FAIL â€” cannot resolve `@/lib/money`.
+Expected: FAIL — cannot resolve `@/lib/money`.
 
 - [ ] **Step 7: Implement money formatting**
 
@@ -1009,7 +1009,7 @@ Create `lib/money.ts`:
 /**
  * Formats an amount as South African rand.
  * en-ZA emits U+00A0 / U+202F as the group separator, which renders as tofu in
- * some PDF and OG-image pipelines â€” so it is normalised to a plain space.
+ * some PDF and OG-image pipelines — so it is normalised to a plain space.
  */
 export function formatZar(amount: number | null | undefined): string | null {
   if (amount === null || amount === undefined) return null
@@ -1042,7 +1042,7 @@ git commit -m "feat(south-canon): add catalogue filter parsing and ZAR formattin
 - Create: `supabase/migrations/0004_search.sql`, `lib/plays.ts`, `lib/playwrights.ts`, `supabase/seed.sql`
 
 **Interfaces:**
-- Consumes: all schema from Tasks 2â€“4, `formatCastSize`, `CatalogueFilters`
+- Consumes: all schema from Tasks 2–4, `formatCastSize`, `CatalogueFilters`
 - Produces:
   - `listPlays(filters: CatalogueFilters): Promise<PlaySummary[]>`
   - `getPlayBySlug(slug: string): Promise<PlayDetail | null>`
@@ -1369,31 +1369,51 @@ where p.slug = 'saturday-night-at-the-palace';
 Run it in the Supabase SQL editor.
 Expected: `select count(*) from plays where status = 'published';` returns 1.
 
-- [ ] **Step 7: Verify the data layer end to end**
+- [ ] **Step 7: Verify the data layer with a unit test**
 
-Create `tests/e2e/data.spec.ts`:
+Create `tests/unit/plays.test.ts`:
 
 ```ts
-import { test, expect } from '@playwright/test'
+import { describe, it, expect } from 'vitest'
+import { listPlays, listGenres } from '@/lib/plays'
 
-test('the seeded play is reachable through the app', async ({ page }) => {
-  const res = await page.goto('/plays/saturday-night-at-the-palace')
-  expect(res?.status()).toBeLessThan(500)
+describe('listPlays', () => {
+  it('returns the seeded play', async () => {
+    const plays = await listPlays({ genres: [] })
+    expect(plays.some((p) => p.slug === 'saturday-night-at-the-palace')).toBe(true)
+  })
+
+  it('filters by playwright slug', async () => {
+    const plays = await listPlays({ genres: [], playwright: 'paul-slabolepszy' })
+    expect(plays.length).toBeGreaterThan(0)
+    expect(plays.every((p) => p.credits.some((c) => c.slug === 'paul-slabolepszy'))).toBe(true)
+  })
+})
+
+describe('listGenres', () => {
+  it('includes Drama from the seeded play', async () => {
+    expect(await listGenres()).toContain('Drama')
+  })
 })
 ```
 
-This will 404 until Task 11. Do not run it yet â€” it is committed now so the page task has a target.
+This talks to the real Supabase project via `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`, so it only runs once those are populated and `supabase/seed.sql` has been applied (Step 6). It asserts on actual returned rows, not just an HTTP status, so it fails honestly if the query or the seed is wrong — no page needs to exist yet for it to be meaningful.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Run it and confirm it passes**
+
+Run: `npm test -- plays`
+Expected: PASS, 3 tests.
+
+- [ ] **Step 9: Commit**
 
 ```bash
-git add supabase/migrations/0004_search.sql supabase/seed.sql lib/plays.ts lib/playwrights.ts lib/types.ts tests/e2e/data.spec.ts
+git add supabase/migrations/0004_search.sql supabase/seed.sql lib/plays.ts lib/playwrights.ts lib/types.ts tests/unit/plays.test.ts
 git commit -m "feat(south-canon): add search index, data access layer and seed data"
 ```
 
 ---
 
-## Task 9: Layout shell â€” header, footer, primitives
+## Task 9: Layout shell — header, footer, primitives
 
 **Files:**
 - Create: `components/layout/Header.tsx`, `components/layout/Footer.tsx`, `components/ui/Container.tsx`, `components/ui/AvailabilityBadge.tsx`
@@ -1582,7 +1602,7 @@ export function PlayCard({ play }: { play: PlaySummary }) {
           </h2>
           {play.credits.length > 0 && (
             <p className="mt-1 text-sm text-muted">
-              {play.credits.map((c) => c.name).join(' Â· ')}
+              {play.credits.map((c) => c.name).join(' · ')}
             </p>
           )}
           {play.logline && <p className="mt-3 max-w-2xl text-base">{play.logline}</p>}
@@ -1828,7 +1848,7 @@ git commit -m "feat(south-canon): add catalogue index with search and filters"
 - Consumes: `getPlayBySlug`, `listPlaySlugs`, `resolveAvailability`, `formatZar`, `PlayDetail`, `LicenceTier`
 - Produces: `/plays/[slug]` rendering all 13 content blocks, each returning `null` when empty.
 
-**Critical requirement:** every block component returns `null` when its data is empty. A play with only a title and cast must render as a clean, deliberate page with no empty headings â€” this is what lets the site launch before photo and video content exists.
+**Critical requirement:** every block component returns `null` when its data is empty. A play with only a title and cast must render as a clean, deliberate page with no empty headings — this is what lets the site launch before photo and video content exists.
 
 - [ ] **Step 1: Add the two remaining queries**
 
@@ -2015,7 +2035,7 @@ export function Characters({ roles }: { roles: CastRole[] }) {
               <p className="font-medium">{role.name}</p>
               <p className="text-xs uppercase tracking-wide text-muted">
                 {GENDER_LABEL[role.gender]}
-                {role.ageRange ? ` Â· ${role.ageRange}` : ''}
+                {role.ageRange ? ` · ${role.ageRange}` : ''}
               </p>
             </div>
             {role.description && <p className="text-muted">{role.description}</p>}
@@ -2044,7 +2064,7 @@ export function ProductionHistory({ productions }: { productions: Production[] }
       <ul className="mt-6 divide-y divide-rule border-t border-rule">
         {productions.map((p) => (
           <li key={p.id} className="grid gap-1 py-4 md:grid-cols-[120px_1fr]">
-            <p className="text-sm text-muted">{year(p.startsOn) ?? 'â€”'}</p>
+            <p className="text-sm text-muted">{year(p.startsOn) ?? '—'}</p>
             <div>
               <p>
                 {p.company}
@@ -2054,7 +2074,7 @@ export function ProductionHistory({ productions }: { productions: Production[] }
               </p>
               <p className="text-sm text-muted">
                 {[p.venue, p.city, p.country].filter(Boolean).join(', ')}
-                {p.director ? ` Â· directed by ${p.director}` : ''}
+                {p.director ? ` · directed by ${p.director}` : ''}
               </p>
             </div>
           </li>
@@ -2109,7 +2129,7 @@ export function MediaGallery({ media }: { media: PlayMedia[] }) {
               <img src={p.url} alt={p.caption ?? ''} className="w-full object-cover" />
               {(p.caption || p.credit) && (
                 <figcaption className="mt-2 text-xs text-muted">
-                  {[p.caption, p.credit].filter(Boolean).join(' Â· ')}
+                  {[p.caption, p.credit].filter(Boolean).join(' · ')}
                 </figcaption>
               )}
             </figure>
@@ -2389,9 +2409,6 @@ test('returns 404 for an unknown play', async ({ page }) => {
 Run: `npm run e2e -- play-detail`
 Expected: 5 passed. The "omits blocks" test is the one that proves the launch-before-content requirement holds.
 
-Run: `npm run e2e -- data`
-Expected: 1 passed (the Task 8 placeholder now resolves).
-
 - [ ] **Step 7: Commit**
 
 ```bash
@@ -2662,7 +2679,7 @@ export async function submitEnquiry(_prev: ContactState, formData: FormData): Pr
 }
 ```
 
-Add the table â€” create `supabase/migrations/0006_enquiries.sql`:
+Add the table — create `supabase/migrations/0006_enquiries.sql`:
 
 ```sql
 create table enquiries (
@@ -2707,7 +2724,7 @@ export default function ContactPage() {
           ? 'Tell us about your production and we will send a perusal script.'
           : intent === 'licence'
             ? 'Tell us about your production and we will come back with a licence quotation.'
-            : 'Producers, writers and press â€” we would like to hear from you.'}
+            : 'Producers, writers and press — we would like to hear from you.'}
       </p>
 
       <form action={action} className="mt-10 grid max-w-xl gap-6">
@@ -2753,7 +2770,7 @@ export default function ContactPage() {
           disabled={pending}
           className="justify-self-start bg-accent px-8 py-3 text-sm uppercase tracking-wide text-paper disabled:opacity-50"
         >
-          {pending ? 'Sendingâ€¦' : 'Send'}
+          {pending ? 'Sending…' : 'Send'}
         </button>
 
         {state && (
@@ -2908,7 +2925,7 @@ describe('playwrightSchema', () => {
 - [ ] **Step 2: Run it and confirm it fails**
 
 Run: `npm test -- seo`
-Expected: FAIL â€” cannot resolve `@/lib/seo`.
+Expected: FAIL — cannot resolve `@/lib/seo`.
 
 - [ ] **Step 3: Implement**
 
@@ -3214,7 +3231,7 @@ export default function LoginPage() {
           disabled={pending}
           className="justify-self-start bg-accent px-8 py-3 text-sm uppercase tracking-wide text-paper disabled:opacity-50"
         >
-          {pending ? 'Signing inâ€¦' : 'Sign in'}
+          {pending ? 'Signing in…' : 'Sign in'}
         </button>
 
         <button
@@ -3326,7 +3343,7 @@ git commit -m "feat(south-canon): add admin authentication and dashboard"
 - Consumes: `createServiceClient`, `TERRITORIES`, `listLicenceTiers`
 - Produces: full create/edit/publish for playwrights and plays, including cast roles, media, press, productions and rights rows.
 
-**Success condition for this task:** the client can add a brand-new playwright and a brand-new play with cast, rights and a hero image, publish it, and see it live on `/plays` â€” without a developer.
+**Success condition for this task:** the client can add a brand-new playwright and a brand-new play with cast, rights and a hero image, publish it, and see it live on `/plays` — without a developer.
 
 - [ ] **Step 1: Build the repeater primitive**
 
@@ -3575,7 +3592,7 @@ function num(v: FormDataEntryValue | null): number | null {
   return Number.isFinite(n) && String(v ?? '').trim() !== '' ? n : null
 }
 
-/** Children are replaced wholesale on every save â€” simplest correct behaviour for small collections. */
+/** Children are replaced wholesale on every save — simplest correct behaviour for small collections. */
 async function replaceChildren(
   db: ReturnType<typeof createServiceClient>,
   table: string,
@@ -4031,15 +4048,15 @@ git commit -m "chore(south-canon): add keep-alive workflow, readme and deploy co
 
 Recorded here so they are not lost, and are not built early:
 
-- **Licence estimator** â€” the interactive calculator belongs beside the application form that
+- **Licence estimator** — the interactive calculator belongs beside the application form that
   supplies venue, seats, ticket price and performance count. M1 ships indicative minimums only.
-- **Perusal delivery** â€” the M1 CTA points at `/contact`. M2 replaces it with a real request,
+- **Perusal delivery** — the M1 CTA points at `/contact`. M2 replaces it with a real request,
   approval and watermarked-PDF flow.
-- **Producer accounts** â€” M1 has no producer login. M2 adds it.
-- **Writer portal and royalty statements** â€” M3 in full.
-- **Upcoming productions map** â€” `play_productions` already stores city and country; the map is
+- **Producer accounts** — M1 has no producer login. M2 adds it.
+- **Writer portal and royalty statements** — M3 in full.
+- **Upcoming productions map** — `play_productions` already stores city and country; the map is
   worth building once there are live licensed productions to plot.
-- **Logo directions** â€” three wordmark studies are a design deliverable produced alongside M1,
+- **Logo directions** — three wordmark studies are a design deliverable produced alongside M1,
   not a coding task in this plan.
 
 ---
@@ -4048,13 +4065,13 @@ Recorded here so they are not lost, and are not built early:
 
 Checked against the spec, 2026-07-26:
 
-- Spec Â§5 lists 14 Play Detail blocks. Tasks 11 and 13 cover all of them. The estimator (block
-  10) ships as indicative minimums in M1 with the calculator deferred to M2 â€” recorded above and
+- Spec §5 lists 14 Play Detail blocks. Tasks 11 and 13 cover all of them. The estimator (block
+  10) ships as indicative minimums in M1 with the calculator deferred to M2 — recorded above and
   in the spec's milestone table.
-- Spec Â§7 standards: honeypot and timing (Task 12), forgot-password / show-password /
+- Spec §7 standards: honeypot and timing (Task 12), forgot-password / show-password /
   keep-me-signed-in (Task 14), keep-alive (Task 16), POPIA notice (Task 12). Perusal watermarking
   is M2.
-- Spec Â§9 M1 success criteria: find by title, genre and playwright (Task 10); complete detail
+- Spec §9 M1 success criteria: find by title, genre and playwright (Task 10); complete detail
   page with no empty-block artefacts (Task 11, tested explicitly); valid `CreativeWork` structured
   data (Task 13); client adds a play and playwright end-to-end (Task 15, verified by hand in
   Step 6).
@@ -4062,5 +4079,5 @@ Checked against the spec, 2026-07-26:
   `listPlays`, `getPlayBySlug`, `listPlaySlugs`, `listGenres`, `listLicenceTiers`,
   `listRelatedPlays`, `listPlaywrights`, `getPlaywrightBySlug`, `listPlaywrightSlugs`,
   `playSchema`, `playwrightSchema` are each defined once and referenced with matching signatures.
-- `CatalogueFilters.genres` is always an array, never optional â€” every call site passes
+- `CatalogueFilters.genres` is always an array, never optional — every call site passes
   `{ genres: [] }` at minimum.
