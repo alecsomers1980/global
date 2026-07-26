@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://southcanon.co.za'),
   title: { default: 'South Canon', template: '%s · South Canon' },
   description:
-    'Theatrical licensing for the global South. Licence plays by Africa's leading writers.',
+    'Theatrical licensing for the global South. Licence plays by Africa’s leading writers.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
