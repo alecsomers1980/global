@@ -38,6 +38,12 @@ describe('resolveAvailability', () => {
     expect(resolveAvailability(rows, 'South Africa', on).status).toBe('unavailable')
   })
 
+  it('still treats a row as active during the whole closing day', () => {
+    const rows = [row({ status: 'available', validTo: '2026-07-01' })]
+    const duringClosingDay = new Date('2026-07-01T12:00:00Z')
+    expect(resolveAvailability(rows, 'South Africa', duringClosingDay).status).toBe('available')
+  })
+
   it('ignores rows whose window has not opened', () => {
     const rows = [row({ status: 'available', validFrom: '2026-09-01' })]
     expect(resolveAvailability(rows, 'South Africa', on).status).toBe('unavailable')

@@ -8,7 +8,11 @@ const SEVERITY: Record<AvailabilityStatus, number> = {
 
 function isActive(r: RightsRow, on: Date): boolean {
   if (r.validFrom && new Date(r.validFrom) > on) return false
-  if (r.validTo && new Date(r.validTo) < on) return false
+  if (r.validTo) {
+    const endOfValidTo = new Date(r.validTo)
+    endOfValidTo.setUTCHours(23, 59, 59, 999)
+    if (endOfValidTo < on) return false
+  }
   return true
 }
 
