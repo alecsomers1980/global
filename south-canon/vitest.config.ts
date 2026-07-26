@@ -4,6 +4,10 @@ import path from 'node:path'
 
 export default defineConfig({
   plugins: [react()],
-  test: { environment: 'node', include: ['tests/unit/**/*.test.ts'] },
+  test: {
+    environment: 'node',
+    include: ['tests/unit/**/*.test.ts'],
+    setupFiles: ['tests/setup-env.ts'],
+  },
   resolve: { alias: { '@': path.resolve(__dirname, '.') } },
 })

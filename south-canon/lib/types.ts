@@ -94,3 +94,24 @@ export type RightsRow = {
   validFrom: string | null
   validTo: string | null
 }
+
+export type PlayDetail = PlaySummary & {
+  synopsisShort: string | null
+  synopsisFull: string | null
+  yearWritten: number | null
+  acts: number | null
+  languages: string[]
+  themes: string[]
+  contentWarnings: string[]
+  setting: string | null
+  timePeriod: string | null
+  targetAudience: string | null
+  isMusical: boolean
+  roles: CastRole[]
+  media: PlayMedia[]
+  press: PressQuote[]
+  productions: Production[]
+  rights: RightsRow[]
+}
+
+export type PlaywrightDetail = Playwright & { plays: PlaySummary[] }
