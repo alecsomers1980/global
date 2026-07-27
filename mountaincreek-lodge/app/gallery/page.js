@@ -1,34 +1,65 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import HeroHeader from "@/components/HeroHeader";
-
-const allImages = [
-  "IMG_8185.jpg", "IMG_8186.jpg", "IMG_8187.jpg", "IMG_8188.jpg", "IMG_8191.jpg", "IMG_8193.jpg", "IMG_8195.jpg", "IMG_8197.jpg",
-  "IMG_8198.jpg", "IMG_8200.jpg", "IMG_8203.jpg", "IMG_8205.jpg", "IMG_8206.jpg", "IMG_8208.jpg", "IMG_8210.jpg", "IMG_8212.jpg",
-  "IMG_8214.jpg", "IMG_8217.jpg", "IMG_8219.jpg", "IMG_8222.jpg", "IMG_8225.jpg", "IMG_8231.jpg", "IMG_8232.jpg",
-  "IMG_8234.jpg", "IMG_8236.jpg", "IMG_8239.jpg", "IMG_8241.jpg", "IMG_8243.jpg", "IMG_8244.jpg", "IMG_8246.jpg",
-  "IMG_8249.jpg", "IMG_8252.jpg", "IMG_8253.jpg", "IMG_8255.jpg", "IMG_8257.jpg", "IMG_8261.jpg", "IMG_8263.jpg",
-  "IMG_8267.jpg", "IMG_8270.jpg", "IMG_8272.jpg", "IMG_8275.jpg", "IMG_8278.jpg", "IMG_8279.jpg", "IMG_8281.jpg",
-  "IMG_8283.jpg", "IMG_8287.jpg", "IMG_8288.jpg", "IMG_8290.jpg", "IMG_8292.jpg", "IMG_8293.jpg", "IMG_8294.jpg"
-].map(f => `/images/accommodation/${f}`);
+import { getCategories, getImagesByCategory } from "@/lib/gallery";
 
 export default function GalleryPage() {
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(null); // null = All
+  const [allImages, setAllImages] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  useEffect(() => {
+    Promise.all([getCategories(), getImagesByCategory(null)])
+      .then(([cats, images]) => {
+        setCategories(cats);
+        setAllImages(images);
+      })
+      .catch((err) => {
+        console.error("Failed to load gallery:", err);
+        setLoadError(true);
+      })
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const images = activeCategory
+    ? allImages.filter((img) => img.categoryId === activeCategory)
+    : allImages;
 
   const openLightbox = (index) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
 
   const handlePrev = (e) => {
     e.stopPropagation();
-    setLightboxIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
+    setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
-    setLightboxIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
+    setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
+
+  if (!loaded) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center">
+        <p className="text-primary/50 text-lg">Loading...</p>
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center px-6">
+        <p className="text-primary/50 text-lg text-center">
+          Couldn&apos;t load the gallery right now. Please refresh the page.
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-linen min-h-screen pb-20">
@@ -38,12 +69,41 @@ export default function GalleryPage() {
         description="Take a look at the serene beauty and accommodations at Mountain Creek Lodge."
       />
 
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-12 flex flex-wrap justify-center gap-3">
+          <button
+            onClick={() => setActiveCategory(null)}
+            className={`px-5 py-2 text-xs uppercase tracking-widest font-semibold rounded-sm border transition-colors ${
+              activeCategory === null
+                ? "bg-primary text-white border-primary"
+                : "bg-transparent text-primary border-primary/20 hover:border-primary/40"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-5 py-2 text-xs uppercase tracking-widest font-semibold rounded-sm border transition-colors ${
+                activeCategory === cat.id
+                  ? "bg-primary text-white border-primary"
+                  : "bg-transparent text-primary border-primary/20 hover:border-primary/40"
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Masonry Grid */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 pt-8">
         <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {allImages.map((src, index) => (
-            <div 
-              key={index}
+          {images.map((img, index) => (
+            <div
+              key={img.id}
               className="relative overflow-hidden group cursor-pointer break-inside-avoid bg-primary/5 rounded-sm"
               onClick={() => openLightbox(index)}
             >
@@ -55,7 +115,7 @@ export default function GalleryPage() {
               </div>
 
               <Image
-                src={src}
+                src={img.src}
                 alt={`Mountain Creek Lodge Gallery Image ${index + 1}`}
                 width={800}
                 height={600}
@@ -99,7 +159,7 @@ export default function GalleryPage() {
           {/* Image Container */}
           <div className="relative w-full max-w-7xl h-[85vh] mx-4 md:mx-24" onClick={(e) => e.stopPropagation()}>
             <Image
-              src={allImages[lightboxIndex]}
+              src={images[lightboxIndex].src}
               alt={`Fullscreen image ${lightboxIndex + 1}`}
               fill
               quality={95}
@@ -121,7 +181,7 @@ export default function GalleryPage() {
 
           {/* Counter */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 font-sans tracking-widest text-sm z-[110]">
-            {lightboxIndex + 1} / {allImages.length}
+            {lightboxIndex + 1} / {images.length}
           </div>
         </div>
       )}
