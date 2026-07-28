@@ -1,26 +1,38 @@
-import { ADMIN_COOKIE_NAME } from "@/lib/adminAuth";
+import { verifyAdminPassword, createSessionCookie } from "@/lib/adminAuth";
+
+const attempts = new Map();
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const recent = (attempts.get(ip) || []).filter((t) => now - t < 60_000);
+  recent.push(now);
+  attempts.set(ip, recent);
+  return recent.length > 5;
+}
 
 export async function POST(request) {
-  const { password } = await request.json();
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "Too many attempts, please wait a minute." }), {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
-  if (password !== process.env.ADMIN_PASSWORD) {
+  const { password, remember } = await request.json();
+
+  const account = await verifyAdminPassword(password || "");
+  if (!account) {
     return new Response(JSON.stringify({ error: "Incorrect password" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  const response = new Response(JSON.stringify({ ok: true }), {
+  await createSessionCookie(Boolean(remember));
+
+  return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
-
-  response.headers.append(
-    "Set-Cookie",
-    `${ADMIN_COOKIE_NAME}=${process.env.ADMIN_SESSION_SECRET}; Path=/; HttpOnly; SameSite=Lax; Max-Age=28800${
-      process.env.NODE_ENV === "production" ? "; Secure" : ""
-    }`
-  );
-
-  return response;
 }

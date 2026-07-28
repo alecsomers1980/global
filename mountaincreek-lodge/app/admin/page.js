@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   getPackages,
   addPackage,
@@ -11,12 +12,14 @@ import {
 import AccommodationManager from "@/components/admin/AccommodationManager";
 import GalleryManager from "@/components/admin/GalleryManager";
 import RedLitchiManager from "@/components/admin/RedLitchiManager";
+import AccountManager from "@/components/admin/AccountManager";
 
 const TABS = [
   { id: "packages", label: "Packages" },
   { id: "accommodation", label: "Accommodation" },
   { id: "gallery", label: "Gallery" },
   { id: "red-litchi", label: "Red Litchi" },
+  { id: "account", label: "Account" },
 ];
 
 const CATEGORIES = ["Safari", "Adventure", "Romantic", "Family", "Dining", "Custom"];
@@ -39,6 +42,8 @@ const emptyForm = {
 // ─── Login Screen ───────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -51,7 +56,7 @@ function LoginScreen({ onLogin }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password, remember }),
       });
       if (res.ok) {
         onLogin();
@@ -84,16 +89,45 @@ function LoginScreen({ onLogin }) {
           <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
             Password
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg mb-4 focus:outline-none focus:border-[#C07750] transition-colors"
-            placeholder="Enter admin password"
-          />
+          <div className="relative mb-4">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+              autoComplete="current-password"
+              className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 pr-16 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+              placeholder="Enter admin password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="absolute inset-y-0 right-0 px-4 text-white/40 hover:text-white/70 text-xs uppercase tracking-wider transition-colors"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <label className="flex items-center gap-2 text-white/50 text-xs">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="w-4 h-4 rounded accent-[#C07750]"
+              />
+              Stay signed in for 7 days
+            </label>
+            <Link
+              href="/admin/forgot"
+              className="text-[#C07750] hover:text-[#C07750]/80 text-xs transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
           <button
             type="submit"
@@ -517,6 +551,7 @@ export default function AdminPage() {
       {activeTab === "accommodation" && <AccommodationManager />}
       {activeTab === "gallery" && <GalleryManager />}
       {activeTab === "red-litchi" && <RedLitchiManager />}
+      {activeTab === "account" && <AccountManager />}
 
       {activeTab === "packages" && (
         <>

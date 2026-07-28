@@ -27,6 +27,7 @@ export default function GalleryManager() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   useEffect(() => {
     loadData();
@@ -131,6 +132,37 @@ export default function GalleryManager() {
       await loadData();
     } catch (error) {
       console.error("Failed to delete image:", error);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAllVisible = () =>
+    setSelectedIds(new Set(filteredImages.map((img) => img.id)));
+
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (
+      !window.confirm(
+        `Delete ${selectedIds.size} image${selectedIds.size !== 1 ? "s" : ""}?`
+      )
+    )
+      return;
+    try {
+      await Promise.all(Array.from(selectedIds).map((id) => deleteImage(id)));
+      setSelectedIds(new Set());
+      await loadData();
+    } catch (error) {
+      console.error("Failed to delete selected images:", error);
     }
   };
 
@@ -320,18 +352,56 @@ export default function GalleryManager() {
           ))}
         </div>
 
+        {/* Bulk selection toolbar */}
+        <div className="flex flex-wrap items-center gap-4 mb-4">
+          <button
+            onClick={selectAllVisible}
+            className="text-white/50 hover:text-white/80 text-xs uppercase tracking-widest transition-colors"
+          >
+            Select All
+          </button>
+          {selectedIds.size > 0 && (
+            <>
+              <button
+                onClick={clearSelection}
+                className="text-white/50 hover:text-white/80 text-xs uppercase tracking-widest transition-colors"
+              >
+                Clear ({selectedIds.size})
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="bg-red-500 text-white px-4 py-1.5 rounded-lg font-semibold tracking-wider text-xs uppercase hover:bg-red-600 transition-colors"
+              >
+                Delete Selected ({selectedIds.size})
+              </button>
+            </>
+          )}
+        </div>
+
         {/* Image grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {filteredImages.map((image) => (
+          {filteredImages.map((image) => {
+            const selected = selectedIds.has(image.id);
+            return (
             <div
               key={image.id}
-              className="relative aspect-square bg-[#1a1d27] rounded-lg border border-white/5 overflow-hidden group"
+              className={`relative aspect-square bg-[#1a1d27] rounded-lg border overflow-hidden group ${
+                selected ? "border-[#C07750] ring-2 ring-[#C07750]" : "border-white/5"
+              }`}
             >
               <img
                 src={image.src}
                 alt=""
                 className="absolute inset-0 w-full h-full object-cover"
               />
+              <label className="absolute top-2 left-2 w-7 h-7 flex items-center justify-center bg-black/60 rounded-full cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selected}
+                  onChange={() => toggleSelect(image.id)}
+                  className="w-4 h-4 rounded accent-[#C07750]"
+                />
+              </label>
               <button
                 onClick={() => handleDeleteImage(image.id)}
                 className="absolute top-2 right-2 bg-black/60 hover:bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm transition-colors"
@@ -356,7 +426,8 @@ export default function GalleryManager() {
                 </select>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>
