@@ -39,17 +39,31 @@ function num(v: FormDataEntryValue | null): number | null {
   return Number.isFinite(n) && String(v ?? '').trim() !== '' ? n : null
 }
 
-/** Children are replaced wholesale on every save — simplest correct behaviour for small collections. */
+/**
+ * Children are replaced wholesale on every save. `parseRepeater` only proves each field is a
+ * JSON array — it can't catch a bad enum value or a dangling foreign key, which the insert below
+ * still can. So the prior rows are snapshotted first and restored if the insert fails, instead of
+ * leaving the delete committed against a rejected insert.
+ */
 async function replaceChildren(
   db: ReturnType<typeof createServiceClient>,
   table: string,
   playId: string,
   rows: Record<string, unknown>[],
+  label: string,
 ) {
-  await db.from(table).delete().eq('play_id', playId)
+  const { data: prior, error: readError } = await db.from(table).select('*').eq('play_id', playId)
+  if (readError) throw readError
+
+  const { error: deleteError } = await db.from(table).delete().eq('play_id', playId)
+  if (deleteError) throw deleteError
+
   if (rows.length) {
     const { error } = await db.from(table).insert(rows.map((r) => ({ ...r, play_id: playId })))
-    if (error) throw error
+    if (error) {
+      if (prior?.length) await db.from(table).insert(prior)
+      throw new Error(`"${label}" couldn't be saved — check the field names and values match the hint. Nothing was changed.`)
+    }
   }
 }
 
@@ -106,19 +120,34 @@ export async function savePlay(_prev: PlayFormState, formData: FormData): Promis
   }
   const playId = saved.data.id
 
-  await replaceChildren(db, 'play_roles', playId, roles)
-  await replaceChildren(db, 'play_media', playId, media)
-  await replaceChildren(db, 'play_press', playId, press)
-  await replaceChildren(db, 'play_productions', playId, productions)
-  await replaceChildren(db, 'rights_availability', playId, rights)
+  try {
+    await replaceChildren(db, 'play_roles', playId, roles, 'Cast')
+    await replaceChildren(db, 'play_media', playId, media, 'Media')
+    await replaceChildren(db, 'play_press', playId, press, 'Press quotes')
+    await replaceChildren(db, 'play_productions', playId, productions, 'Production history')
+    await replaceChildren(db, 'rights_availability', playId, rights, 'Rights and availability')
 
-  const writerIds = formData.getAll('playwrightIds').map(String).filter(Boolean)
-  await db.from('play_playwrights').delete().eq('play_id', playId)
-  if (writerIds.length) {
-    const { error } = await db.from('play_playwrights').insert(
-      writerIds.map((playwright_id, sort) => ({ play_id: playId, playwright_id, role: 'author', sort })),
-    )
-    if (error) throw error
+    const writerIds = formData.getAll('playwrightIds').map(String).filter(Boolean)
+    const { data: priorWriters, error: readError } = await db
+      .from('play_playwrights')
+      .select('*')
+      .eq('play_id', playId)
+    if (readError) throw readError
+
+    const { error: deleteError } = await db.from('play_playwrights').delete().eq('play_id', playId)
+    if (deleteError) throw deleteError
+
+    if (writerIds.length) {
+      const { error } = await db.from('play_playwrights').insert(
+        writerIds.map((playwright_id, sort) => ({ play_id: playId, playwright_id, role: 'author', sort })),
+      )
+      if (error) {
+        if (priorWriters?.length) await db.from('play_playwrights').insert(priorWriters)
+        throw new Error('One of the selected playwrights is invalid. Nothing was changed.')
+      }
+    }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Something went wrong saving this play. Please try again.' }
   }
 
   revalidatePath('/plays')

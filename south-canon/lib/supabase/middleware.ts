@@ -19,9 +19,10 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-  // /admin/reset must stay reachable pre-session: Supabase's recovery link carries its token
-  // in the URL fragment, which the server never sees, so the client-side JS on that page is
-  // what actually establishes the session — the middleware can't check it on this request.
+  // /admin/reset must stay reachable pre-session: the recovery link's token (a `?code=` param
+  // under @supabase/ssr's default PKCE flow) is exchanged for a session by client-side JS on
+  // that page on load — this request arrives before that exchange, so no session cookie exists
+  // for the middleware to check yet.
   const isExempt = request.nextUrl.pathname === '/admin/login' || request.nextUrl.pathname === '/admin/reset'
   const isAdmin = user?.app_metadata?.role === 'admin'
 
