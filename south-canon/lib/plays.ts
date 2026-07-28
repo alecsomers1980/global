@@ -2,6 +2,7 @@ import { createServerClient } from './supabase/server'
 import { formatCastSize } from './cast'
 import type { CatalogueFilters } from './filters'
 import type { CastRole, PlayDetail, PlaySummary } from './types'
+import type { LicenceTier } from './types'
 
 const SUMMARY_SELECT = `
   id, title, slug, logline, genres, duration_min, hero_image_url,
@@ -148,4 +149,38 @@ export async function listGenres(): Promise<string[]> {
   if (error) throw error
   const all = (data ?? []).flatMap((r) => r.genres ?? [])
   return [...new Set(all)].sort()
+}
+
+export async function listLicenceTiers(): Promise<LicenceTier[]> {
+  const db = createServerClient()
+  const { data, error } = await db.from('licence_tiers').select('*').order('sort')
+  if (error) throw error
+  return (data ?? []).map((t: any) => ({
+    id: t.id,
+    label: t.label,
+    description: t.description,
+    minFee: t.min_fee === null ? null : Number(t.min_fee),
+    royaltyPct: t.royalty_pct === null ? null : Number(t.royalty_pct),
+    sort: t.sort,
+  }))
+}
+
+/** Related by shared playwright first, then shared genre. Never returns the play itself. */
+export async function listRelatedPlays(play: PlayDetail, limit = 3): Promise<PlaySummary[]> {
+  const all = await listPlays({ genres: [] })
+  const others = all.filter((p) => p.id !== play.id)
+  const writerSlugs = new Set(play.credits.map((c) => c.slug))
+
+  const scored = others.map((p) => ({
+    play: p,
+    score:
+      (p.credits.some((c) => writerSlugs.has(c.slug)) ? 2 : 0) +
+      (p.genres.some((g) => play.genres.includes(g)) ? 1 : 0),
+  }))
+
+  return scored
+    .filter((s) => s.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((s) => s.play)
 }
