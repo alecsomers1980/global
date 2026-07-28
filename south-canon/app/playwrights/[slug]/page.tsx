@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 import { PlayCard } from '@/components/catalogue/PlayCard'
 import { getPlaywrightBySlug, listPlaywrightSlugs } from '@/lib/playwrights'
+import { playwrightSchema } from '@/lib/seo'
 
 export const revalidate = 300
 
@@ -29,6 +30,10 @@ export default async function PlaywrightPage({ params }: { params: Promise<{ slu
 
   return (
     <Container className="py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playwrightSchema(w)) }}
+      />
       <div className="grid gap-10 md:grid-cols-[240px_1fr]">
         {w.portraitUrl ? (
           // eslint-disable-next-line @next/next/no-img-element

@@ -14,6 +14,7 @@ import { PlaywrightCard } from '@/components/play/PlaywrightCard'
 import { RelatedPlays } from '@/components/play/RelatedPlays'
 import { getPlayBySlug, listLicenceTiers, listPlaySlugs, listRelatedPlays } from '@/lib/plays'
 import { getPlaywrightBySlug } from '@/lib/playwrights'
+import { playSchema } from '@/lib/seo'
 
 export const revalidate = 300
 
@@ -47,6 +48,10 @@ export default async function PlayPage({ params }: { params: Promise<{ slug: str
 
   return (
     <Container className="py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playSchema(play)) }}
+      />
       <PlayHero play={play} />
       <div className="mt-16 space-y-16">
         <AtAGlance play={play} />
