@@ -1,11 +1,19 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { Suspense, useActionState, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 import { submitEnquiry, type ContactState } from './actions'
 
 export default function ContactPage() {
+  return (
+    <Suspense fallback={null}>
+      <ContactForm />
+    </Suspense>
+  )
+}
+
+function ContactForm() {
   const params = useSearchParams()
   const [startedAt] = useState(() => Date.now())
   const [state, action, pending] = useActionState<ContactState, FormData>(submitEnquiry, null)
