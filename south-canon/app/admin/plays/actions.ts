@@ -3,6 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createServiceClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/supabase/admin'
+
+export type PlayFormState = { error: string } | null
 
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -12,13 +15,23 @@ function csv(v: FormDataEntryValue | null): string[] {
   return String(v ?? '').split(',').map((x) => x.trim()).filter(Boolean)
 }
 
-function json<T>(v: FormDataEntryValue | null): T[] {
+/**
+ * Parses one repeater field. Throws (with the field's own label) on invalid JSON, so callers
+ * can validate every repeater before writing anything — a JSON typo must never silently empty
+ * a play's cast, rights, press, media or production history.
+ */
+function parseRepeater(label: string, v: FormDataEntryValue | null): Record<string, unknown>[] {
+  const raw = String(v ?? '[]').trim() || '[]'
+  let parsed: unknown
   try {
-    const parsed = JSON.parse(String(v ?? '[]'))
-    return Array.isArray(parsed) ? parsed : []
+    parsed = JSON.parse(raw)
   } catch {
-    return []
+    throw new Error(`"${label}" isn't valid JSON — fix it and save again. Nothing was changed.`)
   }
+  if (!Array.isArray(parsed)) {
+    throw new Error(`"${label}" must be a JSON array — fix it and save again. Nothing was changed.`)
+  }
+  return parsed as Record<string, unknown>[]
 }
 
 function num(v: FormDataEntryValue | null): number | null {
@@ -40,10 +53,23 @@ async function replaceChildren(
   }
 }
 
-export async function savePlay(formData: FormData) {
+export async function savePlay(_prev: PlayFormState, formData: FormData): Promise<PlayFormState> {
+  await requireAdmin()
   const db = createServiceClient()
   const id = String(formData.get('id') ?? '')
   const title = String(formData.get('title') ?? '').trim()
+
+  // Validate every repeater before touching the database — see parseRepeater's doc comment.
+  let roles, media, press, productions, rights
+  try {
+    roles = parseRepeater('Cast', formData.get('roles'))
+    media = parseRepeater('Media', formData.get('media'))
+    press = parseRepeater('Press quotes', formData.get('press'))
+    productions = parseRepeater('Production history', formData.get('productions'))
+    rights = parseRepeater('Rights and availability', formData.get('rights'))
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'One of the repeater fields is invalid.' }
+  }
 
   const row = {
     title,
@@ -69,21 +95,30 @@ export async function savePlay(formData: FormData) {
   const saved = id
     ? await db.from('plays').update(row).eq('id', id).select('id').single()
     : await db.from('plays').insert(row).select('id').single()
-  if (saved.error) throw saved.error
+
+  if (saved.error) {
+    if (saved.error.code === '23505') {
+      return {
+        error: 'A play with that title or slug already exists. Try a different title, or set the slug manually.',
+      }
+    }
+    return { error: 'Something went wrong saving this play. Please try again.' }
+  }
   const playId = saved.data.id
 
-  await replaceChildren(db, 'play_roles', playId, json(formData.get('roles')))
-  await replaceChildren(db, 'play_media', playId, json(formData.get('media')))
-  await replaceChildren(db, 'play_press', playId, json(formData.get('press')))
-  await replaceChildren(db, 'play_productions', playId, json(formData.get('productions')))
-  await replaceChildren(db, 'rights_availability', playId, json(formData.get('rights')))
+  await replaceChildren(db, 'play_roles', playId, roles)
+  await replaceChildren(db, 'play_media', playId, media)
+  await replaceChildren(db, 'play_press', playId, press)
+  await replaceChildren(db, 'play_productions', playId, productions)
+  await replaceChildren(db, 'rights_availability', playId, rights)
 
-  const writerIds = csv(formData.get('playwrightIds'))
+  const writerIds = formData.getAll('playwrightIds').map(String).filter(Boolean)
   await db.from('play_playwrights').delete().eq('play_id', playId)
   if (writerIds.length) {
-    await db.from('play_playwrights').insert(
+    const { error } = await db.from('play_playwrights').insert(
       writerIds.map((playwright_id, sort) => ({ play_id: playId, playwright_id, role: 'author', sort })),
     )
+    if (error) throw error
   }
 
   revalidatePath('/plays')
@@ -92,6 +127,7 @@ export async function savePlay(formData: FormData) {
 }
 
 export async function deletePlay(formData: FormData) {
+  await requireAdmin()
   const db = createServiceClient()
   const { error } = await db.from('plays').delete().eq('id', String(formData.get('id')))
   if (error) throw error

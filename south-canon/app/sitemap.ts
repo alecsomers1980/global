@@ -3,6 +3,8 @@ import { listPlaySlugs } from '@/lib/plays'
 import { listPlaywrightSlugs } from '@/lib/playwrights'
 import { SITE_URL } from '@/lib/seo'
 
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [plays, playwrights] = await Promise.all([listPlaySlugs(), listPlaywrightSlugs()])
   const staticRoutes = ['', '/plays', '/playwrights', '/about', '/contact']

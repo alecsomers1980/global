@@ -1,5 +1,8 @@
+'use client'
+
+import { useActionState } from 'react'
 import { RepeaterField } from './RepeaterField'
-import { savePlay } from '@/app/admin/plays/actions'
+import { savePlay, type PlayFormState } from '@/app/admin/plays/actions'
 import { TERRITORIES } from '@/lib/types'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -10,11 +13,12 @@ export function PlayForm({
   play: any | null
   playwrights: { id: string; name: string }[]
 }) {
+  const [state, action, pending] = useActionState<PlayFormState, FormData>(savePlay, null)
   const field = 'border-b border-rule bg-transparent py-2 outline-none focus:border-accent'
   const area = 'border border-rule bg-transparent p-3 outline-none focus:border-accent'
 
   return (
-    <form action={savePlay} className="mt-10 grid max-w-3xl gap-6">
+    <form action={action} className="mt-10 grid max-w-3xl gap-6">
       {play && <input type="hidden" name="id" value={play.id} />}
 
       <label className="flex flex-col gap-1">
@@ -143,9 +147,15 @@ export function PlayForm({
         </select>
       </label>
 
-      <button type="submit" className="justify-self-start bg-accent px-8 py-3 text-sm uppercase tracking-wide text-paper">
-        Save
+      <button
+        type="submit"
+        disabled={pending}
+        className="justify-self-start bg-accent px-8 py-3 text-sm uppercase tracking-wide text-paper disabled:opacity-50"
+      >
+        {pending ? 'Saving…' : 'Save'}
       </button>
+
+      {state?.error && <p className="text-restricted">{state.error}</p>}
     </form>
   )
 }

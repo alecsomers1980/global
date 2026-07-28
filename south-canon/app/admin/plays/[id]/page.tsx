@@ -1,5 +1,6 @@
 import { Container } from '@/components/ui/Container'
 import { PlayForm } from '@/components/admin/PlayForm'
+import { DeleteButton } from '@/components/admin/DeleteButton'
 import { createServiceClient } from '@/lib/supabase/server'
 import { deletePlay } from '../actions'
 
@@ -30,9 +31,10 @@ export default async function EditPlay({ params }: { params: Promise<{ id: strin
       {!isNew && (
         <form action={deletePlay} className="mt-10">
           <input type="hidden" name="id" value={id} />
-          <button type="submit" className="text-sm text-restricted hover:underline">
-            Delete this play
-          </button>
+          <DeleteButton
+            label="Delete this play"
+            confirmMessage={`Delete "${playRes.data?.title}"? This also removes its cast, rights, press, media and production history. This cannot be undone.`}
+          />
         </form>
       )}
     </Container>
