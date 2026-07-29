@@ -1,4 +1,5 @@
-import { supabase, getImageUrl } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { getImageUrl } from "@/lib/media";
 import Navbar from "@/components/Navbar";
 import { format } from "date-fns";
 import { Clock, User, Share2, ArrowLeft, ArrowRight } from "lucide-react";

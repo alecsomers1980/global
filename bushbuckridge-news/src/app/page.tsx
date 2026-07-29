@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import CommunityPulse from "@/components/Features";
-import { supabase, getImageUrl } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { getImageUrl } from '@/lib/media';
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
