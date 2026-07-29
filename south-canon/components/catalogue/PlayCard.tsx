@@ -8,16 +8,26 @@ export function PlayCard({ play }: { play: PlaySummary }) {
       className="group block border-b border-rule py-8 transition-colors hover:border-accent"
     >
       <article className="grid gap-4 md:grid-cols-[1fr_auto] md:items-start">
-        <div>
-          <h2 className="font-display text-3xl leading-tight group-hover:text-accent md:text-4xl">
-            {play.title}
-          </h2>
-          {play.credits.length > 0 && (
-            <p className="mt-1 text-sm text-muted">
-              {play.credits.map((c) => c.name).join(' · ')}
-            </p>
+        <div className="flex gap-6">
+          {play.heroImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={play.heroImageUrl}
+              alt={`Illustrative artwork for ${play.title}`}
+              className="aspect-[3/4] w-28 shrink-0 object-cover md:w-36"
+            />
           )}
-          {play.logline && <p className="mt-3 max-w-2xl text-base">{play.logline}</p>}
+          <div>
+            <h2 className="font-display text-3xl leading-tight group-hover:text-accent md:text-4xl">
+              {play.title}
+            </h2>
+            {play.credits.length > 0 && (
+              <p className="mt-1 text-sm text-muted">
+                {play.credits.map((c) => c.name).join(' · ')}
+              </p>
+            )}
+            {play.logline && <p className="mt-3 max-w-2xl text-base">{play.logline}</p>}
+          </div>
         </div>
         <dl className="flex gap-6 text-xs tracking-wide uppercase text-muted md:flex-col md:gap-2 md:text-right">
           {play.genres.length > 0 && (
