@@ -37,7 +37,19 @@ export async function GET(req: Request) {
     // still not 'ready' after this long is stuck (stale task id, silently
     // dead render, etc) and must not keep winning the single per-tick slot
     // over every other job forever.
-    const STUCK_CUTOFF_MS = 60 * 60 * 1000
+    //
+    // This cutoff only applies to jobs that have actually been SUBMITTED to
+    // Seedance (generating/rendering/compositing). It is measured against
+    // created_at, which is set at plan-generation time — not when the job
+    // starts processing. The cron advances exactly one job per 10-minute
+    // tick, and a single video takes ~3 ticks (submit → poll/download →
+    // composite) end to end. A batch of 3 video jobs is inserted with
+    // near-identical created_at and drains strictly sequentially (pending
+    // has the lowest priority below), so job 2 can legitimately still be
+    // mid-render ~60 minutes after created_at, and job 3 may not even be
+    // submitted yet by then. 4 hours comfortably covers worst-case queue
+    // drain for a full batch of 3 without punishing normal queue depth.
+    const STUCK_CUTOFF_MS = 4 * 60 * 60 * 1000
 
     try {
         // One job per tick — advances whichever job is furthest along, so a
@@ -57,16 +69,19 @@ export async function GET(req: Request) {
 
         // Recover jobs that have been stuck for too long instead of letting
         // them starve the queue: flip them to 'failed' and drop them from
-        // this tick's candidate pool.
+        // this tick's candidate pool. 'pending' jobs are exempt — they
+        // haven't been submitted to Seedance yet, so they haven't consumed
+        // any resource and by definition aren't "stuck," they're just
+        // waiting their turn behind other jobs in the queue.
         const now = Date.now()
-        const staleJobs = (jobs as any[]).filter(j => now - new Date(j.created_at).getTime() > STUCK_CUTOFF_MS)
-        const activeJobs = (jobs as any[]).filter(j => now - new Date(j.created_at).getTime() <= STUCK_CUTOFF_MS)
+        const staleJobs = (jobs as any[]).filter(j => j.video_status !== 'pending' && now - new Date(j.created_at).getTime() > STUCK_CUTOFF_MS)
+        const activeJobs = (jobs as any[]).filter(j => j.video_status === 'pending' || now - new Date(j.created_at).getTime() <= STUCK_CUTOFF_MS)
 
         for (const stale of staleJobs) {
             console.warn(`generate-videos: job ${stale.id} stuck in '${stale.video_status}' past ${STUCK_CUTOFF_MS / 60000}min, marking failed`)
             const { error: staleErr } = await supabase
                 .from('posts')
-                .update({ video_status: 'failed', last_error: 'Video generation timed out after 60 minutes' } as never)
+                .update({ video_status: 'failed', last_error: `Video generation timed out after ${STUCK_CUTOFF_MS / 60000} minutes` } as never)
                 .eq('id', stale.id)
             if (staleErr) console.error(`generate-videos: failed to mark stuck job ${stale.id} as failed:`, staleErr)
         }

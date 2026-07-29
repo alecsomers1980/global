@@ -34,9 +34,9 @@ export async function GET(req: Request) {
         const nowIso = now.toISOString()
 
         // Approved posts whose scheduled time has arrived.
-        const { data: approvedPosts, error: approvedErr } = await supabase
+        const { data: approvedPostsRaw, error: approvedErr } = await supabase
             .from('posts')
-            .select('id')
+            .select('id, pillar, video_status')
             .eq('status', 'approved')
             .not('scheduled_at', 'is', null)
             .lte('scheduled_at', nowIso)
@@ -44,6 +44,20 @@ export async function GET(req: Request) {
             .limit(10)
 
         if (approvedErr) console.error('publish-scheduled: approved query error:', approvedErr)
+
+        // A pillar='video' post carries reference stock photos in media_urls
+        // from insert time (so Seedance has something to work from), so it
+        // can look like a normal approvable post even while its video job is
+        // still rendering or has failed outright. Don't let it publish as
+        // 3 raw stock photos with a video-flavored caption — only publish
+        // once the video has actually finished (video_status === 'ready').
+        const approvedPosts = (approvedPostsRaw ?? []).filter((p: any) => {
+            if (p.pillar === 'video' && p.video_status !== 'ready') {
+                console.warn(`publish-scheduled: skipping post ${p.id} — pillar='video' but video_status='${p.video_status}' (not ready)`)
+                return false
+            }
+            return true
+        })
 
         // Posts stuck in 'publishing' are recovered: a previous run crashed
         // mid-flight (timeout, deploy interrupt, etc) and left them

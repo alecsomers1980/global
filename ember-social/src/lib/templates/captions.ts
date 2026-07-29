@@ -150,8 +150,8 @@ export function videoCaption(conceptTitle: string, car: VehicleInput): string {
     const name = `${car.year} ${car.make} ${modelTrim(car)}`
     const url = vehicleUrl(car)
     const hook = `${conceptTitle} 🎬`
-    const body = `Watch the ${name} in motion — new video dropping soon. Don't wait for the reel to fall in love with it in person.`
-    const cta = `See it in full: ${url}`
+    const body = `Watch the ${name} in motion. Hit play and see why this one won't be sitting on our floor for long.`
+    const cta = `See the full listing: ${url}`
     return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
 }
 

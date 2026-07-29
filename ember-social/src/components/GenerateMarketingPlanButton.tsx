@@ -11,7 +11,9 @@ interface GenerationResult {
     strategy_rationale: string
     pillars: string[]
     count: number
+    totalExpected: number
     public_token: string | null
+    errors?: string[]
 }
 
 // Next 6 months (incl. current) as { value: "YYYY-MM", label: "June 2026" }.
@@ -59,7 +61,9 @@ export default function GenerateMarketingPlanButton({ workspaceSlug }: Props) {
                     strategy_rationale: data.strategy_rationale,
                     pillars: data.pillars,
                     count: data.count,
+                    totalExpected: data.totalExpected,
                     public_token: data.public_token || null,
+                    errors: data.errors,
                 })
             } else {
                 alert(`Generation failed: ${data.error || 'unknown'}`)
@@ -114,12 +118,25 @@ export default function GenerateMarketingPlanButton({ workspaceSlug }: Props) {
                     style={{ border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.04)' }}>
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-semibold text-green-300">
-                            {result.count} posts generated
+                            {result.totalExpected && result.count !== result.totalExpected
+                                ? `${result.count} of ${result.totalExpected} posts generated`
+                                : `${result.count} posts generated`}
                         </span>
                         <button onClick={() => setResult(null)} className="text-green-400 hover:text-white transition-colors">
                             <X className="w-4 h-4" />
                         </button>
                     </div>
+
+                    {result.errors && result.errors.length > 0 && (
+                        <div className="rounded-xl p-3 space-y-1.5" style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.25)' }}>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-red-400">
+                                {result.errors.length} post{result.errors.length === 1 ? '' : 's'} failed to generate
+                            </p>
+                            <ul className="text-xs space-y-0.5" style={{ color: '#f87171' }}>
+                                {result.errors.map((err, i) => <li key={i}>{err}</li>)}
+                            </ul>
+                        </div>
+                    )}
 
                     {/* Shareable client link */}
                     {planUrl && (
