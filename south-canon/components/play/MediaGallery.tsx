@@ -31,6 +31,7 @@ export function MediaGallery({ media }: { media: PlayMedia[] }) {
                 src={v.url}
                 title={v.caption ?? 'Production video'}
                 allowFullScreen
+                loading="lazy"
                 className="h-full w-full"
               />
             </div>

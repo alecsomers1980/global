@@ -15,7 +15,7 @@ export default async function PlaywrightsPage() {
   return (
     <Container className="py-16">
       <h1 className="font-display text-5xl md:text-6xl">Playwrights</h1>
-      <div className="mt-12">
+      <div className="mt-12 space-y-12">
         {playwrights.map((p) => (
           <PlaywrightCard key={p.slug} playwright={p} />
         ))}
