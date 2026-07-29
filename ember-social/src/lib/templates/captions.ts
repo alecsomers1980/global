@@ -93,3 +93,22 @@ export function sellYourCarCaption(freshBody?: string | null): string {
 export function sellYourCarHashtags(): string[] {
     return pickHashtags(3, ['#SellYourCar', '#TradeInSA', '#WeBuyCars'])
 }
+
+// --- FINANCE ---
+export function financeCaption(car: VehicleInput, monthly: number, freshBody?: string | null): string {
+    const name = `${car.year} ${car.make} ${modelTrim(car)}`
+    const url = vehicleUrl(car)
+    const amount = `R${monthly.toLocaleString('en-ZA').replace(/,/g, ' ')}`
+    if (freshBody) {
+        return `${freshBody}\n\n${name} — estimated ${amount}/month*\n\n*Est: no deposit, no balloon, 72 months @ 12.5% p.a. On approved credit. T&Cs apply.\n\nView it today: ${url}${contactStrip()}`
+    }
+    const hook = `Getting into something you love shouldn't mean waiting years.`
+    const body = `The ${name} works out to an estimated ${amount} a month.* Come talk numbers — you might be closer than you think.`
+    const disclaimer = `*Est: no deposit, no balloon, 72 months @ 12.5% p.a. On approved credit. T&Cs apply.`
+    const cta = `View it today: ${url}`
+    return `${hook}\n\n${body}\n\n${disclaimer}\n\n${cta}${contactStrip()}`
+}
+
+export function financeHashtags(): string[] {
+    return pickHashtags(3, ['#CarFinance', '#DriveNow', '#PreOwned'])
+}
