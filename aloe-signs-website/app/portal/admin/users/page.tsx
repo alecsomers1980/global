@@ -17,6 +17,13 @@ export default function AdminUsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [banner, setBanner] = useState<{ email: string; password: string } | null>(null);
 
+  // Edit user
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFullName, setEditFullName] = useState('');
+  const [editShortCode, setEditShortCode] = useState('');
+  const [editLoading, setEditLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   // Add user form
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
@@ -78,6 +85,60 @@ export default function AdminUsersPage() {
       }
     } catch (err: any) {
       alert(err.message);
+    }
+  };
+
+  const startEditing = (user: User) => {
+    setEditingId(user.id);
+    setEditFullName(user.full_name);
+    setEditShortCode(user.short_code);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditFullName('');
+    setEditShortCode('');
+  };
+
+  const handleSaveEdit = async (userId: string) => {
+    setEditLoading(true);
+    try {
+      const res = await fetch(`/api/portal/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: editFullName, short_code: editShortCode }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.message || 'Failed to update user');
+      } else {
+        cancelEditing();
+        fetchUsers();
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (user: User) => {
+    if (!confirm(`Delete ${user.email}? This cannot be undone.`)) return;
+    setDeletingId(user.id);
+    try {
+      const res = await fetch(`/api/portal/admin/users/${user.id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.message || 'Failed to delete user');
+      } else {
+        fetchUsers();
+      }
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -162,31 +223,91 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3">{user.short_code || '—'}</td>
-                    <td className="px-4 py-3">{user.full_name || '—'}</td>
-                    <td className="px-4 py-3">{user.email}</td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                        className="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white"
-                      >
-                        <option value="admin">admin</option>
-                        <option value="user">user</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleResetPassword(user.id)}
-                        className="bg-[#84cc16] text-black rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#72b012] transition-colors"
-                      >
-                        Reset password
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((user) => {
+                  const isEditing = editingId === user.id;
+                  return (
+                    <tr key={user.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3">
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editShortCode}
+                            onChange={(e) => setEditShortCode(e.target.value)}
+                            className="w-20 bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-white"
+                          />
+                        ) : (
+                          user.short_code || '—'
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editFullName}
+                            onChange={(e) => setEditFullName(e.target.value)}
+                            className="w-full bg-black/30 border border-white/10 rounded-lg px-2 py-1 text-white"
+                          />
+                        ) : (
+                          user.full_name || '—'
+                        )}
+                      </td>
+                      <td className="px-4 py-3">{user.email}</td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          className="bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-white"
+                        >
+                          <option value="admin">admin</option>
+                          <option value="user">user</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-2">
+                          {isEditing ? (
+                            <>
+                              <button
+                                onClick={() => handleSaveEdit(user.id)}
+                                disabled={editLoading}
+                                className="bg-[#84cc16] text-black rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#72b012] transition-colors disabled:opacity-50"
+                              >
+                                {editLoading ? 'Saving...' : 'Save'}
+                              </button>
+                              <button
+                                onClick={cancelEditing}
+                                className="bg-white/10 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-white/20 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEditing(user)}
+                                className="bg-white/10 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-white/20 transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleResetPassword(user.id)}
+                                className="bg-[#84cc16] text-black rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-[#72b012] transition-colors"
+                              >
+                                Reset password
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(user)}
+                                disabled={deletingId === user.id}
+                                className="bg-red-500/20 text-red-400 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                              >
+                                {deletingId === user.id ? 'Deleting...' : 'Delete'}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {users.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-white/50">

@@ -105,3 +105,47 @@ export async function PATCH(
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const admin = await requireAdmin();
+    if (!admin.ok) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { id } = await context.params;
+
+    if (id === admin.staff.user.id) {
+      return NextResponse.json({ message: 'You cannot delete your own account' }, { status: 400 });
+    }
+
+    const supabase = createAdminSupabase();
+
+    const { data: { user }, error: fetchError } = await supabase.auth.admin.getUserById(id);
+    if (fetchError || !user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(id);
+    if (deleteError) {
+      return NextResponse.json({ message: deleteError.message }, { status: 400 });
+    }
+
+    await logAudit({
+      actorEmail: admin.staff.email,
+      actorCode: admin.staff.code,
+      action: 'user.delete',
+      entityType: 'user',
+      entityId: user.email,
+      summary: `Deleted ${user.email}`,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
