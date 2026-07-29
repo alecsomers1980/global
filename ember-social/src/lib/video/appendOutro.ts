@@ -4,7 +4,7 @@
 // system ffmpeg binary required, works in a Vercel serverless function.
 
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
+import { mkdirSync, existsSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import sharp from 'sharp'
 import ffmpegPath from 'ffmpeg-static'
@@ -83,5 +83,11 @@ export async function appendOutro(sourceBuf: Buffer, tagline: string, accent: st
         outPath,
     ])
 
-    return readFileSync(outPath)
+    const result = readFileSync(outPath)
+
+    // Cron warm containers can reuse this process across ticks — clean up the
+    // per-call scratch dir so /tmp doesn't accumulate render artifacts.
+    try { rmSync(workDir, { recursive: true, force: true }) } catch {}
+
+    return result
 }

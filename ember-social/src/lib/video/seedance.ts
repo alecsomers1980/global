@@ -25,6 +25,7 @@ export async function submitSeedanceTask(prompt: string, referenceImageUrls: str
             },
         }),
     })
+    if (!r.ok) throw new Error(`createTask HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`)
     const data = await r.json()
     if (data.code !== 200 || !data.data?.taskId) throw new Error(`createTask failed: ${JSON.stringify(data).slice(0, 300)}`)
     return data.data.taskId
@@ -35,6 +36,7 @@ export async function pollSeedanceTask(taskId: string): Promise<{ state: 'proces
     const r = await fetch(`https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`, {
         headers: { Authorization: `Bearer ${KIE_KEY}` },
     })
+    if (!r.ok) throw new Error(`recordInfo HTTP ${r.status}: ${(await r.text()).slice(0, 300)}`)
     const data = await r.json()
     const st = data.data?.state
     if (st === 'success') {
