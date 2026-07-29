@@ -39,7 +39,7 @@ export interface RenderResult {
     hashtags: string[]
     scheduledAt: Date
     ctaUrl?: string
-    pillar: 'showcase' | 'lifestyle' | 'maintenance' | 'seasonal' | 'sellYourCar'
+    pillar: 'showcase' | 'lifestyle' | 'maintenance' | 'seasonal' | 'sellYourCar' | 'finance' | 'comparison' | 'seasonalLocal'
 }
 
 export const OPENAI_KEY = process.env.OPENAI_API_KEY
