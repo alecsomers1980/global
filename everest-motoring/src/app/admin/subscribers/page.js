@@ -48,7 +48,7 @@ export default async function SubscribersPage() {
                         {rows.map((s) => (
                             <tr key={s.id} className="hover:bg-slate-50 transition-colors">
                                 <td className="p-5 font-bold text-slate-900">
-                                    <a href={`mailto:${s.email}`} className="hover:text-primary">{s.email}</a>
+                                    <a href={`mailto:${s.email}`} className="hover:text-primary-ink">{s.email}</a>
                                 </td>
                                 <td className="p-5 text-slate-500 font-medium">
                                     {s.created_at ? new Date(s.created_at).toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" }) : "—"}

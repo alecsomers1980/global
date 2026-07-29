@@ -6,6 +6,8 @@ import InventoryTable from "./InventoryTable";
 import SeoBatchButton from "./SeoBatchButton";
 import { pingDeletedVehicle } from "./seo_actions";
 import { deleteStreamFromVideoUrl } from "@/utils/ai/cloudflareStreamService";
+import Link from "next/link";
+import { Rule } from "@/components/ui/Surface";
 
 export const metadata = {
     title: "Admin Dashboard | Everest Motoring",
@@ -84,22 +86,23 @@ export default async function AdminDashboardPage() {
         .order('created_at', { ascending: false });
 
     return (
-        <div className="p-8 max-w-7xl mx-auto w-full text-white">
-            <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
+        <div className="px-6 py-12 lg:px-10 max-w-7xl mx-auto w-full">
+            <div className="flex justify-between items-end mb-10 gap-6 flex-wrap">
                 <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tight text-black">Manage <span className="italic">Inventory</span></h1>
-                    <p className="text-slate-400 mt-1 font-medium">Real-time control over showroom listings and vehicle status.</p>
+                    <Rule className="mb-5" />
+                    <h1 className="text-display-sm font-semibold text-slate-900">Inventory</h1>
+                    <p className="text-slate-500 mt-2">Showroom listings and vehicle status.</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                     <SeoBatchButton />
-                    <a href="/admin/sales" className="bg-white border border-slate-300 hover:bg-slate-50 transition-all px-6 py-3 rounded-xl font-black text-slate-800 shadow-sm flex items-center gap-2 active:scale-95">
-                        <span className="material-symbols-outlined text-[20px]">sell</span>
-                        Off-Inventory Sale
-                    </a>
-                    <a href="/admin/inventory/add" className="bg-primary hover:bg-primary-dark transition-all px-6 py-3 rounded-xl font-black text-black shadow-lg shadow-primary/20 flex items-center gap-2 active:scale-95">
-                        <span className="material-symbols-outlined text-[20px]">add</span>
-                        Add Vehicle
-                    </a>
+                    <Link href="/admin/sales" className="bg-white border border-hairline hover:border-slate-400 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium text-slate-900 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px]">sell</span>
+                        Off-inventory sale
+                    </Link>
+                    <Link href="/admin/inventory/add" className="bg-slate-900 hover:bg-slate-800 transition-colors px-5 py-2.5 rounded-lg text-sm font-medium text-white flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[18px]">add</span>
+                        Add vehicle
+                    </Link>
                 </div>
             </div>
 

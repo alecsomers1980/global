@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Sparkles, Loader2 } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 import { autoFixSeoForCar } from "./seo_actions";
 
 export default function SeoFixButton({ car }) {
@@ -33,25 +35,24 @@ export default function SeoFixButton({ car }) {
     }
 
     return (
-        <button
-            type="button"
+        <IconButton
             onClick={handleClick}
             disabled={pending}
-            className={`p-2 transition-colors ${pending
-                ? "text-slate-300"
+            busy={pending}
+            tone="accent"
+            active={hasSeo}
+            aria-label={pending
+                ? "Generating SEO"
                 : hasSeo
-                    ? "text-purple-500 hover:text-purple-700"
-                    : "text-slate-400 hover:text-purple-600"
-                }`}
+                    ? "Re-generate SEO (title and alts)"
+                    : "Auto-fix SEO (title and alts)"}
             title={pending
                 ? "Generating SEO..."
                 : hasSeo
                     ? "Re-generate SEO (title + alts)"
                     : "Auto-Fix SEO (title + alts)"}
         >
-            <span className={`material-symbols-outlined ${pending ? "animate-spin" : ""}`}>
-                {pending ? "sync" : "auto_fix_high"}
-            </span>
-        </button>
+            {pending ? <Loader2 className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
+        </IconButton>
     );
 }

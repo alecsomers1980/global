@@ -87,7 +87,7 @@ export default function HandoverTestPage() {
                 {videoUrl && (
                     <div className="mt-6">
                         <video src={videoUrl} controls autoPlay loop className="w-full rounded-xl border border-slate-200" />
-                        <a href={videoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary-dark font-bold underline mt-2 inline-block">Open / download</a>
+                        <a href={videoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary-ink font-bold underline mt-2 inline-block">Open / download</a>
                     </div>
                 )}
             </div>

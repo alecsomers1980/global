@@ -1,6 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import ReportActions from "./ReportActions";
 import GenerateReportButton from "./GenerateReportButton";
+import StatTile from "@/components/admin/StatTile";
+import { Surface, Label, Rule } from "@/components/ui/Surface";
+import { monthWindow, inMonth, countByMonth, previousMonthName } from "@/utils/admin/trends";
 
 export const metadata = {
     title: "Mission Control | Everest Admin",
@@ -19,16 +22,25 @@ export default async function AdminDashboardRoot() {
     // 2. Fetch Sales & CRM Velocity (Current Month vs Overall)
     const { data: leads } = await supabase.from('leads').select('status, created_at');
 
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
+    // Bucket leads into the last 6 calendar months so the tiles can show a real
+    // month-over-month delta and trend. Metrics without stored history (stock
+    // level, floor value) deliberately get neither — see StatTile.
+    const now = new Date();
+    const MONTH_WINDOW = 6;
+    const monthKeys = monthWindow(now, MONTH_WINDOW);
+    const lastIndex = MONTH_WINDOW - 1;
 
-    const leadsThisMonth = leads?.filter(l => {
-        const d = new Date(l.created_at);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    }) || [];
+    const leadTrend = countByMonth(leads, monthKeys);
+    const wonTrend = countByMonth(leads, monthKeys, (l) => l.status === 'closed_won');
 
+    const prevMonthName = previousMonthName(now);
+
+    const leadsThisMonth = leads?.filter(l => inMonth(l.created_at, monthKeys[lastIndex])) || [];
     const closedWonLeads = leadsThisMonth.filter(l => l.status === 'closed_won');
     const financePendingLeads = leadsThisMonth.filter(l => l.status === 'finance_pending');
+
+    const leadDelta = leadTrend[lastIndex] - leadTrend[lastIndex - 1];
+    const wonDelta = wonTrend[lastIndex] - wonTrend[lastIndex - 1];
 
     // 3. Fetch Trade-In Volume
     const { count: tradeInCount } = await supabase
@@ -36,117 +48,68 @@ export default async function AdminDashboardRoot() {
         .select('*', { count: 'exact', head: true });
 
     return (
-        <div className="p-8 max-w-7xl mx-auto w-full">
-            <div className="flex justify-between items-center mb-12">
+        <div className="px-6 py-12 lg:px-10 max-w-7xl mx-auto w-full">
+            <div className="flex flex-wrap justify-between items-start gap-6 mb-12">
                 <div>
-                    <h1 className="text-4xl font-black uppercase tracking-tight text-black flex items-center gap-3">
-                        Mission <span className="italic">Control</span>
-                    </h1>
-                    <p className="text-slate-500 mt-2 font-medium tracking-wide">Live Dealership Analytics & Key Performance Indicators.</p>
+                    <Rule className="mb-5" />
+                    <h1 className="text-display-sm font-semibold text-slate-900">Dashboard</h1>
+                    <p className="text-slate-500 mt-2">
+                        Dealership performance at a glance.
+                    </p>
                 </div>
                 <ReportActions />
             </div>
 
-            {/* Inventory Health Section */}
-            <div className="mb-16">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
-                        <span className="w-8 h-1 bg-primary rounded-full"></span>
-                        Inventory Health
-                    </h2>
+            {/* Inventory — no stored history, so these tiles carry no trend. */}
+            <section className="mb-14">
+                <Label as="h2" className="mb-5">Inventory</Label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <StatTile label="Showroom stock" value={activeCars.length} unit="units" />
+                    <StatTile
+                        label="Total floor value"
+                        value={`R ${new Intl.NumberFormat('en-ZA').format(totalInventoryValue)}`}
+                    />
+                    <StatTile label="Reserved / pending" value={reservedCars.length} unit="units" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm group hover:border-primary/50 transition-all">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 group-hover:text-primary transition-colors">Showroom Stock</p>
-                        <div className="flex items-end gap-3">
-                            <span className="text-5xl font-black text-slate-900">{activeCars.length}</span>
-                            <span className="text-sm text-slate-500 mb-2 font-bold uppercase tracking-widest">Units</span>
-                        </div>
-                    </div>
+            </section>
 
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm border-l-primary border-l-4">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Total Floor Value</p>
-                        <div className="flex items-end gap-3">
-                            <span className="text-4xl lg:text-5xl font-black text-slate-900">
-                                R {new Intl.NumberFormat('en-ZA').format(totalInventoryValue)}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 relative z-10">Reserved / Pending</p>
-                        <div className="flex items-end gap-3 relative z-10">
-                            <span className="text-5xl font-black text-amber-500 group-hover:scale-110 transition-transform">{reservedCars.length}</span>
-                            <span className="text-sm text-slate-500 mb-2 font-bold uppercase tracking-widest">Units</span>
-                        </div>
-                        <span className="material-symbols-outlined absolute -bottom-6 -right-6 text-[120px] text-slate-100 rotate-[-15deg] group-hover:text-primary/5 transition-colors">payments</span>
-                    </div>
+            {/* Sales — leads carry created_at, so these show real month-over-month. */}
+            <section className="mb-14">
+                <Label as="h2" className="mb-5">Sales this month</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                    <StatTile
+                        label="Inquiries"
+                        value={leadsThisMonth.length}
+                        unit="leads"
+                        delta={leadDelta}
+                        deltaLabel={`vs ${prevMonthName}`}
+                        trend={leadTrend}
+                    />
+                    <StatTile label="Finance pending" value={financePendingLeads.length} unit="queued" />
+                    <StatTile
+                        label="Deals won"
+                        value={closedWonLeads.length}
+                        delta={wonDelta}
+                        deltaLabel={`vs ${prevMonthName}`}
+                        trend={wonTrend}
+                    />
+                    <StatTile label="Trade-ins" value={tradeInCount || 0} unit="all time" />
                 </div>
-            </div>
+            </section>
 
-            {/* Sales CRM Section */}
-            <div className="mb-16">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black uppercase tracking-widest text-slate-800 flex items-center gap-3">
-                        <span className="w-8 h-1 bg-green-500 rounded-full"></span>
-                        Sales Velocity
-                    </h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-green-50 p-8 rounded-2xl border border-green-100 shadow-sm">
-                        <p className="text-xs font-black text-green-600 uppercase tracking-[0.2em] mb-4">Inquiries</p>
-                        <div className="flex items-end gap-3">
-                            <span className="text-5xl font-black text-green-700">{leadsThisMonth.length}</span>
-                            <span className="text-sm text-green-600/50 mb-2 font-bold">LEADS</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Finance Pending</p>
-                        <div className="flex items-end gap-3">
-                            <span className="text-5xl font-black text-slate-900">{financePendingLeads.length}</span>
-                            <span className="text-sm text-slate-500 mb-2 font-bold">QUEUED</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Deals Won</p>
-                        <div className="flex items-end gap-3">
-                            <span className="text-5xl font-black text-primary">{closedWonLeads.length}</span>
-                            <span className="text-sm text-slate-500 mb-2 font-bold">TOTAL</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 relative z-10">Trade-Ins</p>
-                        <div className="flex items-end gap-3 relative z-10">
-                            <span className="text-5xl font-black text-slate-900">{tradeInCount || 0}</span>
-                            <span className="text-sm text-slate-500 mb-2 font-bold">TOTAL</span>
-                        </div>
-                        <span className="material-symbols-outlined absolute -bottom-6 -right-6 text-[120px] text-slate-100 rotate-[-15deg]">car_tag</span>
-                    </div>
-                </div>
-            </div>
-
-            <div 
-                className="p-16 rounded-[2.5rem] shadow-2xl relative z-10 border border-primary/20"
-                style={{ background: '#000000', backgroundColor: '#000000' }}
-            >
-                <div className="relative z-10 max-w-3xl">
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,1,0.3)]">
-                            <span className="material-symbols-outlined text-black text-2xl font-black">auto_awesome</span>
-                        </div>
-                        <span className="text-primary font-black uppercase tracking-[0.5em] text-xs">AI Automation Suite</span>
-                    </div>
-                    <h3 className="text-5xl font-black text-white mb-8 leading-tight tracking-tighter">Performance <span className="text-primary italic">Intelligence</span></h3>
-                    <p className="text-slate-300 mb-12 text-xl leading-relaxed font-medium tracking-wide max-w-2xl">
-                        Instantly compile dealership metrics into high-fidelity performance reports. Our automation engine generates visual snapshots of your showroom velocity and sales trends with single-click precision.
+            <Surface className="p-8 lg:p-12 bg-black border-hairline-dark">
+                <div className="max-w-2xl">
+                    <Label className="text-primary mb-4">Reports</Label>
+                    <h3 className="text-display-sm font-semibold text-white mb-4">
+                        Performance intelligence
+                    </h3>
+                    <p className="text-slate-400 mb-8 leading-relaxed">
+                        Compile dealership metrics into a shareable performance report —
+                        showroom velocity and sales trends in a single snapshot.
                     </p>
                     <GenerateReportButton />
                 </div>
-                <span className="material-symbols-outlined absolute -right-24 -bottom-24 text-[450px] text-white/5 rotate-12 group-hover:text-primary/5 transition-all duration-1000 ease-in-out">picture_as_pdf</span>
-            </div>
+            </Surface>
 
         </div>
     );

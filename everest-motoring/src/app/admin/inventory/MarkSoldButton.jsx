@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Handshake, Tag, X, Loader2 } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 import { getLeadsForCar, markCarAsSold, getSaleForCar, addDeliveryPhotoToSale, setSaleSkipSocial } from "./sale_actions";
 import SaleVideoPicker from "./SaleVideoPicker";
 import { trackEvent } from "@/lib/gtag";
@@ -137,19 +139,15 @@ export default function MarkSoldButton({ car }) {
 
     return (
         <>
-            <button
-                type="button"
+            <IconButton
                 onClick={() => setOpen(true)}
-                className={`transition-colors p-2 ${isSold
-                    ? "text-slate-400 hover:text-slate-700"
-                    : "text-slate-400 hover:text-green-600"
-                    }`}
+                tone={isSold ? "default" : "positive"}
+                active={isSold}
+                aria-label={isSold ? "View sale details" : "Mark as sold"}
                 title={isSold ? "View Sale Details" : "Mark as Sold"}
             >
-                <span className="material-symbols-outlined">
-                    {isSold ? "handshake" : "sell"}
-                </span>
-            </button>
+                {isSold ? <Handshake className="h-5 w-5" /> : <Tag className="h-5 w-5" />}
+            </IconButton>
 
             {open && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -163,18 +161,14 @@ export default function MarkSoldButton({ car }) {
                                     {car.year} {car.make} {car.model}
                                 </p>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => setOpen(false)}
-                                className="text-slate-400 hover:text-slate-700"
-                            >
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
+                            <IconButton onClick={() => setOpen(false)} aria-label="Close">
+                                <X className="h-5 w-5" />
+                            </IconButton>
                         </div>
 
                         {loading ? (
                             <div className="p-12 text-center text-slate-500">
-                                <span className="material-symbols-outlined animate-spin text-3xl">sync</span>
+                                <Loader2 className="mx-auto h-7 w-7 animate-spin" />
                                 <p className="mt-2 text-sm">Loading...</p>
                             </div>
                         ) : (
@@ -323,7 +317,7 @@ export default function MarkSoldButton({ car }) {
                                                 type="file"
                                                 name="delivery_photo"
                                                 accept="image/png, image/jpeg, image/webp"
-                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                                className="text-sm w-full file:mr-2 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-primary/10 file:text-primary-ink hover:file:bg-primary/20"
                                             />
                                             <p className="text-xs text-slate-500 mt-1">
                                                 Customer collecting their car. Will be reused for a video clip later.

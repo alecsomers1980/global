@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
+import Icon from "@/components/Icon";
 
 export default function Footer({ siteConfig }) {
     const name = siteConfig?.name || "Dealership";
@@ -26,15 +27,15 @@ export default function Footer({ siteConfig }) {
                         <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-wider">Contact Us</h3>
                         <ul className="space-y-4 text-sm text-slate-400">
                             <li className="flex items-start gap-3">
-                                <span className="material-symbols-outlined text-[20px] text-primary">location_on</span>
+                                <Icon name="location_on" className="text-[20px] text-primary" />
                                 <span>{siteConfig?.address || "Address"}</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[20px] text-primary">phone</span>
+                                <Icon name="phone" className="text-[20px] text-primary" />
                                 <Link href={`tel:${siteConfig?.phone || ""}`} className="hover:text-primary transition-colors">{siteConfig?.phone || "Phone"}</Link>
                             </li>
                             <li className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[20px] text-primary">mail</span>
+                                <Icon name="mail" className="text-[20px] text-primary" />
                                 <Link href={`mailto:${siteConfig?.email || ""}`} className="hover:text-primary transition-colors">{siteConfig?.email || "Email"}</Link>
                             </li>
                         </ul>

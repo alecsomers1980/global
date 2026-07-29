@@ -4,10 +4,11 @@ export const metadata = {
 };
 
 import PageBanner from "@/components/PageBanner";
+import Icon from "@/components/Icon";
 
 const teamMembers = [
     { name: "Anton Thornhill", role: "General Manager", image: "/images/team/Anton.jpg" },
-    { name: "Jaco Van Zyl", role: "Sales Executive", image: "/images/team/Jaco.jpg" },
+    { name: "George Khumalo", role: "Sales Executive", image: "/images/team/George.jpg" },
     { name: "Moffat Maseko", role: "Driver", image: "/images/team/Moffat.jpg" },
 ];
 
@@ -53,11 +54,11 @@ export default function AboutPage() {
                         {/* Photo */}
                         <div className="md:col-span-2 flex flex-col items-center">
                             <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-100 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-slate-300 text-[140px]">person</span>
+                                <Icon name="person" className="text-slate-300 text-[140px]" />
                             </div>
                             <div className="mt-6 text-center">
                                 <h3 className="text-2xl font-bold text-slate-900">Christo Pieterse</h3>
-                                <p className="text-primary font-semibold tracking-wide uppercase text-sm mt-1">Director & Founder</p>
+                                <p className="text-primary-ink font-semibold tracking-wide uppercase text-sm mt-1">Director & Founder</p>
                             </div>
                         </div>
 
@@ -79,7 +80,7 @@ export default function AboutPage() {
                                 </p>
                             </div>
                             <div className="bg-white rounded-2xl p-8 mt-8 shadow-sm border border-slate-100 relative">
-                                <div className="absolute -top-4 -left-2 text-6xl text-primary/20 font-serif leading-none">"</div>
+                                <div className="absolute -top-4 -left-2 text-6xl text-primary-ink/20 font-serif leading-none">"</div>
                                 <p className="text-slate-800 font-medium italic text-lg leading-relaxed relative z-10 pl-4 border-l-4 border-primary">
                                     Quality isn&apos;t just a promise; it&apos;s a guaranteed standard. We are changing the way South Africans buy pre-owned vehicles through absolute transparency and an uncompromising commitment to our clients.
                                 </p>
@@ -105,7 +106,7 @@ export default function AboutPage() {
                         {teamMembers.map((member) => (
                             <div key={member.name} className="group cursor-pointer">
                                 <div className="relative h-[400px] w-full overflow-hidden rounded-2xl mb-6 bg-slate-100 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-slate-300 text-[120px]">person</span>
+                                    <Icon name="person" className="text-slate-300 text-[120px]" />
                                 </div>
                                 <div className="text-center">
                                     <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>

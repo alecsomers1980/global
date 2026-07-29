@@ -18,7 +18,7 @@ export default async function AdminNewsEditPage({ params }) {
 
     return (
         <div className="p-8 max-w-[1100px] mx-auto w-full">
-            <Link href="/admin/news" className="text-sm text-slate-500 hover:text-primary flex items-center gap-1 mb-6">
+            <Link href="/admin/news" className="text-sm text-slate-500 hover:text-primary-ink flex items-center gap-1 mb-6">
                 <span className="material-symbols-outlined text-base">arrow_back</span>
                 Back to all articles
             </Link>

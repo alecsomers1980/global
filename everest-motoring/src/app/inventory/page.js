@@ -3,8 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import PageBanner from "@/components/PageBanner";
 import InventoryFilter from "./InventoryFilter";
+import InventorySort from "./InventorySort";
 import { altForImage } from "@/utils/ai/seoGenerator";
 import { getVehiclePath } from "@/utils/url/vehicleUrl";
+import { calculateMonthly, formatRand } from "@/utils/finance/calculator";
+import Icon from "@/components/Icon";
 
 export const metadata = {
     title: "Inventory | Everest Motoring",
@@ -53,7 +56,7 @@ export default async function InventoryPage({ searchParams }) {
     const twoWeeksAgo = new Date();
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
-    const cars = (allCars || []).filter(car => {
+    const filteredCars = (allCars || []).filter(car => {
         if (car.status === "available") return true;
         if (car.status === "sold") {
             const soldAtStr = car.sales?.[0]?.sold_at;
@@ -64,6 +67,20 @@ export default async function InventoryPage({ searchParams }) {
         return false;
     });
 
+    // Available stock always ranks above the recently-sold cars we keep on show.
+    const SORTERS = {
+        price_asc: (a, b) => (a.price || 0) - (b.price || 0),
+        price_desc: (a, b) => (b.price || 0) - (a.price || 0),
+        mileage_asc: (a, b) => (a.mileage || 0) - (b.mileage || 0),
+        year_desc: (a, b) => (b.year || 0) - (a.year || 0),
+    };
+    const sorter = SORTERS[params.sort];
+    const cars = sorter
+        ? [...filteredCars].sort((a, b) => {
+            if (a.status !== b.status) return a.status === "available" ? -1 : 1;
+            return sorter(a, b);
+        })
+        : filteredCars;
 
     return (
         <div className="bg-background-alt min-h-screen">
@@ -81,13 +98,14 @@ export default async function InventoryPage({ searchParams }) {
 
                     {/* Main Content Grid */}
                     <div className="w-full flex-1 flex flex-col min-w-0">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                        <InventorySort count={cars.length} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
                             {cars && cars.map((car) => (
                                 <Link
                                     key={car.id}
                                     href={getVehiclePath(car)}
-                                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col"
+                                    className="group bg-white rounded-2xl overflow-hidden border border-hairline hover:border-slate-300 transition-colors duration-300 flex flex-col"
                                 >
                                     {/* Thumbnail Area */}
                                     <div className="relative aspect-[4/3] bg-black overflow-hidden">
@@ -101,7 +119,7 @@ export default async function InventoryPage({ searchParams }) {
                                             />
                                         ) : (
                                             <div className="flex items-center justify-center h-full text-slate-700">
-                                                <span className="material-symbols-outlined text-4xl">directions_car</span>
+                                                <Icon name="directions_car" className="text-4xl" />
                                             </div>
                                         )}
 
@@ -114,7 +132,7 @@ export default async function InventoryPage({ searchParams }) {
                                             </div>
                                         ) : (
                                             <div className="absolute top-4 left-4">
-                                                <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-green-700 font-bold text-xs uppercase tracking-wider rounded-md border border-white/20 shadow-lg">
+                                                <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm text-slate-700 text-label font-semibold uppercase rounded-md">
                                                     {car.status === 'available' ? 'Available' : 'Reserved'}
                                                 </span>
                                             </div>
@@ -123,55 +141,39 @@ export default async function InventoryPage({ searchParams }) {
 
                                     {/* Details Area */}
                                     <div className="p-6 flex flex-col flex-1">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h2 className="text-base font-bold text-slate-900 transition-colors">
-                                                    {car.year} {car.make}
-                                                </h2>
-                                                <p className="text-xs font-medium text-slate-500">{car.model}</p>
-                                            </div>
+                                        <div className="mb-5">
+                                            <p className="text-label font-semibold uppercase text-slate-400 mb-1.5">
+                                                {car.year} {car.make}
+                                            </p>
+                                            <h2 className="text-lg font-semibold leading-snug text-slate-900">
+                                                {car.model}
+                                            </h2>
                                         </div>
 
                                         <div className="mt-auto">
-                                            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-slate-400 mb-6 pb-6 border-b border-slate-100">
-                                                <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">speed</span>
-                                                    {new Intl.NumberFormat('en-ZA').format(car.mileage)} km
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">local_gas_station</span>
-                                                    {car.fuel_type || 'Fuel'}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <span className="material-symbols-outlined text-[16px]">settings</span>
-                                                    {car.transmission === 'Automatic' ? 'Auto' : 'Manual'}
-                                                </span>
-                                                {car.drivetrain && (
-                                                    <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-[16px]">settings_input_component</span>
-                                                        {car.drivetrain}
-                                                    </span>
-                                                )}
-                                                {car.colour && (
-                                                    <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-[16px]">palette</span>
-                                                        {car.colour}
-                                                    </span>
-                                                )}
-                                                {car.has_warranty && (
-                                                    <span className="flex items-center gap-1 text-green-600">
-                                                        <span className="material-symbols-outlined text-[16px]">verified</span>
-                                                        Warranty
-                                                    </span>
-                                                )}
-                                            </div>
+                                            {/* Three facts, plain text. Drivetrain, colour and
+                                                warranty live on the detail page. */}
+                                            <p className="text-sm text-slate-500 mb-5 pb-5 border-b border-hairline">
+                                                {[
+                                                    `${new Intl.NumberFormat('en-ZA').format(car.mileage)} km`,
+                                                    car.transmission === 'Automatic' ? 'Auto' : 'Manual',
+                                                    car.fuel_type,
+                                                ].filter(Boolean).join(' · ')}
+                                            </p>
 
                                             <div className="flex items-center justify-between">
-                                                <div className="font-bold text-lg text-slate-900 tracking-tight whitespace-nowrap">
-                                                    R {new Intl.NumberFormat('en-ZA').format(car.price)}
+                                                <div>
+                                                    <div className="font-semibold text-2xl text-slate-900 tracking-display whitespace-nowrap">
+                                                        R {new Intl.NumberFormat('en-ZA').format(car.price)}
+                                                    </div>
+                                                    {car.status === 'available' && (
+                                                        <div className="mt-1 text-sm text-slate-500">
+                                                            from {formatRand(calculateMonthly({ price: Number(car.price) || 0 }).monthly)} p/m
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-colors text-slate-400">
-                                                    <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                                                    <Icon name="arrow_forward" className="text-[20px]" />
                                                 </div>
                                             </div>
                                         </div>
@@ -181,7 +183,7 @@ export default async function InventoryPage({ searchParams }) {
 
                             {(!cars || cars.length === 0) && (
                                 <div className="col-span-full py-24 text-center">
-                                    <span className="material-symbols-outlined text-6xl text-slate-300 mb-4 block">inventory_2</span>
+                                    <Icon name="inventory_2" className="text-6xl text-slate-300 mb-4 block" />
                                     <p className="text-slate-500 text-lg">Our showroom is currently being updated with new premium stock.</p>
                                     <p className="text-slate-400">Please check back again soon.</p>
                                 </div>

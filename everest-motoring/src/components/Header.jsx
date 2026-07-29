@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Icon from "@/components/Icon";
 
 export default function Header({ siteConfig }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,9 +40,7 @@ export default function Header({ siteConfig }) {
                     onClick={toggleMobileMenu}
                     aria-label="Toggle mobile menu"
                 >
-                    <span className="material-symbols-outlined text-3xl">
-                        {isMobileMenuOpen ? "close" : "menu"}
-                    </span>
+                    <Icon name={isMobileMenuOpen ? "close" : "menu"} className="text-3xl" />
                 </button>
             </div>
 
@@ -93,8 +92,8 @@ export default function Header({ siteConfig }) {
                         </Link>
 
                         <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-2 text-center">
-                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/admin" onClick={closeMobileMenu}>Admin</Link>
-                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded" href="/register" onClick={closeMobileMenu}>Affiliate</Link>
+                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded-md" href="/admin" onClick={closeMobileMenu}>Admin</Link>
+                            <Link className="text-xs font-bold text-slate-400 uppercase tracking-wider transition-colors hover:text-primary bg-white/5 py-2 rounded-md" href="/register" onClick={closeMobileMenu}>Affiliate</Link>
                         </div>
                     </nav>
                 </div>

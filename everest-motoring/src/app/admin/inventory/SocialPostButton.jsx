@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Share2, CheckCircle2, Loader2 } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 import { createSocialPost } from "./socialAction";
 
 function formatSharedDate(iso) {
@@ -37,11 +39,10 @@ export default function SocialPostButton({ car }) {
     };
 
     const isShared = status === "shared" || status === "success";
-    const icon =
-        status === "loading" ? "hourglass_empty" :
-        status === "success" ? "check_circle" :
-        status === "shared" ? "share" :
-        "share";
+    const Glyph =
+        status === "loading" ? Loader2 :
+        status === "success" ? CheckCircle2 :
+        Share2;
     const title =
         status === "loading" ? "Posting..." :
         status === "success" ? "Posted!" :
@@ -49,17 +50,16 @@ export default function SocialPostButton({ car }) {
         "Post to social";
 
     return (
-        <button
+        <IconButton
             onClick={handlePost}
             disabled={status === "loading"}
-            className={`transition-colors p-2 flex items-center gap-1 ${
-                status === "loading" ? "opacity-50 cursor-not-allowed text-slate-400" :
-                isShared ? "text-green-600 hover:text-green-700" :
-                "text-slate-400 hover:text-blue-500"
-            }`}
+            busy={status === "loading"}
+            tone={isShared ? "positive" : "info"}
+            active={isShared}
+            aria-label={title}
             title={title}
         >
-            <span className="material-symbols-outlined">{icon}</span>
-        </button>
+            <Glyph className="h-5 w-5" />
+        </IconButton>
     );
 }

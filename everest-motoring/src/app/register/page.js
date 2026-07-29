@@ -1,3 +1,5 @@
+import Icon from "@/components/Icon";
+
 export const metadata = {
     title: "Affiliate Registration | Everest Motoring",
     description: "Apply to become an Everest Motoring affiliate and start earning competitive commissions on premium pre-owned vehicle sales.",
@@ -21,14 +23,14 @@ export default async function RegisterPage({ searchParams }) {
                     {/* Feedback Messages */}
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center gap-3">
-                            <span className="material-symbols-outlined shrink-0">error</span>
+                            <Icon name="error" className="shrink-0" />
                             <p className="text-sm font-medium">{error}</p>
                         </div>
                     )}
 
                     {message && (
                         <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center gap-3">
-                            <span className="material-symbols-outlined shrink-0">check_circle</span>
+                            <Icon name="check_circle" className="shrink-0" />
                             <p className="text-sm font-medium">{message}</p>
                         </div>
                     )}
@@ -120,7 +122,7 @@ export default async function RegisterPage({ searchParams }) {
 
                     <div className="mt-8 text-center bg-slate-50 p-4 rounded-lg border border-slate-100">
                         <p className="text-sm text-slate-500">
-                            Already have an account? <a href="/login" className="text-primary font-bold hover:underline">Sign In Instead</a>
+                            Already have an account? <a href="/login" className="text-primary-ink font-bold hover:underline">Sign In Instead</a>
                         </p>
                     </div>
                 </div>

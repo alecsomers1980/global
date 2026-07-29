@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import Icon from "@/components/Icon";
 
 export const metadata = {
     title: "Dashboard | Everest Motoring",
@@ -41,21 +42,21 @@ export default async function DashboardPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-start gap-4">
-                        <span className="material-symbols-outlined text-primary text-3xl bg-primary/10 p-3 rounded-lg">group</span>
+                        <Icon name="group" className="text-primary-ink text-3xl bg-primary/10 p-3 rounded-lg" />
                         <div>
                             <h3 className="font-bold text-slate-900">Total Leads</h3>
                             <p className="text-2xl font-bold text-slate-700 mt-1">0</p>
                         </div>
                     </div>
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-start gap-4">
-                        <span className="material-symbols-outlined text-secondary text-3xl bg-secondary/10 p-3 rounded-lg">directions_car</span>
+                        <Icon name="directions_car" className="text-secondary text-3xl bg-secondary/10 p-3 rounded-lg" />
                         <div>
                             <h3 className="font-bold text-slate-900">Sales Closed</h3>
                             <p className="text-2xl font-bold text-slate-700 mt-1">0</p>
                         </div>
                     </div>
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-start gap-4">
-                        <span className="material-symbols-outlined text-green-600 text-3xl bg-green-50 p-3 rounded-lg">account_balance_wallet</span>
+                        <Icon name="account_balance_wallet" className="text-green-600 text-3xl bg-green-50 p-3 rounded-lg" />
                         <div>
                             <h3 className="font-bold text-slate-900">Pending Commision</h3>
                             <p className="text-2xl font-bold text-slate-700 mt-1">R 0.00</p>

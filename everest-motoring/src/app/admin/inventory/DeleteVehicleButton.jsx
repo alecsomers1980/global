@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Trash2, Loader2 } from "lucide-react";
+import IconButton from "@/components/ui/IconButton";
 
 export default function DeleteVehicleButton({ car, deleteCarAction }) {
     const [isPending, startTransition] = useTransition();
@@ -23,15 +25,16 @@ export default function DeleteVehicleButton({ car, deleteCarAction }) {
 
     return (
         <>
-            <button
-                type="button"
+            <IconButton
                 onClick={handleClick}
                 disabled={isPending}
-                className="text-slate-400 hover:text-red-500 transition-colors p-2 disabled:opacity-50 disabled:cursor-wait"
+                busy={isPending}
+                tone="danger"
+                aria-label={isPending ? "Deleting vehicle" : "Delete vehicle"}
                 title={isPending ? "Deleting..." : "Delete Vehicle"}
             >
-                <span className="material-symbols-outlined">{isPending ? "hourglass_empty" : "delete"}</span>
-            </button>
+                {isPending ? <Loader2 className="h-5 w-5" /> : <Trash2 className="h-5 w-5" />}
+            </IconButton>
             {errorMsg && (
                 <span className="hidden" data-delete-error={errorMsg} />
             )}
