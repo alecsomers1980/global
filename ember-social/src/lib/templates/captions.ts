@@ -112,3 +112,20 @@ export function financeCaption(car: VehicleInput, monthly: number, freshBody?: s
 export function financeHashtags(): string[] {
     return pickHashtags(3, ['#CarFinance', '#DriveNow', '#PreOwned'])
 }
+
+// --- COMPARISON ---
+export function comparisonCaption(carA: VehicleInput, carB: VehicleInput, labelA: string, labelB: string, freshBody?: string | null): string {
+    const nameA = `${carA.year} ${carA.make} ${modelTrim(carA)}`
+    const nameB = `${carB.year} ${carB.make} ${modelTrim(carB)}`
+    if (freshBody) {
+        return `${freshBody}\n\nLeft: the ${nameA} ("${labelA}"). Right: the ${nameB} ("${labelB}").\n\nWhich one is you? Tell us in the comments.${contactStrip()}`
+    }
+    const hook = `Two very different kinds of Saturday. 👇`
+    const body = `Left: the ${nameA} — ${labelA.toLowerCase()}. Right: the ${nameB} — ${labelB.toLowerCase()}.`
+    const cta = `Which one is you? Tell us in the comments — we'll help you find it in stock.`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function comparisonHashtags(): string[] {
+    return pickHashtags(3, ['#WhichOneAreYou', '#PreOwned'])
+}
