@@ -3,8 +3,9 @@ import { createAdminClient } from '@/lib/supabase/client'
 import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
-import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal } from '@/lib/templates'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderFinance, renderComparison, renderSeasonalLocal } from '@/lib/templates'
 import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
+import { pickRotationSeats } from '@/lib/rotation/pillarHistory'
 import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
 import crypto from 'crypto'
 
@@ -46,6 +47,12 @@ const PILLARS: PillarDef[] = [
     { name: 'maintenance', dayName: 'fri', render: renderMaintenance as any, needsCar: false },
     { name: 'seasonal',    dayName: 'sat', render: renderSeasonal as any,    needsCar: true },
 ]
+
+const ROTATION_RENDERERS: Record<string, (car: VehicleInput, opts?: any) => Promise<any>> = {
+    finance: renderFinance as any,
+    comparison: renderComparison as any, // called specially below — needs 2 cars
+    seasonal_local: renderSeasonalLocal as any,
+}
 
 export async function POST(req: Request) {
     try {
@@ -130,6 +137,8 @@ export async function POST(req: Request) {
         // curated pools as a fallback (batch still succeeds).
         const fresh = await generateFreshHeadlines({ count: weeks, season: planSeason })
 
+        const [seatA, seatB] = await pickRotationSeats(supabase, resolvedId)
+
         const tasks: Array<Promise<void>> = []
         const errors: string[] = []
         let vehicleIdx = 0
@@ -137,17 +146,32 @@ export async function POST(req: Request) {
 
         for (let week = 0; week < weeks; week++) {
             for (const pillar of PILLARS) {
+                const isSeatA = week === 1 && pillar.name === 'seasonal'
+                const isSeatB = week === 3 && pillar.name === 'lifestyle'
+                const seatPillarName = isSeatA ? seatA : isSeatB ? seatB : null
+
                 const car = vehicles[vehicleIdx % vehicles.length]
                 if (pillar.needsCar) vehicleIdx++
 
-                const headline = fresh
+                const headline = fresh && !seatPillarName
                     ? (fresh as any)[pillar.name]?.[week] ?? null
                     : null
 
                 tasks.push((async () => {
                     try {
                         const targetDate = computeWeekday(monthStart, week, pillar.dayName)
-                        const result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
+                        const effectivePillarName = seatPillarName || pillar.name
+
+                        let result: { image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }
+                        if (seatPillarName === 'comparison') {
+                            const carB = vehicles[vehicleIdx % vehicles.length]
+                            vehicleIdx++
+                            result = await renderComparison(car as VehicleInput, carB as VehicleInput, 'Family', 'Fun', { targetDate, variantIndex: week })
+                        } else if (seatPillarName) {
+                            result = await ROTATION_RENDERERS[seatPillarName](car as VehicleInput, { targetDate, variantIndex: week })
+                        } else {
+                            result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
+                        }
 
                         const postId = crypto.randomUUID()
                         let mediaUrl: string | null = null
@@ -167,7 +191,7 @@ export async function POST(req: Request) {
                                 id: postId,
                                 workspace_id: resolvedId,
                                 campaign_batch_id: batchId,
-                                pillar: pillar.name,
+                                pillar: effectivePillarName,
                                 vehicle_id: pillar.needsCar ? (car as any)?.id || null : null,
                                 content: result.caption,
                                 variants: { facebook: { content: result.caption, hashtags: result.hashtags } },
@@ -182,7 +206,7 @@ export async function POST(req: Request) {
                             } as any)
 
                         if (insertError) {
-                            errors.push(`${pillar.name} week ${week + 1}: ${insertError.message}`)
+                            errors.push(`${effectivePillarName} week ${week + 1}: ${insertError.message}`)
                         } else {
                             inserted++
                         }
