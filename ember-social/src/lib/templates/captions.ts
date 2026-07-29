@@ -129,3 +129,18 @@ export function comparisonCaption(carA: VehicleInput, carB: VehicleInput, labelA
 export function comparisonHashtags(): string[] {
     return pickHashtags(3, ['#WhichOneAreYou', '#PreOwned'])
 }
+
+// --- SEASONAL LOCAL ---
+export function seasonalLocalCaption(freshBody?: string | null): string {
+    if (freshBody) {
+        return `${freshBody}\n\nBrowse our inventory: ${CONTACT.website}/inventory${contactStrip()}`
+    }
+    const hook = `Long weekend ahead — where are you headed?`
+    const body = `The Panorama Route, a Kruger day trip, or just a quiet escape into the lowveld — whatever the plan, the right vehicle makes the drive part of the getaway.\n\nTell us where you're headed this weekend, and let's find the car that gets you there.`
+    const cta = `Browse our inventory: ${CONTACT.website}/inventory`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function seasonalLocalHashtags(): string[] {
+    return pickHashtags(3, ['#LongWeekend', '#PanoramaRoute', '#WhereAreYouHeaded'])
+}
