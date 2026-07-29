@@ -45,7 +45,7 @@ export function PlayHero({ play }: { play: PlayDetail }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={play.heroImageUrl}
-          alt={`Production photograph from ${play.title}`}
+          alt={`Key art for ${play.title}`}
           className="aspect-[4/5] w-full object-cover"
         />
       )}
