@@ -2,7 +2,7 @@
 
 Date: 2026-07-28
 Branch/worktree: `feat/south-canon-m1` (continues directly on the M1 build, no new worktree)
-Status: Approved for planning
+Status: Implemented 2026-07-28
 
 ## Problem
 
