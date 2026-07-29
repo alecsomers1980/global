@@ -73,6 +73,13 @@ Sourced from Wikipedia and ESAT (Encyclopedia of South African Theatre), not inv
 | Pale Natives | 1993 | — |
 | Heel Against the Head | 1995 | Vita & Star Tonight Best Comedy |
 
+Character names "Tjokkie" and "Crispin" (used in *Heel Against the Head*'s logline/synopsis) are
+sourced from public descriptions of the 1999 film Slabolepszy adapted from this exact play
+(moviefone.com, watchmode.com — "Two rugby fans, Tjokkie and Crispin, arrive in Wales for the
+1999 Rugby World Cup..."), not invented. Recorded here per the final whole-branch review's request
+to put this specific sourcing on record durably, since it's the one content claim in this plan
+that names real characters from a real client's copyrighted work.
+
 Combined with the existing *Saturday Night at the Palace* (1982), this brings the catalogue to 7
 titles, matching the original brief's "launch with 7–8 titles" decision.
 
