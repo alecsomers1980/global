@@ -32,17 +32,22 @@ export async function GET(req: Request) {
     try {
         // One job per tick — advances whichever job is furthest along, so a
         // batch of 3 completes over several ticks instead of all racing at once.
+        // Fetch a small batch and rank client-side by an explicit priority map,
+        // since sorting the status string alphabetically doesn't match progress order.
+        const STATUS_PRIORITY: Record<string, number> = { compositing: 0, rendering: 1, generating: 1, pending: 2 }
         const { data: jobs, error } = await supabase
             .from('posts')
             .select('id, workspace_id, video_status, video_concept, video_task_id, video_prompt, media_urls')
             .in('video_status', ['pending', 'generating', 'rendering', 'compositing'])
-            .order('video_status', { ascending: false }) // 'rendering'/'compositing' before 'pending' alphabetically-ish; good enough tie-break
-            .limit(1)
+            .order('created_at', { ascending: true })
+            .limit(10)
 
         if (error) throw error
         if (!jobs || jobs.length === 0) return NextResponse.json({ ok: true, processed: 0 })
 
-        const job = jobs[0] as any
+        const job = (jobs as any[]).reduce((best, current) =>
+            STATUS_PRIORITY[current.video_status] < STATUS_PRIORITY[best.video_status] ? current : best
+        )
 
         if (job.video_status === 'pending') {
             // Submit to Seedance. video_prompt and any reference image URLs are

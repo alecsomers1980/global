@@ -60,34 +60,35 @@ export async function appendOutro(sourceBuf: Buffer, tagline: string, accent: st
     const workDir = join(tmp, `outro-${Date.now()}`)
     mkdirSync(workDir, { recursive: true })
 
-    const srcPath = join(workDir, 'src.mp4')
-    writeFileSync(srcPath, sourceBuf)
+    try {
+        const srcPath = join(workDir, 'src.mp4')
+        writeFileSync(srcPath, sourceBuf)
 
-    const { width: W, height: H, duration: srcDuration } = probe(srcPath)
-    const endCardPng = await buildEndCard(W, H, tagline, accent)
-    const endCardPath = join(workDir, 'endcard.png')
-    writeFileSync(endCardPath, endCardPng)
+        const { width: W, height: H, duration: srcDuration } = probe(srcPath)
+        const endCardPng = await buildEndCard(W, H, tagline, accent)
+        const endCardPath = join(workDir, 'endcard.png')
+        writeFileSync(endCardPath, endCardPng)
 
-    const endCardVideoPath = join(workDir, 'endcard.mp4')
-    ff(['-loop', '1', '-i', endCardPath, '-t', String(OUTRO), '-r', String(FPS), '-pix_fmt', 'yuv420p', endCardVideoPath])
+        const endCardVideoPath = join(workDir, 'endcard.mp4')
+        ff(['-loop', '1', '-i', endCardPath, '-t', String(OUTRO), '-r', String(FPS), '-pix_fmt', 'yuv420p', endCardVideoPath])
 
-    // Crossfade offset = where in the source the outro should start overlapping,
-    // i.e. (source duration - crossfade duration).
-    const outPath = join(workDir, 'out.mp4')
-    const offset = Math.max(0, srcDuration - XF)
-    ff([
-        '-i', srcPath, '-i', endCardVideoPath,
-        '-filter_complex', `[0:v][1:v]xfade=transition=fade:duration=${XF}:offset=${offset}[v]`,
-        '-map', '[v]', '-map', '0:a?',
-        '-c:v', 'libx264', '-c:a', 'aac', '-pix_fmt', 'yuv420p',
-        outPath,
-    ])
+        // Crossfade offset = where in the source the outro should start overlapping,
+        // i.e. (source duration - crossfade duration).
+        const outPath = join(workDir, 'out.mp4')
+        const offset = Math.max(0, srcDuration - XF)
+        ff([
+            '-i', srcPath, '-i', endCardVideoPath,
+            '-filter_complex', `[0:v][1:v]xfade=transition=fade:duration=${XF}:offset=${offset}[v]`,
+            '-map', '[v]', '-map', '0:a?',
+            '-c:v', 'libx264', '-c:a', 'aac', '-pix_fmt', 'yuv420p',
+            outPath,
+        ])
 
-    const result = readFileSync(outPath)
-
-    // Cron warm containers can reuse this process across ticks — clean up the
-    // per-call scratch dir so /tmp doesn't accumulate render artifacts.
-    try { rmSync(workDir, { recursive: true, force: true }) } catch {}
-
-    return result
+        return readFileSync(outPath)
+    } finally {
+        // Cron warm containers can reuse this process across ticks — clean up the
+        // per-call scratch dir so /tmp doesn't accumulate render artifacts, on
+        // both success and failure (probe()/ff() can throw before we get here).
+        try { rmSync(workDir, { recursive: true, force: true }) } catch {}
+    }
 }
