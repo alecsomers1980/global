@@ -5,13 +5,14 @@ import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
 import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderFinance, renderComparison, renderSeasonalLocal } from '@/lib/templates'
 import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
+import { videoCaption, videoHashtags } from '@/lib/templates/captions'
 import { pickRotationSeats } from '@/lib/rotation/pillarHistory'
 import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
 import { pickVideoConcepts } from '@/lib/video/concepts'
 import crypto from 'crypto'
 
-const DOW: Record<string, number> = { mon: 1, wed: 3, fri: 5, sat: 6 }
-const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, fri: 9, sat: 8 }
+const DOW: Record<string, number> = { mon: 1, wed: 3, thu: 4, fri: 5, sat: 6 }
+const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, thu: 12, fri: 9, sat: 8 }
 
 // Season for a given 0-indexed month (0=Jan) in the South African calendar.
 function seasonForMonth(m: number): string {
@@ -86,7 +87,7 @@ export async function POST(req: Request) {
             clientSupabaseUrl: ws.client_supabase_url,
             clientServiceKey: ws.client_supabase_service_key,
             table: (ws.content_source as any)?.table || 'cars',
-            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url',
+            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url,gallery_urls',
             filter: (ws.content_source as any)?.filter || {},
             limit: 60,
             notSharedWithinDays: 0,
@@ -162,6 +163,13 @@ export async function POST(req: Request) {
                     try {
                         const targetDate = computeWeekday(monthStart, week, pillar.dayName)
                         const effectivePillarName = seatPillarName || pillar.name
+                        // Finance renders a nonsensical "±R0 / PER MONTH*" headline for a
+                        // vehicle with no valid price — swap in the next priced vehicle for
+                        // this branch only (comparison/seasonal_local are unaffected).
+                        let effectiveCar = car
+                        if (seatPillarName === 'finance' && !(Number(car.price) > 0)) {
+                            effectiveCar = vehicles.find(v => Number(v.price) > 0) || car
+                        }
 
                         let result: { image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }
                         if (seatPillarName === 'comparison') {
@@ -169,7 +177,7 @@ export async function POST(req: Request) {
                             vehicleIdx++
                             result = await renderComparison(car as VehicleInput, carB as VehicleInput, 'Family', 'Fun', { targetDate, variantIndex: week })
                         } else if (seatPillarName) {
-                            result = await ROTATION_RENDERERS[seatPillarName](car as VehicleInput, { targetDate, variantIndex: week })
+                            result = await ROTATION_RENDERERS[seatPillarName](effectiveCar as VehicleInput, { targetDate, variantIndex: week })
                         } else {
                             result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
                         }
@@ -193,7 +201,7 @@ export async function POST(req: Request) {
                                 workspace_id: resolvedId,
                                 campaign_batch_id: batchId,
                                 pillar: effectivePillarName,
-                                vehicle_id: pillar.needsCar ? (car as any)?.id || null : null,
+                                vehicle_id: pillar.needsCar ? (effectiveCar as any)?.id || null : null,
                                 content: result.caption,
                                 variants: { facebook: { content: result.caption, hashtags: result.hashtags } },
                                 platforms: ['facebook'],
@@ -234,11 +242,17 @@ export async function POST(req: Request) {
                 concept.vehicleKeywords.some(kw => `${v.make} ${v.model}`.toLowerCase().includes(kw))
             ) || vehicles[i % vehicles.length]
 
-            const videoPrompt = `${concept.brief} Hero vehicle: a ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model} — keep its exact colour and shape throughout. South Africa: driving is on the LEFT-hand side of the road, right-hand-drive vehicle. Photorealistic, cinematic, no text, no logos, blank number plates.`
+            // Real stock photos, sent to Seedance as reference_image_urls so it locks
+            // onto the actual vehicle instead of hallucinating one (up to 3, no gaps).
+            const refImageUrls = [(car as any).main_image_url, ...((car as any).gallery_urls || []).slice(0, 2)].filter(Boolean)
+            const imageCount = refImageUrls.length
 
-            const targetDate = computeWeekday(monthStart, videoWeeks[i], 'mon')
+            const videoPrompt = `${concept.brief} Hero vehicle: the ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model}${imageCount > 0 ? ` shown in the attached reference photo${imageCount > 1 ? `s (Image 1 through Image ${imageCount})` : ' (Image 1)'} — match its exact colour, shape, and details throughout, do not deviate from the reference` : ' — keep its exact colour and shape throughout'}. South Africa: driving is on the LEFT-hand side of the road, right-hand-drive vehicle. Photorealistic, cinematic, no text, no logos, blank number plates.`
+
+            const targetDate = computeWeekday(monthStart, videoWeeks[i], 'thu')
             const postId = crypto.randomUUID()
             const approvalToken = crypto.randomUUID()
+            const caption = videoCaption(concept.title, car as VehicleInput)
 
             const { error: videoInsertError } = await supabase
                 .from('posts')
@@ -248,10 +262,10 @@ export async function POST(req: Request) {
                     campaign_batch_id: batchId,
                     pillar: 'video',
                     vehicle_id: (car as any)?.id || null,
-                    content: `${concept.title} — video generating`,
-                    variants: {},
+                    content: caption,
+                    variants: { facebook: { content: caption, hashtags: videoHashtags() } },
                     platforms: ['facebook'],
-                    media_urls: null,
+                    media_urls: imageCount > 0 ? refImageUrls : null,
                     scheduled_at: targetDate.toISOString(),
                     status: 'pending_approval',
                     client_status: 'pending',
@@ -273,9 +287,9 @@ export async function POST(req: Request) {
             batchId,
             public_token: publicToken,
             count: inserted,
-            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times.`,
-            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal'],
-            totalExpected: weeks * PILLARS.length,
+            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times, with Finance/Comparison/Seasonal-Local angles rotated into select weeks, plus up to ${Math.min(videoConcepts.length, videoWeeks.length)} short-form video posts (Thu).`,
+            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal', 'Rotation Seat', 'Video'],
+            totalExpected: weeks * PILLARS.length + Math.min(videoConcepts.length, videoWeeks.length),
             errors: errors.length > 0 ? errors : undefined,
         })
     } catch (error: any) {

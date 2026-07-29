@@ -42,7 +42,7 @@ export default function GenerateMarketingPlanButton({ workspaceSlug }: Props) {
 
     const handleGenerate = async () => {
         const monthLabel = monthOptions.find(o => o.value === targetMonth)?.label || targetMonth
-        if (!window.confirm(`Generate the ${monthLabel} marketing plan? This creates 16 draft posts (4 pillars × 4 weeks) for your review.`)) return
+        if (!window.confirm(`Generate the ${monthLabel} marketing plan? This creates up to 19 draft posts — 16 static posts with rotating angles, plus up to 3 videos — for your review.`)) return
 
         setLoading(true)
         setResult(null)

@@ -144,3 +144,17 @@ export function seasonalLocalCaption(freshBody?: string | null): string {
 export function seasonalLocalHashtags(): string[] {
     return pickHashtags(3, ['#LongWeekend', '#PanoramaRoute', '#WhereAreYouHeaded'])
 }
+
+// --- VIDEO ---
+export function videoCaption(conceptTitle: string, car: VehicleInput): string {
+    const name = `${car.year} ${car.make} ${modelTrim(car)}`
+    const url = vehicleUrl(car)
+    const hook = `${conceptTitle} 🎬`
+    const body = `Watch the ${name} in motion — new video dropping soon. Don't wait for the reel to fall in love with it in person.`
+    const cta = `See it in full: ${url}`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function videoHashtags(): string[] {
+    return pickHashtags(3, ['#WatchThis', '#ReelDrive', '#PreOwned'])
+}
