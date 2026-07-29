@@ -25,7 +25,7 @@ export async function POST(request) {
 
   if (contentType.startsWith("image/") && contentType !== "image/svg+xml") {
     const input = Buffer.from(await file.arrayBuffer());
-    body = await sharp(input)
+    const optimized = await sharp(input)
       .rotate()
       .resize({
         width: MAX_DIMENSION,
@@ -37,6 +37,9 @@ export async function POST(request) {
       .toBuffer();
     contentType = "image/webp";
     safeName = safeName.replace(/\.[^.]+$/, "") + ".webp";
+    // Wrap in a Blob: a raw Node Buffer gets UTF-8 stringified (and so
+    // corrupted) by the fetch implementation in Vercel's production runtime.
+    body = new Blob([optimized], { type: contentType });
   }
 
   const path = `${folder}/${Date.now()}-${safeName}`;

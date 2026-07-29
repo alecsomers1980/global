@@ -63,7 +63,6 @@ export default function ContactPage() {
                   <div>
                     <p className="font-sans text-xs uppercase tracking-widest text-primary/60 mb-1">Call Us</p>
                     <a href="tel:0829594643" className="block font-sans text-primary hover:text-accent transition-colors">082 959 4643</a>
-                    <a href="tel:0866280913" className="block font-sans text-primary hover:text-accent transition-colors">086 628 0913</a>
                   </div>
                 </div>
 
@@ -92,7 +91,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="font-sans text-xs uppercase tracking-widest text-primary/60 mb-1">Location</p>
-                    <p className="font-sans text-primary mb-1">R536 road, Hazyview<br/>Mpumalanga, South Africa</p>
+                    <p className="font-sans text-primary mb-1">R536 Hazyview/Sabie Road<br/>Mpumalanga, South Africa</p>
                     <p className="font-sans text-sm text-primary/70">GPS: 25 01 57.05 S | 31 02 13.01 E</p>
                   </div>
                 </div>
@@ -124,19 +123,26 @@ export default function ContactPage() {
             {/* Directions */}
             <div>
               <h3 className="font-serif text-primary text-2xl mb-4">Directions to Mountain Creek Lodge</h3>
-              <div className="prose prose-sm prose-p:text-primary/70 prose-p:leading-relaxed">
+              <div className="prose prose-sm prose-p:text-primary/70 prose-p:leading-relaxed space-y-4">
                 <p>
-                  From Johannesburg take N12 to Witbank. From Witbank on N4 to Nelspruit. 
-                  From Nelspruit to R40 White River/Witrivier. From White River stay on the R40 to Hazyview. 
-                  (Don't turn right when you exit White River as suggested just past the Casterbridge centre.)
+                  From Johannesburg, take the N12 to Witbank, then continue on the N4 to Nelspruit.
+                  From Nelspruit, follow the R40 through White River towards Hazyview.
                 </p>
                 <p>
-                  Stay on R40 Phalaborwa. (This is the scenic route and much better to drive on. It will also take you through Hazyview.)
+                  <strong className="text-primary">Important:</strong> Do not turn right when leaving White River,
+                  even if your GPS suggests it just past Casterbridge Lifestyle Centre. Stay on the R40 towards
+                  Phalaborwa, which is the scenic route through Hazyview.
                 </p>
                 <p>
-                  When you come towards Hazyview turn left at the t-junction to drive through town. 
-                  In Hazyview stay on R40 through town. At a 3-way stop, just past the Perry’s Bridge centre, 
-                  you will turn left on the R536 road to Sabie.
+                  Continue through Hazyview on the R40. At the three-way stop just past Perry’s Bridge Trading Post,
+                  turn left onto the R536 towards Sabie.
+                </p>
+                <p>
+                  Mountain Creek Lodge is located 10 km along the R536, on the left-hand side.
+                </p>
+                <p>
+                  <strong className="text-primary">GPS:</strong> We recommend using Google Maps or Waze and
+                  searching for &ldquo;Mountain Creek Lodge, Hazyview&rdquo; for the most accurate directions.
                 </p>
               </div>
             </div>
