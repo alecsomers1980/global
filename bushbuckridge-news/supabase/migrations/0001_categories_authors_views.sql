@@ -35,3 +35,15 @@ AS $$
 $$;
 
 GRANT EXECUTE ON FUNCTION public.increment_view_count(TEXT, TEXT) TO anon;
+
+CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
+    id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email      TEXT NOT NULL,
+    site_id    TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE (site_id, email)
+);
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Anyone can subscribe" ON public.newsletter_subscribers;
+CREATE POLICY "Anyone can subscribe" ON public.newsletter_subscribers
+    FOR INSERT WITH CHECK (true);
