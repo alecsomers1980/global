@@ -7,6 +7,7 @@ import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, ren
 import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
 import { pickRotationSeats } from '@/lib/rotation/pillarHistory'
 import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
+import { pickVideoConcepts } from '@/lib/video/concepts'
 import crypto from 'crypto'
 
 const DOW: Record<string, number> = { mon: 1, wed: 3, fri: 5, sat: 6 }
@@ -218,6 +219,54 @@ export async function POST(req: Request) {
         }
 
         await Promise.all(tasks)
+
+        // 3 video jobs, concepts picked by least-recently-used so they don't
+        // repeat what recent months already ran. Actual rendering happens
+        // asynchronously via /api/cron/generate-videos — this just reserves
+        // the slots and stores the brief.
+        const videoConcepts = await pickVideoConcepts(supabase, resolvedId, 3)
+        const videoWeeks = [0, 1, 2].filter(w => w < weeks) // one per week 1/2/3, skip if the batch is shorter than 3 weeks
+
+        for (let i = 0; i < videoConcepts.length && i < videoWeeks.length; i++) {
+            const concept = videoConcepts[i]
+            const car = vehicles.find(v =>
+                concept.vehicleKeywords.length === 0 ||
+                concept.vehicleKeywords.some(kw => `${v.make} ${v.model}`.toLowerCase().includes(kw))
+            ) || vehicles[i % vehicles.length]
+
+            const videoPrompt = `${concept.brief} Hero vehicle: a ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model} — keep its exact colour and shape throughout. South Africa: driving is on the LEFT-hand side of the road, right-hand-drive vehicle. Photorealistic, cinematic, no text, no logos, blank number plates.`
+
+            const targetDate = computeWeekday(monthStart, videoWeeks[i], 'mon')
+            const postId = crypto.randomUUID()
+            const approvalToken = crypto.randomUUID()
+
+            const { error: videoInsertError } = await supabase
+                .from('posts')
+                .insert({
+                    id: postId,
+                    workspace_id: resolvedId,
+                    campaign_batch_id: batchId,
+                    pillar: 'video',
+                    vehicle_id: (car as any)?.id || null,
+                    content: `${concept.title} — video generating`,
+                    variants: {},
+                    platforms: ['facebook'],
+                    media_urls: null,
+                    scheduled_at: targetDate.toISOString(),
+                    status: 'pending_approval',
+                    client_status: 'pending',
+                    approval_token: approvalToken,
+                    video_status: 'pending',
+                    video_concept: concept.id,
+                    video_prompt: videoPrompt,
+                } as any)
+
+            if (videoInsertError) {
+                errors.push(`video ${concept.id}: ${videoInsertError.message}`)
+            } else {
+                inserted++
+            }
+        }
 
         return NextResponse.json({
             ok: true,
