@@ -4,6 +4,10 @@ import { submitSeedanceTask, pollSeedanceTask } from '@/lib/video/seedance'
 import { appendOutro } from '@/lib/video/appendOutro'
 import { uploadCampaignVideo } from '@/lib/media/uploadCampaignVideo'
 
+// NOTE: submitSeedanceTask() needs KIE_API_KEY. It has so far only ever lived
+// in local .env.local for scripts — make sure it's also added to this
+// project's Vercel environment variables, or every tick here will fail.
+
 export const maxDuration = 300
 
 function admin() {
@@ -124,6 +128,21 @@ export async function GET(req: Request) {
                 if (!up.ok) throw new Error(up.error)
                 const { error: updateErr } = await supabase.from('posts').update({ video_status: 'ready', media_urls: [up.publicUrl], image_status: 'ready' } as never).eq('id', job.id)
                 if (updateErr) console.error(`generate-videos: failed to update job ${job.id} to 'ready':`, updateErr)
+
+                // Best-effort cleanup of the now-orphaned raw Seedance render — the
+                // post's media_urls has moved on to the composited video above, and
+                // this file would otherwise sit in campaign-media forever. A cleanup
+                // failure must never block the job from reaching 'ready'.
+                try {
+                    const rawPath = rawUrl.split('/campaign-media/')[1]
+                    if (rawPath) {
+                        const { error: removeErr } = await supabase.storage.from('campaign-media').remove([rawPath])
+                        if (removeErr) console.warn(`generate-videos: failed to delete raw video for job ${job.id}:`, removeErr)
+                    }
+                } catch (cleanupErr) {
+                    console.warn(`generate-videos: raw video cleanup threw for job ${job.id}:`, cleanupErr)
+                }
+
                 return NextResponse.json({ ok: true, processed: 1, action: 'ready', postId: job.id })
             }
 

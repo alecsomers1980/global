@@ -4,7 +4,7 @@
 // system ffmpeg binary required, works in a Vercel serverless function.
 
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, existsSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import sharp from 'sharp'
 import ffmpegPath from 'ffmpeg-static'

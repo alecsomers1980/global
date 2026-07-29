@@ -173,6 +173,12 @@ export async function POST(req: Request) {
 
                         let result: { image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }
                         if (seatPillarName === 'comparison') {
+                            // Runs before any `await` in this async IIFE, so it stays in the
+                            // same synchronous tick as the outer loop's own `vehicleIdx`
+                            // increment above — a future edit that adds an `await` before
+                            // this line could silently break that ordering. Also: `car`
+                            // (carA) and `carB` can be the same vehicle if inventory has
+                            // exactly one vehicle.
                             const carB = vehicles[vehicleIdx % vehicles.length]
                             vehicleIdx++
                             result = await renderComparison(car as VehicleInput, carB as VehicleInput, 'Family', 'Fun', { targetDate, variantIndex: week })
