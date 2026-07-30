@@ -1,6 +1,6 @@
 import type { PlayDetail, PlaywrightDetail } from './types'
 
-export const SITE_URL = 'https://southcanon.co.za'
+export const SITE_URL = 'https://southcanon.com'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function playSchema(play: PlayDetail): Record<string, any> {

@@ -8,7 +8,7 @@ const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', dis
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://southcanon.co.za'),
+  metadataBase: new URL('https://southcanon.com'),
   title: { default: 'South Canon', template: '%s · South Canon' },
   description:
     'Theatrical licensing for the global South. Licence plays by Africa’s leading writers.',

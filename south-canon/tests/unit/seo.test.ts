@@ -36,7 +36,7 @@ describe('playSchema', () => {
     expect(schema['@type']).toBe('CreativeWork')
     expect(schema.name).toBe('Saturday Night at the Palace')
     expect(schema.author).toEqual([{ '@type': 'Person', name: 'Paul Slabolepszy' }])
-    expect(schema.url).toBe('https://southcanon.co.za/plays/saturday-night-at-the-palace')
+    expect(schema.url).toBe('https://southcanon.com/plays/saturday-night-at-the-palace')
   })
 
   it('encodes duration as an ISO 8601 period', () => {
