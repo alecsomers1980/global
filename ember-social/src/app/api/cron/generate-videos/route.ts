@@ -48,7 +48,14 @@ export async function GET(req: Request) {
     // legitimately-queued-but-not-yet-started jobs, or need an unreasonably
     // long cutoff to avoid that. Measuring from actual start time means this
     // only needs to cover one job's real worst case, not the whole queue's.
-    const STUCK_CUTOFF_MS = 30 * 60 * 1000
+    //
+    // 60 minutes, not 30: by this file's own timing assumptions above (up to
+    // a 12-minute Seedance poll ceiling, one job advanced per 10-minute tick,
+    // ~3 ticks end-to-end), a single job's nominal best case already lands
+    // close to 30 minutes with no slack for cron scheduling jitter, a render
+    // that runs slightly past the stated ceiling, or the compositing step's
+    // own runtime — 30 min was the expected timeline, not a margin above it.
+    const STUCK_CUTOFF_MS = 60 * 60 * 1000
 
     try {
         // One job per tick — advances whichever job is furthest along, so a
