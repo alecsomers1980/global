@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { SITE_GATED } from '@/lib/gate'
 import { updateSession } from '@/lib/supabase/middleware'
 
 /**
@@ -36,7 +37,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const hasPreview = request.cookies.get(PREVIEW_COOKIE)?.value === '1'
-  if (!hasPreview && pathname !== '/coming-soon') {
+  if (SITE_GATED && !hasPreview && pathname !== '/coming-soon') {
     // Rewrite, not redirect: the visitor stays on the URL they asked for and simply sees the
     // holding page, so no real URLs leak into browser history or get bookmarked mid-build.
     return NextResponse.rewrite(new URL('/coming-soon', request.url))
