@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { Bodoni_Moda } from 'next/font/google'
-import { Container } from '@/components/ui/Container'
+import styles from './coming-soon.module.css'
 
 const bodoni = Bodoni_Moda({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
+  weight: ['400', '500'],
   style: ['normal', 'italic'],
   display: 'swap',
 })
@@ -13,169 +12,82 @@ const bodoni = Bodoni_Moda({
 export const metadata: Metadata = {
   title: 'South Canon — Theatre from the South, licensed worldwide',
   description:
-    'South Canon represents playwrights across Africa and the global South, licensing their work for performance worldwide.',
+    'South Canon represents playwrights across Africa and the global South, licensing their work for performance worldwide. The catalogue opens soon.',
 }
-
-const NAV = [
-  { href: '#catalogue', label: 'Plays' },
-  { href: '#catalogue', label: 'Authors' },
-  { href: '#catalogue', label: 'Catalogue' },
-  { href: '#about', label: 'About' },
-  { href: '#contact', label: 'Contact' },
-]
 
 export default function ComingSoonPage() {
   return (
-    <div className="bg-onyx text-ivory">
-      {/* Hero */}
-      <section className="px-4 pt-4 pb-16 md:px-8 md:pt-8 md:pb-28">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl bg-ivory text-onyx shadow-2xl">
-          <nav className="flex items-center justify-between border-b border-onyx/10 px-6 py-5 md:px-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/southcanon-logo-onyx.png" alt="South Canon" className="h-4 md:h-5" />
-            <ul className="hidden gap-8 text-xs font-medium tracking-wide text-onyx/70 uppercase md:flex">
-              {NAV.map((item) => (
-                <li key={item.label}>
-                  <a href={item.href} className="hover:text-canon-red">
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <a
-              href="#contact"
-              aria-label="Menu"
-              className="flex flex-col gap-1.5 md:hidden"
-            >
-              <span className="block h-0.5 w-6 bg-canon-red" />
-              <span className="block h-0.5 w-6 bg-canon-red" />
-            </a>
-          </nav>
+    <div
+      className={`${styles.page} flex min-h-[100svh] flex-col items-center justify-center bg-onyx px-6 py-14 text-center sm:py-16 text-ivory`}
+    >
+      <p
+        className={`${styles.reveal} ${styles.d1} text-[0.65rem] font-medium tracking-[0.4em] text-canon-red uppercase`}
+      >
+        Coming soon
+      </p>
 
-          <div className="px-6 py-16 md:px-14 md:py-24">
-            <h1
-              className={`${bodoni.className} text-4xl leading-[1.08] font-medium tracking-tight md:text-6xl lg:text-7xl`}
-            >
-              Theatre from the south.
-              <br />
-              <em className="italic">Licensed worldwide.</em>
-            </h1>
-            <div className="mt-8 h-1 w-16 bg-canon-red" />
-            <p className="mt-8 max-w-md text-base text-onyx/70 md:text-lg">
-              South Canon represents playwrights across Africa and the global South &mdash;
-              licensing their work for performance worldwide, and making sure the writers who made
-              it are paid, on time, in full.
-            </p>
-          </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/brand/southcanon-logo-ivory.png"
+        alt="South Canon"
+        className={`${styles.reveal} ${styles.d2} mt-8 h-5 w-auto sm:h-7 md:h-8`}
+      />
 
-          <div className="grid grid-cols-1 divide-y divide-ivory/10 bg-onyx px-6 py-8 text-ivory sm:grid-cols-3 sm:divide-x sm:divide-y-0 md:px-14">
-            <p className="pt-4 text-xs font-medium tracking-wide uppercase sm:pt-0 sm:pr-6">
-              Contemporary voices
-            </p>
-            <p className="pt-4 text-xs font-medium tracking-wide uppercase sm:px-6 sm:pt-0">
-              Powerful stories.
-              <br className="hidden sm:block" /> Global stage.
-            </p>
-            <Link
-              href="/contact"
-              className="pt-4 text-xs font-medium tracking-wide text-canon-red uppercase hover:opacity-80 sm:pt-0 sm:pl-6"
-            >
-              Licensing enquiries &rarr;
-            </Link>
-          </div>
-        </div>
-      </section>
+      <h1
+        className={`${bodoni.className} ${styles.reveal} ${styles.d3} mt-9 max-w-3xl text-3xl sm:mt-10 leading-[1.15] font-normal sm:text-4xl md:text-5xl`}
+      >
+        Theatre from the south.
+        <br />
+        <em className="italic">Licensed worldwide.</em>
+      </h1>
 
-      {/* About */}
-      <section id="about" className="border-t border-ivory/10 py-24">
-        <Container>
-          <p className="text-xs font-medium tracking-[0.25em] text-canon-red uppercase">
-            About South Canon
-          </p>
-          <h2 className={`${bodoni.className} mt-6 max-w-2xl text-3xl font-medium md:text-5xl`}>
-            The leading rights home for theatre from the African continent.
-          </h2>
-          <p className="mt-8 max-w-2xl text-lg text-ivory/70">
-            We license plays for performance to schools, community theatres, professional
-            producers and international companies. Every writer we represent gets a full account
-            of where their work is playing, what it has earned, and when they will be paid &mdash;
-            no exceptions.
-          </p>
-        </Container>
-      </section>
+      <div className={`${styles.rule} mt-9 h-px sm:mt-10 w-24 bg-canon-red`} />
 
-      {/* Pillars */}
-      <section className="border-t border-ivory/10 py-24">
-        <Container>
-          <div className="grid gap-12 md:grid-cols-3 md:gap-10">
-            {[
-              {
-                title: 'Rights, protected',
-                body: 'Clear licensing terms and territory-by-territory availability, administered properly.',
-              },
-              {
-                title: 'Writers, paid',
-                body: 'Full visibility into every production and every royalty &mdash; the thing the old system never gave them.',
-              },
-              {
-                title: 'A global stage',
-                body: 'Representing playwrights across Africa and the global South to producers worldwide.',
-              },
-            ].map((p) => (
-              <div key={p.title}>
-                <div className="h-0.5 w-10 bg-canon-red" />
-                <h3 className={`${bodoni.className} mt-6 text-2xl font-medium`}>{p.title}</h3>
-                <p className="mt-3 text-ivory/60">{p.body}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
+      <p
+        className={`${styles.reveal} ${styles.d4} mt-9 max-w-lg text-base sm:mt-10 leading-relaxed text-ivory/60 sm:text-lg`}
+      >
+        South Canon represents playwrights across Africa and the global South, licensing their
+        work for performance worldwide &mdash; and making sure the writers who made it are paid,
+        in full and on time. The catalogue opens shortly.
+      </p>
 
-      {/* Catalogue teaser */}
-      <section id="catalogue" className="border-t border-ivory/10 py-24">
-        <Container>
-          <p className="text-xs font-medium tracking-[0.25em] text-canon-red uppercase">
-            Our first writer
-          </p>
-          <h2 className={`${bodoni.className} mt-6 max-w-2xl text-3xl font-medium md:text-5xl`}>
-            Paul Slabolepszy.
-          </h2>
-          <p className="mt-8 max-w-2xl text-lg text-ivory/70">
-            One of South Africa&rsquo;s most decorated playwrights &mdash; author of{' '}
-            <em className={`${bodoni.className} italic`}>Saturday Night at the Palace</em> and a
-            catalogue of work spanning four decades. The first of the writers South Canon
-            represents, with more to follow.
-          </p>
-        </Container>
-      </section>
+      <div className={`${styles.reveal} ${styles.d5} mt-12 sm:mt-14`}>
+        <p className="text-[0.65rem] font-medium tracking-[0.3em] text-ivory/40 uppercase">
+          Licensing &amp; representation enquiries
+        </p>
+        <p className={`${bodoni.className} mt-5 text-xl text-ivory italic sm:text-2xl`}>Jaco</p>
+        <a
+          href="tel:+27827735397"
+          className={`${styles.link} mt-2 inline-block text-base tracking-wide text-ivory/70 sm:text-lg`}
+        >
+          +27 82 773 5397
+        </a>
 
-      {/* Contact */}
-      <section id="contact" className="border-t border-ivory/10 py-24">
-        <Container>
-          <p className="text-xs font-medium tracking-[0.25em] text-canon-red uppercase">
-            Get in touch
-          </p>
-          <h2 className={`${bodoni.className} mt-6 max-w-xl text-3xl font-medium md:text-5xl`}>
-            The full catalogue is on its way. Licensing enquiries are open now.
-          </h2>
-          <Link
-            href="/contact"
-            className="mt-10 inline-block bg-canon-red px-8 py-4 text-sm font-medium tracking-wide text-ivory uppercase hover:opacity-90"
+        <div className="mt-8">
+          <a
+            href="https://wa.me/27827735397"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${styles.button} inline-flex items-center gap-3 border border-ivory/25 px-7 py-3.5 text-[0.65rem] font-medium tracking-[0.25em] text-ivory uppercase`}
           >
-            Contact South Canon &rarr;
-          </Link>
-        </Container>
-      </section>
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0"
+            >
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 0 1 6.988 2.896 9.83 9.83 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.82 11.82 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z" />
+            </svg>
+            WhatsApp Jaco
+          </a>
+        </div>
+      </div>
 
-      <footer className="border-t border-ivory/10 py-10">
-        <Container className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/southcanon-logo-ivory.png" alt="South Canon" className="h-4" />
-          <p className="text-xs text-ivory/50">
-            &copy; {new Date().getFullYear()} South Canon. All rights reserved.
-          </p>
-        </Container>
+      <footer
+        className={`${styles.reveal} ${styles.d6} mt-12 sm:mt-14 text-[0.65rem] tracking-[0.2em] text-ivory/30 uppercase`}
+      >
+        &copy; {new Date().getFullYear()}{' '}
+        South Canon &middot; South Africa
       </footer>
     </div>
   )
