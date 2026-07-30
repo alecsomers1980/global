@@ -10,6 +10,13 @@
   --color-restricted: #B07A15;
   --color-unavailable: #6B635C;
 
+  /* South Canon brand system (2026-07-30) — scoped to the /coming-soon page for now,
+     kept separate from the ink/paper/accent tokens the rest of the app still uses. */
+  --color-onyx: #121212;
+  --color-ivory: #F5F5F0;
+  --color-slate: #4A4A4A;
+  --color-canon-red: #D45F59;
+
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
 }

@@ -1,7 +1,13 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 
 export function Footer() {
+  const pathname = usePathname()
+  if (pathname === '/coming-soon') return null
+
   return (
     <footer className="mt-24 border-t border-rule py-10 text-sm text-muted">
       <Container className="flex flex-col gap-4 md:flex-row md:justify-between">
