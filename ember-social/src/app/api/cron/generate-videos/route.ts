@@ -33,23 +33,22 @@ export async function GET(req: Request) {
 
     const supabase = admin()
 
-    // Well past the 12-minute Seedance poll ceiling plus retry margin — a job
-    // still not 'ready' after this long is stuck (stale task id, silently
-    // dead render, etc) and must not keep winning the single per-tick slot
-    // over every other job forever.
+    // Well past the 12-minute Seedance poll ceiling plus compositing/retry
+    // margin — a job still not 'ready' this long after it actually started
+    // processing is genuinely stuck (stale task id, silently dead render,
+    // etc) and must not keep winning the single per-tick slot forever.
     //
-    // This cutoff only applies to jobs that have actually been SUBMITTED to
-    // Seedance (generating/rendering/compositing). It is measured against
-    // created_at, which is set at plan-generation time — not when the job
-    // starts processing. The cron advances exactly one job per 10-minute
-    // tick, and a single video takes ~3 ticks (submit → poll/download →
-    // composite) end to end. A batch of 3 video jobs is inserted with
-    // near-identical created_at and drains strictly sequentially (pending
-    // has the lowest priority below), so job 2 can legitimately still be
-    // mid-render ~60 minutes after created_at, and job 3 may not even be
-    // submitted yet by then. 4 hours comfortably covers worst-case queue
-    // drain for a full batch of 3 without punishing normal queue depth.
-    const STUCK_CUTOFF_MS = 4 * 60 * 60 * 1000
+    // This is measured against video_started_at (set the moment a job is
+    // first submitted to Seedance — see the 'pending' branch below), NOT
+    // created_at. created_at is set at plan-generation time; since the cron
+    // advances one job per 10-minute tick and a batch of 3 drains
+    // sequentially, later jobs in a batch (or jobs from back-to-back
+    // plan-generation runs) can have a created_at far earlier than when they
+    // actually began rendering — measuring from created_at would either kill
+    // legitimately-queued-but-not-yet-started jobs, or need an unreasonably
+    // long cutoff to avoid that. Measuring from actual start time means this
+    // only needs to cover one job's real worst case, not the whole queue's.
+    const STUCK_CUTOFF_MS = 30 * 60 * 1000
 
     try {
         // One job per tick — advances whichever job is furthest along, so a
@@ -59,7 +58,7 @@ export async function GET(req: Request) {
         const STATUS_PRIORITY: Record<string, number> = { compositing: 0, rendering: 1, generating: 1, pending: 2 }
         const { data: jobs, error } = await supabase
             .from('posts')
-            .select('id, workspace_id, video_status, video_concept, video_task_id, video_prompt, media_urls, created_at')
+            .select('id, workspace_id, video_status, video_concept, video_task_id, video_prompt, media_urls, created_at, video_started_at')
             .in('video_status', ['pending', 'generating', 'rendering', 'compositing'])
             .order('created_at', { ascending: true })
             .limit(10)
@@ -72,16 +71,24 @@ export async function GET(req: Request) {
         // this tick's candidate pool. 'pending' jobs are exempt — they
         // haven't been submitted to Seedance yet, so they haven't consumed
         // any resource and by definition aren't "stuck," they're just
-        // waiting their turn behind other jobs in the queue.
+        // waiting their turn behind other jobs in the queue. A submitted job
+        // with no video_started_at (shouldn't happen after this fix, but
+        // defensive against rows from before this migration) falls back to
+        // created_at so it's still eventually recoverable rather than
+        // exempt forever.
         const now = Date.now()
-        const staleJobs = (jobs as any[]).filter(j => j.video_status !== 'pending' && now - new Date(j.created_at).getTime() > STUCK_CUTOFF_MS)
-        const activeJobs = (jobs as any[]).filter(j => j.video_status === 'pending' || now - new Date(j.created_at).getTime() <= STUCK_CUTOFF_MS)
+        const startedAt = (j: any) => new Date(j.video_started_at || j.created_at).getTime()
+        const staleJobs = (jobs as any[]).filter(j => j.video_status !== 'pending' && now - startedAt(j) > STUCK_CUTOFF_MS)
+        const activeJobs = (jobs as any[]).filter(j => j.video_status === 'pending' || now - startedAt(j) <= STUCK_CUTOFF_MS)
 
         for (const stale of staleJobs) {
-            console.warn(`generate-videos: job ${stale.id} stuck in '${stale.video_status}' past ${STUCK_CUTOFF_MS / 60000}min, marking failed`)
+            // Report how long this specific job has actually been processing
+            // (video_started_at → now), not the cutoff constant.
+            const ageMinutes = Math.round((now - startedAt(stale)) / 60000)
+            console.warn(`generate-videos: job ${stale.id} stuck in '${stale.video_status}', started ${ageMinutes}min ago, marking failed`)
             const { error: staleErr } = await supabase
                 .from('posts')
-                .update({ video_status: 'failed', last_error: `Video generation timed out after ${STUCK_CUTOFF_MS / 60000} minutes` } as never)
+                .update({ video_status: 'failed', last_error: `Video generation did not complete within ${ageMinutes} minutes of starting` } as never)
                 .eq('id', stale.id)
             if (staleErr) console.error(`generate-videos: failed to mark stuck job ${stale.id} as failed:`, staleErr)
         }
@@ -101,7 +108,7 @@ export async function GET(req: Request) {
                 const taskId = await submitSeedanceTask(job.video_prompt, refUrls, '16:9')
                 const { error: updateErr } = await supabase
                     .from('posts')
-                    .update({ video_status: 'generating', video_task_id: taskId } as never)
+                    .update({ video_status: 'generating', video_task_id: taskId, video_started_at: new Date().toISOString() } as never)
                     .eq('id', job.id)
                 if (updateErr) {
                     // The (billable) Seedance submission already succeeded, but the

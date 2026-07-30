@@ -224,7 +224,10 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
     const igVariant = variants.instagram || {}
     const tkVariant = variants.tiktok || {}
     const mediaUrl = post.media_urls?.[0] || null
-    const videoNotReady = Boolean(post.pillar === 'video' && post.video_status && post.video_status !== 'ready')
+    // No truthy-guard on video_status here — a null/missing value must be
+    // treated as "not ready" too, matching publishPost's own gate
+    // (src/lib/publish.ts), which blocks anything that isn't exactly 'ready'.
+    const videoNotReady = Boolean(post.pillar === 'video' && post.video_status !== 'ready')
 
     return (
         <div className="glass-card overflow-hidden">

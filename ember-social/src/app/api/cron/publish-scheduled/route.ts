@@ -33,10 +33,19 @@ export async function GET(req: Request) {
         const now = new Date()
         const nowIso = now.toISOString()
 
-        // Approved posts whose scheduled time has arrived.
-        const { data: approvedPostsRaw, error: approvedErr } = await supabase
+        // Approved posts whose scheduled time has arrived. Selecting only
+        // 'id' (not pillar/video_status) keeps this query independent of
+        // whether the video-job migration has been applied yet — publishPost
+        // itself is the single gate for pillar='video' posts that aren't
+        // ready (see src/lib/publish.ts), covering this query, the stuck-post
+        // recovery query below, and the manual "Post Now" route all at once.
+        // A pre-filter here would just re-select the same not-ready video
+        // posts on every tick without ever letting publishPost's own logic
+        // flip a permanently-failed one to status='failed' — which is what
+        // actually clears it out of this limit(10) window.
+        const { data: approvedPosts, error: approvedErr } = await supabase
             .from('posts')
-            .select('id, pillar, video_status')
+            .select('id')
             .eq('status', 'approved')
             .not('scheduled_at', 'is', null)
             .lte('scheduled_at', nowIso)
@@ -44,20 +53,6 @@ export async function GET(req: Request) {
             .limit(10)
 
         if (approvedErr) console.error('publish-scheduled: approved query error:', approvedErr)
-
-        // A pillar='video' post carries reference stock photos in media_urls
-        // from insert time (so Seedance has something to work from), so it
-        // can look like a normal approvable post even while its video job is
-        // still rendering or has failed outright. Don't let it publish as
-        // 3 raw stock photos with a video-flavored caption — only publish
-        // once the video has actually finished (video_status === 'ready').
-        const approvedPosts = (approvedPostsRaw ?? []).filter((p: any) => {
-            if (p.pillar === 'video' && p.video_status !== 'ready') {
-                console.warn(`publish-scheduled: skipping post ${p.id} — pillar='video' but video_status='${p.video_status}' (not ready)`)
-                return false
-            }
-            return true
-        })
 
         // Posts stuck in 'publishing' are recovered: a previous run crashed
         // mid-flight (timeout, deploy interrupt, etc) and left them
