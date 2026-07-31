@@ -156,7 +156,7 @@ function getSizeLabel(size) {
   return map[size] || "Standard";
 }
 
-function UnitCard({ unit }) {
+function UnitCard({ unit, index }) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -177,21 +177,26 @@ function UnitCard({ unit }) {
   const whatsappUrl = `https://wa.me/27829594643?text=${whatsappMessage}`;
   const bookingUrl = "https://www.nightsbridge.co.za/bridge/book?bbid=27902";
 
+  // Alternate which side the gallery sits on for a magazine-style rhythm.
+  const imageOnRight = index % 2 === 1;
+
   return (
     <article
-      className={`
-        group relative bg-white rounded-sm border border-primary/10 overflow-hidden
+      className="
+        group relative grid grid-cols-1 lg:grid-cols-2
+        bg-white rounded-sm border border-primary/10 overflow-hidden
         transition-all duration-500 ease-out
         hover:border-primary/25 hover:shadow-[0_8px_40px_-12px_rgba(26,47,35,0.15)]
-        ${unit.span === "col-span-2" ? "md:col-span-2" : "md:col-span-1"}
-      `}
+      "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Slider */}
       {unit.images && unit.images.length > 0 && (
-        <div 
-          className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[4/3] lg:aspect-[16/9] w-full overflow-hidden bg-primary/5 cursor-pointer group/img"
+        <div
+          className={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[460px] w-full overflow-hidden bg-primary/5 cursor-pointer group/img ${
+            imageOnRight ? "lg:order-2" : "lg:order-1"
+          }`}
           onClick={() => setIsLightboxOpen(true)}
         >
           <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors z-[5] pointer-events-none flex items-center justify-center">
@@ -205,7 +210,7 @@ function UnitCard({ unit }) {
             fill
             quality={90}
             className="object-cover transition-transform duration-700 group-hover/img:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
 
           {unit.images.length > 1 && (
@@ -247,17 +252,18 @@ function UnitCard({ unit }) {
         </div>
       )}
 
-      {/* Top accent bar */}
-      <div className="h-1 bg-primary w-full" />
-
-      <div className="p-6 md:p-8 lg:p-10">
+      <div
+        className={`flex flex-col justify-center p-6 md:p-10 lg:p-12 ${
+          imageOnRight ? "lg:order-1" : "lg:order-2"
+        }`}
+      >
         {/* Card header */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <p className="text-accent font-sans text-xs uppercase tracking-[0.2em] font-medium mb-1">
+            <p className="text-accent font-sans text-xs uppercase tracking-[0.2em] font-medium mb-2">
               {unit.tagline}
             </p>
-            <h3 className="font-serif text-2xl md:text-3xl text-primary leading-tight">
+            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary leading-tight">
               {unit.name}
             </h3>
           </div>
@@ -273,7 +279,7 @@ function UnitCard({ unit }) {
         </div>
 
         {/* Description */}
-        <p className="font-sans text-primary/70 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
+        <p className="font-sans text-primary/70 text-sm md:text-base leading-relaxed mb-6">
           {unit.description}
         </p>
 
@@ -476,16 +482,19 @@ export default function AccommodationPage() {
         description={
           <>
             With {units.length} unique self-catering units accommodating up to{" "}
-            {totalGuests} guests, Mountaincreek Lodge offers the perfect base
-            for family gatherings, couples&apos; retreats, or solo nature
-            walks in Hazyview. Prefer breakfast taken care of? Ask about our{" "}
-            <Link
-              href="/packages/bed-and-breakfast"
-              className="underline hover:text-linen transition-colors"
-            >
-              Bed & Breakfast
-            </Link>{" "}
-            option.
+            {totalGuests} guests, Mountain Creek Lodge offers the perfect base
+            for family gatherings, couples&apos; getaways, or solo escapes in
+            the heart of Hazyview.
+            <span className="block mt-4">
+              Prefer to have breakfast taken care of? Simply ask about our{" "}
+              <Link
+                href="/packages/bed-and-breakfast"
+                className="underline hover:text-linen transition-colors"
+              >
+                Bed &amp; Breakfast
+              </Link>{" "}
+              option.
+            </span>
           </>
         }
       >
@@ -525,10 +534,10 @@ export default function AccommodationPage() {
           </div>
         </div>
 
-        {/* Asymmetric Grid — each unit's span (col-span-1/2) is set in the admin portal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-          {units.map((unit) => (
-            <UnitCard key={unit.id} unit={unit} />
+        {/* Full-width rows — gallery and details alternate sides down the page */}
+        <div className="space-y-8 md:space-y-12">
+          {units.map((unit, index) => (
+            <UnitCard key={unit.id} unit={unit} index={index} />
           ))}
         </div>
       </section>

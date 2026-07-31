@@ -56,8 +56,8 @@ export const experiences = [
   {
     id: "local-food-cafe-culture",
     slug: "red-litchi", // Points to existing page
-    title: "Local Food & Café Culture",
-    shortDescription: "Enjoy hearty meals, fresh coffee and delicious treats at Red Litchi Farm Cafe and other local favourites.",
+    title: "Red Litchi Farm Café",
+    shortDescription: "Fresh, farm-to-table delights in a cosy setting. Perfect for coffee dates, breakfast, lunch, cake events, and kids at play.",
     fullDescription: "The Lowveld is home to a vibrant culinary scene, driven by local farms and passionate chefs. Right here on the estate, you can indulge in the delights of the Red Litchi Farm Café, offering artisanal coffee, freshly baked goods, and hearty, wholesome meals surrounded by nature. Beyond the lodge, Hazyview and the surrounding towns like Graskop and Sabie boast incredible pancake houses, craft breweries, and fine dining restaurants celebrating South African flavors.",
     image: "/images/Red Litchi/2.jpg",
     category: "Dining & Lifestyle",
