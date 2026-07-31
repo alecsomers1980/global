@@ -1,7 +1,4 @@
-'use client'
-
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { Container } from '@/components/ui/Container'
 
 const NAV = [
@@ -12,9 +9,6 @@ const NAV = [
 ]
 
 export function Header() {
-  const pathname = usePathname()
-  if (pathname === '/coming-soon') return null
-
   return (
     <header className="border-b border-rule">
       <Container className="flex items-center justify-between py-6">
