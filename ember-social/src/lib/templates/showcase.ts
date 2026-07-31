@@ -3,7 +3,7 @@
 // Logo top-left. NO price box, NO spec list, NO CTA banner.
 
 import sharp from 'sharp'
-import { VehicleInput, RenderResult, RenderOpts, fmtPrice, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, nextSlot, vehicleUrl } from './common'
+import { VehicleInput, RenderResult, RenderOpts, fmtPrice, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot, vehicleUrl } from './common'
 import { showcaseCaption, showcaseHashtags } from './captions'
 
 const SHOWCASE_HEADLINES = [
@@ -38,7 +38,7 @@ function buildPrompt(car: VehicleInput): string {
     const mm = modelMain(car)
     const mt = modelTrim(car)
 
-    return `Create a HYPER-REALISTIC, CINEMATIC studio automotive photograph (1024x1024) for a South African dealership.
+    return `Create a HYPER-REALISTIC, CINEMATIC studio automotive photograph for a South African dealership.
 
 PHOTOGRAPHIC STYLE:
 - Shot on Sony A7R V. Editorial product photography. Photorealistic.
@@ -48,6 +48,7 @@ MAIN SUBJECT:
 - A photorealistic ${String(car.colour).toLowerCase()} ${car.year} ${car.make} ${mm} ${mt} centred in the LOWER half of the canvas.
 - Three-quarter front angle. Studio lighting. Polished dark floor with subtle reflection. Soft side rim-light picking out the body lines.
 - The vehicle takes up about 65% of the canvas width, sitting on a black studio floor.
+- ${RHD_SPEC}.
 - IMPORTANT: the car must have NO number plate. Leave the number-plate area blank/empty or body-coloured — do NOT render any registration plate, license plate, numbers or letters where a plate would go.
 
 BACKGROUND:
@@ -65,7 +66,7 @@ export async function renderShowcase(car: VehicleInput, opts?: RenderOpts): Prom
     const hl = opts?.headline ?? pickHeadline(opts?.variantIndex ?? 0)
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({ W, H, lines: hl.lines, accentWord: hl.accent, position: 'top-right' })
+    const headlineSvg = await buildHeadlineSvg({ W, H, lines: hl.lines, accentWord: hl.accent, position: 'top-right', baseImage: baseBuf })
 
     const finalBuf = await sharp(baseBuf)
         .composite([...logoOverlays, { input: Buffer.from(headlineSvg), top: 0, left: 0 }])

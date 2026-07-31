@@ -32,10 +32,13 @@ EVERY item also needs a "caption" — the post's body text (what goes under the 
 - Do NOT include any URL, phone number, address, or hashtags in the caption — those are appended automatically. End with a light call-to-action phrase (e.g. "Enquire today", "Book your viewing", "Message us").
 
 PILLAR-SPECIFIC GUIDANCE:
-- showcase: bold statement about owning / driving a quality used car (studio hero shot).
-- lifestyle: adventure / freedom / the open road / weekends (car in a scenic SA landscape).
-- maintenance: a USEFUL car-care TIP. lines = the punchy tip title; subhead = one factual sentence explaining it. Every tip must be DIFFERENT and genuinely useful (tyres, brakes, oil, service history, fuel, battery, aircon, wipers, suspension, cooling, cambelt, etc.). Do NOT reuse the same topic twice.
-- seasonal: tie to the CURRENT South African season provided by the user.
+- showcase: bold statement about owning / driving a quality used car (studio hero shot). Do NOT mention the season.
+- lifestyle: adventure / freedom / the open road / weekends (car in a scenic SA landscape). Do NOT mention the season or weather — this pillar is about the destination and the drive, not the time of year.
+- maintenance: a USEFUL car-care TIP. lines = the punchy tip title; subhead = one factual sentence explaining it. Every tip must be DIFFERENT and genuinely useful (tyres, brakes, oil, service history, fuel, battery, aircon, wipers, suspension, cooling, cambelt, etc.). Do NOT reuse the same topic twice. Only mention the season if that specific tip is genuinely season-dependent (e.g. battery cold-starts) — most tips (tyres, oil, service history) apply year-round and should say nothing about the season.
+  Maintenance items ALSO need an "imageSubject": a short description of the single MACRO photograph that illustrates THAT tip (e.g. "an extreme close-up of a car battery terminal with a clean clamp"). It must show the actual part the tip is about — one object, close up, workshop lighting, no whole car, no people, no text.
+- seasonal: the ONLY pillar that should lean into the current South African season. Even so, vary the ANGLE each time (the activity, the light, the mood, a place, the school-holiday calendar) rather than repeating the season's name — at most one seasonal item in the whole batch may contain the literal season word in its headline or caption; the rest should evoke the season without naming it.
+
+Never repeat the same word, phrase, or angle across different pillars in one batch — if "winter" (or any season word) shows up in one item, the rest must find a different way in.
 
 Return STRICT JSON only.`
 
@@ -47,6 +50,7 @@ function coerceSpec(x: any): HeadlineSpec | null {
         subhead: typeof x.subhead === 'string' && x.subhead.trim() ? x.subhead.trim() : null,
         subheadAccent: typeof x.subheadAccent === 'string' && x.subheadAccent.trim() ? x.subheadAccent.trim() : null,
         caption: typeof x.caption === 'string' && x.caption.trim() ? x.caption.trim() : null,
+        imageSubject: typeof x.imageSubject === 'string' && x.imageSubject.trim() ? x.imageSubject.trim() : null,
     }
 }
 
@@ -80,7 +84,7 @@ Return JSON exactly like (every item MUST include a fresh "caption"):
 {
   "showcase":    [{ "lines": ["...","..."], "accent": "WORD", "caption": "2-3 fresh sentences ending in a CTA." }, ...${count} total],
   "lifestyle":   [{ "lines": ["...","..."], "accent": "WORD", "subhead": "lower case line", "subheadAccent": "word", "caption": "..." }, ...],
-  "maintenance": [{ "lines": ["TIP TITLE"], "accent": "WORD", "subhead": "one factual sentence.", "subheadAccent": "word", "caption": "..." }, ...],
+  "maintenance": [{ "lines": ["TIP TITLE"], "accent": "WORD", "subhead": "one factual sentence.", "subheadAccent": "word", "imageSubject": "macro photo description for THIS tip", "caption": "..." }, ...],
   "seasonal":    [{ "lines": ["...","..."], "accent": "WORD", "caption": "..." }, ...]
 }`
 

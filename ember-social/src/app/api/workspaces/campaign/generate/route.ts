@@ -3,7 +3,7 @@ import { createAdminClient } from '@/lib/supabase/client'
 import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
-import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderFinance, renderComparison, renderSeasonalLocal } from '@/lib/templates'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderFinance, renderComparison, renderSeasonalLocal, isAiRenderable } from '@/lib/templates'
 import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
 import { videoCaption, videoHashtags } from '@/lib/templates/captions'
 import { pickRotationSeats } from '@/lib/rotation/pillarHistory'
@@ -141,6 +141,21 @@ export async function POST(req: Request) {
 
         const [seatA, seatB] = await pickRotationSeats(supabase, resolvedId)
 
+        // Templates that draw their picture from a text prompt must only be
+        // handed vehicles the image model can actually render (see
+        // isAiRenderable). The comparison template is exempt — it composites the
+        // real inventory photo, so it needs cars that HAVE one. If a filter
+        // would empty a pool, fall back to the full list rather than generate
+        // nothing at all.
+        const scenePool = vehicles.filter(v => isAiRenderable(v as any))
+        const sceneVehicles = scenePool.length ? scenePool : vehicles
+        const photoPool = vehicles.filter(v => (v as any).main_image_url)
+        const photoVehicles = photoPool.length ? photoPool : vehicles
+        const skipped = vehicles.length - scenePool.length
+        if (skipped > 0) {
+            console.log(`[campaign/generate] ${skipped} vehicle(s) excluded from AI-generated scenes (model cannot render them faithfully)`)
+        }
+
         const tasks: Array<Promise<void>> = []
         const errors: string[] = []
         let vehicleIdx = 0
@@ -149,10 +164,14 @@ export async function POST(req: Request) {
         for (let week = 0; week < weeks; week++) {
             for (const pillar of PILLARS) {
                 const isSeatA = week === 1 && pillar.name === 'seasonal'
-                const isSeatB = week === 3 && pillar.name === 'lifestyle'
+                const isSeatB = week === 3 && pillar.name === 'maintenance'
                 const seatPillarName = isSeatA ? seatA : isSeatB ? seatB : null
 
-                const car = vehicles[vehicleIdx % vehicles.length]
+                // Comparison shows real photographs, so it draws from the
+                // photo pool; every other template generates its image and
+                // draws from the AI-renderable pool.
+                const pool = seatPillarName === 'comparison' ? photoVehicles : sceneVehicles
+                const car = pool[vehicleIdx % pool.length]
                 if (pillar.needsCar) vehicleIdx++
 
                 const headline = fresh && !seatPillarName
@@ -179,7 +198,12 @@ export async function POST(req: Request) {
                             // this line could silently break that ordering. Also: `car`
                             // (carA) and `carB` can be the same vehicle if inventory has
                             // exactly one vehicle.
-                            const carB = vehicles[vehicleIdx % vehicles.length]
+                            //
+                            // The host pillar only advanced vehicleIdx if it needsCar; when
+                            // this seat sits on a car-less pillar (maintenance) it did not,
+                            // so both halves would otherwise show the SAME vehicle.
+                            if (!pillar.needsCar) vehicleIdx++
+                            const carB = photoVehicles[vehicleIdx % photoVehicles.length]
                             vehicleIdx++
                             result = await renderComparison(car as VehicleInput, carB as VehicleInput, 'Family', 'Fun', { targetDate, variantIndex: week })
                         } else if (seatPillarName) {
@@ -253,7 +277,7 @@ export async function POST(req: Request) {
             const refImageUrls = [(car as any).main_image_url, ...((car as any).gallery_urls || []).slice(0, 2)].filter(Boolean)
             const imageCount = refImageUrls.length
 
-            const videoPrompt = `${concept.brief} Hero vehicle: the ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model}${imageCount > 0 ? ` shown in the attached reference photo${imageCount > 1 ? `s (Image 1 through Image ${imageCount})` : ' (Image 1)'} — match its exact colour, shape, and details throughout, do not deviate from the reference` : ' — keep its exact colour and shape throughout'}. South Africa: driving is on the LEFT-hand side of the road, right-hand-drive vehicle. Photorealistic, cinematic, no text, no logos, blank number plates.`
+            const videoPrompt = `${concept.brief} Hero vehicle: the ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model}${imageCount > 0 ? ` shown in the attached reference photo${imageCount > 1 ? `s (Image 1 through Image ${imageCount})` : ' (Image 1)'} — match its exact colour, shape, and details throughout, do not deviate from the reference` : ' — keep its exact colour and shape throughout'}. SOUTH AFRICA — RIGHT-HAND DRIVE, THIS IS CRITICAL: the steering wheel is on the RIGHT-hand side of the cabin and the driver sits on the RIGHT. Any interior, dashboard, driver or over-the-shoulder shot MUST show the steering wheel on the right and the centre console to the driver's LEFT. Never show a left-hand-drive cabin. ROADS: strongly prefer unmarked gravel, dirt or farm roads with NO painted lane markings — the safest way to stay correct. If a marked public road is unavoidable, the vehicle MUST travel in the LEFT-hand lane, hugging the road's left edge, with the opposing lane to its right. MOTION: the vehicle always travels FORWARDS — wheels rotating forwards, scenery moving past consistently in one direction. Never show the vehicle reversing, rolling backwards, or footage that reads as played in reverse. Photorealistic, cinematic, no text, no logos, blank number plates.`
 
             const targetDate = computeWeekday(monthStart, videoWeeks[i], 'thu')
             const postId = crypto.randomUUID()

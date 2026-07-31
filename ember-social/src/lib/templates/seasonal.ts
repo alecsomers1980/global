@@ -3,7 +3,7 @@
 // Logo top-left. NO price box, NO CTA banner.
 
 import sharp from 'sharp'
-import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, nextSlot } from './common'
+import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot } from './common'
 import { seasonalCaption, seasonalHashtags } from './captions'
 
 const SEASONS: Record<string, { scene: string; headlines: { lines: string[]; accent: string }[] }> = {
@@ -69,7 +69,7 @@ function buildPrompt(car: VehicleInput, season: string): string {
     const mt = modelTrim(car)
     const { scene } = SEASONS[season] || SEASONS[currentSASeason()]
 
-    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph (1024x1024) of a real vehicle in a seasonal South African landscape.
+    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph of a real vehicle in a seasonal South African landscape.
 
 PHOTOGRAPHIC STYLE:
 - Shot on Sony A7R V. Golden hour or dramatic weather. Editorial commercial automotive photography. Photorealistic.
@@ -78,6 +78,7 @@ PHOTOGRAPHIC STYLE:
 SUBJECT:
 - A photorealistic ${String(car.colour).toLowerCase()} ${car.year} ${car.make} ${mm} ${mt} in a seasonal South African scene.
 - Vehicle dominates the lower 60% of the frame.
+- ${RHD_SPEC}. If the vehicle is moving or on a road, it drives on the LEFT-hand side of the road (South Africa).
 - NO people, NO passengers.
 - IMPORTANT: the car must have NO number plate. Leave the number-plate area blank/empty or body-coloured — do NOT render any registration plate, license plate, numbers or letters where a plate would go.
 
@@ -101,7 +102,7 @@ export async function renderSeasonal(car: VehicleInput, opts?: RenderOpts): Prom
     const headline = opts?.headline ?? headlines[(opts?.variantIndex ?? 0) % headlines.length]
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({ W, H, lines: headline.lines, accentWord: headline.accent, position: 'top-right' })
+    const headlineSvg = await buildHeadlineSvg({ W, H, lines: headline.lines, accentWord: headline.accent, position: 'top-right', baseImage: baseBuf })
 
     const finalBuf = await sharp(baseBuf)
         .composite([...logoOverlays, { input: Buffer.from(headlineSvg), top: 0, left: 0 }])

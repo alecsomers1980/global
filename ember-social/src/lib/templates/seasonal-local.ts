@@ -3,7 +3,7 @@
 // to the CALENDAR (long weekends, school holidays) rather than the season.
 
 import sharp from 'sharp'
-import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, nextSlot } from './common'
+import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot } from './common'
 import { seasonalLocalCaption, seasonalLocalHashtags } from './captions'
 
 const LOCAL_HEADLINES = [
@@ -31,10 +31,11 @@ function modelTrim(car: VehicleInput): string {
 function buildPrompt(car: VehicleInput): string {
     const mm = modelMain(car)
     const mt = modelTrim(car)
-    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph (1024x1024) of a real vehicle on South Africa's Panorama Route (Mpumalanga), golden hour.
+    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph of a real vehicle on South Africa's Panorama Route (Mpumalanga), golden hour.
 
 SUBJECT:
 - A photorealistic ${String(car.colour).toLowerCase()} ${car.year} ${car.make} ${mm} ${mt} at a mountain-pass viewpoint, wide horizon, dominating the lower 60% of the frame.
+- ${RHD_SPEC}. If the vehicle is moving or on a road, it drives on the LEFT-hand side of the road (South Africa).
 - NO people, NO passengers.
 - IMPORTANT: the car must have NO number plate.
 
@@ -53,7 +54,7 @@ export async function renderSeasonalLocal(car: VehicleInput, opts?: RenderOpts):
     const headline = opts?.headline ?? pickHeadline(opts?.variantIndex ?? 0)
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({ W, H, lines: headline.lines, accentWord: headline.accent, position: 'top-right' })
+    const headlineSvg = await buildHeadlineSvg({ W, H, lines: headline.lines, accentWord: headline.accent, position: 'top-right', baseImage: baseBuf })
 
     const finalBuf = await sharp(baseBuf)
         .composite([...logoOverlays, { input: Buffer.from(headlineSvg), top: 0, left: 0 }])

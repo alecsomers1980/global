@@ -30,7 +30,7 @@ export const VIDEO_CONCEPTS: VideoConcept[] = [
         id: 'work_hard_play_harder',
         title: 'Work Hard, Play Harder',
         vehicleKeywords: ['hilux', 'np200', 'ranger', 'triton'],
-        brief: 'A working bakkie through a weekday shift — loaded, dusty, capable — transitions into weekend escape: same vehicle, empty load bed, open road, golden hour.',
+        brief: 'A working bakkie through a weekday shift — loaded, dusty, capable — transitions into weekend escape: same vehicle, empty load bed, golden hour. Set entirely on unmarked gravel, dirt and farm roads through the lowveld — no painted lane markings anywhere.',
     },
     {
         id: 'date_night',

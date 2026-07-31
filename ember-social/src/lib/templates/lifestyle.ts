@@ -3,7 +3,7 @@
 // Logo top-left. NO price box, NO CTA banner.
 
 import sharp from 'sharp'
-import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, nextSlot, vehicleUrl } from './common'
+import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot, vehicleUrl } from './common'
 import { lifestyleCaption, lifestyleHashtags } from './captions'
 
 const LIFESTYLE_HEADLINES = [
@@ -66,7 +66,7 @@ function buildPrompt(car: VehicleInput): string {
         ])
     }
 
-    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph (1024x1024) of a real vehicle in a stunning South African landscape.
+    return `Create a HYPER-REALISTIC, CINEMATIC editorial lifestyle photograph of a real vehicle in a stunning South African landscape.
 
 PHOTOGRAPHIC STYLE:
 - Shot on Sony A7R V. Golden hour or dramatic weather. Editorial commercial automotive photography. Photorealistic.
@@ -75,6 +75,7 @@ PHOTOGRAPHIC STYLE:
 SUBJECT:
 - A photorealistic ${String(car.colour).toLowerCase()} ${car.year} ${car.make} ${mm} ${mt} in a real South African outdoor scene.
 - Vehicle dominates the lower 60% of the frame.
+- ${RHD_SPEC}. If the vehicle is moving or on a road, it drives on the LEFT-hand side of the road (South Africa).
 - NO people, NO passengers.
 - IMPORTANT: the car must have NO number plate. Leave the number-plate area blank/empty or body-coloured — do NOT render any registration plate, license plate, numbers or letters where a plate would go.
 
@@ -96,9 +97,9 @@ export async function renderLifestyle(car: VehicleInput, opts?: RenderOpts): Pro
     const hl = opts?.headline ?? pickHeadline(opts?.variantIndex ?? 0)
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({
+    const headlineSvg = await buildHeadlineSvg({
         W, H, lines: hl.lines, accentWord: hl.accent, position: 'top-right',
-        subhead: hl.subhead, subheadAccent: hl.subheadAccent,
+        subhead: hl.subhead, subheadAccent: hl.subheadAccent, baseImage: baseBuf,
     })
 
     const finalBuf = await sharp(baseBuf)
