@@ -145,6 +145,24 @@ export async function generateNewsArticle(opts: {
 - Use South African English: "organise", "colour", "favour", "programme", etc.
 - Mention local context where relevant: Gauteng, Johannesburg, South African business climate, load-shedding considerations, SANS standards (e.g., SANS 1186 for safety signs), the Occupational Health and Safety Act (OHS Act), BBBEE, etc.
 - Be practical, helpful, and educational. Write for business owners, marketing managers, facilities managers, or safety officers – not a hard-sell.
+- UNIQUE ANGLE (this is what makes the article rank and get cited — do not write a generic listicle): build the piece around ONE specific, non-obvious angle or real position, not a bland "X things to know" list every competitor already has. Write from the first-hand perspective of a working signage & large-format print shop: "the brief detail clients most often get wrong", "what we check before quoting a wrap", "why we push back when a customer asks for X". Front-load the core takeaway in the opening paragraph so AI-mode search can cite it.
+- REPLACEABILITY TEST (before you finalise): could an AI answer this reader's question in a single paragraph and make the whole article redundant? If yes, it has no fingerprint of its own — sharpen the angle and add real Aloe Signs shop-floor detail until a generic one-paragraph answer could not replace it.
+- READER-QUESTION GAP: build the piece around ONE real question a customer would actually type — phrased the way a person asks it in a forum or an email ("can I put vinyl over a textured wall?"), not the way a marketer titles a page ("Vinyl Wall Graphics: A Complete Guide"). Answer it directly in the opening, then cover the part the competing top-ranking pages skip: the caveat, the real cost driver, or the "it depends on…" they leave out. Do NOT name, quote, or invent a specific forum, thread, or commenter — this is a framing device for choosing the question, not a source to cite.
+- HONESTY RULE: adopt the experienced-shop voice, but do NOT invent statistics, client names, project outcomes, or numeric "data points" presented as proprietary Aloe Signs data. Use real, general industry facts (materials, SANS standards, print/finishing realities) and the company's genuine positioning — a distinct perspective, never fabricated evidence.
+- ANTI-SLOP RULES (these are the tells that make copy read as AI-generated — avoid every one):
+  - No throat-clearing openers ("Here's the thing", "Let me be clear") and no faux-insight setups ("What nobody tells you", "The part everyone misses"). State the point.
+  - No binary contrasts ("It's not X, it's Y" / "The question isn't X, it's Y") and no negative listing ("Not a X. Not a Y. A Z."). Say the thing directly.
+  - No colon reveals (noun phrase, colon, dramatic lowercase reveal) and no rhetorical setups ("What if I told you", "Think about it:").
+  - No importance puffery ("marks a pivotal moment", "plays a vital role", "stands as a testament"). State the fact and let the reader judge.
+  - No weasel attribution ("experts agree", "studies show", "research suggests"). Name a real, verifiable source or cut the claim — this is the HONESTY RULE restated: never invent authority.
+  - No trailing "-ing" clauses that pretend to explain significance ("highlighting our commitment to…", "underscoring…", "reflecting…"). Give the concrete consequence instead.
+  - No fake-strong verbs ("serves as a centralised hub for") where "is" or "has" is clearer. No synonym cycling — if a word is the right word, repeat it.
+  - No dramatic fragmentation ("That's it. That's the whole thing.") and no stack of one-line punchy paragraphs. Vary sentence length the way a person does.
+  - No fake-profound closing line, and no "In conclusion" / "Ultimately" / "Overall" recap paragraph. End on the last concrete point or the CTA.
+  - Banned words: delve, foster, leverage, utilise, facilitate, empower, streamline, robust, cutting-edge, paradigm shift, game changer, tapestry, realm, beacon, multifaceted, meticulous, intricate, paramount, transformative, elevate, embark, supercharge, harness, ever-evolving.
+  - Banned filler phrases: "it's worth noting", "it's important to note", "at the end of the day", "when it comes to", "in today's world", "in the world of", "the reality is", "in this article", "let's dive in".
+  - Em dashes: 1-2 in the whole article at most, and only where a comma or full stop would genuinely read worse. No decorative dashes.
+  - Formatting: no emoji in headings, no bold sprinkled mid-sentence for emphasis, no bullet list where two sentences of prose read better.
 - End EVERY article with a call-to-action section titled "## Get a Quote from Aloe Signs". The section should invite readers to contact Aloe Signs for a free consultation and quote, and provide the phone number 011 693 2600 and WhatsApp 068 883 8049. Keep the tone warm and professional.
 
 The article category is: ${opts.category}. ${
