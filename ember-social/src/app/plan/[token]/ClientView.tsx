@@ -503,12 +503,30 @@ function ClientActions({ post, token, primaryColor, onImageUpdate }: {
                     {errorMsg && <p className="text-xs text-red-400">{errorMsg}</p>}
                 </div>
             )}
+            {localStatus === 'pending' && referred && (
+                <div className="flex flex-col gap-2 px-5 py-4" style={{ background: '#0d0d14' }}>
+                    <div className="px-4 py-2.5 rounded-xl text-xs flex items-center gap-2" style={{ background: 'rgba(251,191,36,0.06)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.15)' }}>
+                        <Clock className="w-3.5 h-3.5" /> Image referred to agency for manual review.
+                    </div>
+                    <div className="flex gap-3">
+                        <button
+                            type="button"
+                            disabled={busy !== null}
+                            onClick={approve}
+                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg disabled:opacity-50"
+                            style={{ background: '#34d399', color: '#064e3b' }}>
+                            <Check className="w-4 h-4" /> {busy === 'approve' ? 'Approving…' : 'Approve'}
+                        </button>
+                    </div>
+                    {errorMsg && <p className="text-xs text-red-400">{errorMsg}</p>}
+                </div>
+            )}
             {localStatus === 'approved' && (
                 <div className="px-5 py-3 text-xs flex items-center gap-2" style={{ background: 'rgba(52,211,153,0.06)', color: '#34d399' }}>
                     <Check className="w-3.5 h-3.5" /> Approved — thanks!
                 </div>
             )}
-            {(localStatus === 'changes_requested' || referred) && (
+            {localStatus === 'changes_requested' && (
                 <div className="px-5 py-3 text-xs flex items-center gap-2" style={{ background: 'rgba(251,191,36,0.06)', color: '#fbbf24' }}>
                     <Clock className="w-3.5 h-3.5" /> Referred to the agency for manual review.
                 </div>

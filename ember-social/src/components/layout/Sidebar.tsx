@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Flame, LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight, Brain, PenLine, Wifi, Key, Palette, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, Users, Calendar, Inbox, BarChart2, Settings, Plus, ChevronRight, Brain, PenLine, Wifi, Key, Palette, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Workspace {
@@ -46,15 +46,8 @@ export function Sidebar({ workspaces }: SidebarProps) {
             style={{ width: 'var(--sidebar-width)', background: '#0d0d14', borderRight: '1px solid #1a1a27' }}>
 
             {/* Logo */}
-            <div className="flex items-center gap-3 px-5 py-5">
-                <div className="flex items-center justify-center w-9 h-9 rounded-xl ember-glow"
-                    style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                    <Flame className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                    <p className="font-bold text-white text-sm leading-none">Ember Social</p>
-                    <p className="text-[10px] leading-none mt-0.5" style={{ color: '#4a4a6a' }}>Automations</p>
-                </div>
+            <div className="flex items-center px-5 py-5">
+                <img src="/images/ember-logo.png" alt="Ember Automations" className="h-12 w-auto" />
             </div>
 
             {/* Main nav */}

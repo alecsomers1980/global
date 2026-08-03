@@ -1,0 +1,27 @@
+/* Maynardville design tokens — CSS custom properties
+   Source: maynardville.co.za branding extraction (2026-06-15) */
+
+:root {
+  /* Colours */
+  --mv-navy: #060A3C;        /* ink / dark section bg / links */
+  --mv-blue: #0F3193;        /* primary brand */
+  --mv-mint: #62DAA9;        /* secondary accent / CTA */
+  --mv-cream: #FFFADB;       /* logo + text on dark */
+  --mv-navy-muted: #3D4067;  /* input bg on dark / muted navy */
+  --mv-white: #FFFFFF;       /* page bg */
+
+  /* Semantic */
+  --mv-bg: var(--mv-white);
+  --mv-text: var(--mv-navy);
+  --mv-link: var(--mv-navy);
+  --mv-primary: var(--mv-blue);
+  --mv-accent: var(--mv-mint);
+
+  /* Typography */
+  --mv-font-heading: "Montserrat", Helvetica, Arial, Lucida, sans-serif;
+  --mv-font-body: "Montserrat", Helvetica, Arial, Lucida, sans-serif;
+
+  /* Shape & spacing */
+  --mv-radius: 3px;
+  --mv-space-unit: 4px;
+}

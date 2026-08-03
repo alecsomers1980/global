@@ -39,10 +39,10 @@ export function Footer() {
                     <div className="pt-4">
                         <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Stay Connected</p>
                         <div className="flex gap-3">
-                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-brand-gold hover:border-brand-gold transition-colors">
+                            <a href="https://www.facebook.com/RvRPRETORIA" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-brand-gold hover:border-brand-gold transition-colors">
                                 <Facebook className="w-4 h-4" />
                             </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-brand-gold hover:border-brand-gold transition-colors">
+                            <a href="https://za.linkedin.com/company/roets-&-van-rensburg-inc." target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-brand-gold hover:border-brand-gold transition-colors">
                                 <Linkedin className="w-4 h-4" />
                             </a>
                             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-brand-gold hover:border-brand-gold transition-colors">

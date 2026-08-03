@@ -1,7 +1,18 @@
 $ErrorActionPreference = "Stop"
 
 try {
-    $root = $PSScriptRoot
+    # Resolve the folder this launcher lives in — works both as a .ps1 (dev) and
+    # as a ps2exe-compiled .exe (client). A compiled exe runs as its own process,
+    # so its own folder is the app root; a plain script runs under powershell.exe,
+    # so fall back to PSScriptRoot. Uses .NET path APIs, not -match/Split-Path:
+    # ps2exe's regex operator is unreliable and mis-resolved the folder.
+    $exeSelf = [System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+    $hostName = [System.IO.Path]::GetFileNameWithoutExtension($exeSelf)
+    if ($hostName -eq 'powershell' -or $hostName -eq 'pwsh') {
+        $root = $PSScriptRoot
+    } else {
+        $root = [System.IO.Path]::GetDirectoryName($exeSelf)
+    }
 
     # Use a bundled node.exe (installed app) if present, else system node (dev).
     $bundledNode = Join-Path $root "node.exe"
@@ -91,6 +102,8 @@ try {
     Write-Host "All done! Here's what to do next:" -ForegroundColor Green
     Write-Host "1. In the Chrome window, log into both portals and complete any 'Just a moment' checks." -ForegroundColor Cyan
     Write-Host "2. In the dashboard that just opened (or is already open), click the buttons to start filling forms. The tool will stop before submitting." -ForegroundColor Cyan
+    Write-Host ""
+    Read-Host "Setup complete. You can close this window and the agent keeps running. Press Enter to close"
 }
 catch {
     Write-Host "Script failed: $($_.Exception.Message)" -ForegroundColor Red

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   getPackages,
   addPackage,
@@ -8,8 +9,18 @@ import {
   deletePackage,
   generateSlug,
 } from "@/lib/packages";
+import AccommodationManager from "@/components/admin/AccommodationManager";
+import GalleryManager from "@/components/admin/GalleryManager";
+import RedLitchiManager from "@/components/admin/RedLitchiManager";
+import AccountManager from "@/components/admin/AccountManager";
 
-const ADMIN_PASSWORD = "mountaincreek2024";
+const TABS = [
+  { id: "packages", label: "Packages" },
+  { id: "accommodation", label: "Accommodation" },
+  { id: "gallery", label: "Gallery" },
+  { id: "red-litchi", label: "Red Litchi" },
+  { id: "account", label: "Account" },
+];
 
 const CATEGORIES = ["Safari", "Adventure", "Romantic", "Family", "Dining", "Custom"];
 
@@ -31,14 +42,31 @@ const emptyForm = {
 // ─── Login Screen ───────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      onLogin();
-    } else {
-      setError("Incorrect password. Please try again.");
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password, remember }),
+      });
+      if (res.ok) {
+        onLogin();
+      } else {
+        setError("Incorrect password. Please try again.");
+      }
+    } catch {
+      setError("Couldn't reach the server. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -61,22 +89,52 @@ function LoginScreen({ onLogin }) {
           <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
             Password
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg mb-4 focus:outline-none focus:border-[#C07750] transition-colors"
-            placeholder="Enter admin password"
-          />
+          <div className="relative mb-4">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+              autoComplete="current-password"
+              className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 pr-16 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+              placeholder="Enter admin password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="absolute inset-y-0 right-0 px-4 text-white/40 hover:text-white/70 text-xs uppercase tracking-wider transition-colors"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <label className="flex items-center gap-2 text-white/50 text-xs">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="w-4 h-4 rounded accent-[#C07750]"
+              />
+              Stay signed in for 7 days
+            </label>
+            <Link
+              href="/admin/forgot"
+              className="text-[#C07750] hover:text-[#C07750]/80 text-xs transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
           {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
           <button
             type="submit"
-            className="w-full bg-[#C07750] text-white py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors"
+            disabled={submitting}
+            className="w-full bg-[#C07750] text-white py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors disabled:opacity-60"
           >
-            SIGN IN
+            {submitting ? "SIGNING IN…" : "SIGN IN"}
           </button>
         </form>
 
@@ -371,37 +429,75 @@ function PackageForm({ initial, onSave, onCancel }) {
 // ─── Admin Dashboard ────────────────────────────────────────────
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [activeTab, setActiveTab] = useState("packages");
   const [packages, setPackages] = useState([]);
   const [view, setView] = useState("list"); // list | create | edit
   const [editPkg, setEditPkg] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
+    fetch("/api/admin/session", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => setAuthed(Boolean(data.authed)))
+      .finally(() => setCheckingSession(false));
+  }, []);
+
+  useEffect(() => {
     if (authed) {
-      setPackages(getPackages());
+      refreshPackages();
     }
   }, [authed]);
 
-  const refreshPackages = () => setPackages(getPackages());
-
-  const handleCreate = (data) => {
-    addPackage(data);
-    refreshPackages();
-    setView("list");
+  const handleSignOut = async () => {
+    await fetch("/api/admin/logout", { method: "POST", credentials: "include" });
+    setAuthed(false);
   };
 
-  const handleUpdate = (data) => {
-    updatePackage(editPkg.id, data);
-    refreshPackages();
-    setEditPkg(null);
-    setView("list");
+  const refreshPackages = () => {
+    getPackages()
+      .then(setPackages)
+      .catch((err) => console.error("Failed to load packages:", err));
   };
 
-  const handleDelete = (id) => {
-    deletePackage(id);
-    refreshPackages();
-    setDeleteConfirm(null);
+  const handleCreate = async (data) => {
+    try {
+      await addPackage(data);
+      refreshPackages();
+      setView("list");
+    } catch (err) {
+      console.error("Failed to create package:", err);
+    }
   };
+
+  const handleUpdate = async (data) => {
+    try {
+      await updatePackage(editPkg.id, data);
+      refreshPackages();
+      setEditPkg(null);
+      setView("list");
+    } catch (err) {
+      console.error("Failed to update package:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deletePackage(id);
+      refreshPackages();
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Failed to delete package:", err);
+    }
+  };
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-white/40 text-sm">Loading...</p>
+      </div>
+    );
+  }
 
   if (!authed) {
     return <LoginScreen onLogin={() => setAuthed(true)} />;
@@ -410,11 +506,11 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen p-6 md:p-10">
       {/* Top Bar */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-white text-2xl font-serif">Package Manager</h1>
+          <h1 className="text-white text-2xl font-serif">Admin Portal</h1>
           <p className="text-white/30 text-sm mt-1">
-            Mountain Creek Lodge — Admin Portal
+            Mountain Creek Lodge
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -427,7 +523,7 @@ export default function AdminPage() {
             View Site →
           </a>
           <button
-            onClick={() => setAuthed(false)}
+            onClick={handleSignOut}
             className="text-white/30 hover:text-red-400 text-sm transition-colors"
           >
             Sign Out
@@ -435,6 +531,30 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* Tab Bar */}
+      <div className="flex flex-wrap items-center gap-2 mb-10 border-b border-white/5 pb-4">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-5 py-2.5 rounded-lg text-sm font-semibold tracking-wide transition-colors ${
+              activeTab === tab.id
+                ? "bg-[#C07750] text-white"
+                : "text-white/50 hover:text-white/80 hover:bg-white/5"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "accommodation" && <AccommodationManager />}
+      {activeTab === "gallery" && <GalleryManager />}
+      {activeTab === "red-litchi" && <RedLitchiManager />}
+      {activeTab === "account" && <AccountManager />}
+
+      {activeTab === "packages" && (
+        <>
       {/* Create / Edit Form */}
       {(view === "create" || view === "edit") && (
         <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8 mb-10">
@@ -447,6 +567,7 @@ export default function AdminPage() {
                 ? {
                     ...editPkg,
                     price: editPkg?.price?.toString() || "",
+                    duration: editPkg?.duration || "",
                     maxGuests: editPkg?.maxGuests?.toString() || "",
                     includes:
                       editPkg?.includes?.length > 0
@@ -625,6 +746,8 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

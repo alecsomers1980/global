@@ -136,7 +136,10 @@ const M = {
 const COLLAGE_CARS = [M.hiluxSC, M.swift, M.kiger, M.np200].map(findCar).filter(c => c && c.main_image_url)
 
 // ---- Post definitions (calendar order) ----
-const STUDIO_TAIL = 'photorealistic, sharp focus, no text, no logos, blank number plates, no people'
+// SOUTH AFRICA = RIGHT-HAND DRIVE. Steering wheel on the RIGHT; also tint the glass so the
+// cabin isn't legible (gpt-image-1 tends to default to LHD, so hiding the interior is the safety net).
+const RHD = 'South African right-hand-drive specification, steering wheel on the RIGHT-hand side, dark privacy-tinted windows so the cabin interior is not clearly visible'
+const STUDIO_TAIL = `${RHD}, photorealistic, sharp focus, no text, no logos, blank number plates, no people`
 const POSTS = [
     { d: '2026-07-01T08:00:00Z', pillar: 'Lifestyle & adventure', src: { crop: 'lifestyle-ex-1.jpg', pos: 'top' },
       fb: `The lowveld is at its best right now — crisp mornings, golden afternoons, and roads that ask to be driven.\n\nWhether it's a weekend on the Panorama Route or a quiet escape into the bush, the right vehicle turns the drive into the destination.\n\nCome find the one that takes you further.${CONTACT}`,
@@ -189,7 +192,7 @@ const POSTS = [
       tags: ['#EverestMotoring', '#SellYourCar', '#TradeIn', '#WhiteRiver'] },
 
     { d: '2026-07-24T10:00:00Z', pillar: 'Lifestyle & adventure', img: { type: 'photo',
-        prompt: `A photorealistic red 2022 Suzuki Vitara Brezza compact SUV parked at a misty escarpment lookout in Hazyview, Mpumalanga, South Africa at golden hour. A couple stand a short distance from the car with their BACKS TO THE CAMERA, looking out over the valley, each holding a coffee mug. Faces not visible, natural relaxed scene, clean correct anatomy, no extra limbs. Wide cinematic composition, the car in the lower half. Shot on a Sony A7R V, 50mm, photorealistic, sharp focus, no text, no logos, blank number plates.` },
+        prompt: `A photorealistic red 2022 Suzuki Vitara Brezza compact SUV parked at a misty escarpment lookout in Hazyview, Mpumalanga, South Africa at golden hour. A couple stand a short distance from the car with their BACKS TO THE CAMERA, looking out over the valley, each holding a coffee mug. Faces not visible, natural relaxed scene, clean correct anatomy, no extra limbs. Wide cinematic composition, the car in the lower half. The vehicle is South African right-hand drive (steering wheel on the RIGHT-hand side). Shot on a Sony A7R V, 50mm, photorealistic, sharp focus, no text, no logos, blank number plates.` },
       fb: `Coffee with a view. ☕\n\nThe best mornings start with an early drive and a quiet spot to take it all in. Life's too short for the same old route.\n\nFind the vehicle that gets you out there.${CONTACT}`,
       ig: `Coffee with a view. ☕ Life's too short for the same old route.\n\n📞 013 854 0600`,
       tags: ['#EverestMotoring', '#SuzukiVitara', '#WeekendVibes', '#Hazyview'] },
@@ -334,7 +337,8 @@ for (let i = 0; i < POSTS.length; i++) {
         id: randomUUID(), workspace_id: WORKSPACE_ID, campaign_batch_id: batchId,
         pillar: post.pillar, content: fb,
         variants: { facebook: { content: fb, hashtags: post.tags }, instagram: { content: ig, hashtags: post.tags } },
-        platforms: ['facebook', 'instagram'], media_urls: [url], scheduled_at: post.d,
+        // Video posts also target YouTube (the reels upload as YouTube videos/Shorts).
+        platforms: isVideo ? ['facebook', 'instagram', 'youtube'] : ['facebook', 'instagram'], media_urls: [url], scheduled_at: post.d,
         status: 'pending_approval', client_status: 'pending', approval_token: randomUUID(),
         image_status: 'ready',
     })

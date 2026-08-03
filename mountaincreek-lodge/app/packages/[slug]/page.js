@@ -27,9 +27,13 @@ export default function PackageDetailPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const found = getPackageBySlug(params.slug);
-    setPkg(found);
-    setLoaded(true);
+    getPackageBySlug(params.slug)
+      .then(setPkg)
+      .catch((err) => {
+        console.error("Failed to load package:", err);
+        setPkg(null);
+      })
+      .finally(() => setLoaded(true));
   }, [params.slug]);
 
   if (!loaded) {
@@ -160,7 +164,7 @@ export default function PackageDetailPage() {
                       d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
                     />
                   ),
-                  label: `Up to ${pkg.maxGuests || "–"} guests`,
+                  label: pkg.maxGuests ? `Up to ${pkg.maxGuests} guests` : "Flexible guests",
                 },
                 {
                   icon: (
@@ -197,29 +201,46 @@ export default function PackageDetailPage() {
           {/* Right — Booking Card */}
           <div className="lg:col-span-1">
             <div className="bg-white p-8 md:p-10 shadow-[0_8px_40px_-12px_rgba(26,47,35,0.08)] sticky top-28">
-              <p className="font-sans text-xs uppercase tracking-widest text-primary/40 mb-2">
-                Starting from
-              </p>
-              <p className="font-serif text-4xl text-primary mb-1">
-                R{pkg.price?.toLocaleString() || "–"}
-              </p>
-              <p className="font-sans text-sm text-primary/50 mb-8">
-                per person sharing
-              </p>
+              {pkg.price ? (
+                <>
+                  <p className="font-sans text-xs uppercase tracking-widest text-primary/40 mb-2">
+                    Starting from
+                  </p>
+                  <p className="font-serif text-4xl text-primary mb-1">
+                    R{pkg.price.toLocaleString()}
+                  </p>
+                  <p className="font-sans text-sm text-primary/50 mb-8">
+                    per person sharing
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-sans text-xs uppercase tracking-widest text-primary/40 mb-2">
+                    Pricing
+                  </p>
+                  <p className="font-serif text-2xl text-primary mb-8">
+                    Contact us for pricing & availability
+                  </p>
+                </>
+              )}
 
               <div className="space-y-4 mb-8 pb-8 border-b border-primary/10">
-                <div className="flex justify-between text-sm">
-                  <span className="text-primary/60">Duration</span>
-                  <span className="font-medium text-primary">
-                    {pkg.duration}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-primary/60">Max Guests</span>
-                  <span className="font-medium text-primary">
-                    {pkg.maxGuests}
-                  </span>
-                </div>
+                {pkg.duration && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-primary/60">Duration</span>
+                    <span className="font-medium text-primary">
+                      {pkg.duration}
+                    </span>
+                  </div>
+                )}
+                {pkg.maxGuests && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-primary/60">Max Guests</span>
+                    <span className="font-medium text-primary">
+                      {pkg.maxGuests}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-primary/60">Category</span>
                   <span className="font-medium text-primary">

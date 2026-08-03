@@ -1,0 +1,777 @@
+{
+  ".eslintrc.json": {
+    "mtime": 1771587905.0,
+    "ast_hash": "4abd4c97fe438cbe0bd79e1ad4fd5b5b",
+    "semantic_hash": "4abd4c97fe438cbe0bd79e1ad4fd5b5b"
+  },
+  "combined_migration.sql": {
+    "mtime": 1780916515.1641915,
+    "ast_hash": "76e8a326eeea6d65d74e8b1f43876981",
+    "semantic_hash": "76e8a326eeea6d65d74e8b1f43876981"
+  },
+  "import-id-numbers.sql": {
+    "mtime": 1779388318.5136025,
+    "ast_hash": "fdfc794c109f2e8fc374c9084fafc9f0",
+    "semantic_hash": "fdfc794c109f2e8fc374c9084fafc9f0"
+  },
+  "migrate_to_new_supabase.mjs": {
+    "mtime": 1778055871.5350578,
+    "ast_hash": "e5e7ac724fea8e6c8c40f985663ebaa1",
+    "semantic_hash": "e5e7ac724fea8e6c8c40f985663ebaa1"
+  },
+  "next.config.mjs": {
+    "mtime": 1781805956.5388305,
+    "ast_hash": "88ed93004e6c962b957808608331152c",
+    "semantic_hash": "88ed93004e6c962b957808608331152c"
+  },
+  "package.json": {
+    "mtime": 1781815303.6086257,
+    "ast_hash": "ff39965ecf8c22f12bfc2e58712c7e37",
+    "semantic_hash": "ff39965ecf8c22f12bfc2e58712c7e37"
+  },
+  "postcss.config.js": {
+    "mtime": 1771587905.0,
+    "ast_hash": "2d155dbe139fe252932d7794fec71f55",
+    "semantic_hash": "2d155dbe139fe252932d7794fec71f55"
+  },
+  "scripts/create_staff_users.mjs": {
+    "mtime": 1779732254.6664739,
+    "ast_hash": "c7592d26d32883a62c893b4188f773eb",
+    "semantic_hash": "c7592d26d32883a62c893b4188f773eb"
+  },
+  "scripts/extract_foreground.py": {
+    "mtime": 1781703378.688386,
+    "ast_hash": "c7a97e6afd3c53c7f655adc55b8be123",
+    "semantic_hash": "c7a97e6afd3c53c7f655adc55b8be123"
+  },
+  "scripts/generate-id-import-sql.mjs": {
+    "mtime": 1779388064.3829699,
+    "ast_hash": "c6b626e09a75de347ae9c1deb3022254",
+    "semantic_hash": "c6b626e09a75de347ae9c1deb3022254"
+  },
+  "scripts/import-id-numbers.mjs": {
+    "mtime": 1779387988.8548667,
+    "ast_hash": "2275f7799c67407ae176f6d00adcfbfc",
+    "semantic_hash": "2275f7799c67407ae176f6d00adcfbfc"
+  },
+  "scripts/import_marblehall.sql": {
+    "mtime": 1779886865.7518802,
+    "ast_hash": "3676ffa7669e0b805cf62c73174b0a58",
+    "semantic_hash": "3676ffa7669e0b805cf62c73174b0a58"
+  },
+  "scripts/replace_bg.py": {
+    "mtime": 1781702245.675643,
+    "ast_hash": "8881cb845551f68d20862e2db476bee2",
+    "semantic_hash": "8881cb845551f68d20862e2db476bee2"
+  },
+  "scripts/resize_images.py": {
+    "mtime": 1771587906.0,
+    "ast_hash": "7960e9d2c711e56bc195860c4022027b",
+    "semantic_hash": "7960e9d2c711e56bc195860c4022027b"
+  },
+  "scripts/smooth_edges.py": {
+    "mtime": 1781705022.9587822,
+    "ast_hash": "f6a64abc3df13432d4b2e41406306c41",
+    "semantic_hash": "f6a64abc3df13432d4b2e41406306c41"
+  },
+  "scripts/unify_backgrounds.py": {
+    "mtime": 1781698149.1904426,
+    "ast_hash": "91e3cc5ea41f491bf930dbcaba7ca9e2",
+    "semantic_hash": "91e3cc5ea41f491bf930dbcaba7ca9e2"
+  },
+  "seed_database.mjs": {
+    "mtime": 1778080119.6334198,
+    "ast_hash": "f7184c7ec5b5fa580915384ebfcb82c8",
+    "semantic_hash": "f7184c7ec5b5fa580915384ebfcb82c8"
+  },
+  "src/app/about/page.tsx": {
+    "mtime": 1781846781.675078,
+    "ast_hash": "8ab407879ca3a73f7a05d1781ffaf842",
+    "semantic_hash": "8ab407879ca3a73f7a05d1781ffaf842"
+  },
+  "src/app/admin/bookings/page.tsx": {
+    "mtime": 1779742864.5198705,
+    "ast_hash": "0087eb28013872313fd8ffce36703120",
+    "semantic_hash": "0087eb28013872313fd8ffce36703120"
+  },
+  "src/app/admin/cases/[id]/page.tsx": {
+    "mtime": 1783950428.2493265,
+    "ast_hash": "249bdc6a305d585d3a1652b23cfeb877",
+    "semantic_hash": "249bdc6a305d585d3a1652b23cfeb877"
+  },
+  "src/app/admin/cases/actions.ts": {
+    "mtime": 1779780511.0080457,
+    "ast_hash": "2c605b07d073dbad033db91bb40f7de1",
+    "semantic_hash": "2c605b07d073dbad033db91bb40f7de1"
+  },
+  "src/app/admin/cases/new/page.tsx": {
+    "mtime": 1780920620.070152,
+    "ast_hash": "69ab4e35804c4795dd172df410b1d3b6",
+    "semantic_hash": "69ab4e35804c4795dd172df410b1d3b6"
+  },
+  "src/app/admin/cases/page.tsx": {
+    "mtime": 1780920667.178319,
+    "ast_hash": "fdba187654be3aa290d0942c85e9a973",
+    "semantic_hash": "fdba187654be3aa290d0942c85e9a973"
+  },
+  "src/app/admin/clients/[id]/page.tsx": {
+    "mtime": 1781805894.6677747,
+    "ast_hash": "4388829b119de065192d4c79606251b4",
+    "semantic_hash": "4388829b119de065192d4c79606251b4"
+  },
+  "src/app/admin/clients/page.tsx": {
+    "mtime": 1781805893.4657178,
+    "ast_hash": "b3e34aae575b7479060841875bd49102",
+    "semantic_hash": "b3e34aae575b7479060841875bd49102"
+  },
+  "src/app/admin/complete-profile/page.tsx": {
+    "mtime": 1779740327.2433765,
+    "ast_hash": "f043d6e6e1d7a3fa53d0271bdd12aecc",
+    "semantic_hash": "f043d6e6e1d7a3fa53d0271bdd12aecc"
+  },
+  "src/app/admin/documents/page.tsx": {
+    "mtime": 1781805896.3061602,
+    "ast_hash": "4c9513667aedc9504f8c6da6a9f6dbf3",
+    "semantic_hash": "4c9513667aedc9504f8c6da6a9f6dbf3"
+  },
+  "src/app/admin/documents/upload/page.tsx": {
+    "mtime": 1779742867.337868,
+    "ast_hash": "cda83ec580148e5b5f29a9a47649077c",
+    "semantic_hash": "cda83ec580148e5b5f29a9a47649077c"
+  },
+  "src/app/admin/insights/[id]/page.tsx": {
+    "mtime": 1781796479.849599,
+    "ast_hash": "269a4e82281cdd7f5002facdecb900f3",
+    "semantic_hash": "269a4e82281cdd7f5002facdecb900f3"
+  },
+  "src/app/admin/insights/page.tsx": {
+    "mtime": 1781885280.3428552,
+    "ast_hash": "d0688db1529aeb2552a825f093da918b",
+    "semantic_hash": "d0688db1529aeb2552a825f093da918b"
+  },
+  "src/app/admin/layout.tsx": {
+    "mtime": 1779742832.7796845,
+    "ast_hash": "a5c89624954984f6f3932ec600a906fc",
+    "semantic_hash": "a5c89624954984f6f3932ec600a906fc"
+  },
+  "src/app/admin/page.tsx": {
+    "mtime": 1783943985.984595,
+    "ast_hash": "f34c5315db103afcda111edad475eecf",
+    "semantic_hash": "f34c5315db103afcda111edad475eecf"
+  },
+  "src/app/admin/reports/page.tsx": {
+    "mtime": 1780920714.535834,
+    "ast_hash": "0d0f3712ec90b3f1dbeaf639b13d49d4",
+    "semantic_hash": "0d0f3712ec90b3f1dbeaf639b13d49d4"
+  },
+  "src/app/admin/settings/page.tsx": {
+    "mtime": 1782465552.9102287,
+    "ast_hash": "73620894ec954deea0aafcaf47c87d3d",
+    "semantic_hash": "73620894ec954deea0aafcaf47c87d3d"
+  },
+  "src/app/admin/statuses/actions.ts": {
+    "mtime": 1781805900.134847,
+    "ast_hash": "b8b2aafdfd6d22861db7acc777756148",
+    "semantic_hash": "b8b2aafdfd6d22861db7acc777756148"
+  },
+  "src/app/admin/statuses/page.tsx": {
+    "mtime": 1781805897.686862,
+    "ast_hash": "6521609072b6acab2bd8f969c5f0dc6d",
+    "semantic_hash": "6521609072b6acab2bd8f969c5f0dc6d"
+  },
+  "src/app/admin/update-password/page.tsx": {
+    "mtime": 1779732371.7131422,
+    "ast_hash": "813eb193142ef16251c26ad97f593510",
+    "semantic_hash": "813eb193142ef16251c26ad97f593510"
+  },
+  "src/app/admin/users/actions.ts": {
+    "mtime": 1782465579.6192746,
+    "ast_hash": "4b39c841fb4f5f36ff267a6645f6a29c",
+    "semantic_hash": "4b39c841fb4f5f36ff267a6645f6a29c"
+  },
+  "src/app/admin/users/invite/page.tsx": {
+    "mtime": 1771588200.0,
+    "ast_hash": "cdb05a0cb36fd09b8ed7dacd82c1f59b",
+    "semantic_hash": "cdb05a0cb36fd09b8ed7dacd82c1f59b"
+  },
+  "src/app/admin/users/page.tsx": {
+    "mtime": 1782465630.0908709,
+    "ast_hash": "0e256f7091e4d6f26cb5aa1d3007dba6",
+    "semantic_hash": "0e256f7091e4d6f26cb5aa1d3007dba6"
+  },
+  "src/app/api/case-status/route.ts": {
+    "mtime": 1781805831.4201078,
+    "ast_hash": "25a5dc13407dc38a9b3164be401ef084",
+    "semantic_hash": "25a5dc13407dc38a9b3164be401ef084"
+  },
+  "src/app/api/contact/route.ts": {
+    "mtime": 1781805793.0,
+    "ast_hash": "fa401223d4731b238c4eb4dc401b00f6",
+    "semantic_hash": "fa401223d4731b238c4eb4dc401b00f6"
+  },
+  "src/app/api/cron/generate-insights/route.ts": {
+    "mtime": 1781723818.1425955,
+    "ast_hash": "b828a15f4f98bf9fd44664ad9cb8fb22",
+    "semantic_hash": "b828a15f4f98bf9fd44664ad9cb8fb22"
+  },
+  "src/app/api/cron/publish-insights/route.ts": {
+    "mtime": 1781723303.6314971,
+    "ast_hash": "528959581f66804b873d007fa18b2f5b",
+    "semantic_hash": "528959581f66804b873d007fa18b2f5b"
+  },
+  "src/app/api/notify/route.ts": {
+    "mtime": 1771587907.0,
+    "ast_hash": "11aaf4c9764897372faebf04755e906d",
+    "semantic_hash": "11aaf4c9764897372faebf04755e906d"
+  },
+  "src/app/api/setup-raf/route.ts": {
+    "mtime": 1781805843.95628,
+    "ast_hash": "1f7fb05a19875beb9024dc79b55ffbbc",
+    "semantic_hash": "1f7fb05a19875beb9024dc79b55ffbbc"
+  },
+  "src/app/auth/callback/route.ts": {
+    "mtime": 1779633403.1735725,
+    "ast_hash": "f325908d7b7e7661e7577826d885ed10",
+    "semantic_hash": "f325908d7b7e7661e7577826d885ed10"
+  },
+  "src/app/book/page.tsx": {
+    "mtime": 1779633468.4698544,
+    "ast_hash": "7975620c563642b84c81bbc25159d111",
+    "semantic_hash": "7975620c563642b84c81bbc25159d111"
+  },
+  "src/app/case-update/page.tsx": {
+    "mtime": 1779633400.8222547,
+    "ast_hash": "a2bbc65039c55099ecf665e556a153fd",
+    "semantic_hash": "a2bbc65039c55099ecf665e556a153fd"
+  },
+  "src/app/contact/layout.tsx": {
+    "mtime": 1781796403.5788982,
+    "ast_hash": "fcb55c8eeffd9ccb6bc620badad494b4",
+    "semantic_hash": "fcb55c8eeffd9ccb6bc620badad494b4"
+  },
+  "src/app/contact/page.tsx": {
+    "mtime": 1781815412.2278955,
+    "ast_hash": "9344b0911c983200fb42c98b7d3cfea9",
+    "semantic_hash": "9344b0911c983200fb42c98b7d3cfea9"
+  },
+  "src/app/forgot-password/page.tsx": {
+    "mtime": 1779732345.1030455,
+    "ast_hash": "35773fe010b68d49e7ee5f71d72bc127",
+    "semantic_hash": "35773fe010b68d49e7ee5f71d72bc127"
+  },
+  "src/app/insights/[slug]/page.tsx": {
+    "mtime": 1781796371.046986,
+    "ast_hash": "e6f76b757988e120d20b744bb8a4b665",
+    "semantic_hash": "e6f76b757988e120d20b744bb8a4b665"
+  },
+  "src/app/insights/page.tsx": {
+    "mtime": 1781796340.3199048,
+    "ast_hash": "ad275ec3063f18ba0e02fdd43d3f44fd",
+    "semantic_hash": "ad275ec3063f18ba0e02fdd43d3f44fd"
+  },
+  "src/app/layout.tsx": {
+    "mtime": 1781796389.164505,
+    "ast_hash": "1cd52c21fd71eb43cde4035585be2f5f",
+    "semantic_hash": "1cd52c21fd71eb43cde4035585be2f5f"
+  },
+  "src/app/login/actions.ts": {
+    "mtime": 1781805898.9078903,
+    "ast_hash": "b7f0605c006ec71c32e2422b9ba03dca",
+    "semantic_hash": "b7f0605c006ec71c32e2422b9ba03dca"
+  },
+  "src/app/login/page.tsx": {
+    "mtime": 1779734325.1156695,
+    "ast_hash": "3a37b0fc1ac19d7a9d253162837b9608",
+    "semantic_hash": "3a37b0fc1ac19d7a9d253162837b9608"
+  },
+  "src/app/page.tsx": {
+    "mtime": 1771850148.0,
+    "ast_hash": "09da64e30748241ea6d0dc3256cce651",
+    "semantic_hash": "09da64e30748241ea6d0dc3256cce651"
+  },
+  "src/app/paia-manual/page.tsx": {
+    "mtime": 1778079890.4949553,
+    "ast_hash": "b18cd5cf0f5140c657026874cf30541c",
+    "semantic_hash": "b18cd5cf0f5140c657026874cf30541c"
+  },
+  "src/app/practice-areas/[slug]/page.tsx": {
+    "mtime": 1781796300.9444847,
+    "ast_hash": "4849271aefc3a61b6e4d4b2ef0e46544",
+    "semantic_hash": "4849271aefc3a61b6e4d4b2ef0e46544"
+  },
+  "src/app/practice-areas/page.tsx": {
+    "mtime": 1781818554.1154397,
+    "ast_hash": "64396e588a76ae9d7191067ae87e02fe",
+    "semantic_hash": "64396e588a76ae9d7191067ae87e02fe"
+  },
+  "src/app/privacy-policy/page.tsx": {
+    "mtime": 1778079882.8376765,
+    "ast_hash": "7c1de9aefb76361daee14f4b85b26b14",
+    "semantic_hash": "7c1de9aefb76361daee14f4b85b26b14"
+  },
+  "src/app/robots.ts": {
+    "mtime": 1781816727.7380354,
+    "ast_hash": "b6c8b31e0109cc6a453dedf04ef697eb",
+    "semantic_hash": "b6c8b31e0109cc6a453dedf04ef697eb"
+  },
+  "src/app/sitemap.ts": {
+    "mtime": 1781816740.0725818,
+    "ast_hash": "e9bfa61b4ddfa1e0cf17c6ea950d677a",
+    "semantic_hash": "e9bfa61b4ddfa1e0cf17c6ea950d677a"
+  },
+  "src/app/start-claim/layout.tsx": {
+    "mtime": 1781796412.8076172,
+    "ast_hash": "46e35f505581d3b6584e483ff720db30",
+    "semantic_hash": "46e35f505581d3b6584e483ff720db30"
+  },
+  "src/app/start-claim/page.tsx": {
+    "mtime": 1771793618.0,
+    "ast_hash": "ce9c4a93834e7cce6eebbff865646bb7",
+    "semantic_hash": "ce9c4a93834e7cce6eebbff865646bb7"
+  },
+  "src/app/team/[slug]/page.tsx": {
+    "mtime": 1781796323.4871807,
+    "ast_hash": "e22a65a948c64011a102715656be02d2",
+    "semantic_hash": "e22a65a948c64011a102715656be02d2"
+  },
+  "src/app/team/page.tsx": {
+    "mtime": 1781796310.4318936,
+    "ast_hash": "628c17831348981012b4bdfd8116c00f",
+    "semantic_hash": "628c17831348981012b4bdfd8116c00f"
+  },
+  "src/components/CaseStatusModal.tsx": {
+    "mtime": 1779647392.809387,
+    "ast_hash": "52aff3a290c2ea2d535503015d9a83cb",
+    "semantic_hash": "52aff3a290c2ea2d535503015d9a83cb"
+  },
+  "src/components/ContactForm.tsx": {
+    "mtime": 1771587907.0,
+    "ast_hash": "ad0f83b12e2992612dbe90e7b3bfd323",
+    "semantic_hash": "ad0f83b12e2992612dbe90e7b3bfd323"
+  },
+  "src/components/ContactModal.tsx": {
+    "mtime": 1781817729.6237168,
+    "ast_hash": "e1730489b40d86ce51df8b2870074826",
+    "semantic_hash": "e1730489b40d86ce51df8b2870074826"
+  },
+  "src/components/admin/AdminSidebar.tsx": {
+    "mtime": 1782465506.2064438,
+    "ast_hash": "25421f09b43383e9982df0267711e09d",
+    "semantic_hash": "25421f09b43383e9982df0267711e09d"
+  },
+  "src/components/admin/AssignAttorneyForm.tsx": {
+    "mtime": 1779780522.7831376,
+    "ast_hash": "7a1b9a883d2cdde3d2406ffb9499f2fa",
+    "semantic_hash": "7a1b9a883d2cdde3d2406ffb9499f2fa"
+  },
+  "src/components/admin/CaseSearch.tsx": {
+    "mtime": 1779859058.8054533,
+    "ast_hash": "4ef4033d2f19ae1a6860597a949cd8a5",
+    "semantic_hash": "4ef4033d2f19ae1a6860597a949cd8a5"
+  },
+  "src/components/admin/DocumentUpload.tsx": {
+    "mtime": 1779633449.2345893,
+    "ast_hash": "82f9b26a27c3771835a9966091fd1866",
+    "semantic_hash": "82f9b26a27c3771835a9966091fd1866"
+  },
+  "src/components/admin/DownloadButton.tsx": {
+    "mtime": 1779633453.59033,
+    "ast_hash": "b69d0d80442c11726b6baebf4a179c9d",
+    "semantic_hash": "b69d0d80442c11726b6baebf4a179c9d"
+  },
+  "src/components/admin/NewCaseForm.tsx": {
+    "mtime": 1783949329.2509675,
+    "ast_hash": "5a1a1d721fda4f62e5e8885cba99a2e0",
+    "semantic_hash": "5a1a1d721fda4f62e5e8885cba99a2e0"
+  },
+  "src/components/admin/SharePointFiles.tsx": {
+    "mtime": 1779864220.7458751,
+    "ast_hash": "1c3d47ba16946f2e2c129f001027dce1",
+    "semantic_hash": "1c3d47ba16946f2e2c129f001027dce1"
+  },
+  "src/components/admin/StatusManager.tsx": {
+    "mtime": 1783945096.2595947,
+    "ast_hash": "928026abe2390bb1e82b1f89564e772f",
+    "semantic_hash": "928026abe2390bb1e82b1f89564e772f"
+  },
+  "src/components/admin/StatusUpdateForm.tsx": {
+    "mtime": 1780920489.2065444,
+    "ast_hash": "fa8cdc1932be0e35abeb68572f8c2df3",
+    "semantic_hash": "fa8cdc1932be0e35abeb68572f8c2df3"
+  },
+  "src/components/layout/Footer.tsx": {
+    "mtime": 1781884348.9876428,
+    "ast_hash": "c4f9a300cfa31aab8aca9ec6a017d0ad",
+    "semantic_hash": "c4f9a300cfa31aab8aca9ec6a017d0ad"
+  },
+  "src/components/layout/FooterCaseSection.tsx": {
+    "mtime": 1779389515.1635194,
+    "ast_hash": "3730f00e8a50adb04cf37ebf429e774d",
+    "semantic_hash": "3730f00e8a50adb04cf37ebf429e774d"
+  },
+  "src/components/layout/Header.tsx": {
+    "mtime": 1779371567.754004,
+    "ast_hash": "ffa6c8757db1ab38ae50b1b4331c4c84",
+    "semantic_hash": "ffa6c8757db1ab38ae50b1b4331c4c84"
+  },
+  "src/components/sections/Hero.tsx": {
+    "mtime": 1779371603.9228127,
+    "ast_hash": "49abfc4bb7bac5ab3c42e4f20ea8bb1a",
+    "semantic_hash": "49abfc4bb7bac5ab3c42e4f20ea8bb1a"
+  },
+  "src/components/sections/ServiceGrid.tsx": {
+    "mtime": 1781721772.7325046,
+    "ast_hash": "005300c848a95cd38cbfc886765040be",
+    "semantic_hash": "005300c848a95cd38cbfc886765040be"
+  },
+  "src/components/sections/WelcomeSection.tsx": {
+    "mtime": 1779890355.8006406,
+    "ast_hash": "96aa545211ed19c478e4e77e58ca82af",
+    "semantic_hash": "96aa545211ed19c478e4e77e58ca82af"
+  },
+  "src/components/ui/Button.tsx": {
+    "mtime": 1771444384.0,
+    "ast_hash": "bbca71f8bba73fae9c66226a3dae0851",
+    "semantic_hash": "bbca71f8bba73fae9c66226a3dae0851"
+  },
+  "src/components/ui/Calendar.tsx": {
+    "mtime": 1771451781.0,
+    "ast_hash": "602cd9b7360a20b2dc7957a59ae13600",
+    "semantic_hash": "602cd9b7360a20b2dc7957a59ae13600"
+  },
+  "src/components/ui/Card.tsx": {
+    "mtime": 1771446796.0,
+    "ast_hash": "c5101d5bcfc82c62284d4b6b869bed90",
+    "semantic_hash": "c5101d5bcfc82c62284d4b6b869bed90"
+  },
+  "src/components/ui/Dialog.tsx": {
+    "mtime": 1771450938.0,
+    "ast_hash": "d1ccc2270f32f1163058c4a9ad5c06aa",
+    "semantic_hash": "d1ccc2270f32f1163058c4a9ad5c06aa"
+  },
+  "src/components/ui/ImageCarousel.tsx": {
+    "mtime": 1771509889.0,
+    "ast_hash": "6e07823a2da392b61c8743f5bfcafd63",
+    "semantic_hash": "6e07823a2da392b61c8743f5bfcafd63"
+  },
+  "src/components/ui/Input.tsx": {
+    "mtime": 1771450941.0,
+    "ast_hash": "3d86b501d2fc1cf131f0547427bf02b9",
+    "semantic_hash": "3d86b501d2fc1cf131f0547427bf02b9"
+  },
+  "src/components/ui/Label.tsx": {
+    "mtime": 1771450611.0,
+    "ast_hash": "bc6a041d1473fe5c8563ffb5114c327f",
+    "semantic_hash": "bc6a041d1473fe5c8563ffb5114c327f"
+  },
+  "src/components/ui/Popover.tsx": {
+    "mtime": 1771451783.0,
+    "ast_hash": "f3694c6cc9cb59352345542d1f2f336d",
+    "semantic_hash": "f3694c6cc9cb59352345542d1f2f336d"
+  },
+  "src/components/ui/Select.tsx": {
+    "mtime": 1771450943.0,
+    "ast_hash": "6cfe318f7b6cb3ebd290b29c9c1e438b",
+    "semantic_hash": "6cfe318f7b6cb3ebd290b29c9c1e438b"
+  },
+  "src/components/ui/Switch.tsx": {
+    "mtime": 1771450609.0,
+    "ast_hash": "379c4bfa101dca31609fa861a62a2a4b",
+    "semantic_hash": "379c4bfa101dca31609fa861a62a2a4b"
+  },
+  "src/components/ui/Textarea.tsx": {
+    "mtime": 1771452969.0,
+    "ast_hash": "fe73fef6951d88aef578df430df8bd18",
+    "semantic_hash": "fe73fef6951d88aef578df430df8bd18"
+  },
+  "src/components/ui/use-toast.tsx": {
+    "mtime": 1771566877.0,
+    "ast_hash": "2ca2eff71382e338d02d52d07d32a4e8",
+    "semantic_hash": "2ca2eff71382e338d02d52d07d32a4e8"
+  },
+  "src/emails/AdminNotificationEmail.tsx": {
+    "mtime": 1781815370.3167498,
+    "ast_hash": "06b76da81545c8ed81d7817c9bd27050",
+    "semantic_hash": "06b76da81545c8ed81d7817c9bd27050"
+  },
+  "src/emails/CaseUpdateEmail.tsx": {
+    "mtime": 1781816999.693908,
+    "ast_hash": "18137a252dd67d9b42b6f52a25765345",
+    "semantic_hash": "18137a252dd67d9b42b6f52a25765345"
+  },
+  "src/emails/ContactEnquiryEmail.tsx": {
+    "mtime": 1781816966.5116355,
+    "ast_hash": "9c1baa37e0edad6fbf87c8b3714f4f48",
+    "semantic_hash": "9c1baa37e0edad6fbf87c8b3714f4f48"
+  },
+  "src/emails/EmailLayout.tsx": {
+    "mtime": 1781816959.737534,
+    "ast_hash": "49b4057262ef75ef05273c0360e88e24",
+    "semantic_hash": "49b4057262ef75ef05273c0360e88e24"
+  },
+  "src/emails/EnquiryConfirmationEmail.tsx": {
+    "mtime": 1781890408.911983,
+    "ast_hash": "e18daa002a6431b3593054dcb04639fe",
+    "semantic_hash": "e18daa002a6431b3593054dcb04639fe"
+  },
+  "src/lib/blog-data.ts": {
+    "mtime": 1771447118.0,
+    "ast_hash": "e6ee12964701a2f6e9404e32abfba8f1",
+    "semantic_hash": "e6ee12964701a2f6e9404e32abfba8f1"
+  },
+  "src/lib/branch.ts": {
+    "mtime": 1779729060.1616113,
+    "ast_hash": "af49a28febee9295e158644b53ab728b",
+    "semantic_hash": "af49a28febee9295e158644b53ab728b"
+  },
+  "src/lib/config.ts": {
+    "mtime": 1781816721.5372362,
+    "ast_hash": "faaf4e451a96a87fc55a3e60f749b1b9",
+    "semantic_hash": "faaf4e451a96a87fc55a3e60f749b1b9"
+  },
+  "src/lib/data.ts": {
+    "mtime": 1781818530.6676466,
+    "ast_hash": "7a178f92bf5755995c7c7fd6387659a8",
+    "semantic_hash": "7a178f92bf5755995c7c7fd6387659a8"
+  },
+  "src/lib/email.ts": {
+    "mtime": 1781890457.1229453,
+    "ast_hash": "b61c114c164d43910bd6ebcaf81384ce",
+    "semantic_hash": "b61c114c164d43910bd6ebcaf81384ce"
+  },
+  "src/lib/fetchAllRows.ts": {
+    "mtime": 1780854627.029008,
+    "ast_hash": "44d4366a196cf5e3a858d1e8b38b7df0",
+    "semantic_hash": "44d4366a196cf5e3a858d1e8b38b7df0"
+  },
+  "src/lib/prescription.ts": {
+    "mtime": 1781726201.2214327,
+    "ast_hash": "ca23a917a7c6d32222ab76e918152c6e",
+    "semantic_hash": "ca23a917a7c6d32222ab76e918152c6e"
+  },
+  "src/lib/rateLimit.ts": {
+    "mtime": 1781805784.224094,
+    "ast_hash": "b26c0194f43c1a57cbe86c98e5cce474",
+    "semantic_hash": "b26c0194f43c1a57cbe86c98e5cce474"
+  },
+  "src/lib/schemas.ts": {
+    "mtime": 1777901960.0699813,
+    "ast_hash": "fd6faf9cfadfad8ab080fbd0ae87c983",
+    "semantic_hash": "fd6faf9cfadfad8ab080fbd0ae87c983"
+  },
+  "src/lib/sharepoint.ts": {
+    "mtime": 1779868437.940004,
+    "ast_hash": "448907204510a54b71ce7333de4a6661",
+    "semantic_hash": "448907204510a54b71ce7333de4a6661"
+  },
+  "src/lib/statusConfig.ts": {
+    "mtime": 1781691798.6467035,
+    "ast_hash": "138565b54fde5c784fe078d67c8270a3",
+    "semantic_hash": "138565b54fde5c784fe078d67c8270a3"
+  },
+  "src/lib/statuses.ts": {
+    "mtime": 1780920045.8339868,
+    "ast_hash": "39d97809ef4f4eff071078a42a25fdb4",
+    "semantic_hash": "39d97809ef4f4eff071078a42a25fdb4"
+  },
+  "src/lib/supabase/admin.ts": {
+    "mtime": 1781723145.4509346,
+    "ast_hash": "dad89ec76633badd1655f264310d482a",
+    "semantic_hash": "dad89ec76633badd1655f264310d482a"
+  },
+  "src/lib/supabase/adminServer.ts": {
+    "mtime": 1781805852.246877,
+    "ast_hash": "def07f097b692d402b310b7c13d20b31",
+    "semantic_hash": "def07f097b692d402b310b7c13d20b31"
+  },
+  "src/lib/supabase/client.ts": {
+    "mtime": 1771445557.0,
+    "ast_hash": "660883e800c15818e94ffd3a52b6af42",
+    "semantic_hash": "660883e800c15818e94ffd3a52b6af42"
+  },
+  "src/lib/supabase/server.ts": {
+    "mtime": 1771445565.0,
+    "ast_hash": "8ea99d0fa0e051a27e92c864a942bcb7",
+    "semantic_hash": "8ea99d0fa0e051a27e92c864a942bcb7"
+  },
+  "src/lib/utils.ts": {
+    "mtime": 1771444298.0,
+    "ast_hash": "b7369cc6ed1c89d3d06037e2e9947f8f",
+    "semantic_hash": "b7369cc6ed1c89d3d06037e2e9947f8f"
+  },
+  "src/middleware.ts": {
+    "mtime": 1782465523.9622295,
+    "ast_hash": "5b96c92a3dcb572108890ade956767ea",
+    "semantic_hash": "5b96c92a3dcb572108890ade956767ea"
+  },
+  "src/types/index.ts": {
+    "mtime": 1779729053.647021,
+    "ast_hash": "6ad7506be63711d28dff457e02196560",
+    "semantic_hash": "6ad7506be63711d28dff457e02196560"
+  },
+  "src/utils/ai/insightsGenerator.ts": {
+    "mtime": 1781893900.1337469,
+    "ast_hash": "3b4adf968243c8488f97d7bd0bc92d06",
+    "semantic_hash": "3b4adf968243c8488f97d7bd0bc92d06"
+  },
+  "supabase/add_case_fields.sql": {
+    "mtime": 1779638596.2466984,
+    "ast_hash": "b58e09f8aeb947cb8be3a5ba946c9258",
+    "semantic_hash": "b58e09f8aeb947cb8be3a5ba946c9258"
+  },
+  "supabase/add_email_to_profiles.sql": {
+    "mtime": 1771514432.0,
+    "ast_hash": "0f3a6e65a6b648e9197f5af0606cfe99",
+    "semantic_hash": "0f3a6e65a6b648e9197f5af0606cfe99"
+  },
+  "supabase/add_minors_field.sql": {
+    "mtime": 1783943433.7930512,
+    "ast_hash": "726bbbf95c6822e97326e17804150876",
+    "semantic_hash": "726bbbf95c6822e97326e17804150876"
+  },
+  "supabase/add_prescription_tracking.sql": {
+    "mtime": 1777901938.1466954,
+    "ast_hash": "f52c6dfb636e8720a74855b8a2caf5d4",
+    "semantic_hash": "f52c6dfb636e8720a74855b8a2caf5d4"
+  },
+  "supabase/admin_rls.sql": {
+    "mtime": 1771567881.0,
+    "ast_hash": "7431a33557fcac8c0a4b46e95040308c",
+    "semantic_hash": "7431a33557fcac8c0a4b46e95040308c"
+  },
+  "supabase/handle_new_user_trigger.sql": {
+    "mtime": 1771514185.0,
+    "ast_hash": "a72af32f15d45c0a936b3ea62aa80120",
+    "semantic_hash": "a72af32f15d45c0a936b3ea62aa80120"
+  },
+  "supabase/migrations/20260617190000_add_insights_table.sql": {
+    "mtime": 1781723274.6952796,
+    "ast_hash": "365f2563a611e65916012bc15015a189",
+    "semantic_hash": "365f2563a611e65916012bc15015a189"
+  },
+  "supabase/migrations/add_branch_and_onboarding.sql": {
+    "mtime": 1779729038.8669984,
+    "ast_hash": "76a199030a1fc0dab5187a5894c4172b",
+    "semantic_hash": "76a199030a1fc0dab5187a5894c4172b"
+  },
+  "supabase/migrations/add_id_number_to_cases.sql": {
+    "mtime": 1779371646.6616328,
+    "ast_hash": "a030e3bee2a45cff0e0fd3c73cfcdd2e",
+    "semantic_hash": "a030e3bee2a45cff0e0fd3c73cfcdd2e"
+  },
+  "supabase/migrations/add_matter_not_yet_updated_status.sql": {
+    "mtime": 1781692585.564321,
+    "ast_hash": "5dceb270906554f41aa4bda628017279",
+    "semantic_hash": "5dceb270906554f41aa4bda628017279"
+  },
+  "supabase/migrations/ensure_admin_rls.sql": {
+    "mtime": 1779743077.05076,
+    "ast_hash": "4ba82d0739ddd988db9efc419394bfc5",
+    "semantic_hash": "4ba82d0739ddd988db9efc419394bfc5"
+  },
+  "supabase/raf_status_migration.sql": {
+    "mtime": 1780916459.5116231,
+    "ast_hash": "316edbd21b0bf82672eba5104b341b43",
+    "semantic_hash": "316edbd21b0bf82672eba5104b341b43"
+  },
+  "supabase/schema.sql": {
+    "mtime": 1771514435.0,
+    "ast_hash": "3beb15202e5564bdba069da547e3f489",
+    "semantic_hash": "3beb15202e5564bdba069da547e3f489"
+  },
+  "supabase/seed.sql": {
+    "mtime": 1771456691.0,
+    "ast_hash": "73777e6543a28d4aaa3b7040abcf5428",
+    "semantic_hash": "73777e6543a28d4aaa3b7040abcf5428"
+  },
+  "tailwind.config.js": {
+    "mtime": 1771444820.0,
+    "ast_hash": "1fbe222962768b166423846bbd8efc6a",
+    "semantic_hash": "1fbe222962768b166423846bbd8efc6a"
+  },
+  "tsconfig.json": {
+    "mtime": 1771444255.0,
+    "ast_hash": "acee68a959e2b91ccacdf82f6a88e68a",
+    "semantic_hash": "acee68a959e2b91ccacdf82f6a88e68a"
+  },
+  "vercel.json": {
+    "mtime": 1781890440.146931,
+    "ast_hash": "5f80cd3a40320aa9777b0151e745357f",
+    "semantic_hash": "5f80cd3a40320aa9777b0151e745357f"
+  },
+  ".antigravity/brain/agency_operating_model.md": {
+    "mtime": 1771833408.0,
+    "ast_hash": "776316685532d960acdf668cacd51440",
+    "semantic_hash": "776316685532d960acdf668cacd51440"
+  },
+  ".antigravity/brain/aloe_signs_financial_model.md": {
+    "mtime": 1771833751.0,
+    "ast_hash": "a9bd424e798b45b20401389415d8d9ca",
+    "semantic_hash": "a9bd424e798b45b20401389415d8d9ca"
+  },
+  ".antigravity/brain/aloe_signs_growth_proposal.md": {
+    "mtime": 1771832324.0,
+    "ast_hash": "13b8e2aa0a487020763a9f52e2772dea",
+    "semantic_hash": "13b8e2aa0a487020763a9f52e2772dea"
+  },
+  ".antigravity/brain/everest_motoring_feature_breakdown.md": {
+    "mtime": 1771829023.0,
+    "ast_hash": "54f3c80e73f91446d9c13790893a2795",
+    "semantic_hash": "54f3c80e73f91446d9c13790893a2795"
+  },
+  ".antigravity/brain/implementation_plan.md": {
+    "mtime": 1771849950.0,
+    "ast_hash": "28677e98d0d93ea8f0faf5020b31d8f2",
+    "semantic_hash": "28677e98d0d93ea8f0faf5020b31d8f2"
+  },
+  ".antigravity/brain/rvrinc_growth_proposal.md": {
+    "mtime": 1771834332.0,
+    "ast_hash": "4d5ce25e99181e7edae1508ece58ce36",
+    "semantic_hash": "4d5ce25e99181e7edae1508ece58ce36"
+  },
+  ".antigravity/brain/sharing_guide.md": {
+    "mtime": 1771854596.0,
+    "ast_hash": "fe003cc41503f775d773f84793950538",
+    "semantic_hash": "fe003cc41503f775d773f84793950538"
+  },
+  ".antigravity/brain/task.md": {
+    "mtime": 1771850178.0,
+    "ast_hash": "4c0a55253f0169f8aa482aa27baefac1",
+    "semantic_hash": "4c0a55253f0169f8aa482aa27baefac1"
+  },
+  ".antigravity/brain/walkthrough.md": {
+    "mtime": 1771848848.0,
+    "ast_hash": "010851b7db43d2ee1afa9d4e56cf07ab",
+    "semantic_hash": "010851b7db43d2ee1afa9d4e56cf07ab"
+  },
+  "CLIENT_PROGRESS_AND_ROADMAP.md": {
+    "mtime": 1778218646.0181527,
+    "ast_hash": "203dbfb76d40002189b58a682838cd80",
+    "semantic_hash": "203dbfb76d40002189b58a682838cd80"
+  },
+  "README.md": {
+    "mtime": 1771587905.0,
+    "ast_hash": "05d6a0260f998ead044bb4437d014d68",
+    "semantic_hash": "05d6a0260f998ead044bb4437d014d68"
+  },
+  "build_log.txt": {
+    "mtime": 1771587905.0,
+    "ast_hash": "9819d9ef785a445cef39c49b5170b6f8",
+    "semantic_hash": "9819d9ef785a445cef39c49b5170b6f8"
+  },
+  "build_log_2.txt": {
+    "mtime": 1771587905.0,
+    "ast_hash": "9819d9ef785a445cef39c49b5170b6f8",
+    "semantic_hash": "9819d9ef785a445cef39c49b5170b6f8"
+  },
+  "deploy_log.txt": {
+    "mtime": 1771848331.0,
+    "ast_hash": "7a1bd56e45530ff3951c38921d7429b1",
+    "semantic_hash": "7a1bd56e45530ff3951c38921d7429b1"
+  },
+  "full_build_log.txt": {
+    "mtime": 1771851544.0,
+    "ast_hash": "c058726bb2ebbd1805e6bf851a58e213",
+    "semantic_hash": "c058726bb2ebbd1805e6bf851a58e213"
+  }
+}

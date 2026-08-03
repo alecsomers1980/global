@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { Label } from "@/components/ui/Label";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, Plus, X } from "lucide-react";
 import { PHASE_CONFIG, type StatusPhase, type StatusConfig } from "@/lib/statusConfig";
 
 export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: any[]; userBranch?: string | null; statuses: StatusConfig[] }) {
@@ -25,10 +25,18 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
     const [dateOfSummons, setDateOfSummons] = useState("");
     const [dateOfRelodgement, setDateOfRelodgement] = useState("");
     const [placeOfAccident, setPlaceOfAccident] = useState("");
+    const [minors, setMinors] = useState<{ name: string; id_number: string }[]>([]);
+    const [scheduledDate, setScheduledDate] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
+    const selectedStatusConfig = statuses.find((s) => s.slug === status);
+
+    const addMinor = () => setMinors([...minors, { name: "", id_number: "" }]);
+    const updateMinor = (index: number, field: "name" | "id_number", value: string) =>
+        setMinors(minors.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
+    const removeMinor = (index: number) => setMinors(minors.filter((_, i) => i !== index));
 
     const generateCaseNumber = () => {
         const prefix = "KC";
@@ -54,6 +62,17 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
             return;
         }
 
+        if (selectedStatusConfig?.requiresDate && !scheduledDate) {
+            alert(`Please provide a date for "${selectedStatusConfig.label}".`);
+            setLoading(false);
+            return;
+        }
+
+        const cleanedMinors = minors
+            .map((m) => ({ name: m.name.trim(), id_number: m.id_number.trim() }))
+            .filter((m) => m.name)
+            .map((m) => ({ name: m.name, id_number: m.id_number || null }));
+
         try {
             const { error } = await supabase
                 .from('cases')
@@ -64,9 +83,11 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
                     branch,
                     description,
                     status,
+                    scheduled_date: selectedStatusConfig?.requiresDate ? scheduledDate : null,
                     accident_date: accidentDate || null,
                     id_number: idNumber || null,
                     raf_ref: rafRef || null,
+                    minors: cleanedMinors.length ? cleanedMinors : null,
                     date_of_lodgement: dateOfLodgement || null,
                     date_of_summons: dateOfSummons || null,
                     date_of_relodgement: dateOfRelodgement || null,
@@ -148,6 +169,54 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
                 </div>
             </div>
 
+            {/* Minors (optional) */}
+            <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <Label>Minors</Label>
+                        <p className="text-xs text-gray-500">Optional. Add one or more minors — name is required, ID is optional.</p>
+                    </div>
+                    <Button type="button" variant="outline" size="sm" onClick={addMinor}>
+                        <Plus className="h-4 w-4 mr-1" /> Add Minor
+                    </Button>
+                </div>
+
+                {minors.length > 0 && (
+                    <div className="space-y-3">
+                        {minors.map((minor, i) => (
+                            <div key={i} className="flex flex-col md:flex-row gap-3 md:items-end">
+                                <div className="flex-1 space-y-2">
+                                    <Label>Minor Name <span className="text-red-500">*</span></Label>
+                                    <Input
+                                        required
+                                        placeholder="e.g. Thabo Gumede"
+                                        value={minor.name}
+                                        onChange={(e) => updateMinor(i, "name", e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                    <Label>Minor ID Number (optional)</Label>
+                                    <Input
+                                        placeholder="e.g. 1508245830081"
+                                        value={minor.id_number}
+                                        onChange={(e) => updateMinor(i, "id_number", e.target.value)}
+                                    />
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => removeMinor(i)}
+                                    title="Remove minor"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
             <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                     <Label>Date of Accident</Label>
@@ -224,6 +293,18 @@ export function NewCaseForm({ attorneys, userBranch, statuses }: { attorneys: an
                     </Select>
                 </div>
             </div>
+
+            {selectedStatusConfig?.requiresDate && (
+                <div className="space-y-2 max-w-xs">
+                    <Label>{selectedStatusConfig.label} <span className="text-red-500">*</span></Label>
+                    <Input
+                        type="date"
+                        required
+                        value={scheduledDate}
+                        onChange={(e) => setScheduledDate(e.target.value)}
+                    />
+                </div>
+            )}
 
             <div className="space-y-2">
                 <Label>Description / Notes</Label>

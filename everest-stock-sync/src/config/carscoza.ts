@@ -82,6 +82,8 @@ export const carscoza = {
       roadworthy: "Sold in roadworthy condition",
       finance: "Eligible for finance",
     },
+    // VIN has no associated <label>, so locate it by its stable data-cy hook.
+    vinInput: '[data-cy="dap-vin-input"]',
     // Click-to-open native file chooser (no <input type=file> in the DOM).
     photosDropzone: '[data-cy="dap-upload-photos"]',
   },

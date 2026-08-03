@@ -3,7 +3,6 @@ import * as React from "react";
 import { ContactEnquiryEmail } from "@/emails/ContactEnquiryEmail";
 import { EnquiryConfirmationEmail } from "@/emails/EnquiryConfirmationEmail";
 import { CaseUpdateEmail } from "@/emails/CaseUpdateEmail";
-import { PrescriptionAlertEmail } from "@/emails/PrescriptionAlertEmail";
 import { AdminNotificationEmail } from "@/emails/AdminNotificationEmail";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -110,57 +109,6 @@ export async function sendCaseUpdateEmail({
         return { success: true };
     } catch (error: any) {
         console.error("Case update email error:", error);
-        return { success: false, error: error.message };
-    }
-}
-
-/**
- * Send prescription deadline alert to attorney and admin
- */
-export async function sendPrescriptionAlertEmail({
-    attorneyEmail,
-    attorneyName,
-    caseNumber,
-    caseTitle,
-    daysRemaining,
-    deadlineDate,
-    risk,
-}: {
-    attorneyEmail: string | null;
-    attorneyName: string | null;
-    caseNumber: string;
-    caseTitle: string;
-    daysRemaining: number;
-    deadlineDate: Date;
-    risk: string;
-}) {
-    const client = getResendClient();
-    if (!client) return { success: false, error: "Email not configured" };
-
-    const isExpired = risk === "expired";
-
-    const recipients = [];
-    if (attorneyEmail) recipients.push(attorneyEmail);
-    if (!recipients.includes(ADMIN_EMAIL)) recipients.push(ADMIN_EMAIL);
-
-    try {
-        await client.emails.send({
-            from: FROM,
-            to: recipients,
-            subject: `[PRESCRIPTION ALERT] ${caseNumber} — ${daysRemaining <= 0 ? "EXPIRED" : daysRemaining + " days remaining"}`,
-            react: React.createElement(PrescriptionAlertEmail, {
-                attorneyName,
-                caseNumber,
-                caseTitle,
-                daysRemaining,
-                deadlineDateFormatted: deadlineDate.toLocaleDateString("en-ZA"),
-                isExpired,
-                siteUrl: SITE_URL,
-            }),
-        });
-        return { success: true };
-    } catch (error: any) {
-        console.error("Prescription alert email error:", error);
         return { success: false, error: error.message };
     }
 }

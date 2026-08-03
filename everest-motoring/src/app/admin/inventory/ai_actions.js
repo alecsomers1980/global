@@ -30,7 +30,8 @@ export async function queueAiWalkaround(carId) {
     try {
         const supabase = await createAdminClient();
         await supabase.from('cars').update({
-            video_url: 'ai_pending'
+            video_url: 'ai_pending',
+            ai_progress_at: null
         }).eq('id', carId);
         revalidatePath("/admin/inventory");
         return { success: true };
@@ -355,6 +356,7 @@ export async function requestSceneRegenerationAction(carId, sceneNumbers) {
             .update({
                 video_url: "ai_redoing_scenes",
                 ai_pipeline_state: nextState,
+                ai_progress_at: null,
             })
             .eq("id", carId);
         if (updateErr) {
@@ -446,6 +448,7 @@ export async function requestAudioRedoAction(carId, sceneNumbers) {
             .update({
                 video_url: "ai_redoing_audio",
                 ai_pipeline_state: nextState,
+                ai_progress_at: null,
             })
             .eq("id", carId);
         if (updateErr) {

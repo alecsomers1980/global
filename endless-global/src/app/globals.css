@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #102708;
+  --brand-mid: #1c4310;
+  --brand-light: #2e5d1f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #1e1e1e;
+  background: #ffffff;
+  font-family: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* Centered page container */
+  .eg-container {
+    @apply mx-auto w-full max-w-container px-5 sm:px-6 lg:px-8;
+  }
+
+  /* Small uppercase section label pill (e.g. "About Us", "Our Services") */
+  .eyebrow {
+    @apply inline-flex items-center rounded bg-cream px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand;
+  }
+
+  /* Big section heading */
+  .section-title {
+    @apply font-bold uppercase leading-[1.1] tracking-tight text-brand;
+    font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+  }
+
+  /* Primary pill button (dark green + arrow) */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors duration-200 hover:bg-brand-mid;
+  }
+
+  /* Outlined/ghost button used on dark backgrounds */
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-md border border-white/50 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-colors duration-200 hover:bg-white hover:text-brand;
+  }
+
+  /* Signature dark-green pleated-blind texture (hero + footer) */
+  .pleated {
+    background-color: #102708;
+    background-image: url("/images/home-2.png");
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Simple reveal-on-scroll (progressive enhancement) */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}

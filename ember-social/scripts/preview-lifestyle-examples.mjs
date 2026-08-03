@@ -28,7 +28,9 @@ const OPENAI_KEY = process.env.OPENAI_API_KEY
 if (!OPENAI_KEY) { console.error('OPENAI_API_KEY missing'); process.exit(1) }
 
 const LOGO_PATH = 'public/images/logo.png'
-const TAIL = 'shot on a Sony A7R V, 50mm f/1.8, natural golden-hour lighting, warm editorial film grade, RAW photograph, editorial commercial automotive photography, photorealistic, sharp focus, cinematic wide negative space, no illustration, no CGI, no 3D render, no cartoon, no painting, 4:5 portrait, NO text, NO words, NO captions, NO logos, NO watermark, blank number plates'
+// SOUTH AFRICA = RIGHT-HAND DRIVE. Ask for steering on the RIGHT and let the windscreen catch a
+// sky reflection so the cabin isn't legible (gpt-image-1 often defaults to LHD — the reflection hides it).
+const TAIL = 'the vehicle is South African right-hand drive (steering wheel on the RIGHT-hand side), windscreen catching a soft sky reflection so the cabin interior is not clearly visible, shot on a Sony A7R V, 50mm f/1.8, natural golden-hour lighting, warm editorial film grade, RAW photograph, editorial commercial automotive photography, photorealistic, sharp focus, cinematic wide negative space, no illustration, no CGI, no 3D render, no cartoon, no painting, 4:5 portrait, NO text, NO words, NO captions, NO logos, NO watermark, blank number plates'
 
 // Real in-stock Everest Motoring vehicles (pulled from live inventory). Premium lifestyle, "what the car can do".
 const SHOTS = [
@@ -85,7 +87,9 @@ async function compositeLogoSubtle(baseBuf) {
     return sharp(baseBuf).composite([{ input: logo, top: inset, left: inset }]).jpeg({ quality: 92 }).toBuffer()
 }
 
+const ONLY = (process.env.ONLY || '').split(',').filter(Boolean)   // e.g. ONLY=lifestyle-ex-1,lifestyle-ex-2
 for (const shot of SHOTS) {
+    if (ONLY.length && !ONLY.includes(shot.name)) continue
     try {
         console.log(`Generating: ${shot.title} ...`)
         const base = await genImage(shot.prompt)

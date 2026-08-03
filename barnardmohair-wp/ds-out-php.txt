@@ -1,0 +1,480 @@
+===FILE: barnard-child/functions.php===
+```php
+<?php
+/**
+ * Barnard Mohair Child Theme
+ *
+ * Functions and definitions for the Barnard Mohair child theme.
+ *
+ * @package BarnardMohair
+ */
+
+// Define constants for the child theme directory and URI.
+define('BARNARD_DIR', get_stylesheet_directory());
+define('BARNARD_URI', get_stylesheet_directory_uri());
+define('BARNARD_VERSION', '1.0.0');
+
+/**
+ * Enqueue styles and scripts.
+ */
+function barnard_enqueue_assets() {
+    // Parent theme stylesheet (if any).
+    $parent_style = 'parent-theme-style';
+    wp_enqueue_style($parent_style, get_template_directory_uri() . '/style.css', array(), wp_get_theme()->parent()->get('Version'));
+    // Child theme stylesheet (depends on parent).
+    wp_enqueue_style('barnard-child-style', get_stylesheet_uri(), array($parent_style), BARNARD_VERSION);
+    // Preconnect for font sources.
+    wp_resource_hints(array(
+        array('href' => 'https://fonts.googleapis.com', 'crossorigin' => true, 'as' => 'style'),
+        array('href' => 'https://fonts.gstatic.com', 'crossorigin' => true, 'as' => 'style'),
+    ), 'wp_head');
+    // Enqueue media filter script on specific pages.
+    if (is_page(array('media', 'journal', 'media-and-press'))) {
+        wp_enqueue_script('barnard-media-filter', BARNARD_URI . '/assets/js/media-filter.js', array('jquery'), BARNARD_VERSION, true);
+        // Fallback inline version if the external file is missing.
+        add_action('wp_footer', 'barnard_media_filter_inline_js', 20);
+    }
+}
+add_action('wp_enqueue_scripts', 'barnard_enqueue_assets');
+
+/**
+ * Inline media filter JavaScript (used as fallback or primary).
+ */
+function barnard_media_filter_inline_js() {
+    if (!is_page(array('media', 'journal', 'media-and-press'))) {
+        return;
+    }
+    ?>
+    <script>
+    (function($) {
+        'use strict';
+        $(document).ready(function() {
+            var $grid = $('.barnard-media-grid .elementor-posts-container');
+            if (!$grid.length) return;
+            var $items = $grid.children('[data-category]');
+            var $buttons = $('.barnard-filter-buttons [data-filter]');
+            $buttons.on('click', function() {
+                var filter = $(this).data('filter');
+                $buttons.removeClass('active');
+                $(this).addClass('active');
+                if (filter === 'all') {
+                    $items.show();
+                } else {
+                    $items.each(function() {
+                        var cats = $(this).data('category').split(',');
+                        $(this).toggle(cats.indexOf(filter) > -1);
+                    });
+                }
+            });
+        });
+    })(jQuery);
+    </script>
+    <?php
+}
+
+/**
+ * Register navigation menus.
+ */
+function barnard_register_menus() {
+    register_nav_menus(array(
+        'primary' => __('Primary Menu', 'barnardmohair'),
+    ));
+}
+add_action('init', 'barnard_register_menus');
+
+/**
+ * Include required files.
+ */
+require_once BARNARD_DIR . '/inc/schema.php';
+require_once BARNARD_DIR . '/inc/shortcodes.php';
+require_once BARNARD_DIR . '/inc/ai-discovery.php';
+
+/**
+ * Output GEO meta tags for the brand location.
+ */
+function barnard_geo_meta_tags() {
+    echo '<meta name="geo.region" content="ZA-EC" />' . "\n";
+    echo '<meta name="geo.placename" content="Alicedale" />' . "\n";
+    echo '<meta name="geo.position" content="-33.1833;26.0833" />' . "\n";
+    echo '<meta name="ICBM" content="-33.1833, 26.0833" />' . "\n";
+}
+add_action('wp_head', 'barnard_geo_meta_tags', 5);
+
+/**
+ * Preload fonts (Lora and Inter).
+ */
+function barnard_preload_fonts() {
+    ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <?php
+}
+add_action('wp_head', 'barnard_preload_fonts', 1);
+
+/**
+ * Filter Yoast SEO locale to 'en_ZA'.
+ */
+function barnard_wpseo_locale() {
+    return 'en_ZA';
+}
+add_filter('wpseo_locale', 'barnard_wpseo_locale');
+
+/**
+ * Set language attribute to 'en-ZA'.
+ */
+function barnard_language_attributes($output) {
+    if (is_front_page() || is_singular()) {
+        $output = str_replace('lang="', 'lang="en-ZA"', $output);
+    }
+    return $output;
+}
+add_filter('language_attributes', 'barnard_language_attributes');
+
+/**
+ * Obfuscate email addresses in content.
+ */
+function barnard_obfuscate_emails($content) {
+    // Match email addresses.
+    $pattern = '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/';
+    return preg_replace_callback($pattern, function($matches) {
+        return antispambot($matches[0]);
+    }, $content);
+}
+add_filter('the_content', 'barnard_obfuscate_emails');
+add_filter('widget_text', 'barnard_obfuscate_emails');
+add_filter('comment_text', 'barnard_obfuscate_emails');
+
+/**
+ * Google Analytics 4 snippet (placeholder ID).
+ */
+function barnard_ga4_snippet() {
+    if (defined('BARNARD_GA4_ID') && BARNARD_GA4_ID) {
+        ?>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr(BARNARD_GA4_ID); ?>"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '<?php echo esc_attr(BARNARD_GA4_ID); ?>');
+        </script>
+        <?php
+    }
+}
+add_action('wp_head', 'barnard_ga4_snippet', 10);
+
+/**
+ * Disable WordPress emoji scripts and styles.
+ */
+function barnard_disable_emojis() {
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+    add_filter('emoji_svg_url', '__return_false');
+}
+add_action('init', 'barnard_disable_emojis');
+```
+===END===
+
+===FILE: barnard-child/inc/schema.php===
+```php
+<?php
+/**
+ * Structured data (JSON‑LD) for Barnard Mohair.
+ *
+ * @package BarnardMohair
+ */
+
+/**
+ * Output overall business schema on the homepage.
+ */
+function barnard_output_home_schema() {
+    if (!is_front_page()) {
+        return;
+    }
+
+    $schema = array(
+        '@context'      => 'https://schema.org',
+        '@type'         => array('LocalBusiness', 'ClothingStore', 'OnlineStore'),
+        'name'          => 'Barnard Mohair',
+        'url'           => home_url('/'),
+        'logo'          => home_url('/wp-content/uploads/2024/01/barnard-logo.png'), // Placeholder logo URL.
+        'image'         => home_url('/wp-content/uploads/2024/01/barnard-storefront.jpg'), // Placeholder image.
+        'description'   => 'Premium mohair blankets, jackets and accessories handcrafted in the Eastern Cape since 1967.',
+        'telephone'     => '+27 73 039 2013',
+        'email'         => antispambot('info@barnardmohair.com'),
+        'priceRange'    => 'R495 – R3,300 ZAR',
+        'address'       => array(
+            '@type'             => 'PostalAddress',
+            'streetAddress'     => 'Factory Address',
+            'addressLocality'   => 'Alicedale',
+            'addressRegion'     => 'Eastern Cape',
+            'postalCode'        => '',
+            'addressCountry'    => 'ZA',
+        ),
+        'geo'           => array(
+            '@type'             => 'GeoCoordinates',
+            'latitude'          => '-33.1833',
+            'longitude'         => '26.0833',
+        ),
+        'sameAs'        => array(
+            'https://www.facebook.com/profile.php?id=100057658869744',
+            'https://www.instagram.com/barnard_mohair',
+        ),
+        'hasOfferCatalog' => array(
+            '@type'                   => 'OfferCatalog',
+            'name'                    => 'Product Categories',
+            'itemListElement'         => array(
+                array(
+                    '@type'         => 'OfferCatalog',
+                    'name'          => 'Mohair Blankets',
+                    'itemListElement' => array(
+                        array(
+                            '@type'     => 'Offer',
+                            'itemOffered' => array(
+                                '@type' => 'Product',
+                                'name'  => 'Travel Blanket',
+                                'category' => 'Blankets',
+                            ),
+                            'priceSpecification' => array(
+                                '@type'           => 'PriceSpecification',
+                                'price'           => '795',
+                                'priceCurrency'   => 'ZAR',
+                            ),
+                        ),
+                    ),
+                ),
+                array(
+                    '@type'         => 'OfferCatalog',
+                    'name'          => 'Mohair Jackets',
+                    'itemListElement' => array(
+                        array(
+                            '@type'     => 'Offer',
+                            'itemOffered' => array(
+                                '@type' => 'Product',
+                                'name'  => 'Tunic Jacket',
+                                'category' => 'Jackets',
+                            ),
+                            'priceSpecification' => array(
+                                '@type'           => 'PriceSpecification',
+                                'price'           => '1500',
+                                'priceCurrency'   => 'ZAR',
+                            ),
+                        ),
+                    ),
+                ),
+                array(
+                    '@type'         => 'OfferCatalog',
+                    'name'          => 'Kid Mohair Scarves',
+                    'itemListElement' => array(
+                        array(
+                            '@type'     => 'Offer',
+                            'itemOffered' => array(
+                                '@type' => 'Product',
+                                'name'  => 'Kid Mohair Scarf',
+                                'category' => 'Scarves',
+                            ),
+                            'priceSpecification' => array(
+                                '@type'           => 'PriceSpecification',
+                                'price'           => '495',
+                                'priceCurrency'   => 'ZAR',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    );
+
+    printf('<script type="application/ld+json">%s</script>', wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+}
+
+/**
+ * Output FAQ schema on the Care Guide page (covers common questions).
+ */
+function barnard_output_faq_schema() {
+    if (!is_page('care-guide')) {
+        return;
+    }
+
+    $faq = array(
+        '@context'    => 'https://schema.org',
+        '@type'       => 'FAQPage',
+        'mainEntity'  => array(
+            array(
+                '@type'          => 'Question',
+                'name'           => 'How should I care for my mohair product?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Hand wash in lukewarm water with a mild detergent or dry clean. Do not wring; press excess water out in a towel and lay flat to dry away from direct heat.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'Is mohair sustainable?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Yes, mohair is a natural, renewable fibre. Angora goats are shorn twice a year without harm, and our production processes use minimal chemicals and water.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'Where does the mohair come from?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'All mohair is sourced from Eastern Cape Angora goats, often from farms within a 100 km radius of our factory in Alicedale.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'Do you ship internationally?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Yes, we ship worldwide via Aramex. Delivery times and rates are calculated at checkout. Contact us for bulk wholesale shipping.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'How are your products made ethically?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'No animals are harmed during shearing. The mohair is processed in our eco‑sensitive factory, and the final finishing is done by skilled women from the local community.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'What is the history of Barnard Mohair?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Barnard Mohair was founded in 1967 by Jan Paul Barnard in Alicedale, a small railway town in the Karoo. Today the second generation continues the tradition of crafting premium mohair products.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'What products do you offer?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Our range includes mohair blankets (travel, bed, and luxury), jackets (tunic and talisman styles), and kid mohair scarves. New collections are released seasonally.',
+                ),
+            ),
+            array(
+                '@type'          => 'Question',
+                'name'           => 'Do you offer wholesale or trade prices?',
+                'acceptedAnswer' => array(
+                    '@type' => 'Answer',
+                    'text'  => 'Yes, we have a dedicated Wholesale and Trade programme. Please visit our Wholesale and Trade page or contact us for terms and a catalogue.',
+                ),
+            ),
+        ),
+    );
+
+    printf('<script type="application/ld+json">%s</script>', wp_json_encode($faq, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+}
+
+/**
+ * BreadcrumbList schema on non‑front pages.
+ */
+function barnard_output_breadcrumb_schema() {
+    if (is_front_page()) {
+        return;
+    }
+
+    $items = array();
+
+    // Home item.
+    $items[] = array(
+        '@type'    => 'ListItem',
+        'position' => 1,
+        'name'     => 'Home',
+        'item'     => home_url('/'),
+    );
+
+    if (is_single()) {
+        // Single post: add categories and current post.
+        $categories = get_the_category();
+        if (!empty($categories)) {
+            $cat = $categories[0];
+            $items[] = array(
+                '@type'    => 'ListItem',
+                'position' => 2,
+                'name'     => $cat->name,
+                'item'     => get_category_link($cat->term_id),
+            );
+            $items[] = array(
+                '@type'    => 'ListItem',
+                'position' => 3,
+                'name'     => get_the_title(),
+            );
+        } else {
+            $items[] = array(
+                '@type'    => 'ListItem',
+                'position' => 2,
+                'name'     => get_the_title(),
+            );
+        }
+    } elseif (is_page()) {
+        // Page with ancestors.
+        $ancestors = get_post_ancestors(get_the_ID());
+        $ancestors = array_reverse($ancestors);
+        $pos = 2;
+        foreach ($ancestors as $ancestor_id) {
+            $items[] = array(
+                '@type'    => 'ListItem',
+                'position' => $pos++,
+                'name'     => get_the_title($ancestor_id),
+                'item'     => get_permalink($ancestor_id),
+            );
+        }
+        $items[] = array(
+            '@type'    => 'ListItem',
+            'position' => $pos,
+            'name'     => get_the_title(),
+        );
+    } elseif (is_category() || is_tag() || is_tax()) {
+        $term = get_queried_object();
+        $items[] = array(
+            '@type'    => 'ListItem',
+            'position' => 2,
+            'name'     => $term->name,
+        );
+    } elseif (is_post_type_archive()) {
+        $post_type = get_queried_object();
+        $items[] = array(
+            '@type'    => 'ListItem',
+            'position' => 2,
+            'name'     => $post_type->label,
+        );
+    }
+
+    $breadcrumb = array(
+        '@context'         => 'https://schema.org',
+        '@type'            => 'BreadcrumbList',
+        'itemListElement'  => $items,
+    );
+
+    printf('<script type="application/ld+json">%s</script>', wp_json_encode($breadcrumb, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+}
+
+/**
+ * Speakable specification for the homepage (content accessibility).
+ */
+function barnard_output_speakable_schema() {
+    if (!is_front_page()) {
+        return;
+    }
+
+    $speakable = array(
+        '@context'       => 'https://schema.org',
+        '@type'          => 'SpeakableSpecification',
+        'cssSelector'    => array(
+            '.home .entry-content',
+            '.home .site-description',
+        ),
+    );
+
+    printf('<script type="application/ld+json">%s</script>', wp_json_encode($speakable, JSON_UNESCAP

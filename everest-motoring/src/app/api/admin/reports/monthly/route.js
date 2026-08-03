@@ -31,9 +31,12 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month") || undefined;
+  // ?ai=1 forces the AI executive summary on for previewing, regardless of the
+  // REPORT_AI_SUMMARY env flag that gates the live cron.
+  const aiSummary = searchParams.get("ai") === "1" ? true : undefined;
 
   try {
-    const { buffer, filename } = await renderReportPdf(month);
+    const { buffer, filename } = await renderReportPdf(month, { aiSummary });
 
     return new NextResponse(buffer, {
       status: 200,

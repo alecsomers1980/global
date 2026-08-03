@@ -41,12 +41,46 @@ async function resolveStep1(page: Page, v: Vehicle) {
   await page.waitForLoadState("networkidle").catch(() => {});
   await page.waitForTimeout(800);
 
+  // Fresh Chrome profiles show a cookie-consent banner that can gate/obscure the
+  // form (established profiles accepted it long ago — why this only bit the
+  // client PC). Dismiss it before interacting with the form.
+  await page
+    .getByRole("button", { name: /accept all cookies/i })
+    .click({ timeout: 3000 })
+    .catch(() => {});
+
   await page.getByPlaceholder(cfg.step1.yearPlaceholder).first().fill(String(v.year));
   await page.getByPlaceholder(cfg.step1.mileagePlaceholder).first().fill(String(v.mileage));
 
-  // Filter the tree by make + first model word, then set value + fire input.
-  const filter = `${v.make} ${v.model.split(/\s+/)[0]}`;
-  await page.locator(cfg.step1.makeModelInput).first().click();
+  // Filter the tree by MAKE ONLY. The Everest model string ("Grand i10 1.25
+  // Fluid") often starts with words AutoTrader doesn't use as its model node
+  // (here the node is just "i10"), so filtering by a model word can hide the real
+  // model. Make-only keeps every model visible; the drill picks by token score.
+  const filter = v.make;
+  const makeModel = page.locator(cfg.step1.makeModelInput).first();
+  // The make/model box is a READONLY typeahead trigger — you click it to activate
+  // (readonly is removed after). It starts DISABLED until Year+Mileage validate,
+  // which lags on a slow PC. Wait for it to be enabled (readonly is fine, disabled
+  // is not) rather than click-retry into an "element is not enabled" timeout.
+  // NB: isEditable() is always false for a readonly field, so check isEnabled().
+  await makeModel.waitFor({ state: "visible", timeout: 20_000 }).catch(() => {});
+  const readyBy = Date.now() + 20_000;
+  let mmReady = false;
+  while (Date.now() < readyBy) {
+    if (await makeModel.isEnabled().catch(() => false)) {
+      mmReady = true;
+      break;
+    }
+    await page.waitForTimeout(300);
+  }
+  if (!mmReady) {
+    await captureEvidence(page, "autotrader-step1-not-ready");
+    throw new Error(
+      `Make/model field never became enabled — Find-Spec form not ready, or a ` +
+        `different dealer than 48055 is logged in. URL: ${page.url()} — evidence saved.`,
+    );
+  }
+  await makeModel.click();
   await page
     .locator(`${cfg.step1.makeModelInput}:not([readonly])`)
     .first()
@@ -91,8 +125,21 @@ async function resolveStep1(page: Page, v: Vehicle) {
     }
     clicked.add(bestText.toLowerCase());
     log("info", `  drill: "${bestText}" (score ${bestScore})`);
-    await items.nth(bestIdx).click().catch(() => {});
-    await page.waitForTimeout(2500);
+    // This tree is a keyboard-driven custom widget that ignores synthetic clicks on
+    // the row/arrow. Focus the highlighted node and press Enter/ArrowRight to expand
+    // (or select a leaf), then reinforce by clicking the ".e-expander" toggle.
+    const target = items.nth(bestIdx);
+    await target.scrollIntoViewIfNeeded().catch(() => {});
+    await target.focus().catch(() => {});
+    await target.press("Enter").catch(() => {});
+    await page.waitForTimeout(300);
+    await target.press("ArrowRight").catch(() => {});
+    await page.waitForTimeout(300);
+    const expander = target.locator(".e-expander").first();
+    if (await expander.isVisible().catch(() => false)) {
+      await expander.click().catch(() => {});
+    }
+    await page.waitForTimeout(1900);
   }
 
   void tokens;
@@ -101,10 +148,15 @@ async function resolveStep1(page: Page, v: Vehicle) {
   // verified specs (the trim/transmission is disambiguated in the results).
   if (!page.url().includes(cfg.listingUrlMarker)) {
     const searchBtn = page.getByRole("button", { name: /^\s*search\s*$/i }).first();
-    if (await searchBtn.isVisible().catch(() => false)) {
+    // Search stays DISABLED until a full make→model→variant is selected. Only
+    // click when enabled, else the run crashes with a cryptic click-retry; a
+    // disabled Search here means the spec is incomplete (handled below).
+    if (await searchBtn.isEnabled().catch(() => false)) {
       log("info", "  clicking Search…");
-      await searchBtn.click();
+      await searchBtn.click().catch(() => {});
       await page.waitForTimeout(3000);
+    } else {
+      log("warn", "  Search still disabled — make/model/variant selection incomplete.");
     }
   }
 
@@ -153,7 +205,11 @@ async function resolveStep1(page: Page, v: Vehicle) {
 
   if (!page.url().includes(cfg.listingUrlMarker)) {
     await captureEvidence(page, "autotrader-step1-stuck");
-    throw new Error("Step 1 did not reach a listing page — see evidence/ dump.");
+    throw new Error(
+      "Couldn't auto-select the vehicle spec. In the AutoTrader window, pick the " +
+        "Make/Model/Variant yourself, Search, and choose the match so the page is on " +
+        "the Listing form — then click AutoTrader again and it'll fill the rest.",
+    );
   }
   log("ok", `Step 1 resolved → ${page.url()}`);
 }
@@ -264,11 +320,12 @@ async function uploadPhotos(page: Page, v: Vehicle) {
 
 async function main() {
   let browser;
+  let page: Page | undefined;
   try {
     const vehicle = await fetchVehicle({ id: process.env.VEHICLE_ID, stock: process.env.VEHICLE_STOCK });
     const conn = await connectExisting(cfg.host, `https://${cfg.host}/`);
     browser = conn.browser;
-    const page = conn.page;
+    page = conn.page;
 
     await waitForCloudflare(page);
     // Step 1: auto-resolve the verified spec unless we're already on a listing.
@@ -290,6 +347,7 @@ async function main() {
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    if (page) await captureEvidence(page, "autotrader-failure").catch(() => {});
     await sendAlert("AutoTrader create failed", msg);
     process.exitCode = 1;
   } finally {

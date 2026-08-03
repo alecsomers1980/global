@@ -183,16 +183,17 @@ export default function EnquiryForm({ onSubmit, initialData, saving }: EnquiryFo
             className={inputClass}
           />
         </div>
-        <div>
-          <label className={labelClass}>Notes</label>
-          <textarea
-            rows={1}
-            value={form.notes}
-            onChange={(e) => handleChange("notes", e.target.value)}
-            className={inputClass + " resize-none"}
-            placeholder="Internal notes..."
-          />
-        </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>Notes</label>
+        <textarea
+          rows={6}
+          value={form.notes}
+          onChange={(e) => handleChange("notes", e.target.value)}
+          className={inputClass + " resize-y"}
+          placeholder="Internal notes..."
+        />
       </div>
 
       <div className="flex gap-4 pt-4">

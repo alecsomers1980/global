@@ -1,0 +1,31 @@
+name: Keep Supabase Alive
+
+# Prevents this project's Free-plan Supabase DB from being paused after ~7 days
+# of inactivity by inserting one row into public.keep_alive twice a week.
+# Requires repo secrets: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.
+# One-time DB setup: run supabase/keep_alive.sql in the Supabase SQL Editor.
+#
+# NOTE: scheduled runs only fire from the default branch. Use "Run workflow"
+# to test manually.
+
+on:
+  schedule:
+    - cron: '0 9 * * 1,4'   # 09:00 UTC every Monday & Thursday (max ~4-day gap)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Insert keep-alive row
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -sS -X POST "${SUPABASE_URL}/rest/v1/keep_alive" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d '{"note":"keep-alive"}' \
+            --fail-with-body

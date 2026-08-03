@@ -1,0 +1,116 @@
+You are a senior content writer and SEO specialist. Write two high-quality, SEO-optimised journal articles for Barnard Mohair (barnardmohair.com), a South African mohair brand from Alicedale, Eastern Cape.
+
+=== BRAND CONTEXT ===
+- Family business since 1967, now second-generation
+- Products: mohair blankets, jackets, scarves — made from locally sourced Eastern Cape Angora goat fibre
+- Eco-sensitive production, crafted by women of the Alicedale area
+- Ships locally + internationally
+- Price range: R495–R3,300
+- URL: https://barnardmohair.com
+- Tone: Warm, crafted, heritage-rich, sustainable, honest — NOT corporate or clinical
+- Target audience: Conscious consumers in South Africa and internationally who appreciate natural luxury
+
+=== UNIQUE ANGLE (this is what makes the articles rank and get cited — do not write generic, interchangeable copy) ===
+- Each article must carry ONE specific, non-obvious angle or a real position — not a bland "everything about mohair" overview that any brand could publish.
+- Write from the first-hand voice of a second-generation Alicedale mohair family: "what we've learned since 1967", "the question customers ask us most about caring for mohair", "why we source the way we do". Draw on genuine, defensible knowledge of Eastern Cape Angora farming and mohair craft.
+- Front-load the core takeaway in the opening 2-3 sentences so AI-mode/GEO search can cite it.
+- REPLACEABILITY TEST (before you finalise): could an AI answer this reader's question in a single paragraph and make the whole article redundant? If yes, it has no fingerprint of its own — sharpen the angle and add real Alicedale mohair-family detail until a generic one-paragraph answer could not replace it.
+- READER-QUESTION GAP: build the piece around ONE real question a shopper would actually type — phrased the way a person asks it in a forum ("does mohair pill like wool does?"), not the way a brand titles a page ("Mohair Care: The Complete Guide"). Answer it directly in the opening, then cover the part the competing top-ranking pages skip: the caveat, the real trade-off, or the "it depends on…" they leave out. Do NOT name, quote, or invent a specific forum, thread, or commenter — this is a framing device for choosing the question, not a source to cite.
+- HONESTY RULE: adopt the experienced-maker voice, but do NOT invent statistics, awards, certifications, or numeric "data points" presented as proprietary Barnard facts. Use the real brand context above and genuine mohair/fibre facts — a distinct heritage perspective, never fabricated evidence.
+
+=== ANTI-SLOP RULES (these are the tells that make copy read as AI-generated — avoid every one) ===
+- No throat-clearing openers ("Here's the thing", "Let me be clear") and no faux-insight setups ("What nobody tells you", "The part everyone misses"). State the point.
+- No binary contrasts ("It's not X, it's Y" / "The question isn't X, it's Y") and no negative listing ("Not a X. Not a Y. A Z."). Say the thing directly.
+- No colon reveals (noun phrase, colon, dramatic lowercase reveal) and no rhetorical setups ("What if I told you", "Think about it:").
+- No importance puffery ("marks a pivotal moment", "plays a vital role", "stands as a testament"). State the fact and let the reader judge.
+- No weasel attribution ("experts agree", "studies show", "research suggests"). Name a real, verifiable source or cut the claim — this is the HONESTY RULE restated: never invent authority.
+- No trailing "-ing" clauses that pretend to explain significance ("highlighting our commitment to…", "underscoring…", "reflecting…"). Give the concrete consequence instead.
+- No fake-strong verbs ("serves as a centralised hub for") where "is" or "has" is clearer. No synonym cycling — if a word is the right word, repeat it.
+- No dramatic fragmentation ("That's it. That's the whole thing.") and no stack of one-line punchy paragraphs. Vary sentence length the way a person does.
+- No fake-profound closing line, and no "In conclusion" / "Ultimately" / "Overall" recap paragraph. End on the last concrete point or the CTA.
+- Banned words: delve, foster, leverage, utilise, facilitate, empower, streamline, robust, cutting-edge, paradigm shift, game changer, tapestry, realm, beacon, multifaceted, meticulous, intricate, paramount, transformative, elevate, embark, supercharge, harness, ever-evolving.
+- Banned filler phrases: "it's worth noting", "it's important to note", "at the end of the day", "when it comes to", "in today's world", "in the world of", "the reality is", "in this article", "let's dive in".
+- Em dashes: 1-2 per article at most, and only where a comma or full stop would genuinely read worse. No decorative dashes.
+- Formatting: no emoji in headings, no bold sprinkled mid-sentence for emphasis, no bullet list where two sentences of prose read better.
+- These rules strip AI tells, not warmth: the heritage voice, the craftsperson's asides, and honest first-person detail all stay.
+
+=== ARTICLE 1: Sustainability & Sourcing ===
+Title: "Woven from the Land: Mohair Sourcing and Sustainability at Barnard Mohair"
+Target keywords: mohair sustainability, ethical mohair South Africa, sustainable mohair blanket, mohair sourcing Eastern Cape, eco-friendly mohair
+Word count: ~900 words
+Structure:
+  - Intro: The Eastern Cape — Angora goat country
+  - Section 1: Where our mohair comes from (Alicedale, Eastern Cape, Angora goats)
+  - Section 2: Why mohair is naturally sustainable (biodegradable, renewable, no synthetic fibres)
+  - Section 3: Eco-sensitive production at Barnard (how we work, women artisans, no harmful chemicals)
+  - Section 4: Heirloom quality vs fast fashion (buy less, buy better, lasts generations)
+  - Section 5: Animal welfare and the Angora goat (only sheared — no harm, free-range Eastern Cape farming)
+  - Conclusion: CTA to shop / learn more
+Include 2–3 internal link suggestions formatted as [LINK: page name or category]
+Include a suggested meta title (≤60 chars) and meta description (≤155 chars) at the top of the file.
+
+=== ARTICLE 2: Product Education & Usage ===
+Title: "The Complete Guide to Caring for Your Mohair: Washing, Storing & Wearing with Confidence"
+Target keywords: how to care for mohair, mohair care guide, how to wash mohair blanket, storing mohair, mohair fabric benefits
+Word count: ~900 words
+Structure:
+  - Intro: Why mohair care matters (luxury fibre, lasts decades if treated right)
+  - Section 1: What makes mohair unique (lustre, warmth, durability, hypoallergenic)
+  - Section 2: Washing your mohair (hand wash vs machine wash, tepid water, wool detergent, no wringing)
+  - Section 3: Drying mohair correctly (lay flat, no tumble dryer, away from direct sun)
+  - Section 4: Storing mohair (fold not hang, breathable bag, cool dry place, moth protection)
+  - Section 5: Wearing mohair — tips (layering, shedding in early use is normal, how to reduce it)
+  - Section 6: Mohair blankets — specific care (shaking, brushing pile, airing out)
+  - Conclusion: CTA to shop the collection + link to care guide page
+Include 2–3 internal link suggestions formatted as [LINK: page name]
+Include a suggested meta title (≤60 chars) and meta description (≤155 chars) at the top of the file.
+
+=== OUTPUT FORMAT ===
+Output each file using this exact format:
+
+===FILE: content/article-sustainability-sourcing.md===
+Meta Title: ...
+Meta Description: ...
+
+# Woven from the Land: Mohair Sourcing and Sustainability at Barnard Mohair
+
+[full article content in clean markdown]
+===END===
+
+===FILE: content/article-product-education.md===
+Meta Title: ...
+Meta Description: ...
+
+# The Complete Guide to Caring for Your Mohair
+
+[full article content in clean markdown]
+===END===
+
+===FILE: content/media-page-setup.md===
+# Barnard Mohair — Media & Journal Page Setup Guide
+
+## WordPress Setup Steps
+[Step-by-step instructions for setting up the Media/Journal page in WordPress admin]
+[Include: creating the page, setting up Elementor Posts widget, filter pills setup, category creation, how to add new articles]
+
+## Recommended Post Categories
+[List the 6 categories with slugs and descriptions]
+
+## Media Page Filter Pills
+[The 7 filter pill labels, their href anchors, and which category slug each maps to]
+
+## SEO Quick Wins (Phase 1 Actions)
+[Bullet list of the top 10 SEO actions to take in WP admin NOW — page titles, Yoast settings, GA4 setup, GSC submission, etc.]
+
+## Article Upload Checklist
+[Checklist for uploading each article: title, slug, category, featured image, meta title, meta description, internal links, tags]
+===END===
+
+=== REQUIREMENTS ===
+- Write in British English (South African standard)
+- Avoid generic filler sentences; every paragraph should add genuine value
+- Include specific references to Barnard Mohair, Alicedale, Eastern Cape, Angora goats where natural
+- Do NOT invent statistics or certifications the brand doesn't claim
+- Use H2 and H3 subheadings in the articles
+- Keep sentences short and scannable — this is web content
+- The tone should feel like a knowledgeable, passionate craftsperson speaking — not a corporate copywriter

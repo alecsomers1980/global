@@ -1,0 +1,109 @@
+You are a senior WordPress developer. Generate PHP child theme files for Barnard Mohair (barnardmohair.com) following the exact same patterns as the Ramenhead child theme shown below.
+
+=== BRAND FACTS ===
+Name: Barnard Mohair
+Site: https://barnardmohair.com
+Type: WooCommerce online store + brand (NOT a restaurant)
+Founded: 1967 by Jan Paul Barnard in Alicedale, Eastern Cape, South Africa
+Now: Second-generation family business
+Factory: Alicedale, Eastern Cape (small railway town, Karoo region)
+Phone/WhatsApp: +27 73 039 2013
+Email: info@barnardmohair.com  (use this placeholder)
+Facebook: https://www.facebook.com/profile.php?id=100057658869744
+Instagram: https://www.instagram.com/barnard_mohair
+Products: Mohair blankets, travel blankets, bed blankets, mohair jackets (tunic, talisman), kid mohair scarves
+Price range: R495 – R3,300
+Sourcing: Locally sourced mohair from Eastern Cape Angora goats
+Ethics: Eco-sensitive production, no animals harmed, women of the area craft & finish products
+Delivery: South Africa + international via Aramex
+Existing pages: Home, About Us, Catalogue, Contact, Care Guide, Wholesale and Trade, Factory Visits, Authorised Retailers
+New pages being added: Media / Journal (for blog posts)
+GEO: Eastern Cape, South Africa; lat -33.1833, lon 26.0833 (Alicedale approximate); region ZA-EC
+
+=== REFERENCE: Ramenhead functions.php (mirror structure, adapt for a WooCommerce store) ===
+<?php
+// [Ramenhead functions.php — key patterns to replicate:]
+// 1. define() prefix constant (use BARNARD_ prefix)
+// 2. wp_enqueue_scripts: enqueue parent + child styles
+// 3. register_nav_menus: register 'primary'
+// 4. require_once: inc/schema.php, inc/shortcodes.php, inc/ai-discovery.php
+// 5. wp_head GEO meta tags (adapt for ZA-EC / Eastern Cape / Alicedale coords)
+// 6. wpseo_locale filter → 'en_ZA'
+// 7. language_attributes filter → 'en-ZA'
+// 8. ramenhead_obfuscate_emails → rename barnard_obfuscate_emails
+// 9. GA4 snippet with placeholder BARNARD_GA4_ID
+// 10. ramenhead_disable_emojis → barnard_disable_emojis
+// 11. Font preload (use system fonts or placeholder - NOT Poppins as that's Ramenhead's font; use Lora + Inter as placeholders)
+// 12. Media filter script — trigger on pages named 'media', 'journal', 'media-and-press'
+//     Filter slugs: all, press, editorial, sustainability, craftsmanship, collections, stockists
+//     Grid selector: .barnard-media-grid .elementor-posts-container
+
+=== REFERENCE: Ramenhead inc/schema.php patterns ===
+// Restaurant schema → adapt as:
+//   '@type': ['OnlineStore', 'LocalBusiness', 'ClothingStore']
+//   Products highlights in offers
+//   Address: Alicedale, Eastern Cape
+//   FAQ covering mohair care, sourcing, shipping, sustainability
+//   BreadcrumbList on non-home pages
+//   Speakable on homepage
+//   Article schema on single posts (blog/journal)
+
+=== REFERENCE: Ramenhead inc/ai-discovery.php ===
+// Same structure, rename all functions from ramenhead_ to barnard_
+// Same AI bot allowlist
+// Change comment header to "Barnard Mohair"
+// llms.txt file path: BARNARD_DIR . 'inc/llms.txt'
+
+=== REFERENCE: Ramenhead inc/shortcodes.php ===
+// Adapt for Barnard Mohair:
+// [barnard_whatsapp] → WhatsApp link to +27 73 039 2013
+// [barnard_contact] → contact info block
+// [barnard_shop_now url="..."] → CTA button
+// [barnard_care_guide] → link to care guide page
+
+=== OUTPUT FORMAT ===
+Output each file using this exact format (no other text, just the blocks):
+
+===FILE: barnard-child/functions.php===
+<?php
+... full file content ...
+===END===
+
+===FILE: barnard-child/inc/schema.php===
+<?php
+...
+===END===
+
+===FILE: barnard-child/inc/ai-discovery.php===
+<?php
+...
+===END===
+
+===FILE: barnard-child/inc/llms.txt===
+# llms.txt — Barnard Mohair
+...
+===END===
+
+===FILE: barnard-child/inc/shortcodes.php===
+<?php
+...
+===END===
+
+===FILE: barnard-child/style.css===
+/*
+Theme Name: Barnard Mohair Child
+...
+*/
+===END===
+
+=== REQUIREMENTS ===
+- Use barnard_ prefix everywhere (constants, functions, hooks)
+- Schema '@type' for the business: use ["LocalBusiness", "ClothingStore", "OnlineStore"]
+- Schema should include product categories as hasOfferCatalog
+- FAQ schema: minimum 8 Q&As covering mohair care, sustainability, sourcing, shipping, ethical production, history, product types, wholesale
+- llms.txt: comprehensive brand index including all pages, product categories, brand story, sustainability credentials, contact info — at least 80 lines
+- DO NOT include restaurant-specific things (servesCuisine, openingHours, hasMenu, priceRange in restaurant sense)
+- For price range use: "R495 – R3,300 ZAR"
+- The media filter JS should use slug 'journal' for the page slug check
+- All PHP comments should be concise and professional
+- No trailing whitespace, use 4-space indentation

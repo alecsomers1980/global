@@ -1,105 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import HeroHeader from "@/components/HeroHeader";
-
-const allImages = [
-  "IMG_8185.jpg", "IMG_8186.jpg", "IMG_8187.jpg", "IMG_8188.jpg", "IMG_8191.jpg", "IMG_8193.jpg", "IMG_8195.jpg", "IMG_8197.jpg",
-  "IMG_8198.jpg", "IMG_8200.jpg", "IMG_8203.jpg", "IMG_8205.jpg", "IMG_8206.jpg", "IMG_8208.jpg", "IMG_8210.jpg", "IMG_8212.jpg",
-  "IMG_8214.jpg", "IMG_8217.jpg", "IMG_8219.jpg", "IMG_8222.jpg", "IMG_8225.jpg", "IMG_8231.jpg", "IMG_8232.jpg",
-  "IMG_8234.jpg", "IMG_8236.jpg", "IMG_8239.jpg", "IMG_8241.jpg", "IMG_8243.jpg", "IMG_8244.jpg", "IMG_8246.jpg",
-  "IMG_8249.jpg", "IMG_8252.jpg", "IMG_8253.jpg", "IMG_8255.jpg", "IMG_8257.jpg", "IMG_8261.jpg", "IMG_8263.jpg",
-  "IMG_8267.jpg", "IMG_8270.jpg", "IMG_8272.jpg", "IMG_8275.jpg", "IMG_8278.jpg", "IMG_8279.jpg", "IMG_8281.jpg",
-  "IMG_8283.jpg", "IMG_8287.jpg", "IMG_8288.jpg", "IMG_8290.jpg", "IMG_8292.jpg", "IMG_8293.jpg", "IMG_8294.jpg"
-].map(f => "/images/accommodation/" + f);
-
-const units = [
-  {
-    id: 1,
-    name: "Main House",
-    sleeps: 10,
-    tagline: "The Crown Jewel",
-    description:
-      "Spacious bedrooms, expansive deck overlooking indigenous gardens, full kitchen, private braai area",
-    features: ["Expansive Deck", "Full Kitchen", "Private Braai", "Garden Views"],
-    size: "premium",
-    span: "col-span-2",
-    images: allImages.slice(0, 8),
-  },
-  {
-    id: 2,
-    name: "Main House 2",
-    sleeps: 6,
-    tagline: "Creek-Side Comfort",
-    description:
-      "Modern open-plan kitchen, large lounge, outdoor patio facing the creek",
-    features: ["Open-Plan Kitchen", "Large Lounge", "Creek Patio", "Modern Finish"],
-    size: "large",
-    span: "col-span-1",
-    images: allImages.slice(8, 15),
-  },
-  {
-    id: 3,
-    name: "Chalet 1",
-    sleeps: 3,
-    tagline: "Thatched Charm",
-    description:
-      "Cozy thatched roof, kitchen corner, private garden views",
-    features: ["Thatched Roof", "Kitchen Corner", "Garden Views", "Cozy Interiors"],
-    size: "medium",
-    span: "col-span-1",
-    images: allImages.slice(15, 22),
-  },
-  {
-    id: 4,
-    name: "Chalet 2",
-    sleeps: 2,
-    tagline: "Romantic Retreat",
-    description:
-      "Romantic studio layout, bathroom en-suite, direct pathway to pool",
-    features: ["Studio Layout", "En-Suite Bath", "Pool Access", "Romantic Setting"],
-    size: "intimate",
-    span: "col-span-1",
-    images: allImages.slice(22, 29),
-  },
-  {
-    id: 5,
-    name: "Chalet 3",
-    sleeps: 2,
-    tagline: "Rustic Elegance",
-    description:
-      "Rustic cottage charm, river stone finishes, private braai corner",
-    features: ["River Stone Finishes", "Private Braai", "Cottage Charm", "Natural Textures"],
-    size: "intimate",
-    span: "col-span-1",
-    images: allImages.slice(29, 36),
-  },
-  {
-    id: 6,
-    name: "Chalet 4",
-    sleeps: 4,
-    tagline: "Family Loft",
-    description:
-      "Loft bedroom, ideal for small families, fully equipped self-catering setup",
-    features: ["Loft Bedroom", "Family Ideal", "Self-Catering", "Fully Equipped"],
-    size: "medium",
-    span: "col-span-1",
-    images: allImages.slice(36, 43),
-  },
-  {
-    id: 7,
-    name: "Cottage",
-    sleeps: 4,
-    tagline: "Secluded Haven",
-    description:
-      "Secluded valley setting, fire pit, perfect for absolute privacy",
-    features: ["Secluded Valley", "Fire Pit", "Total Privacy", "Nature Immersed"],
-    size: "medium",
-    span: "col-span-2",
-    images: allImages.slice(43, 51),
-  },
-];
+import { getActiveUnits } from "@/lib/accommodation";
 
 function PeopleIcon() {
   return (
@@ -272,23 +177,26 @@ function UnitCard({ unit, index }) {
   const whatsappUrl = `https://wa.me/27829594643?text=${whatsappMessage}`;
   const bookingUrl = "https://www.nightsbridge.co.za/bridge/book?bbid=27902";
 
-  const cardOrdinal = String(unit.id).padStart(2, "0");
+  // Alternate which side the gallery sits on for a magazine-style rhythm.
+  const imageOnRight = index % 2 === 1;
 
   return (
     <article
-      className={`
-        group relative bg-white rounded-sm border border-primary/10 overflow-hidden
+      className="
+        group relative grid grid-cols-1 lg:grid-cols-2
+        bg-white rounded-sm border border-primary/10 overflow-hidden
         transition-all duration-500 ease-out
         hover:border-primary/25 hover:shadow-[0_8px_40px_-12px_rgba(26,47,35,0.15)]
-        ${unit.span === "col-span-2" ? "md:col-span-2" : "md:col-span-1"}
-      `}
+      "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image Slider */}
       {unit.images && unit.images.length > 0 && (
-        <div 
-          className="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[4/3] lg:aspect-[16/9] w-full overflow-hidden bg-primary/5 cursor-pointer group/img"
+        <div
+          className={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[460px] w-full overflow-hidden bg-primary/5 cursor-pointer group/img ${
+            imageOnRight ? "lg:order-2" : "lg:order-1"
+          }`}
           onClick={() => setIsLightboxOpen(true)}
         >
           <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors z-[5] pointer-events-none flex items-center justify-center">
@@ -302,7 +210,7 @@ function UnitCard({ unit, index }) {
             fill
             quality={90}
             className="object-cover transition-transform duration-700 group-hover/img:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
 
           {unit.images.length > 1 && (
@@ -344,24 +252,20 @@ function UnitCard({ unit, index }) {
         </div>
       )}
 
-      {/* Top accent bar */}
-      <div className="h-1 bg-primary w-full" />
-
-      <div className="p-6 md:p-8 lg:p-10">
-        {/* Card header with ordinal */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <span className="font-serif text-5xl md:text-6xl text-primary/10 leading-none select-none">
-              {cardOrdinal}
-            </span>
-            <div className="pt-1">
-              <p className="text-accent font-sans text-xs uppercase tracking-[0.2em] font-medium mb-1">
-                {unit.tagline}
-              </p>
-              <h3 className="font-serif text-2xl md:text-3xl text-primary leading-tight">
-                {unit.name}
-              </h3>
-            </div>
+      <div
+        className={`flex flex-col justify-center p-6 md:p-10 lg:p-12 ${
+          imageOnRight ? "lg:order-1" : "lg:order-2"
+        }`}
+      >
+        {/* Card header */}
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <p className="text-accent font-sans text-xs uppercase tracking-[0.2em] font-medium mb-2">
+              {unit.tagline}
+            </p>
+            <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-primary leading-tight">
+              {unit.name}
+            </h3>
           </div>
           <div
             className={`
@@ -375,7 +279,7 @@ function UnitCard({ unit, index }) {
         </div>
 
         {/* Description */}
-        <p className="font-sans text-primary/70 text-sm md:text-base leading-relaxed mb-6 max-w-xl">
+        <p className="font-sans text-primary/70 text-sm md:text-base leading-relaxed mb-6">
           {unit.description}
         </p>
 
@@ -530,7 +434,39 @@ function UnitCard({ unit, index }) {
 }
 
 export default function AccommodationPage() {
+  const [units, setUnits] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    getActiveUnits()
+      .then(setUnits)
+      .catch((err) => {
+        console.error("Failed to load accommodation units:", err);
+        setLoadError(true);
+      })
+      .finally(() => setLoaded(true));
+  }, []);
+
   const totalGuests = units.reduce((sum, u) => sum + u.sleeps, 0);
+
+  if (!loaded) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center">
+        <p className="text-primary/50 text-lg">Loading...</p>
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center px-6">
+        <p className="text-primary/50 text-lg text-center">
+          Couldn&apos;t load accommodation right now. Please refresh the page.
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-linen min-h-screen">
@@ -543,7 +479,24 @@ export default function AccommodationPage() {
             <span className="sm:hidden"> </span>&amp; Adventure
           </>
         }
-        description={`With 7 unique self-catering units accommodating up to ${totalGuests} guests, Mountaincreek Lodge offers the perfect base for family gatherings, couples' retreats, or solo nature walks in Hazyview.`}
+        description={
+          <>
+            With {units.length} unique self-catering units accommodating up to{" "}
+            {totalGuests} guests, Mountain Creek Lodge offers the perfect base
+            for family gatherings, couples&apos; getaways, or solo escapes in
+            the heart of Hazyview.
+            <span className="block mt-4">
+              Prefer to have breakfast taken care of? Simply ask about our{" "}
+              <Link
+                href="/packages/bed-and-breakfast"
+                className="underline hover:text-linen transition-colors"
+              >
+                Bed &amp; Breakfast
+              </Link>{" "}
+              option.
+            </span>
+          </>
+        }
       >
         <div className="flex flex-wrap justify-center gap-3">
           <span className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm">
@@ -552,12 +505,19 @@ export default function AccommodationPage() {
           </span>
           <span className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm">
             <BedIcon />
-            7 Units
+            {units.length} Units
           </span>
           <span className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm">
             <TreeIcon />
             Self-Catering
           </span>
+          <Link
+            href="/packages/bed-and-breakfast"
+            className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm hover:bg-linen/20 transition-colors"
+          >
+            <BedIcon />
+            Bed & Breakfast Available
+          </Link>
         </div>
       </HeroHeader>
 
@@ -574,20 +534,11 @@ export default function AccommodationPage() {
           </div>
         </div>
 
-        {/* Asymmetric Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-          {/* Row 1: Main House spans 2, Main House 2 spans 1 */}
-          <UnitCard unit={units[0]} index={0} />
-          <UnitCard unit={units[1]} index={1} />
-
-          {/* Row 2: Chalet 1 spans 1, Chalet 2 spans 1, Chalet 3 spans 1 on lg */}
-          <UnitCard unit={units[2]} index={2} />
-          <UnitCard unit={units[3]} index={3} />
-          <UnitCard unit={units[4]} index={4} />
-
-          {/* Row 3: Chalet 4 spans 1, Cottage spans 2 */}
-          <UnitCard unit={units[5]} index={5} />
-          <UnitCard unit={units[6]} index={6} />
+        {/* Full-width rows — gallery and details alternate sides down the page */}
+        <div className="space-y-8 md:space-y-12">
+          {units.map((unit, index) => (
+            <UnitCard key={unit.id} unit={unit} index={index} />
+          ))}
         </div>
       </section>
 

@@ -6,7 +6,6 @@ import { downloadImages } from "./lib/images.js";
 import {
   connectExisting,
   waitForCloudflare,
-  firstVisible,
   humanType,
   humanPause,
   captureEvidence,
@@ -168,6 +167,11 @@ async function fillForm(page: Page, v: Vehicle) {
   await resolveSpec(page, v);
   await humanPause();
 
+  if (v.vin) {
+    await humanType(page.locator(cfg.addForm.vinInput).first(), v.vin);
+    log("info", `  VIN = ${v.vin}`);
+  }
+
   await fillByLabel(page, cfg.addForm.labels.mileage, String(v.mileage));
   await fillByLabel(page, cfg.addForm.labels.price, String(v.price));
   await selectByLabel(page, cfg.addForm.labels.usedNew, v.condition === "new" ? "New" : "Used");
@@ -258,16 +262,32 @@ async function submitListing(_page: Page) {
 
 async function main() {
   let browser;
+  let page: Page | undefined;
   try {
     const vehicle = await fetchVehicle({ id: process.env.VEHICLE_ID, stock: process.env.VEHICLE_STOCK });
     const conn = await connectExisting(PORTAL_HOST, cfg.addForm.url);
     browser = conn.browser;
-    const page = conn.page;
+    page = conn.page;
 
     log("info", `Opening add form: ${cfg.addForm.url}`);
     await page.goto(cfg.addForm.url, { waitUntil: "domcontentloaded" });
     if (!(await waitForCloudflare(page))) throw new Error("Cloudflare challenge — solve in Chrome, re-run.");
-    if (!(await firstVisible(page, cfg.login.successMarker, 4000))) throw new Error("Not logged in.");
+
+    // Proof of a live session = the real Add-Vehicle form rendered. A dead
+    // session bounces to a login page where the vehicle "Year" select doesn't
+    // exist — far more reliable than sniffing for a "Logout" link (which some
+    // layouts hide inside an account menu, causing false "Not logged in").
+    const addFormReady = await byLabel(page, cfg.addForm.labels.year)
+      .waitFor({ state: "visible", timeout: 12_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!addFormReady) {
+      await captureEvidence(page, "carscoza-not-logged-in");
+      throw new Error(
+        `Add form did not load — not logged in to cars.co.za in the agent's ` +
+          `Chrome window, or Cloudflare not cleared. URL: ${page.url()} — evidence saved.`,
+      );
+    }
     await page.waitForLoadState("networkidle").catch(() => {});
     await humanPause();
 
@@ -282,6 +302,7 @@ async function main() {
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    if (page) await captureEvidence(page, "carscoza-failure").catch(() => {});
     await sendAlert("cars.co.za create failed", msg);
     process.exitCode = 1;
   } finally {

@@ -187,6 +187,35 @@ const styles = StyleSheet.create({
     color: "#9ca3af",
     fontStyle: "italic",
   },
+  // Executive summary (AI)
+  summaryHeadline: {
+    fontSize: 11,
+    fontFamily: "Helvetica-Bold",
+    color: BRAND_BLACK,
+    marginTop: 4,
+    marginBottom: 10,
+  },
+  summaryItem: {
+    marginBottom: 9,
+  },
+  summaryFinding: {
+    fontSize: 9.5,
+    fontFamily: "Helvetica-Bold",
+    color: BRAND_BLACK,
+    marginBottom: 2,
+  },
+  summaryLine: {
+    fontSize: 9,
+    color: DARK_GREY,
+    marginBottom: 1,
+    marginLeft: 10,
+  },
+  summaryNote: {
+    fontSize: 8,
+    color: MID_GREY,
+    fontStyle: "italic",
+    marginTop: 6,
+  },
   // Footer
   footer: {
     position: "absolute",
@@ -402,6 +431,36 @@ function ReportFooter() {
         }
       />
       <Text style={styles.footerText}>Powered by Ember Automation</Text>
+    </View>
+  );
+}
+
+// ──── Section: Executive Summary (AI, optional) ────
+// Renders only when the AI summary was generated (gated in build.js). The
+// "AI CFO" pattern: each finding states what happened, why it matters, and the
+// recommended action. Silently absent if unavailable.
+function SummarySection({ summary }) {
+  if (!summary || !summary.available || !summary.findings?.length) return null;
+  return (
+    <View style={{ marginBottom: 6 }}>
+      <SectionTitle>Executive Summary</SectionTitle>
+      {summary.headline ? (
+        <Text style={styles.summaryHeadline}>{summary.headline}</Text>
+      ) : null}
+      {summary.findings.map((f, i) => (
+        <View key={i} style={styles.summaryItem} wrap={false}>
+          <Text style={styles.summaryFinding}>{`${i + 1}. ${f.finding}`}</Text>
+          {f.why ? (
+            <Text style={styles.summaryLine}>{`Why it matters: ${f.why}`}</Text>
+          ) : null}
+          {f.action ? (
+            <Text style={styles.summaryLine}>{`Recommended action: ${f.action}`}</Text>
+          ) : null}
+        </View>
+      ))}
+      <Text style={styles.summaryNote}>
+        AI-generated from this month&apos;s figures.
+      </Text>
     </View>
   );
 }
@@ -935,6 +994,9 @@ export default function MonthlyReport({ data, monthLabel, logo }) {
             </Text>
           </View>
         </View>
+
+        {/* Executive summary (AI) — renders above Traffic only when generated. */}
+        <SummarySection summary={data.summary} />
 
         {/* Sections — each major section starts on its own page (break).
             Website Activity and Social Media were explicitly requested on

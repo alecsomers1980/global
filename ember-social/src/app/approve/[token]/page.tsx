@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase/client'
 import { redirect } from 'next/navigation'
-import { Flame, Check, MessageSquare, AlertCircle } from 'lucide-react'
+import { Check, MessageSquare, AlertCircle } from 'lucide-react'
 import { formatDateTime, PLATFORM_COLORS } from '@/lib/utils'
 
 export default async function ApprovePage({ params }: { params: Promise<{ token: string }> }) {
@@ -22,10 +22,7 @@ export default async function ApprovePage({ params }: { params: Promise<{ token:
                 <header className="sticky top-0 z-10 glass-card rounded-none px-6 py-4 flex items-center justify-between"
                     style={{ borderBottom: '1px solid #1a1a27', background: 'rgba(10,10,15,0.8)' }}>
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-lg ember-glow"
-                            style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                            <Flame className="w-4 h-4 text-white" />
-                        </div>
+                        <img src="/images/ember-logo.png" alt="Ember Automations" className="h-10 w-auto" />
                         <div>
                             <p className="font-bold text-white text-sm leading-none">Content Review</p>
                             <p className="text-[10px] leading-none mt-1" style={{ color: '#5a5a7a' }}>{workspaceName}</p>

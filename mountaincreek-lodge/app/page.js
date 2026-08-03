@@ -1,8 +1,28 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { getActivePackages } from "@/lib/packages";
+import { getCategories, getImagesByCategory } from "@/lib/gallery";
 
 export default function Home() {
+  const [packages, setPackages] = useState([]);
+  const [momentsImages, setMomentsImages] = useState([]);
+
+  useEffect(() => {
+    getActivePackages()
+      .then((pkgs) => setPackages(pkgs.slice(0, 4)))
+      .catch((err) => console.error("Failed to load packages:", err));
+
+    getCategories()
+      .then((categories) => {
+        const moments = categories.find((c) => c.name === "Moments");
+        return moments ? getImagesByCategory(moments.id) : [];
+      })
+      .then(setMomentsImages)
+      .catch((err) => console.error("Failed to load moments images:", err));
+  }, []);
+
   return (
     <main>
       {/* Hero Section */}
@@ -19,11 +39,8 @@ export default function Home() {
           <h1 className="font-serif text-5xl md:text-7xl text-white leading-tight mb-4 tracking-tight">
             Experience the Lowveld Differently
           </h1>
-          <p className="font-serif italic text-2xl md:text-3xl text-white/90 mb-6">
-            Stay. Explore. Unwind.
-          </p>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-            Boutique lodge stays, curated safari escapes, and authentic farm-style hospitality near Kruger National Park.
+            Wake up to mountain views, explore the beauty of the Lowveld, and unwind with authentic countryside hospitality at Mountain Creek Lodge.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -57,55 +74,17 @@ export default function Home() {
 
           {/* Experience Cards Grid — 3 columns, premium overlay */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-            {[
-              {
-                title: "Sunrise Safari Escape",
-                slug: "sunrise-safari-escape",
-                img: "/images/packages/sunrise.png",
-                desc: "Guided game drives and bush walks through the heart of the Lowveld.",
-                tag: "MOST POPULAR",
-              },
-              {
-                title: "The Adventure Weekend",
-                slug: "adventure-weekend",
-                img: "/images/packages/adventure.png",
-                desc: "Thrilling outdoor activities from zip-lining to river rafting.",
-                tag: null,
-              },
-              {
-                title: "Romantic Creekside Retreat",
-                slug: "romantic-creekside-retreat",
-                img: "/images/packages/romantic.png",
-                desc: "Intimate dinners under the stars and couples' spa treatments.",
-                tag: null,
-              },
-              {
-                title: "Full Lowveld Experience",
-                slug: "full-lowveld-experience",
-                img: "/images/packages/lowveld.png",
-                desc: "The ultimate all-inclusive escape with everything taken care of.",
-                tag: null,
-              },
-              {
-                title: "Farm Café Experience",
-                slug: "red-litchi", // Fixing slug as well
-                img: "/images/packages/cafe.png",
-                desc: "Farm-to-table dining with freshly baked goods and local coffee.",
-                tag: null,
-              },
-            ].map((card, i) => (
+            {packages.map((pkg) => (
               <a
-                key={i}
-                href={`/packages/${card.slug}`}
-                className={`group relative overflow-hidden block ${
-                  i >= 3 ? "md:col-span-1 lg:col-span-1" : ""
-                } ${i === 3 ? "lg:col-span-2" : ""}`}
+                key={pkg.id}
+                href={`/packages/${pkg.slug}`}
+                className="group relative overflow-hidden block"
                 style={{ minHeight: "420px" }}
               >
                 {/* Background Image */}
                 <Image
-                  src={card.img}
-                  alt={card.title}
+                  src={pkg.image}
+                  alt={pkg.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -115,19 +94,19 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
                 {/* Tag */}
-                {card.tag && (
+                {pkg.tag && (
                   <span className="absolute top-5 left-5 bg-[var(--color-terracotta)] text-white text-[10px] font-bold tracking-widest px-3 py-1.5 uppercase z-10">
-                    {card.tag}
+                    {pkg.tag}
                   </span>
                 )}
 
                 {/* Content Overlay */}
                 <div className="absolute inset-0 flex flex-col justify-end p-7 md:p-8">
                   <h3 className="font-serif text-white text-2xl md:text-3xl mb-2 leading-tight tracking-tight">
-                    {card.title}
+                    {pkg.title}
                   </h3>
                   <p className="text-white/80 text-sm leading-relaxed mb-4 max-w-sm">
-                    {card.desc}
+                    {pkg.shortDescription}
                   </p>
                   <span className="inline-flex items-center gap-2 text-[var(--color-terracotta)] text-sm font-semibold tracking-wider group-hover:gap-3 transition-all">
                     EXPLORE
@@ -191,19 +170,13 @@ export default function Home() {
         </h2>
         <div className="w-full">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-0">
-            {[
-              "/images/moments/1.jpg",
-              "/images/moments/4.jpg",
-              "/images/moments/dam.jpg",
-              "/images/moments/IMG_4003.JPG",
-              "/images/moments/IMG_4101.JPG",
-            ].map((src, i) => (
+            {momentsImages.map((img, i) => (
               <div
-                key={i}
+                key={img.id}
                 className={`relative w-full h-64 md:h-80 overflow-hidden ${i === 4 ? "col-span-2 md:col-span-1" : ""}`}
               >
                 <Image
-                  src={src}
+                  src={img.src}
                   alt={`Gallery image ${i + 1}`}
                   fill
                   sizes="(max-width: 768px) 50vw, 20vw"

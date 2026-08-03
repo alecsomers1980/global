@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WordPress eXtended RSS — import via Tools → Import → WordPress Importer -->
+<!-- generator="WordPress/6.4" created="2026-06-15"                           -->
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/"
+>
+
+<channel>
+	<title>Barnard Mohair</title>
+	<link>https://barnardmohair.com</link>
+	<description></description>
+	<pubDate>Sun, 15 Jun 2026 00:00:00 +0000</pubDate>
+	<language>en-ZA</language>
+	<wp:wxr_version>1.2</wp:wxr_version>
+	<wp:base_site_url>https://barnardmohair.com</wp:base_site_url>
+	<wp:base_blog_url>https://barnardmohair.com</wp:base_blog_url>
+
+	<wp:author>
+		<wp:author_id>1</wp:author_id>
+		<wp:author_login><![CDATA[barnardmohair]]></wp:author_login>
+		<wp:author_email><![CDATA[info@barnardmohair.com]]></wp:author_email>
+		<wp:author_display_name><![CDATA[Barnard Mohair]]></wp:author_display_name>
+		<wp:author_first_name><![CDATA[Barnard]]></wp:author_first_name>
+		<wp:author_last_name><![CDATA[Mohair]]></wp:author_last_name>
+	</wp:author>
+
+	<!-- ======================================================
+	     CATEGORIES
+	     ====================================================== -->
+
+	<wp:category>
+		<wp:term_id>101</wp:term_id>
+		<wp:category_nicename>sustainability</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Sustainability]]></wp:cat_name>
+		<wp:category_description><![CDATA[Articles about ethical sourcing, mohair and the environment]]></wp:category_description>
+	</wp:category>
+
+	<wp:category>
+		<wp:term_id>102</wp:term_id>
+		<wp:category_nicename>care-guides</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Care Guides]]></wp:cat_name>
+		<wp:category_description><![CDATA[How to wash, store and maintain mohair pieces]]></wp:category_description>
+	</wp:category>
+
+	<wp:category>
+		<wp:term_id>103</wp:term_id>
+		<wp:category_nicename>behind-the-scenes</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Behind the Scenes]]></wp:cat_name>
+		<wp:category_description><![CDATA[A look at the workshop, women artisans and Alicedale life]]></wp:category_description>
+	</wp:category>
+
+	<wp:category>
+		<wp:term_id>104</wp:term_id>
+		<wp:category_nicename>style-wear</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Style &amp; Wear]]></wp:cat_name>
+		<wp:category_description><![CDATA[Outfit inspiration, layering tips, mohair styling]]></wp:category_description>
+	</wp:category>
+
+	<wp:category>
+		<wp:term_id>105</wp:term_id>
+		<wp:category_nicename>farm-stories</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Farm Stories]]></wp:cat_name>
+		<wp:category_description><![CDATA[Angora goat tales, Eastern Cape farming heritage]]></wp:category_description>
+	</wp:category>
+
+	<wp:category>
+		<wp:term_id>106</wp:term_id>
+		<wp:category_nicename>news</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[News]]></wp:cat_name>
+		<wp:category_description><![CDATA[Product launches, market events, brand updates]]></wp:category_description>
+	</wp:category>
+
+	<!-- ======================================================
+	     ARTICLE 1 — Sustainability / Sourcing
+	     ====================================================== -->
+
+	<item>
+		<title>Woven from the Land: Mohair Sourcing and Sustainability at Barnard Mohair</title>
+		<link>https://barnardmohair.com/mohair-sourcing-sustainability/</link>
+		<pubDate>Sun, 01 Jun 2026 08:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[barnardmohair]]></dc:creator>
+		<guid isPermaLink="false">https://barnardmohair.com/?p=1001</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<p><strong>The Eastern Cape is Angora goat country. Here, where the veld meets the sky, mohair has been part of daily life for more than a century. At Barnard Mohair in Alicedale, we've been part of that story since 1967 — turning the fleece of free-ranging Angora goats into blankets, jackets and scarves that are as kind to the earth as they are beautiful in your home.</strong></p>
+
+<p>Sourcing and sustainability aren't separate ideas for us. They're woven into everything we make. This is how we work with the land, the goats and our community to bring you mohair you can feel good about.</p>
+
+<h2>Where Our Mohair Comes From</h2>
+
+<p>All our mohair starts with Angora goats raised on small farms across the Eastern Cape. These are not industrial operations. They're family-run, free-range herds that browse on mixed natural pasture — grass, karoo scrub and indigenous herbs.</p>
+
+<p>The Alicedale area sits in a valley where conditions are near-perfect for healthy goats. Plenty of sunshine, dry winters and a landscape that keeps the animals moving naturally. The result is a fleece with exceptional lustre, strength and softness.</p>
+
+<p>We buy fleece from local growers we know personally. Many have supplied the Barnard family for decades. When you hold a Barnard Mohair blanket, you're holding fibre from a specific stretch of Eastern Cape veld — not an anonymous supply chain.</p>
+
+<p><a href="/about-us/">Learn more about us →</a></p>
+
+<h2>Why Mohair Is Naturally Sustainable</h2>
+
+<p>Mohair doesn't ask for much. It's one of the few luxury fibres that's genuinely renewable and biodegradable.</p>
+
+<ul>
+<li><strong>Renewable:</strong> Angora goats are shorn twice a year. The fleece grows back naturally, without the need for fertilisers, pesticides or irrigation on a scale that damages the land.</li>
+<li><strong>Biodegradable:</strong> At the end of its long life, pure mohair will break down naturally in soil. It leaves behind no microplastics, unlike synthetic fleece.</li>
+<li><strong>No synthetic blends:</strong> Our blankets, scarves and jackets are made from 100% mohair or carefully chosen natural blends. You won't find hidden polyester inside.</li>
+<li><strong>Long-wearing:</strong> Mohair's natural strength means a well-cared-for blanket outlasts its synthetic cousins by decades. That's less waste and fewer replacements.</li>
+</ul>
+
+<p>Because mohair is a protein fibre, it also takes dye beautifully without requiring heavy chemical baths — a small but meaningful advantage in reducing water pollution.</p>
+
+<h2>Eco-Sensitive Production at Barnard Mohair</h2>
+
+<p>Our workshop in Alicedale is purposefully small and deliberately slow. Every piece is crafted by women from the local area, many of whom have spent years perfecting the feel of the fibre.</p>
+
+<p>We process mohair with care for the people making it and the environment around us:</p>
+
+<ul>
+<li><strong>No harsh chemical finishes</strong> — we avoid unnecessary treatments that could harm workers or waterways.</li>
+<li><strong>Low-waste cutting and sewing</strong> — offcuts are reused where possible, and we make in small batches to match demand.</li>
+<li><strong>Air-drying and hand-finishing</strong> — energy use is kept low; many finishing steps rely on human hands, not machines.</li>
+<li><strong>Natural colours and classic designs</strong> — we favour undyed shades and timeless patterns that never go out of style, reducing the pressure to chase seasonal trends.</li>
+</ul>
+
+<p><a href="/product-category/blankets-2/">Browse our mohair blankets →</a></p>
+
+<h2>Heirloom Quality vs Fast Fashion</h2>
+
+<p>Fast fashion treats textiles as disposable. Mohair works on a different clock.</p>
+
+<p>A Barnard Mohair blanket is built to be used daily, then passed down. We still hear from customers whose parents bought a throw in the 1970s — it's slightly softer, a little fuzzier, and still keeping someone warm tonight.</p>
+
+<p>That's the opposite of a throwaway purchase. It's an investment in natural luxury that grows gentler with time. When you choose well-made mohair, you step off the cycle of cheap synthetics and into something lasting.</p>
+
+<p>Buying better also supports the livelihoods of rural Eastern Cape families — from the goat keeper to the woman at the sewing machine. Every sale helps keep traditional skills alive in Alicedale.</p>
+
+<p><a href="/product-category/kid-mohair-scarves/">Shop kid mohair scarves →</a></p>
+
+<h2>Animal Welfare and the Angora Goat</h2>
+
+<p>We're often asked about animal treatment. It's a fair question, and the answer matters deeply to us.</p>
+
+<p>Angora goats in the Eastern Cape are free-range. They're never kept in confinement or force-fed. Shearing happens twice a year, carried out by skilled handlers who use gentle restraint — never causing harm to the animal. The shearer works quickly and correctly because a calm goat produces better fibre.</p>
+
+<p>Healthy goats mean excellent mohair. That's been true for generations. Farmers who look after their herd see it in the quality of the clip. There's no upside to poor welfare, and the close-knit farming community here wouldn't tolerate it.</p>
+
+<p>Mohair SA, the industry body, promotes the highest standards of care — and our local farmers abide by those guidelines without exception.</p>
+
+<h2>From the Land, to Your Home</h2>
+
+<p>Mohair is more than a fibre. It's a connection to a landscape, a way of farming and a set of values we've held since 1967. When you choose Barnard Mohair, you're choosing a piece of the Eastern Cape — responsibly sourced, gently made, and meant to last.</p>
+
+<p><strong>Explore our full collection of sustainable mohair blankets, scarves and wraps at <a href="https://barnardmohair.com">barnardmohair.com</a>.</strong></p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Discover how Barnard Mohair ethically sources Angora goat fibre in the Eastern Cape, crafting sustainable mohair blankets and accessories built to last.]]></excerpt:encoded>
+		<wp:post_id>1001</wp:post_id>
+		<wp:post_date>2026-06-01 08:00:00</wp:post_date>
+		<wp:post_date_gmt>2026-06-01 06:00:00</wp:post_date_gmt>
+		<wp:comment_status>closed</wp:comment_status>
+		<wp:ping_status>closed</wp:ping_status>
+		<wp:post_name>mohair-sourcing-sustainability</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_parent>0</wp:post_parent>
+		<wp:menu_order>0</wp:menu_order>
+		<wp:post_type>post</wp:post_type>
+		<wp:post_password></wp:post_password>
+		<wp:is_sticky>0</wp:is_sticky>
+		<category domain="category" nicename="sustainability"><![CDATA[Sustainability]]></category>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_title</wp:meta_key>
+			<wp:meta_value><![CDATA[Woven from the Land: Mohair Sourcing & Sustainability]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_metadesc</wp:meta_key>
+			<wp:meta_value><![CDATA[Discover how Barnard Mohair ethically sources Angora goat fibre in the Eastern Cape, crafting sustainable mohair blankets and accessories built to last.]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_focuskw</wp:meta_key>
+			<wp:meta_value><![CDATA[sustainable mohair Eastern Cape]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<!-- ======================================================
+	     ARTICLE 2 — Care Guide
+	     ====================================================== -->
+
+	<item>
+		<title>The Complete Guide to Caring for Your Mohair: Washing, Storing &amp; Wearing with Confidence</title>
+		<link>https://barnardmohair.com/how-to-care-for-mohair/</link>
+		<pubDate>Sun, 08 Jun 2026 08:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[barnardmohair]]></dc:creator>
+		<guid isPermaLink="false">https://barnardmohair.com/?p=1002</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<p><strong>A well-made mohair blanket or jacket can last thirty years, fifty years — sometimes even longer. But only if you show it the right kind of attention. Caring for mohair doesn't require a dry-cleaning budget or specialist knowledge. It just takes a little understanding of the fibre and a few gentle habits.</strong></p>
+
+<p>This guide brings together everything we've learned at Barnard Mohair since 1967. Whether you've just unwrapped your first mohair scarf or are keeping a family blanket going for another generation, you'll find the answers here.</p>
+
+<h2>What Makes Mohair Unique</h2>
+
+<p>Before we get to washing, it helps to know what you're dealing with. Mohair is the fleece of the Angora goat — not to be confused with angora rabbit wool. Here's why it behaves the way it does:</p>
+
+<ul>
+<li><strong>Natural lustre:</strong> Mohair's smooth fibre scales reflect light, giving it that gentle sheen no synthetic can match.</li>
+<li><strong>Warmth without weight:</strong> The hollow fibre traps air, insulating beautifully while feeling deceptively light.</li>
+<li><strong>Durable:</strong> Mohair is one of the strongest natural fibres. It doesn't pill easily, and it resists stretching and creasing.</li>
+<li><strong>Hypoallergenic:</strong> Because it has a smooth surface and contains very little lanolin, it's kind to sensitive skin.</li>
+</ul>
+
+<p>This natural strength means mohair responds well to careful washing and storing — it's not a diva, just a fibre that deserves respect.</p>
+
+<h2>Washing Your Mohair</h2>
+
+<p>Most of the time, airing out your mohair piece is all that's needed. Freshen it on a shaded washing line, and it will feel new. When it does need a proper wash, follow these steps.</p>
+
+<h3>Hand Washing (Recommended)</h3>
+
+<ol>
+<li>Fill a basin with tepid water — not hot, not cold. Think lukewarm.</li>
+<li>Add a small amount of wool-specific detergent or pH-neutral liquid soap. Avoid ordinary laundry powders and fabric softeners, which can coat and dull the fibre.</li>
+<li>Submerge the item and let it soak for 10–15 minutes. Gently press the fabric, but never rub, twist or wring. Mohair weakens when handled roughly while wet.</li>
+<li>Drain the soapy water and refill with clean tepid water. Rinse by pressing gently. Repeat until no soap remains.</li>
+</ol>
+
+<h3>Machine Washing (Use with Caution)</h3>
+
+<p>Some of our heavier mohair blankets can handle a machine wash, but always check your product's care label first. If the label allows:</p>
+
+<ul>
+<li>Use the wool or delicate cycle.</li>
+<li>Set the temperature to cold or 30°C maximum.</li>
+<li>Place the item in a mesh laundry bag to reduce friction.</li>
+<li>Use a liquid wool detergent — never pour it directly onto the fabric.</li>
+</ul>
+
+<p>After washing, skip the spin cycle if you can. High-spin speeds can stretch wet mohair.</p>
+
+<p><a href="/care-guide/">See our full mohair care guide →</a></p>
+
+<h2>Drying Mohair Correctly</h2>
+
+<p>How you dry your mohair matters just as much as how you wash it.</p>
+
+<ul>
+<li><strong>Lay it flat</strong> on a clean, dry towel, away from direct heat and sunlight. Roll the towel gently to absorb excess water, then unroll and reshape the item while it's still damp.</li>
+<li><strong>Never tumble dry.</strong> The heat and friction will cause felting, shrinkage and permanent damage.</li>
+<li><strong>Keep it out of direct sun.</strong> UV rays can fade coloured mohair over time, so a well-ventilated room or a shady outdoor spot is best.</li>
+</ul>
+
+<p>Reshape hems, seams and fringes while damp. Once dry, a light shake restores the fibre's natural loft.</p>
+
+<h2>Storing Mohair</h2>
+
+<p>Mohair is surprisingly resistant to pests, but a bit of smart storage goes a long way.</p>
+
+<ul>
+<li><strong>Fold, don't hang.</strong> Hanging a heavy mohair blanket or long coat can stretch the fibres and distort the shape. Fold loosely and place on a shelf.</li>
+<li><strong>Use a breathable storage bag</strong> — cotton or linen, never plastic. Plastic traps moisture and invites mildew.</li>
+<li><strong>Store in a cool, dry area.</strong> Avoid attics and damp basements. A wardrobe drawer with cedar blocks or a lavender sachet naturally deters moths.</li>
+<li><strong>For seasonal pieces</strong>, gently wash or air them out before storing. Always store clean — body oils and perfume residue attract moths over time.</li>
+</ul>
+
+<p><a href="/product-category/blankets-2/">Browse mohair blankets →</a></p>
+
+<h2>Wearing Mohair — Tips for Daily Confidence</h2>
+
+<p>Mohair garments feel incredibly soft, but new pieces can shed a little fluff in the first few wears. This is normal. It's not a sign of poor quality — it's simply short, loose fibres working their way out.</p>
+
+<p><strong>To reduce shedding:</strong></p>
+
+<ul>
+<li>Give the garment a gentle shake outdoors before wearing.</li>
+<li>Lightly brush the surface with a soft-bristle brush or use a lint roller on the inside.</li>
+<li>Place the item in a sealed bag and pop it in the freezer overnight. The cold helps firm up the fibre tips and reduces initial shedding. Yes, really.</li>
+</ul>
+
+<p>When layering, let mohair be the outermost piece — it breathes well, so you won't overheat. A thin cotton or silk layer underneath feels smooth against the skin and extends time between washes.</p>
+
+<p><a href="/product-category/jackets/">Browse mohair jackets &amp; coats →</a></p>
+
+<h2>Mohair Blankets — Specific Care</h2>
+
+<p>Blankets get different use than clothing. They're often on couches, beds or laps, picking up dust and the occasional coffee splash. Here's how to keep them feeling fresh:</p>
+
+<ul>
+<li><strong>Shake outdoors weekly</strong> to dislodge surface dust.</li>
+<li><strong>Brush the pile</strong> once a month with a soft, long-bristled garment brush. Brush in the direction of the nap to lift the fibres and restore that subtle shimmer.</li>
+<li><strong>Spot clean spills immediately</strong> with a damp cloth and wool-safe cleaner. Don't rub — blot gently.</li>
+<li><strong>Air the blanket outdoors</strong> in the shade for a few hours every season. It will smell crisp and feel renewed without a full wash.</li>
+</ul>
+
+<p>Because mohair is naturally stain-resistant and odour-repellent, you'll find you need to wash blankets far less often than expected.</p>
+
+<h2>A Lifetime of Softness</h2>
+
+<p>Mohair rewards care with decades of comfort. That first hint of shedding settles down quickly. The colours stay rich. The softness deepens. And each time you wrap yourself in a Barnard piece, you'll be reminded of the Eastern Cape veld and the hands that made it.</p>
+
+<p><strong>Ready to add a piece to your home? Visit <a href="https://barnardmohair.com">barnardmohair.com</a> to explore our full collection of mohair blankets, scarves and wraps — each one crafted to be cherished.</strong></p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Learn how to wash, dry, store and wear mohair blankets and garments. Barnard Mohair's care guide preserves the natural luxury of Eastern Cape mohair.]]></excerpt:encoded>
+		<wp:post_id>1002</wp:post_id>
+		<wp:post_date>2026-06-08 08:00:00</wp:post_date>
+		<wp:post_date_gmt>2026-06-08 06:00:00</wp:post_date_gmt>
+		<wp:comment_status>closed</wp:comment_status>
+		<wp:ping_status>closed</wp:ping_status>
+		<wp:post_name>how-to-care-for-mohair</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_parent>0</wp:post_parent>
+		<wp:menu_order>0</wp:menu_order>
+		<wp:post_type>post</wp:post_type>
+		<wp:post_password></wp:post_password>
+		<wp:is_sticky>0</wp:is_sticky>
+		<category domain="category" nicename="care-guides"><![CDATA[Care Guides]]></category>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_title</wp:meta_key>
+			<wp:meta_value><![CDATA[The Complete Guide to Caring for Your Mohair | Barnard Mohair]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_metadesc</wp:meta_key>
+			<wp:meta_value><![CDATA[Learn how to wash, dry, store and wear mohair blankets and garments. Barnard Mohair's care guide preserves the natural luxury of Eastern Cape mohair.]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_focuskw</wp:meta_key>
+			<wp:meta_value><![CDATA[how to care for mohair]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+</channel>
+</rss>

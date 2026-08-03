@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Flame, Calendar, Sparkles, BarChart3 } from 'lucide-react'
+import { Calendar, Sparkles, BarChart3 } from 'lucide-react'
 
 export default function HomePage() {
     const features = [
@@ -23,13 +23,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-[#e2e2f0]" style={{ fontFamily: 'var(--font-sans)' }}>
             <header className="flex items-center justify-between max-w-5xl w-full mx-auto px-6 py-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center ember-glow"
-                        style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>
-                        <Flame className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="font-bold text-white">Ember Social</span>
-                </div>
+                <img src="/images/ember-logo.png" alt="Ember Automations" className="h-16 w-auto" />
                 <Link href="/login"
                     className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-orange-500/20"
                     style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}>

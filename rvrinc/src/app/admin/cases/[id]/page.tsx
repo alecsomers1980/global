@@ -64,6 +64,8 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
     const statuses = await getCaseStatuses();
     const { bgColor, textColor } = getStatusColor(caseData.status, statuses);
     const statusLabel = getStatusLabel(caseData.status, statuses);
+    const currentStatusConfig = statuses.find((s) => s.slug === caseData.status);
+    const scheduledDateLabel = currentStatusConfig?.requiresDate ? currentStatusConfig.label : "Scheduled Court Date";
     const progress = getPhaseProgress(caseData.status, statuses);
     const phases = Object.entries(PHASE_CONFIG) as [StatusPhase, typeof PHASE_CONFIG[StatusPhase]][];
     const prescription = getPrescriptionInfo(caseData.accident_date, caseData.status);
@@ -148,6 +150,22 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                     )}
                 </div>
 
+                {Array.isArray(caseData.minors) && caseData.minors.length > 0 && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Minors</p>
+                        <ul className="space-y-1">
+                            {caseData.minors.map((m: any, i: number) => (
+                                <li key={i} className="text-sm text-slate-800 flex items-center gap-2 flex-wrap">
+                                    <span className="font-medium">{m.name}</span>
+                                    {m.id_number && (
+                                        <span className="font-mono text-xs text-gray-500">{m.id_number}</span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 {caseData.description && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
                         <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Notes</p>
@@ -225,7 +243,7 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
                     <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
                         <p className="text-sm text-blue-800">
-                            <strong>Scheduled Court Date:</strong> {new Date(caseData.scheduled_date).toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            <strong>{scheduledDateLabel}:</strong> {new Date(caseData.scheduled_date).toLocaleDateString('en-ZA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
                 )}

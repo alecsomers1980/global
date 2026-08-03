@@ -1,0 +1,21 @@
+/*
+Theme Name:   Barnard Mohair Child
+Description:  The7 child theme for barnardmohair.com
+Template:     dt-the7
+Version:      1.0.0
+Text Domain:  barnardmohair
+*/
+
+/* Child-theme overrides go here */
+
+/* Hide elements marked for screen readers only */
+[data-barnard-hidden="1"] {
+    display: none !important;
+}
+
+/* Media/Journal filter pill active state */
+.barnard-filter-pill.is-active,
+a.is-active[href^="#filter-"] {
+    font-weight: 700;
+    text-decoration: underline;
+}

@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(npx vercel *)",
+      "Bash(VERCEL_ORG_ID=\"team_3jy71rATiJlBERReI0J8CTON\" VERCEL_PROJECT_ID=\"prj_6YXUKerFoLo5zxp03dZO5nLTSixD\" npx vercel --prod --yes)",
       "Bash(xargs grep *)",
       "Bash(npx tsc *)",
       "Bash(curl -s -H \"Authorization: token $\\(gh auth token || echo NONE\\)\" \"https://api.github.com/repos/alecsomers1980/everest-motoring/commits/main\")",
@@ -143,7 +144,7 @@
       "Bash(rm -rf .turbo)",
       "WebFetch(domain:www.dbib.co.za)",
       "PowerShell(Set-Location \"C:\\\\Users\\\\info\\\\OneDrive\\\\Documents\\\\Antigravity\\\\bushbuckridge-directory\\\\public\"; Add-Type -AssemblyName System.Drawing; $decoder = New-Object System.Drawing.Imaging.ImageCodecInfo; $decoders = [System.Drawing.Imaging.ImageCodecInfo]::GetImageDecoders\\(\\); foreach\\($d in $decoders\\) { Write-Host \"$\\($d.CodecName\\) -> $\\($d.FormatID\\) $\\($d.FilenameExtension\\)\" })",
-      "PowerShell(Start-Sleep -Seconds 10; try { $response = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5; Write-Host \"Status: $\\($response.StatusCode\\)\" } catch { Write-Host \"Not ready: $_\" })"
+      "PowerShell(Start-Sleep -Seconds 10; try { $response = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 5; Write-Host \"Status: $\\($response.StatusCode\\)\" } catch { Write-Host \"Not ready: $_\" })""Bash(ANTHROPIC_BASE_URL=http://localhost:8082 ANTHROPIC_AUTH_TOKEN=freecc CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1 claude -p *)",
     ]
   }
 }

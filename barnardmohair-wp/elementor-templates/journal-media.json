@@ -1,0 +1,792 @@
+{
+  "version": "0.4",
+  "title": "Journal & Media",
+  "type": "page",
+  "content": [
+    {
+      "id": "bmhero01",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#f5f0eb",
+        "padding": {
+          "unit": "px",
+          "top": "120",
+          "right": "24",
+          "bottom": "90",
+          "left": "24",
+          "isLinked": false
+        },
+        "padding_mobile": {
+          "unit": "px",
+          "top": "80",
+          "right": "20",
+          "bottom": "60",
+          "left": "20",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "bmhero01col",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "bmhero11",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "div",
+                "title": "Journal & Media",
+                "title_color": "#8B6E4A",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 12
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 4
+                },
+                "typography_text_transform": "uppercase"
+              }
+            },
+            {
+              "id": "bmhero12",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "h1",
+                "title": "Stories from the Eastern Cape",
+                "title_color": "#1a1a1a",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 52
+                },
+                "typography_font_size_mobile": {
+                  "unit": "px",
+                  "size": 34
+                },
+                "typography_font_weight": "400",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.15
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": 14,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "isLinked": false
+                }
+              }
+            },
+            {
+              "id": "bmhero13",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "align": "center",
+                "text_color": "#6b6560",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 16
+                },
+                "typography_font_weight": "300",
+                "typography_line_height": {
+                  "unit": "em",
+                  "size": 1.7
+                },
+                "_margin": {
+                  "unit": "px",
+                  "top": 16,
+                  "right": 0,
+                  "bottom": 0,
+                  "left": 0,
+                  "isLinked": false
+                },
+                "editor": "<p>Care guides, sustainability, farm stories and news from Barnard Mohair in Alicedale.</p>"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bmpills01",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#ffffff",
+        "padding": {
+          "unit": "px",
+          "top": "44",
+          "right": "24",
+          "bottom": "12",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "bmpills01col",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "bmpillsrow",
+              "elType": "section",
+              "settings": {
+                "isInner": true
+              },
+              "elements": [
+                {
+                  "id": "bmpillsrowcol",
+                  "elType": "column",
+                  "settings": {
+                    "_column_size": 100,
+                    "_inline_size": 100,
+                    "align": "center"
+                  },
+                  "elements": [
+                    {
+                      "id": "bmpill01",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "All",
+                        "link": {
+                          "url": "#filter-all",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "#1a1a1a",
+                        "button_text_color": "#ffffff",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "#1a1a1a",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill is-active"
+                      }
+                    },
+                    {
+                      "id": "bmpill02",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Sustainability",
+                        "link": {
+                          "url": "#filter-sustainability",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    },
+                    {
+                      "id": "bmpill03",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Care Guides",
+                        "link": {
+                          "url": "#filter-care-guides",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    },
+                    {
+                      "id": "bmpill04",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Behind the Scenes",
+                        "link": {
+                          "url": "#filter-behind-the-scenes",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    },
+                    {
+                      "id": "bmpill05",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Style & Wear",
+                        "link": {
+                          "url": "#filter-style-wear",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    },
+                    {
+                      "id": "bmpill06",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "Farm Stories",
+                        "link": {
+                          "url": "#filter-farm-stories",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    },
+                    {
+                      "id": "bmpill07",
+                      "elType": "widget",
+                      "widgetType": "button",
+                      "settings": {
+                        "text": "News",
+                        "link": {
+                          "url": "#filter-news",
+                          "is_external": "",
+                          "nofollow": ""
+                        },
+                        "size": "sm",
+                        "align": "center",
+                        "background_color": "rgba(0,0,0,0)",
+                        "button_text_color": "#1a1a1a",
+                        "border_border": "solid",
+                        "border_width": {
+                          "unit": "px",
+                          "top": "1",
+                          "right": "1",
+                          "bottom": "1",
+                          "left": "1",
+                          "isLinked": true
+                        },
+                        "border_color": "rgba(26,26,26,0.3)",
+                        "hover_color": "#ffffff",
+                        "button_background_hover_color": "#8B6E4A",
+                        "border_border_hover_color": "#8B6E4A",
+                        "typography_typography": "custom",
+                        "typography_font_size": {
+                          "unit": "px",
+                          "size": 11
+                        },
+                        "typography_font_weight": "600",
+                        "typography_letter_spacing": {
+                          "unit": "px",
+                          "size": 1.5
+                        },
+                        "typography_text_transform": "uppercase",
+                        "text_padding": {
+                          "unit": "px",
+                          "top": "8",
+                          "right": "18",
+                          "bottom": "8",
+                          "left": "18",
+                          "isLinked": false
+                        },
+                        "_margin": {
+                          "unit": "px",
+                          "top": "5",
+                          "right": "4",
+                          "bottom": "5",
+                          "left": "4",
+                          "isLinked": false
+                        },
+                        "_css_classes": "barnard-filter-pill"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "isInner": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bmgrid01",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 1100
+        },
+        "background_background": "classic",
+        "background_color": "#ffffff",
+        "padding": {
+          "unit": "px",
+          "top": "40",
+          "right": "24",
+          "bottom": "100",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "bmgrid01col",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100
+          },
+          "elements": [
+            {
+              "id": "bmposts01",
+              "elType": "widget",
+              "widgetType": "posts",
+              "settings": {
+                "_skin": "classic",
+                "posts_post_type": "post",
+                "posts_posts_per_page": 9,
+                "classic_columns": 3,
+                "classic_columns_tablet": 2,
+                "classic_columns_mobile": 1,
+                "classic_row_gap": {
+                  "unit": "px",
+                  "size": 48
+                },
+                "classic_image_size": "large",
+                "classic_show_excerpt": "yes",
+                "classic_excerpt_length": 20,
+                "classic_meta_data": [
+                  "date",
+                  "categories"
+                ],
+                "classic_read_more_text": "Read article →",
+                "classic_show_read_more": "yes",
+                "pagination_type": "numbers_and_prev_next",
+                "title_color": "#1a1a1a",
+                "title_color_hover": "#8B6E4A",
+                "title_typography_typography": "custom",
+                "title_typography_font_size": {
+                  "unit": "px",
+                  "size": 18
+                },
+                "title_typography_font_weight": "500",
+                "meta_color": "#8B6E4A",
+                "excerpt_color": "#6b6560",
+                "excerpt_typography_typography": "custom",
+                "excerpt_typography_font_size": {
+                  "unit": "px",
+                  "size": 14
+                },
+                "excerpt_typography_font_weight": "300",
+                "excerpt_typography_line_height": {
+                  "unit": "em",
+                  "size": 1.6
+                },
+                "read_more_color": "#8B6E4A",
+                "_css_classes": "barnard-media-grid"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bmpress01",
+      "elType": "section",
+      "settings": {
+        "stretch_section": "section-stretched",
+        "layout": "boxed",
+        "content_width": {
+          "unit": "px",
+          "size": 720
+        },
+        "background_background": "classic",
+        "background_color": "#f5f0eb",
+        "padding": {
+          "unit": "px",
+          "top": "70",
+          "right": "24",
+          "bottom": "70",
+          "left": "24",
+          "isLinked": false
+        }
+      },
+      "elements": [
+        {
+          "id": "bmpress01col",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100,
+            "_inline_size": 100,
+            "align": "center"
+          },
+          "elements": [
+            {
+              "id": "bmpresshed",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "header_size": "h2",
+                "title": "Writing about Barnard Mohair?",
+                "title_color": "#1a1a1a",
+                "align": "center",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 26
+                },
+                "typography_font_weight": "500"
+              }
+            },
+            {
+              "id": "bmpresstxt",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "align": "center",
+                "text_color": "#6b6560",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 15
+                },
+                "typography_font_weight": "300",
+                "_margin": {
+                  "unit": "px",
+                  "top": 12,
+                  "right": 0,
+                  "bottom": 24,
+                  "left": 0,
+                  "isLinked": false
+                },
+                "editor": "<p>For press enquiries, high-resolution images and interviews, please get in touch with us directly.</p>"
+              }
+            },
+            {
+              "id": "bmpressbtn",
+              "elType": "widget",
+              "widgetType": "button",
+              "settings": {
+                "text": "CONTACT US",
+                "link": {
+                  "url": "/contact/",
+                  "is_external": "",
+                  "nofollow": ""
+                },
+                "background_color": "#1a1a1a",
+                "button_text_color": "#ffffff",
+                "hover_color": "#ffffff",
+                "button_background_hover_color": "#8B6E4A",
+                "typography_typography": "custom",
+                "typography_font_size": {
+                  "unit": "px",
+                  "size": 12
+                },
+                "typography_font_weight": "600",
+                "typography_letter_spacing": {
+                  "unit": "px",
+                  "size": 3
+                },
+                "typography_text_transform": "uppercase",
+                "text_padding": {
+                  "unit": "px",
+                  "top": "14",
+                  "right": "36",
+                  "bottom": "14",
+                  "left": "36",
+                  "isLinked": false
+                },
+                "align": "center"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "background_background": "classic",
+    "background_color": "#ffffff",
+    "hide_title": "yes"
+  }
+}

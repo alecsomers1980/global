@@ -1,32 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import HeroHeader from "@/components/HeroHeader";
-
-const galleryImages = [
-  "IMG-20241029-WA0008.jpg", "IMG-20241029-WA0009.jpg", "IMG-20241029-WA0010.jpg",
-  "IMG-20241029-WA0011.jpg", "IMG-20241029-WA0012.jpg", "IMG-20241029-WA0013.jpg",
-  "IMG-20241029-WA0014.jpg", "IMG-20241029-WA0018.jpg", "IMG-20241029-WA0019.jpg",
-  "IMG-20241029-WA0020.jpg", "IMG-20241029-WA0022.jpg", "IMG-20241029-WA0023.jpg",
-  "IMG-20241029-WA0024.jpg", "IMG-20241029-WA0026.jpg",
-  "IMG-20241029-WA0027.jpg", "IMG-20241029-WA0028.jpg", "IMG-20241029-WA0029.jpg",
-  "IMG-20241029-WA0031.jpg", "IMG-20241029-WA0032.jpg", "IMG-20241029-WA0033.jpg",
-  "IMG-20241029-WA0035.jpg", "IMG-20241029-WA0036.jpg", "IMG-20241029-WA0037.jpg",
-  "IMG-20241029-WA0038.jpg", "IMG-20241029-WA0039.jpg", "IMG-20241029-WA0042.jpg",
-  "IMG-20241029-WA0045.jpg", "IMG-20241029-WA0046.jpg", "IMG-20241029-WA0048.jpg",
-  "IMG-20241029-WA0049.jpg", "IMG-20241029-WA0050.jpg", "IMG-20241029-WA0051.jpg",
-  "IMG-20241029-WA0052.jpg", "IMG-20241029-WA0053.jpg", "IMG-20241029-WA0054.jpg",
-  "IMG-20241029-WA0055.jpg", "IMG-20241029-WA0056.jpg", "IMG-20241029-WA0057.jpg",
-  "IMG-20241029-WA0058.jpg", "IMG-20241029-WA0059.jpg", "IMG-20241029-WA0060.jpg",
-  "IMG-20241029-WA0061.jpg", "IMG-20241029-WA0062.jpg", "IMG-20241029-WA0063.jpg",
-  "IMG-20241029-WA0064.jpg", "IMG-20241029-WA0065.jpg", "IMG-20241029-WA0066.jpg",
-  "IMG-20241029-WA0067.jpg", "IMG-20241029-WA0068.jpg", "IMG-20241029-WA0098.jpg",
-  "WhatsApp-Image-2024-10-29-at-07.52.10_4e6e14b6.jpg"
-].map(f => `/images/Red Litchi/Gallery/${f}`);
+import { getImages, getMenuUrl } from "@/lib/red-litchi";
 
 export default function RedLitchiPage() {
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [menuUrl, setMenuUrlState] = useState("/Red%20Litchi%20Official%20Menu.pdf");
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  useEffect(() => {
+    Promise.all([getImages(), getMenuUrl()])
+      .then(([images, menu]) => {
+        setGalleryImages(images);
+        setMenuUrlState(menu);
+      })
+      .catch((err) => {
+        console.error("Failed to load Red Litchi content:", err);
+        setLoadError(true);
+      })
+      .finally(() => setLoaded(true));
+  }, []);
 
   const openLightbox = (index) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
@@ -40,6 +37,24 @@ export default function RedLitchiPage() {
     e.stopPropagation();
     setLightboxIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
   };
+
+  if (!loaded) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center">
+        <p className="text-primary/50 text-lg">Loading...</p>
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="bg-linen min-h-screen flex items-center justify-center px-6">
+        <p className="text-primary/50 text-lg text-center">
+          Couldn&apos;t load this page right now. Please refresh.
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-linen min-h-screen">
@@ -154,9 +169,9 @@ export default function RedLitchiPage() {
 
         <div className="max-w-7xl mx-auto">
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-            {galleryImages.map((src, index) => (
-              <div 
-                key={index}
+            {galleryImages.map((img, index) => (
+              <div
+                key={img.id}
                 className="relative overflow-hidden group cursor-pointer break-inside-avoid bg-primary/5 rounded-sm"
                 onClick={() => openLightbox(index)}
               >
@@ -168,7 +183,7 @@ export default function RedLitchiPage() {
                 </div>
 
                 <Image
-                  src={src}
+                  src={img.src}
                   alt={`Red Litchi Gallery Image ${index + 1}`}
                   width={800}
                   height={600}
@@ -188,8 +203,8 @@ export default function RedLitchiPage() {
         <p className="font-sans text-primary/70 text-lg max-w-2xl mx-auto mb-10">
           Discover our selection of freshly brewed coffees, hearty breakfasts, and light lunches crafted with local ingredients.
         </p>
-        <a 
-          href="/Red%20Litchi%20Official%20Menu.pdf"
+        <a
+          href={menuUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block bg-[var(--color-terracotta)] text-white px-10 py-4 font-semibold tracking-widest text-sm hover:opacity-90 transition-opacity shadow-md"
@@ -229,7 +244,7 @@ export default function RedLitchiPage() {
           {/* Image Container */}
           <div className="relative w-full max-w-7xl h-[85vh] mx-4 md:mx-24" onClick={(e) => e.stopPropagation()}>
             <Image
-              src={galleryImages[lightboxIndex]}
+              src={galleryImages[lightboxIndex].src}
               alt={`Fullscreen image ${lightboxIndex + 1}`}
               fill
               quality={95}

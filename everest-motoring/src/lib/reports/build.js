@@ -11,6 +11,7 @@ import { fetchWebsiteActivity } from "./website";
 import { fetchEmailStats } from "./emails";
 import { fetchSocialReport } from "./social";
 import { fetchAffiliateReport } from "./affiliates";
+import { fetchExecutiveSummary } from "./summary";
 
 let _logoDataUrl = null;
 
@@ -27,7 +28,7 @@ function getLogoDataUrl() {
  * Fetches all four modules in parallel via Promise.allSettled so one failure
  * doesn't kill the whole report.
  */
-export async function buildReportData(month) {
+export async function buildReportData(month, opts = {}) {
   const { monthLabel, prevLabel, curr, prev } = getMonthWindows(month);
 
   const [ga, website, emails, social, affiliates] = await Promise.allSettled([
@@ -38,7 +39,7 @@ export async function buildReportData(month) {
     fetchAffiliateReport({ curr, prev }),
   ]);
 
-  return {
+  const data = {
     monthLabel,
     prevLabel,
     ga: ga.status === "fulfilled" ? ga.value : { available: false, error: "Module failed" },
@@ -59,14 +60,27 @@ export async function buildReportData(month) {
         ? affiliates.value
         : { available: false, error: "Module failed" },
   };
+
+  // AI executive summary — gated OFF by default. Enabled per-request via
+  // opts.aiSummary (admin preview: ?ai=1) or globally via REPORT_AI_SUMMARY=on
+  // (the live cron). Best-effort — fetchExecutiveSummary never throws, and a
+  // failure just omits the section.
+  const includeSummary =
+    opts.aiSummary === true ||
+    (opts.aiSummary === undefined && process.env.REPORT_AI_SUMMARY === "on");
+  if (includeSummary) {
+    data.summary = await fetchExecutiveSummary(data);
+  }
+
+  return data;
 }
 
 /**
  * Render the MonthlyReport PDF to a Buffer.
  * Returns { buffer, monthLabel, filename } or throws on error.
  */
-export async function renderReportPdf(month) {
-  const data = await buildReportData(month);
+export async function renderReportPdf(month, opts = {}) {
+  const data = await buildReportData(month, opts);
   const { default: React } = await import("react");
   const { renderToBuffer } = await import("@react-pdf/renderer");
   const { default: MonthlyReport } = await import("./MonthlyReport");

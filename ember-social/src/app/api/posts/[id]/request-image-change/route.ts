@@ -106,7 +106,25 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         const pillar = String(p.pillar || '')
         const render = RENDERERS[pillar]
         if (!render) {
-            return NextResponse.json({ ok: false, error: `Cannot regenerate: unknown pillar "${pillar}"` }, { status: 400 })
+            // Custom-built posts (finance, comparison, carousel, and the human-labelled
+            // batch pillars like "Vehicle showcase") aren't produced by the template
+            // renderers, so they can't be auto-regenerated. The reason is already logged
+            // above — route the request to the agency for a manual update instead of erroring.
+            await supabase
+                .from('posts')
+                .update({
+                    referred_to_agency: true,
+                    client_status: 'changes_requested',
+                    status: 'draft',
+                } as never)
+                .eq('id', postId)
+            return NextResponse.json({
+                ok: true,
+                referred: true,
+                regenerationsUsed: currentCount,
+                maxRegenerations: MAX_AUTO_REGENERATIONS,
+                message: 'Thanks — your change has been sent to our team to update manually.',
+            })
         }
 
         // Re-fetch the vehicle for car pillars (needed to re-render the image).

@@ -347,11 +347,7 @@ export default function AboutPage() {
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4 mt-8">
                             {[
-                                "Personal Claims",
-                                "Loss of Support Claims",
-                                "Under Settlements",
-                                "Direct Claims",
-                                "Road Accident Fund Matters"
+                                "RAF Claims"
                             ].map((item) => (
                                 <div key={item} className="flex items-center gap-3 p-4 bg-brand-cream rounded-lg border border-gray-100">
                                     <CheckCircle2 className="w-5 h-5 text-brand-gold flex-shrink-0" />

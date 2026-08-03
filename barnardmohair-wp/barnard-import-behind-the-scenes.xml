@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WordPress eXtended RSS — import via Tools → Import → WordPress Importer -->
+<!-- This file contains ONLY the new "Behind the Scenes" article.            -->
+<!-- Import it on its own — do NOT re-import barnard-import.xml at the same  -->
+<!-- time, or the first two articles will be duplicated.                    -->
+<!-- generator="WordPress/6.4" created="2026-06-16"                         -->
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/"
+>
+
+<channel>
+	<title>Barnard Mohair</title>
+	<link>https://barnardmohair.com</link>
+	<description></description>
+	<pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+	<language>en-ZA</language>
+	<wp:wxr_version>1.2</wp:wxr_version>
+	<wp:base_site_url>https://barnardmohair.com</wp:base_site_url>
+	<wp:base_blog_url>https://barnardmohair.com</wp:base_blog_url>
+
+	<wp:author>
+		<wp:author_id>1</wp:author_id>
+		<wp:author_login><![CDATA[barnardmohair]]></wp:author_login>
+		<wp:author_email><![CDATA[info@barnardmohair.com]]></wp:author_email>
+		<wp:author_display_name><![CDATA[Barnard Mohair]]></wp:author_display_name>
+		<wp:author_first_name><![CDATA[Barnard]]></wp:author_first_name>
+		<wp:author_last_name><![CDATA[Mohair]]></wp:author_last_name>
+	</wp:author>
+
+	<wp:category>
+		<wp:term_id>103</wp:term_id>
+		<wp:category_nicename>behind-the-scenes</wp:category_nicename>
+		<wp:category_parent></wp:category_parent>
+		<wp:cat_name><![CDATA[Behind the Scenes]]></wp:cat_name>
+		<wp:category_description><![CDATA[A look at the workshop, women artisans and Alicedale life]]></wp:category_description>
+	</wp:category>
+
+	<!-- ======================================================
+	     ARTICLE 3 — Behind the Scenes / Craftsmanship
+	     ====================================================== -->
+
+	<item>
+		<title>Behind the Loom: How a Barnard Mohair Blanket Is Made</title>
+		<link>https://barnardmohair.com/how-a-mohair-blanket-is-made/</link>
+		<pubDate>Sun, 21 Jun 2026 08:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[barnardmohair]]></dc:creator>
+		<guid isPermaLink="false">https://barnardmohair.com/?p=1003</guid>
+		<description></description>
+		<content:encoded><![CDATA[
+<p><strong>Every Barnard Mohair blanket passes through human hands a dozen times before it ever reaches yours — gilled, twisted, dyed in small batches, dried in the Eastern Cape sun, threaded by hand and woven on looms that have run for decades. There is no shortcut version of this process. Here is what actually happens inside our Alicedale workshop, step by step.</strong></p>
+
+<h2>From Raw Tops to Aligned Fibre</h2>
+
+<p>Mohair arrives at our workshop in a form called "tops" — a thick, washed sliver of fibre that looks a little like a soft white sausage. Before it can become yarn, it needs to be aligned.</p>
+
+<p>We feed the tops through a Gillbox, a machine fitted with pin-beds that comb multiple slivers together. The pins straighten the individual fibres, even out the thickness along the length of the sliver, and work loose any dirt or uneven clumps left over from the raw fleece. What comes out the other end is a clean, consistent sliver ready for the next stage.</p>
+
+<p><a href="/mohair-sourcing-sustainability/">Read how we source our mohair →</a></p>
+
+<h2>Twisting the Roving</h2>
+
+<p>The gilled sliver is then twisted into a roving — a slightly twisted rope of fibre that holds its shape without being a finished yarn yet. As it twists, we spin it together with a core wool and nylon thread, which gives the finished mohair yarn the strength it needs to survive years of weaving, washing and everyday use.</p>
+
+<p>Only once we have a properly twisted yarn can the real character of the blanket begin to take shape: its colour.</p>
+
+<h2>Dyeing by Hand, One Pot at a Time</h2>
+
+<p>Every colour in a Barnard Mohair blanket is mixed and dyed by hand. We start by measuring out exactly the amount of mohair a design calls for and winding it into hanks — loosely coiled bundles that dye evenly.</p>
+
+<p>Each hank goes into a stainless-steel pot with dye measured and mixed into water, then slowly heated. There's no automation here; someone watches every pot. We know the dye is done when the water runs clear — every last bit of colour has been absorbed into the yarn rather than left behind. The hanks are rinsed and hung out to dry.</p>
+
+<h2>Drying in the Eastern Cape Sun</h2>
+
+<p>This is the one step we don't try to rush or mechanise. Freshly dyed mohair is hung outdoors against the workshop walls in Alicedale and left to dry naturally over a few days, relying entirely on the sun. It's a small detail, but it matters — slow air-drying protects the fibre and keeps the colour true.</p>
+
+<p>Walk past our workshop on a sunny afternoon and you'll see lines of mohair in every shade drying in the open air — one of the most photographed corners of Barnard Mohair, and for good reason.</p>
+
+<h2>Building the Beam</h2>
+
+<p>Once the yarn is dry, it's wound onto colour-coded cones and the next, most painstaking stage begins: building the beam. The beam forms the base of the entire fabric — every single thread that will run the length of the blanket is counted out and wound onto it according to the exact colour sequence of the design.</p>
+
+<p>A single beam can take a full day or two to build. Get the thread count or the colour order wrong, and the whole design shifts. There is no part of this process that can be guessed at.</p>
+
+<h2>Threading and Weaving</h2>
+
+<p>With the beam built, every one of those threads is hand-threaded onto the loom in the correct order. Only then is the beam ready to weave.</p>
+
+<p>From here, our weavers take over — feeding the weft back and forth across the threaded warp, building the fabric row by row. It's slow, focused work, and it's where a flat sheet of coloured thread finally becomes a length of mohair cloth.</p>
+
+<h2>Brushing for the Signature Mohair Fluff</h2>
+
+<p>Off the loom, the woven fabric is still flat and tightly bound — nothing like the soft, fluffy blanket you'd recognise. That comes from the next step: brushing. We run the woven fabric through a brushing machine that gently raises the pile of the mohair fibres, lofting them up off the weave.</p>
+
+<p>This is what gives every Barnard Mohair blanket its cosy, fluffy hand-feel — and it only works because of how carefully the fibre was aligned, spun and woven in every step before it.</p>
+
+<h2>From Our Workshop, To Your Home</h2>
+
+<p>Tops to Gillbox, roving to dye pot, dye pot to sun-dried hank, hank to beam, beam to loom, loom to brush — every Barnard Mohair blanket carries dozens of hours of hand work from Alicedale before it's folded, finished and ready to travel.</p>
+
+<p><strong>See the colours and designs that come out of this process — <a href="/product-category/blankets-2/">browse our handwoven mohair blankets</a> and bring a piece of this craftsmanship home.</strong></p>
+		]]></content:encoded>
+		<excerpt:encoded><![CDATA[Go inside our Alicedale workshop to see how a Barnard Mohair blanket is made — from raw mohair tops to hand-dyed, hand-woven heirloom blankets.]]></excerpt:encoded>
+		<wp:post_id>1003</wp:post_id>
+		<wp:post_date>2026-06-21 08:00:00</wp:post_date>
+		<wp:post_date_gmt>2026-06-21 06:00:00</wp:post_date_gmt>
+		<wp:comment_status>closed</wp:comment_status>
+		<wp:ping_status>closed</wp:ping_status>
+		<wp:post_name>how-a-mohair-blanket-is-made</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_parent>0</wp:post_parent>
+		<wp:menu_order>0</wp:menu_order>
+		<wp:post_type>post</wp:post_type>
+		<wp:post_password></wp:post_password>
+		<wp:is_sticky>0</wp:is_sticky>
+		<category domain="category" nicename="behind-the-scenes"><![CDATA[Behind the Scenes]]></category>
+		<category domain="post_tag" nicename="behind-the-scenes"><![CDATA[behind the scenes]]></category>
+		<category domain="post_tag" nicename="mohair-weaving"><![CDATA[mohair weaving]]></category>
+		<category domain="post_tag" nicename="handmade-blankets"><![CDATA[handmade blankets]]></category>
+		<category domain="post_tag" nicename="eastern-cape-craftsmanship"><![CDATA[Eastern Cape craftsmanship]]></category>
+		<category domain="post_tag" nicename="alicedale"><![CDATA[Alicedale]]></category>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_title</wp:meta_key>
+			<wp:meta_value><![CDATA[How a Mohair Blanket Is Made — Barnard Mohair]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_metadesc</wp:meta_key>
+			<wp:meta_value><![CDATA[Go inside our Alicedale workshop to see how a Barnard Mohair blanket is made — from raw mohair tops to hand-dyed, hand-woven heirloom blankets.]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key>_yoast_wpseo_focuskw</wp:meta_key>
+			<wp:meta_value><![CDATA[how a mohair blanket is made]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+</channel>
+</rss>

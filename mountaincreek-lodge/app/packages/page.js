@@ -41,18 +41,24 @@ const GiftIcon = () => (
 export default function PackagesPage() {
   const [packages, setPackages] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    setPackages(getActivePackages());
-    setLoaded(true);
+    getActivePackages()
+      .then(setPackages)
+      .catch((err) => {
+        console.error("Failed to load packages:", err);
+        setLoadError(true);
+      })
+      .finally(() => setLoaded(true));
   }, []);
 
   return (
     <main className="bg-linen min-h-screen">
       <HeroHeader
         eyebrow="Mountaincreek Lodge"
-        title="Curated Escape Packages"
-        description="Choose your perfect Lowveld experience."
+        title="Curated Stay Packages"
+        description="Whether you're here for a quick countryside escape, a safari adventure, or a romantic weekend away, we've designed experiences to make your stay effortless, memorable, and uniquely Mountain Creek."
       />
 
       {/* Packages List */}
@@ -61,6 +67,12 @@ export default function PackagesPage() {
           {!loaded ? (
             <div className="text-center py-20">
               <p className="text-primary/50 text-lg">Loading packages...</p>
+            </div>
+          ) : loadError ? (
+            <div className="text-center py-20">
+              <p className="text-primary/50 text-lg">
+                Couldn&apos;t load packages right now. Please refresh the page.
+              </p>
             </div>
           ) : (
             packages.map((pkg, index) => (
@@ -153,6 +165,146 @@ export default function PackagesPage() {
               </div>
             ))
           )}
+        </div>
+      </section>
+
+      {/* Enhance Your Stay */}
+      <section className="bg-white py-16 md:py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-serif text-3xl md:text-4xl text-primary text-center mb-12">
+            Enhance Your Stay
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                question: "Looking For Adventure?",
+                text: "Ziplining, river rafting, tubing and more are just minutes away.",
+                linkText: "View Adventure Experiences",
+                href: "/experiences/adventure-activities",
+              },
+              {
+                question: "Exploring The Panorama Route?",
+                text: "Discover waterfalls, scenic viewpoints and unforgettable day trips.",
+                linkText: "View Scenic Experiences",
+                href: "/experiences/panorama-route",
+              },
+              {
+                question: "Going on Safari?",
+                text: "Discover some of the region's most trusted safari operators.",
+                linkText: "View Safari Experiences",
+                href: "/experiences/kruger-national-park",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="flex flex-col text-center items-center gap-3 p-8 bg-linen"
+              >
+                <h3 className="font-serif text-xl text-primary">
+                  {item.question}
+                </h3>
+                <p className="font-sans text-gray-600 text-sm leading-relaxed">
+                  {item.text}
+                </p>
+                <Link
+                  href={item.href}
+                  className="font-sans text-sm font-semibold tracking-wider text-[var(--color-terracotta)] hover:opacity-80 transition-opacity mt-2"
+                >
+                  {item.linkText.toUpperCase()}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Experiences Around Us */}
+      <section className="bg-linen py-16 md:py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="font-serif text-3xl md:text-4xl text-primary text-center mb-12">
+            Experiences Around Us
+          </h2>
+
+          {/* Safari Experiences — big image feature */}
+          <div className="relative overflow-hidden mb-8" style={{ minHeight: "360px" }}>
+            <Image
+              src="/images/experiences/kruger_safari.png"
+              alt="Safari Experiences"
+              fill
+              className="object-cover"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+            <div className="relative z-10 flex flex-col justify-end h-full p-8 md:p-12" style={{ minHeight: "360px" }}>
+              <h3 className="font-serif text-white text-2xl md:text-3xl mb-3">
+                Safari Experiences
+              </h3>
+              <p className="font-sans italic text-white/85 text-base md:text-lg mb-6 max-w-lg">
+                &ldquo;Discover Kruger National Park through a range of trusted local operators.&rdquo;
+              </p>
+              <Link
+                href="/experiences/kruger-national-park"
+                className="inline-block bg-[var(--color-terracotta)] text-white font-sans text-sm font-semibold tracking-wider px-8 py-3.5 hover:opacity-90 transition-opacity duration-200 uppercase w-fit"
+              >
+                View Operators
+              </Link>
+            </div>
+          </div>
+
+          {/* Remaining experience categories */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Adventure Experiences",
+                features: ["Skyway Trails", "Quad biking", "River rafting", "Tubing"],
+                linkText: "Book Direct",
+                href: "/experiences/adventure-activities",
+              },
+              {
+                title: "Panorama Route",
+                features: [
+                  "God's Window",
+                  "Blyde River Canyon",
+                  "Lisbon Falls",
+                  "Bourke's Luck Potholes",
+                ],
+                linkText: "Plan Your Route",
+                href: "/experiences/panorama-route",
+              },
+              {
+                title: "Local Dining",
+                features: [
+                  "Red Litchi Farm Café",
+                  "Local restaurants",
+                  "Bush pubs",
+                ],
+                linkText: "Explore Dining",
+                href: "/red-litchi",
+              },
+            ].map((cat, i) => (
+              <div
+                key={i}
+                className="flex flex-col bg-white p-8 shadow-[0_4px_24px_-4px_rgba(26,47,35,0.08)]"
+              >
+                <h3 className="font-serif text-xl text-primary mb-4">
+                  {cat.title}
+                </h3>
+                <ul className="flex flex-col gap-2.5 mb-8 flex-1">
+                  {cat.features.map((f, j) => (
+                    <li key={j} className="flex items-start gap-2.5">
+                      <CheckIcon />
+                      <span className="font-sans text-sm text-gray-700">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={cat.href}
+                  className="inline-block text-center bg-primary text-white font-sans text-sm font-semibold tracking-wider px-6 py-3 hover:bg-primary/90 transition-colors duration-200 uppercase"
+                >
+                  {cat.linkText}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

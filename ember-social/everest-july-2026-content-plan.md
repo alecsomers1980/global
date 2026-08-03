@@ -26,19 +26,18 @@ Runs through Ember Social's six-template system (`lifestyle_hero`, `studio`, `sp
 
 ## 2. Pillar Mix — July 2026 (12 posts + 2 videos)
 
-Quality over volume, weighted to lifestyle while protecting tips + features.
+Quality over volume, **still weighted to lifestyle** — but this month we rotate three conversion angles from §6 into the mix (finance, comparison, seasonal/local) and add one carousel. We don't run every angle every month; these rotate in for July, others (sell-yours, extra tips/specs) sit out and come back later.
 
-| Template | Role | # Posts | Share |
+| Template / Angle | Role | # Posts | Share |
 |---|---|---|---|
-| `lifestyle_hero` | **Hero pillar** — where the car takes you | 5 | ~42% |
-| `studio` | Premium car-feature ("car as jewellery") | 2 | ~17% |
-| `spec_card` | Car-feature / educational spec | 2 | ~17% |
-| `tip_card` | Maintenance / winter driving tips | 2 | ~17% |
-| `multi_car` | Fresh-arrivals supporting moment | 1 | ~8% |
-| `sell_yours` | "We buy your car" — once, mid-month | 1 | ~8% |
+| `lifestyle_hero` | **Hero pillar** — where the car takes you (incl. 1 seasonal/local hook) | 5 | ~42% |
+| `studio` | Premium car-features (Discovery, Polo) + 1 **finance** post ("from R—/month") | 3 | ~25% |
+| `multi_car` | 1 **comparison** ("which one is you?") + 1 fresh-arrivals | 2 | ~17% |
+| **carousel** | Single-car walkthrough → finance CTA (**NEW format**) | 1 | ~8% |
+| `tip_card` | Maintenance / winter driving tip | 1 | ~8% |
 | **VIDEO** | Lifestyle clips (see §4) | 2 | — |
 
-> Lifestyle + premium-studio = ~58% of the static feed. Tips and features fully retained. Price-led `multi_car` intentionally minimised.
+> **Lifestyle stays the main message** (~42% of statics, plus both videos). New this month: **finance**, **comparison**, **seasonal/local** and a **carousel** — each takes one slot, rotated in place of July's sell-yours, second tip, the "BUILT FOR MORE" studio and the standalone Grand Vitara spec (the Grand Vitara now anchors the carousel). Rotate the rest back in future months.
 
 ---
 
@@ -46,27 +45,28 @@ Quality over volume, weighted to lifestyle while protecting tips + features.
 
 ~3 posts/week, Mon–Sat only, 09:00–17:00 SAST. Two VIDEO slots open weeks 2 and 4 for maximum reach.
 
-**Formats:** static posts export at **4:5 (1080×1350)** — the sweet spot that fills the feed on **both Facebook and Instagram**. Videos are **16:9 (1280×720)** landscape brand films (great on Facebook; post to Instagram as feed video / Reel). All vehicles are **real in-stock units** (pulled from live inventory); all driving scenes are **left-hand side of the road** (South Africa).
+**Formats:** static posts export at **4:5 (1080×1350)** — the sweet spot that fills the feed on **both Facebook and Instagram**. Videos are **16:9 (1280×720)** landscape brand films (great on Facebook; post to Instagram as feed video / Reel). All vehicles are **real in-stock units** (pulled from live inventory); all driving scenes are **left-hand side of the road** (South Africa). All AI-generated vehicles are **right-hand drive** (steering wheel on the right) — SA-correct; studio shots use tinted glass as a safety net.
 
-| # | Date | Day | Template | Working headline / tagline | Concept | Asset / image-prompt direction |
+| # | Date | Day | Template / Angle | Working headline / tagline | Concept | Asset / image-prompt direction |
 |---|---|---|---|---|---|---|
 | 1 | 1 Jul | Wed | `lifestyle_hero` | *"Winter belongs out here."* | Discovery at a Panorama Route viewpoint — opens road-trip month. | **Asset ready:** `lifestyle-ex-1.jpg` — Black Land Rover Discovery 4 at a Blyde Canyon lookout, golden-hour winter mist, wide horizon, blank plates. |
-| 2 | 3 Jul | Fri | `tip_card` | *"Cold mornings? Check your battery."* | Winter battery-care tip. | Macro car-battery terminal, calm typographic card, yellow keyword accent, no vehicle. |
+| 2 | 3 Jul | Fri | `tip_card` | *"Cold mornings? Check your battery."* | Winter battery-care tip — the month's one maintenance card. | Macro car-battery terminal, calm typographic card, yellow keyword accent, no vehicle. |
 | 3 | 6 Jul | Mon | **🎬 VIDEO — Week 2** | *Family reel: "Saturday Belongs to Us"* | Maroon Tucson family day-trip; lands in the school-holiday window. | **Ready:** ▶ `everest-reel-family-outro.mp4` (16:9, ~17.6s, branded outro). |
-| 4 | 8 Jul | Wed | `studio` | *"BUILT FOR MORE."* | Hilux Raider hero, cinematic black studio. | Silver 2024 Toyota Hilux Raider D-cab on pure black, single rim light, glossy reflection, 2-3 word caps tagline, blank plates. |
-| 5 | 11 Jul | Sat | `lifestyle_hero` | *"School holidays, sorted."* | Family SUV loaded for a trip. | Maroon 2020 Hyundai Tucson at a lowveld lookout, two adults + child, soft winter light, max 3 people, blank plates. |
-| 6 | 14 Jul | Tue | `spec_card` | *"Every detail considered."* | Grand Vitara feature, specs panel. | Clean studio Silver 2024 Suzuki Grand Vitara, three-quarter front, bottom 35% quiet spec panel, soft grade, blank plates. |
+| 4 | 8 Jul | Wed | `studio` · **💰 finance** | *"±R4,400/month.*"* | **NEW angle** — affordability hook on a cinematic studio hero; the biggest buyer motivator. | **Built:** 2023 Suzuki Swift 1.5 GLX on pure-black studio, single rim light, glossy reflection; yellow "±R4,400 / PER MONTH*" + estimate footnote, blank plates. Links to the live listing. |
+| 5 | 11 Jul | Sat | `lifestyle_hero` | *"School holidays, sorted."* | Family SUV loaded for a trip — lands in the holiday window. | Maroon 2020 Hyundai Tucson at a lowveld lookout, two adults + child, soft winter light, max 3 people, blank plates. |
+| 6 | 14 Jul | Tue | `multi_car` · **⚖️ comparison** | *"Family or fun? Which one is you?"* | **NEW angle** — two cars side by side, let the audience self-select; caption asks them to comment. | **Built:** 2-up split — 2020 Hyundai Tucson ("FAMILY") vs. 2022 Renault Kiger ("FUN") from real inventory photos, centre "VS" badge, "WHICH ONE IS YOU?" header. |
 | 7 | 16 Jul | Thu | `lifestyle_hero` | *"Take the long way home."* | Rugged bakkie on a lowveld dirt road — freedom. | **Asset ready:** `lifestyle-ex-2.jpg` — Silver 2019 Toyota Land Cruiser 79 on a dusty White River farm road, warm low sun, dust trail, blank plates. |
 | 8 | 20 Jul | Mon | **🎬 VIDEO — Week 4** | *Rugged reel: "The Long Way Round"* | Land Cruiser / Discovery bushveld run. | **Ready:** ▶ `everest-reel-seedance-outro.mp4` (16:9, ~17.6s, branded outro). |
-| 9 | 22 Jul | Wed | `sell_yours` | *"We'll buy your car."* | Trade-in / we-buy moment. | Single sleek car silhouette on glossy black, premium "sell yours" card, yellow accent, blank plates. |
+| 9 | 22 Jul | Wed | **🎠 carousel** | *"A closer look: 2024 Suzuki Grand Vitara."* | **NEW format** — single-car walkthrough that ends on the finance CTA (see slide outline in §5). | **Built:** 4-slide preview, each backed by a real gallery photo of the same car under a dark overlay — 1) exterior "A closer look" → 2) dash "Room where it counts" → 3) rear seats "Weekend-bag approved" → 4) "±R6,500/m*". Real in-stock Grand Vitara; links to the live listing. |
 | 10 | 24 Jul | Fri | `lifestyle_hero` | *"Coffee with a view."* | Hilux at a lookout, couple — lifestyle moment. | **Asset ready:** `lifestyle-ex-3.jpg` — Silver Toyota Hilux Raider at a Hazyview escarpment lookout, couple with coffee at the tailgate, golden hour, max 2 people. |
-| 11 | 28 Jul | Tue | `tip_card` | *"Tyre pressure: your winter friend."* | Winter tyre-pressure tip. | Macro tread-and-gauge close-up, calm typographic card, yellow keyword accent, no vehicle. |
-| 12 | 29 Jul | Wed | `studio` | *"QUIET CONFIDENCE."* | Premium SUV studio hero. | Black 2016 Land Rover Discovery 4 on pure black, dramatic rim light, reflection floor, 2-word caps tagline, blank plates. |
-| 13 | 30 Jul | Thu | `multi_car` | *"Fresh arrivals this week."* | Supporting inventory grid. | Grid of 3-4 real in-stock vehicles (Hilux, Land Cruiser 79, Land Rover Discovery 4, VW T-Roc) on branded dark backdrop, blank plates. |
-| 14 | 31 Jul | Fri | `spec_card` | *"Hilux. The one that never quits."* | Hilux feature post to close the month. | Clean studio Silver Toyota Hilux three-quarter, bottom 35% spec panel, warm grade, blank plates. |
+| 11 | 28 Jul | Tue | `lifestyle_hero` · **🗺️ seasonal/local** | *"Long weekend ahead — where are you headed?"* | **NEW angle** — lowveld/Panorama-Route hook tied to the calendar; invites replies. | **Asset ready:** `lifestyle-ex-4.jpg` — White VW T-Roc on a golden-hour Panorama Route mountain pass, wide horizon, blank plates. |
+| 12 | 29 Jul | Wed | `studio` | *"QUIET CONFIDENCE."* | Premium SUV studio hero — the month's "car as jewellery" feature. | Black 2016 Land Rover Discovery 4 on pure black, dramatic rim light, reflection floor, 2-word caps tagline, blank plates. |
+| 13 | 30 Jul | Thu | `multi_car` · **just-arrived** | *"Fresh arrivals this week."* | Supporting inventory grid with a newness/urgency hook. | Grid of 3-4 real in-stock vehicles (Hilux, Land Cruiser 79, Land Rover Discovery 4, VW T-Roc) on branded dark backdrop, blank plates. |
+| 14 | 31 Jul | Fri | `studio` | *"PURE POLO."* | VW Polo feature post to close the month. | Clean studio 2023 VW Polo 1.0 TSI on black, three-quarter front, warm grade, blank plates. Links to the live listing. |
 
-> 5 `lifestyle_hero` · 2 `studio` · 2 `spec_card` (spotlight) · 2 `tip_card` (maintenance) · 1 `multi_car` · 1 `sell_yours` · 2 VIDEO = 12 posts + 2 videos. No Sundays.
-> **4 lifestyle assets already produced** (`lifestyle-ex-1…4.jpg`) + **both videos done**. Remaining static posts (studio/spec/tip/multi/sell) still to generate at 4:5.
+> 5 `lifestyle_hero` (incl. 1 seasonal/local) · 3 `studio` (Swift finance + Discovery + Polo features) · 2 `multi_car` (comparison + just-arrived) · 1 carousel · 1 `tip_card` · 2 VIDEO = 12 posts + 2 videos. No Sundays.
+> **Live now** on the client review link (`/plan/7f4cd715…`): all 14 posts built — 4 lifestyle assets (`lifestyle-ex-1…4.jpg` → posts 1, 7, 10, 11), both videos untouched, and the 4 new angle posts (finance/comparison/carousel/seasonal) rendered at 4:5.
+> **Rotated out this month** (available to bring back later): `sell_yours`, the second `tip_card` (tyre pressure), the "BUILT FOR MORE" Hilux studio, the standalone Grand Vitara spec (now the carousel), and the `spec_card` template.
 
 ---
 
@@ -125,11 +125,41 @@ Do **not** reuse the July two. Each month gets fresh lifestyle films from the co
 > 🌐 everestmotoring.co.za
 > 📍 White River, Mpumalanga
 
+**C) `studio` · finance — Post #4, "±R4,400/month."**
+
+> Getting into something you love shouldn't mean waiting years.
+>
+> The 2023 Suzuki Swift 1.5 GLX — light on fuel, easy to live with — works out to an estimated **±R4,400 a month.\*** Come talk numbers; you might be closer than you think.
+>
+> *\*Est: no deposit, no balloon, 72 months @ 12.5% p.a. On approved credit. T&Cs apply.*
+>
+> 📞 013 854 0600 · 🌐 everestmotoring.co.za · 📍 White River, Mpumalanga
+
+**D) `multi_car` · comparison — Post #6, "Which one is you?"**
+
+> Two very different kinds of Saturday. 👇
+>
+> Left: the Hyundai Tucson — space, comfort, the whole family along for the ride. Right: the Renault Kiger — nippy, easy to park, and just wants to have fun in town.
+>
+> **Which one is you?** Tell us in the comments — we'll help you find it in stock.
+>
+> 📞 013 854 0600 · 🌐 everestmotoring.co.za · 📍 White River, Mpumalanga
+
+**E) 🎠 carousel — Post #9, "A closer look: Grand Vitara" (slide outline)**
+
+> **Slide 1 (hook):** Silver Grand Vitara, three-quarter front — *"A closer look. 👀 Swipe →"*
+> **Slide 2 (interior):** Dash + front seats — *"Room where it counts."*
+> **Slide 3 (boot):** Open boot — *"Weekend-bag approved."*
+> **Slide 4 (spec):** One clean spec keyword (economy / safety) on the car.
+> **Slide 5 (CTA):** *"±R6,500/month.* On approved credit. 📞 013 854 0600"* — condensed to 4 slides in the built preview.
+>
+> Caption: *Sometimes you just need to see it properly. Here's the Grand Vitara, slide by slide — and yes, finance can be arranged. Swipe through, then come see it in person.*
+
 ---
 
-## 6. New Content Angles — to layer into August onward
+## 6. New Content Angles — rotating in from July
 
-Beyond the three pillars we run now (lifestyle · maintenance/tips · spotlight), these five angles add variety and — importantly for a dealership — drive enquiries and trust. Rotate them in; don't replace the lifestyle spine.
+We've started folding these into July (finance · comparison · seasonal/local · carousel — see §3); the rest rotate in over the following months. Beyond the three original pillars (lifestyle · maintenance/tips · spotlight), these five angles add variety and — importantly for a dealership — drive enquiries and trust. Rotate them in; **don't replace the lifestyle spine.**
 
 | Angle | What it is | Best format | Example post |
 |---|---|---|---|

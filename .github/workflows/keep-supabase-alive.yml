@@ -1,0 +1,71 @@
+name: Keep Supabase Alive (global monorepo projects)
+
+# Prevents Free-plan Supabase projects (still living inside this `global` repo)
+# from being paused after ~7 days of inactivity. Inserts one row into each
+# project's public.keep_alive table twice a week.
+#
+# Secrets are namespaced per project: <PREFIX>_SUPABASE_URL and
+# <PREFIX>_SUPABASE_SERVICE_ROLE_KEY (repo Settings -> Secrets -> Actions).
+# Projects whose secrets are not set are skipped, so you can add them gradually.
+#
+# When a project is split into its own repo, delete its two env lines + its
+# PREFIX from the `projects` list below, and add the standalone
+# keep-supabase-alive.yml (plain SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY) there.
+#
+# NOTE: scheduled runs only fire from the default branch (main). Merge this to
+# main for the cron to activate; use "Run workflow" to test from any branch.
+
+on:
+  schedule:
+    - cron: '0 9 * * 1,4'   # 09:00 UTC every Monday & Thursday (max ~4-day gap)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      ALOE_URL: ${{ secrets.ALOE_SUPABASE_URL }}
+      ALOE_KEY: ${{ secrets.ALOE_SUPABASE_SERVICE_ROLE_KEY }}
+      EVEREST_MOTORING_URL: ${{ secrets.EVEREST_MOTORING_SUPABASE_URL }}
+      EVEREST_MOTORING_KEY: ${{ secrets.EVEREST_MOTORING_SUPABASE_SERVICE_ROLE_KEY }}
+      EMBER_SOCIAL_URL: ${{ secrets.EMBER_SOCIAL_SUPABASE_URL }}
+      EMBER_SOCIAL_KEY: ${{ secrets.EMBER_SOCIAL_SUPABASE_SERVICE_ROLE_KEY }}
+      HSLABOUR_URL: ${{ secrets.HSLABOUR_SUPABASE_URL }}
+      HSLABOUR_KEY: ${{ secrets.HSLABOUR_SUPABASE_SERVICE_ROLE_KEY }}
+      EXECAIR_URL: ${{ secrets.EXECAIR_SUPABASE_URL }}
+      EXECAIR_KEY: ${{ secrets.EXECAIR_SUPABASE_SERVICE_ROLE_KEY }}
+      RIVERVIEW_URL: ${{ secrets.RIVERVIEW_SUPABASE_URL }}
+      RIVERVIEW_KEY: ${{ secrets.RIVERVIEW_SUPABASE_SERVICE_ROLE_KEY }}
+      BBNEWS_URL: ${{ secrets.BBNEWS_SUPABASE_URL }}
+      BBNEWS_KEY: ${{ secrets.BBNEWS_SUPABASE_SERVICE_ROLE_KEY }}
+      EMBER_AUTOMATIONS_URL: ${{ secrets.EMBER_AUTOMATIONS_SUPABASE_URL }}
+      EMBER_AUTOMATIONS_KEY: ${{ secrets.EMBER_AUTOMATIONS_SUPABASE_SERVICE_ROLE_KEY }}
+      EVEREST_STOCK_URL: ${{ secrets.EVEREST_STOCK_SUPABASE_URL }}
+      EVEREST_STOCK_KEY: ${{ secrets.EVEREST_STOCK_SUPABASE_SERVICE_ROLE_KEY }}
+      BBDIRECTORY_URL: ${{ secrets.BBDIRECTORY_SUPABASE_URL }}
+      BBDIRECTORY_KEY: ${{ secrets.BBDIRECTORY_SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Ping all configured projects
+        shell: bash
+        run: |
+          set -u
+          projects="ALOE EVEREST_MOTORING EMBER_SOCIAL HSLABOUR EXECAIR RIVERVIEW BBNEWS EMBER_AUTOMATIONS EVEREST_STOCK BBDIRECTORY"
+          fail=0
+          for p in $projects; do
+            url_var="${p}_URL"; key_var="${p}_KEY"
+            url="${!url_var:-}"; key="${!key_var:-}"
+            if [ -z "$url" ] || [ -z "$key" ]; then
+              echo "SKIP  $p (secrets not set)"; continue
+            fi
+            code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "${url}/rest/v1/keep_alive" \
+              -H "apikey: ${key}" \
+              -H "Authorization: Bearer ${key}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              -d '{"note":"keep-alive"}') || code=000
+            case "$code" in
+              200|201|204) echo "OK    $p ($code)";;
+              *)           echo "FAIL  $p ($code)"; fail=1;;
+            esac
+          done
+          exit $fail
