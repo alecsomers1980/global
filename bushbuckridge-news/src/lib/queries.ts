@@ -128,14 +128,19 @@ export async function getPostsByCategory(
 
   if (!category) return { category: null, posts: [] as PostSummary[] };
 
-  const { data: links } = await supabase
-    .from('post_categories').select('post_id').eq('category_id', category.id);
-
-  const ids = (links ?? []).map(l => l.post_id);
-  if (!ids.length) return { category, posts: [] as PostSummary[] };
-
-  const { data } = await published(siteId)
-    .in('id', ids)
+  // Filtered via an inner join on post_categories rather than fetching every
+  // linked post_id and passing it through `.in()` — a category with hundreds
+  // of posts (Community: 551 here) blows past PostgREST's ~16KB request
+  // header limit as a plain ID list, and this scales to any category size.
+  const { data } = await supabase
+    .from('posts')
+    .select(`
+      id, title, slug, content, featured_image, published_at, author, view_count,
+      post_categories!inner ( categories ( name, slug ) )
+    `)
+    .eq('site_id', siteId)
+    .eq('status', 'publish')
+    .eq('post_categories.category_id', category.id)
     .order('published_at', { ascending: false })
     .range(offset, offset + limit - 1);
 
