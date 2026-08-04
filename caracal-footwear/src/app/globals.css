@@ -5,6 +5,15 @@
  * Lifted from the client's printed flyer so print and web read as one brand.
  * Use these by name (bg-canvas, text-accent, border-accent). Never raw hex
  * in a component.
+ *
+ * MEASURED CONTRAST against --color-canvas (#14110F):
+ *   text  #F5F0E8  16.58:1  -- AA everywhere
+ *   muted #A39A90   6.79:1  -- AA everywhere
+ *   accent #C25A1E  4.28:1  -- FAILS AA body text (needs 4.5), passes
+ *                              large text and UI components (needs 3.0)
+ *
+ * So: text-accent is for display type >=19px bold, rules, borders and icons
+ * ONLY. Body copy and small links use text-text or text-muted.
  */
 @theme {
   --color-canvas:    #14110F;
