@@ -14,8 +14,9 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function migrate() {
-    console.log("Loading final posts JSON...");
-    const posts = JSON.parse(fs.readFileSync('bushbuckridge_final_posts_2026.json', 'utf8'));
+    const jsonFile = process.argv[2] || 'bushbuckridge_final_posts_2026.json';
+    console.log(`Loading final posts JSON (${jsonFile})...`);
+    const posts = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
 
     console.log(`Starting migration for ${posts.length} posts...`);
 
