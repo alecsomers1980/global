@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/*
+ * Caracal Footwear -- "Wild by Nature" design tokens.
+ * Lifted from the client's printed flyer so print and web read as one brand.
+ * Use these by name (bg-canvas, text-accent, border-accent). Never raw hex
+ * in a component.
+ */
+@theme {
+  --color-canvas:    #14110F;
+  --color-surface:   #1E1A17;
+  --color-accent:    #C25A1E;
+  --color-accent-hi: #D96B2A;
+  --color-tan:       #B5763A;
+  --color-cognac:    #A8542A;
+  --color-camel:     #C89660;
+  --color-text:      #F5F0E8;
+  --color-muted:     #A39A90;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-inter), system-ui, sans-serif;
+}
+
+:root {
+  /* The site is dark by design, not by preference -- form controls and
+     scrollbars should match rather than flipping with the OS setting. */
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * Display type: heavy, condensed, tight tracking. Used for the statement
+ * lines only -- never for body copy.
+ */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/*
+ * The orange rule that sits under the wordmark on the flyer.
+ */
+.rule-accent::after {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 2px;
+  margin-top: 0.75rem;
+  background-color: var(--color-accent);
+}
+
+/*
+ * Film grain, ties the site back to the printed flyer. Decorative only,
+ * so it stays out of the accessibility tree and never eats clicks.
+ */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Visible, on-brand focus ring everywhere. Never remove without replacing. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
