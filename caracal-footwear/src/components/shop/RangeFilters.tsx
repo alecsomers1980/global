@@ -145,14 +145,14 @@ export default function RangeFilters({
       {/* Size grid */}
       <div>
         <p className="text-[10px] uppercase tracking-wide text-muted mb-2">Size</p>
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+        <div className="flex flex-wrap gap-2">
           {ALL_SIZES.map((size) => {
             const isActive = activeSize === size;
             return (
               <Link
                 key={size}
                 href={isActive ? buildHref({ size: null }) : buildHref({ size })}
-                className={`rounded-md px-2 py-1.5 text-xs border text-center transition-colors ${
+                className={`flex h-9 w-11 shrink-0 items-center justify-center rounded-md text-xs border transition-colors ${
                   isActive
                     ? 'bg-accent text-canvas border-accent'
                     : 'border-text/20 text-muted hover:text-text hover:border-text/40'

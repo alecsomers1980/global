@@ -40,7 +40,9 @@ export default function SizeSelector({
       </div>
 
       {/* Size grid */}
-      <div className="mt-2 grid grid-cols-6 gap-2" role="group" aria-label="Size">
+      {/* Fixed-width chips, not a stretched grid -- a full-width size button
+          reads as a primary action rather than a compact size choice. */}
+      <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Size">
         {sorted.map((sizeOption) => {
           const { size, stockQty } = sizeOption;
           const isSelected = selected === size;
@@ -49,7 +51,7 @@ export default function SizeSelector({
 
           // Base classes
           let classes =
-            "relative flex h-10 items-center justify-center rounded border font-medium text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2";
+            "relative flex h-11 w-12 shrink-0 items-center justify-center rounded border font-medium text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2";
 
           if (isSoldOut) {
             classes += " cursor-not-allowed line-through text-muted/50 border-text/10";

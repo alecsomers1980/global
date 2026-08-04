@@ -24,7 +24,12 @@ export default async function Footer() {
 
       {/* Main footer content */}
       <div className="bg-surface">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/*
+          [&>*]:min-w-0 is load-bearing: grid items default to min-width:auto,
+          so a long unbreakable token (the contact email) refuses to shrink and
+          pushes the whole page 10px wider than the viewport at exactly 768px.
+        */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10 [&>*]:min-w-0">
           {/* Brand column */}
           <div>
             <h2 className="display text-2xl">CARACAL</h2>
@@ -142,7 +147,7 @@ export default async function Footer() {
               <li>
                 <a
                   href={`mailto:${settings.contact_email}`}
-                  className="text-sm text-muted hover:text-text transition-colors"
+                  className="text-sm text-muted hover:text-text transition-colors block break-words"
                 >
                   {settings.contact_email}
                 </a>

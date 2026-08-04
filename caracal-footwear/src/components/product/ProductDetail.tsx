@@ -65,7 +65,7 @@ export default function ProductDetail({ product, leadTime, freeDeliveryLabel }: 
           </span>
         )}
 
-        <h1 className="text-3xl sm:text-4xl text-text">{product.name}</h1>
+        <h1 className="display text-3xl sm:text-4xl text-text">{product.name}</h1>
 
         <p className="text-xs text-muted">
           {CATEGORY_LABELS[product.category]}
