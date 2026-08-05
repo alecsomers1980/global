@@ -26,8 +26,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       href={`/product/${product.slug}`}
       className="group block bg-surface rounded-lg overflow-hidden border border-text/5 hover:border-accent transition-colors"
     >
-      {/* Image area */}
-      <div className="aspect-[4/5] relative overflow-hidden bg-canvas">
+      {/*
+        Image area. 4:3 matches what scripts/prepare-images.mjs writes, so the
+        card crops nothing further -- the photos are side-profile shots of a
+        shoe and a portrait card would cut the toe or the heel off.
+      */}
+      <div className="aspect-[4/3] relative overflow-hidden bg-canvas">
         {hasImages ? (
           <Image
             src={firstImage!.url}

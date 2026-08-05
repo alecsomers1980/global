@@ -26,7 +26,7 @@ export default function ProductGallery({
   // Empty state – no images available
   if (images.length === 0) {
     return (
-      <div className="relative flex aspect-[4/5] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-surface">
+      <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-surface">
         {/* Simple caracal head SVG */}
         <svg
           className="h-16 w-16 text-accent/30"
@@ -46,7 +46,7 @@ export default function ProductGallery({
   // Only one image – no thumbnail strip
   if (images.length === 1) {
     return (
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface">
         <Image
           src={images[0].url}
           alt={images[0].alt || productName}
@@ -63,7 +63,7 @@ export default function ProductGallery({
   return (
     <div>
       {/* Main image */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-surface">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-surface">
         <Image
           src={images[activeIndex].url}
           alt={images[activeIndex].alt || `${productName}, image ${activeIndex + 1}`}

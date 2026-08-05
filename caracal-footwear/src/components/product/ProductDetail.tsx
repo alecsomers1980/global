@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ProductWithVariants } from '@/lib/supabase/types';
+import type { ProductImage, ProductWithVariants } from '@/lib/supabase/types';
 import { CATEGORY_LABELS } from '@/lib/supabase/types';
 import { groupVariants, imagesForColour } from '@/lib/catalogue';
 import { formatZAR } from '@/lib/money';
@@ -15,17 +15,32 @@ interface Props {
   freeDeliveryLabel: string;
 }
 
-const getInitialColour = (groups: ReturnType<typeof groupVariants>): string => {
+/**
+ * Stock wins, then photography. Variants arrive ordered by colour name, so
+ * without this the page opens on whatever sorts first alphabetically -- which
+ * is rarely the colour that has been shot.
+ *
+ * `images` is ordered by sort_order, so the first colour-specific image is the
+ * lead shot: the one the range card shows. Opening on its colour means the
+ * shopper lands on the shoe they just clicked, rather than an empty gallery.
+ */
+const getInitialColour = (
+  groups: ReturnType<typeof groupVariants>,
+  images: ProductImage[],
+): string => {
   if (groups.length === 0) return '';
-  const inStock = groups.find((g) => g.sizes.some((s) => s.stockQty > 0));
-  return inStock ? inStock.colourName : groups[0].colourName;
+  const inStock = groups.filter((g) => g.sizes.some((s) => s.stockQty > 0));
+  const pool = inStock.length > 0 ? inStock : groups;
+  const lead = images.find((img) => img.colour_name !== null);
+  const match = lead && pool.find((g) => g.colourName === lead.colour_name);
+  return (match ?? pool[0]).colourName;
 };
 
 export default function ProductDetail({ product, leadTime, freeDeliveryLabel }: Props) {
   const groups = useMemo(() => groupVariants(product.variants, product.base_price), [product]);
 
   const [selectedColour, setSelectedColour] = useState<string>(() =>
-    getInitialColour(groups),
+    getInitialColour(groups, product.images),
   );
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
