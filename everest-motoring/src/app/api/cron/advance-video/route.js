@@ -120,9 +120,12 @@ export async function GET(request) {
             if (stuckMs > STUCK_TIMEOUT_MS) {
                 const mins = Math.round(stuckMs / 60000);
                 console.error(`${logPrefix} no progress for ${mins} min -> auto-failing to unblock the queue`);
+                // Keep ai_pipeline_state (don't null it out) — it may hold
+                // already-completed scene clips (muxed_url) and the stuck
+                // task_id, both needed to diagnose the failure or do a cheap
+                // partial redo instead of re-rendering all 4 scenes from scratch.
                 await updateCar(admin, car.id, {
                     video_url: `error: timed out — no progress for ${mins} min (auto-failed to unblock the render queue)`,
-                    ai_pipeline_state: null,
                 });
                 revalidatePath("/admin/inventory");
                 return NextResponse.json({ advanced: car.id, timed_out: true, stuck_minutes: mins });
@@ -555,9 +558,11 @@ export async function GET(request) {
         const errorMsg = rawMsg.length > 240 ? rawMsg.slice(0, 237) + "..." : rawMsg;
         console.error(`${logPrefix} FAILED: ${errorMsg}`);
         try {
+            // Keep ai_pipeline_state — see comment on the stuck-timeout branch
+            // above. A single scene erroring shouldn't destroy sibling scenes'
+            // already-completed clips or the failing task_id.
             await updateCar(admin, car.id, {
                 video_url: `error: ${errorMsg}`,
-                ai_pipeline_state: null,
             });
             revalidatePath("/admin/inventory");
         } catch (writeErr) {
