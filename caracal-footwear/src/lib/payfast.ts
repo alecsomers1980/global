@@ -29,8 +29,13 @@ export class PayFastService {
 
   constructor() {
     this.config = {
-      // Defaults are PayFast's public sandbox credentials -- safe to ship,
-      // they only work against the sandbox endpoint.
+      // These fallbacks are PayFast's DOCUMENTATION EXAMPLE merchant id/key,
+      // not a live account -- they render a real sandbox process page (so
+      // dev without any env vars set doesn't hard-crash) but PayFast's
+      // servers reject the signature on any real transaction against them.
+      // Register your own free sandbox account at sandbox.payfast.co.za and
+      // set PAYFAST_MERCHANT_ID/PAYFAST_MERCHANT_KEY/PAYFAST_PASSPHRASE in
+      // .env.local to actually complete a payment. Confirmed 2026-08-05.
       merchantId: process.env.PAYFAST_MERCHANT_ID || '10000100',
       merchantKey: process.env.PAYFAST_MERCHANT_KEY || '46f0cd694581a',
       passphrase: process.env.PAYFAST_PASSPHRASE || '',
