@@ -5,6 +5,7 @@ import type { ProductImage, ProductWithVariants } from '@/lib/supabase/types';
 import { CATEGORY_LABELS } from '@/lib/supabase/types';
 import { groupVariants, imagesForColour } from '@/lib/catalogue';
 import { formatZAR } from '@/lib/money';
+import { useCartStore } from '@/lib/cart/store';
 import ColourSwatches from '@/components/product/ColourSwatches';
 import SizeSelector from '@/components/product/SizeSelector';
 import ProductGallery from '@/components/product/ProductGallery';
@@ -60,6 +61,25 @@ export default function ProductDetail({ product, leadTime, freeDeliveryLabel }: 
     setGalleryIndex(0);
   };
 
+  const addItem = useCartStore((s) => s.addItem);
+  const [justAdded, setJustAdded] = useState(false);
+
+  const selectedSizeOption = activeGroup?.sizes.find((s) => s.size === selectedSize);
+
+  const handleAddToCart = () => {
+    if (!activeGroup || !selectedSizeOption) return;
+    addItem({
+      variantId: selectedSizeOption.variantId,
+      productSlug: product.slug,
+      productName: product.name,
+      colour: activeGroup.colourName,
+      size: selectedSizeOption.size,
+      priceCents: selectedSizeOption.priceCents,
+    });
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1500);
+  };
+
   const description = product.description ?? '';
   const paragraphs = description.split('\n').filter(Boolean);
   const showDescription = paragraphs.length > 0 ? paragraphs : description ? [description] : [];
@@ -105,12 +125,11 @@ export default function ProductDetail({ product, leadTime, freeDeliveryLabel }: 
 
         <button
           type="button"
-          disabled
-          aria-disabled="true"
-          title="Online checkout is coming soon"
-          className="w-full bg-accent text-canvas py-3 rounded-md text-sm uppercase tracking-[0.15em] disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={!selectedSizeOption}
+          onClick={handleAddToCart}
+          className="w-full bg-accent text-canvas py-3 rounded-md text-sm uppercase tracking-[0.15em] transition-colors hover:bg-accent-hi disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-accent"
         >
-          Coming soon
+          {justAdded ? 'Added ✓' : selectedSizeOption ? 'Add to cart' : 'Select a size'}
         </button>
 
         {showDescription.length > 0 && (

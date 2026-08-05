@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import MobileMenu from './MobileMenu';
+import CartBadge from './CartBadge';
 
 const navLinks = [
   { href: '/range', label: 'Range' },
@@ -38,7 +39,7 @@ export default function Header() {
           <Link
             href="/cart"
             className="relative p-1 text-text hover:text-accent transition-colors"
-            aria-label="Cart, 0 items"
+            aria-label="Cart"
           >
             <svg
               className="h-6 w-6"
@@ -53,9 +54,7 @@ export default function Header() {
                 d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
               />
             </svg>
-            <span className="absolute -top-1 -right-1 bg-accent text-canvas text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              0
-            </span>
+            <CartBadge />
           </Link>
           <MobileMenu links={navLinks} />
         </div>
