@@ -15,6 +15,7 @@ import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createMuxAssetFromUrl } from "@/utils/ai/muxService";
 import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStreamService";
 import { composeSceneOneImage } from "@/utils/ai/nanoBananaService";
+import { estimateSpokenMs, CLIP_DURATION_MS, VOICEOVER_BUDGET_MS } from "@/utils/ai/voiceoverDuration";
 import { revalidatePath } from "next/cache";
 
 // Pipeline selector. "seedance" = new Seedance 2 Pro (silent) + ElevenLabs SA
@@ -457,6 +458,139 @@ export async function requestAudioRedoAction(carId, sceneNumbers) {
 
         revalidatePath("/admin/inventory");
         return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message || "Unknown error" };
+    }
+}
+
+/**
+ * Read the four spoken lines for a car so the admin can edit them, along with
+ * an estimate of how long each takes to say. Anything over the clip length is
+ * cut off mid-sentence in the finished video, which is why the estimate is
+ * surfaced in the UI rather than left as an invisible trap.
+ */
+export async function getSceneVoiceoversAction(carId) {
+    try {
+        const supabase = await createAdminClient();
+        const { data: car, error } = await supabase
+            .from("cars")
+            .select("id, video_url, ai_pipeline_state")
+            .eq("id", carId)
+            .limit(1)
+            .single();
+        if (error || !car) return { success: false, error: "Car not found" };
+
+        const state = car.ai_pipeline_state;
+        if (!state || !Array.isArray(state.script) || state.script.length !== 4) {
+            return { success: false, error: "This video has no editable script (it predates script persistence, or the render failed). Regenerate it once to get one." };
+        }
+
+        const scenes = state.script.map((s, i) => {
+            const text = s?.voiceover_text || "";
+            const entry = (state.scenes || []).find((x) => x.scene === i + 1);
+            return {
+                scene: i + 1,
+                text,
+                estimatedMs: estimateSpokenMs(text),
+                canRedoAudio: Boolean(entry?.clip_url),
+            };
+        });
+
+        return { success: true, scenes, clipMs: CLIP_DURATION_MS, budgetMs: VOICEOVER_BUDGET_MS };
+    } catch (err) {
+        return { success: false, error: err.message || "Unknown error" };
+    }
+}
+
+/**
+ * Save edited voiceover lines and queue an audio-only redo for the scenes that
+ * actually changed. Re-voicing reuses each scene's stored silent clip, so this
+ * costs no video credits — just ElevenLabs, one re-stitch and one re-ingest.
+ *
+ * `edits` is { [sceneNumber]: newText }. Scenes whose text is unchanged are
+ * ignored, so we never pay to re-render something the user didn't touch.
+ *
+ * Only `voiceover_text` is rewritten; the stale line embedded in the AUDIO
+ * block of `visual_prompt` is left alone because the Seedance engine strips
+ * that block before rendering (seedanceVideoEngine.stripAudioBlock).
+ */
+export async function updateSceneVoiceoversAction(carId, edits) {
+    if (!edits || typeof edits !== "object" || Array.isArray(edits)) {
+        return { success: false, error: "Invalid edits" };
+    }
+
+    try {
+        const supabase = await createAdminClient();
+        const { data: car, error: fetchErr } = await supabase
+            .from("cars")
+            .select("id, video_url, ai_pipeline_state")
+            .eq("id", carId)
+            .limit(1)
+            .single();
+        if (fetchErr || !car) return { success: false, error: "Car not found" };
+
+        const state = car.ai_pipeline_state;
+        const isValid =
+            typeof car.video_url === "string" &&
+            car.video_url.startsWith("cf:") &&
+            state &&
+            Array.isArray(state.script) && state.script.length === 4 &&
+            Array.isArray(state.scenes) && state.scenes.length === 4;
+        if (!isValid) {
+            return { success: false, error: "Car must have a finished video with a complete script to edit its voiceover" };
+        }
+
+        let nextState;
+        try {
+            nextState = typeof structuredClone === "function"
+                ? structuredClone(state)
+                : JSON.parse(JSON.stringify(state));
+        } catch (e) {
+            return { success: false, error: "Pipeline state is malformed" };
+        }
+
+        const changed = [];
+        for (const [key, rawText] of Object.entries(edits)) {
+            const n = Number(key);
+            if (!Number.isInteger(n) || n < 1 || n > 4) {
+                return { success: false, error: `Invalid scene number: ${key}` };
+            }
+            const text = String(rawText ?? "").trim();
+            if (!text) return { success: false, error: `Scene ${n}'s voiceover can't be empty` };
+            if (text.length > 300) return { success: false, error: `Scene ${n}'s voiceover is far too long` };
+
+            if (text === (nextState.script[n - 1]?.voiceover_text || "").trim()) continue;
+
+            const entry = nextState.scenes.find((s) => s.scene === n);
+            if (!entry?.clip_url) {
+                return { success: false, error: `Scene ${n} has no saved silent clip, so its audio can't be redone on its own. Use "Redo video" on that scene once — after that, voiceover edits are free.` };
+            }
+
+            nextState.script[n - 1].voiceover_text = text;
+            delete entry.muxed_url;
+            changed.push(n);
+        }
+
+        if (changed.length === 0) {
+            return { success: false, error: "No changes to save" };
+        }
+
+        changed.sort((a, b) => a - b);
+        nextState.audio_redo_scenes = changed;
+        nextState.previous_cf_uid = car.video_url.slice(3);
+
+        const { error: updateErr } = await supabase
+            .from("cars")
+            .update({
+                video_url: "ai_redoing_audio",
+                ai_pipeline_state: nextState,
+                ai_progress_at: null,
+            })
+            .eq("id", carId);
+        if (updateErr) return { success: false, error: updateErr.message };
+
+        revalidatePath("/admin/inventory");
+        return { success: true, scenes: changed };
     } catch (err) {
         return { success: false, error: err.message || "Unknown error" };
     }

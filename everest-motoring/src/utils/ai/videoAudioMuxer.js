@@ -34,10 +34,16 @@ export async function muxAudioOntoVideo({ videoUrl, audioUrl, videoDurationMs = 
     // (omitting it returns HTTP 422). Use the real mp3 duration when supplied
     // (accurate to within a few ms based on byte-count parsing); fall back to
     // the video duration if for some reason we couldn't measure it.
-    const audioMs = Math.min(
-        audioDurationMs && audioDurationMs > 0 ? audioDurationMs : videoDurationMs,
-        videoDurationMs,
-    );
+    const measuredMs = audioDurationMs && audioDurationMs > 0 ? audioDurationMs : videoDurationMs;
+    const audioMs = Math.min(measuredMs, videoDurationMs);
+
+    // Capping at the clip length cuts the voiceover mid-sentence. That is a
+    // script problem (a line too long to say in 8s), not a mux problem, and it
+    // used to happen silently — say so loudly, because an audio-only redo of
+    // the same text reproduces it exactly.
+    if (measuredMs > videoDurationMs) {
+        console.warn(`[Audio Mux] Voiceover is ${measuredMs}ms but the clip is only ${videoDurationMs}ms — the line will be CUT OFF after ${videoDurationMs}ms. Shorten the scene's voiceover text in admin and redo its audio.`);
+    }
 
     const requestBody = {
         tracks: [

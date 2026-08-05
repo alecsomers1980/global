@@ -1,4 +1,5 @@
 import { runWithFallback } from "./aiProviderChain";
+import { estimateSpokenMs, findOverBudgetScenes, VOICEOVER_BUDGET_MS } from "./voiceoverDuration";
 
 function pickFeaturedPair(features, pool) {
     if (!features || features.length === 0) return [];
@@ -135,6 +136,7 @@ Strict Instructions for the script:
 2b. NEVER use the phrase "test drive" anywhere in any voiceover, in any scene. The CTA should invite the viewer to "view", "see", or "experience" the vehicle, or to "contact" / "visit" / "enquire with" Everest Motoring — never to book a test drive.
 2c. VOICEOVER VARIETY — STRICT: each voiceover must feel uniquely written for THIS specific ${car.year} ${car.make} ${car.model}, not a fill-in-the-blank template. Vary your sentence openers, structures, and word choices. Do NOT default to predictable patterns like every Scene 1 starting with "Introducing the…", every Scene 4 starting with "Contact Everest Motoring today…", or "Featuring X and Y" / "With X and Y" stock phrasing. Treat each voiceover line as bespoke copy for this vehicle: reference its specific character — sporty, family-focused, executive, rugged, economical — and write language that fits THAT vehicle's personality rather than a generic luxury template. Two different cars must never receive the same voiceover line.
 2d. VOICEOVER LENGTH — STRICT: scenes 1–3 are MAX 12 WORDS each (aim 9–11); the scene-4 CTA is MAX 9 WORDS (aim 7–8) so it stays punchy and never rushes or gets cut off. Each clip is only 8 seconds, so the line must comfortably fit at a calm, unhurried, premium pace. If you cannot fit your point, say less — drop a feature, drop an adjective, drop the lead-in. A short, well-spoken line is far better than a long one that gets cut off mid-sentence.
+2d-i. NEVER SPELL OUT SPEC CODES — STRICT: the voiceover is read aloud by a text-to-speech voice that pronounces trim and engine designations letter by letter, which eats the 8-second clip. "2.0TDi" is spoken as "two point zero T D I" and "DSG" as "D S G" — six syllables and three syllables for what looks like two short words. So in \`voiceover_text\` you must NEVER include engine/trim/gearbox codes such as "2.0TDi", "1.5T", "GD-6", "DSG", "GLX", "CRDi", "TSI", "SD V6", "A/T", or similar. Use the PLAIN model name only — say "Volkswagen Transporter", NOT "Volkswagen T6 2.0TDi Transporter DSG Trendline"; say "Hilux Raider", NOT "Hilux 2.4 GD-6 Raised Body Raider Auto". Describe the mechanicals in ordinary words instead ("turbo diesel", "smooth automatic", "turbo-petrol"). Mentioning the year plus make and short model name once in scene 1 is plenty — the full designation belongs in the written listing, never in the spoken line.
 2e. SALES INTENT & SPECS — STRICT: write like a premium, professional salesperson with a sale or enquiry in mind — confident, warm, aspirational, never cheesy, pushy, or used-car-salesy. Weave the vehicle's ACTUAL specifications (year, make, model, transmission, fuel type, mileage, and 1–2 real features from the list above) into the lines as desirable selling points — make the car feel sought-after, NOT a dry spec read-out. Build genuine interest across scenes 1–3 and convert it with the scene-4 call to action. Use confident, premium vocabulary (e.g. "refined", "commanding", "impeccably kept", "effortless", "exceptional value") suited to THIS vehicle's character.
 3. Keep visual descriptions concise — 2–3 short sentences before AUDIO. Describe WHAT is in the frame (the vehicle and its surroundings) and the fidelity rules. Do NOT describe the camera motion yourself — a single fixed motion directive is appended downstream to every clip, so your job is only to describe the static subject faithfully.
 4. MOTION — every scene uses ONE gentle camera move: a slow cinematic dolly forward, a subtle push-in (Motion Value: Low, ~3/10). The environment and the subject are completely static and faithful to the source photograph — nothing morphs, warps, stretches, or changes; the camera simply eases forward smoothly and steadily. There is no panning, no rotation, no orbit, no angle swing, no perspective re-projection. Absolute image fidelity to the source: no hallucinated detail, no restyling.
@@ -181,30 +183,62 @@ Example Output:
 ]
 `;
 
-        const { text, providerUsed } = await runWithFallback({
-            prompt,
-            label: "script",
-            maxOutputTokens: 3000,
-        });
-        console.log(`[Script] Generated via ${providerUsed}`);
+        const runScript = async (scriptPrompt) => {
+            const { text, providerUsed } = await runWithFallback({
+                prompt: scriptPrompt,
+                label: "script",
+                maxOutputTokens: 3000,
+            });
+            console.log(`[Script] Generated via ${providerUsed}`);
 
-        const parsed = extractSceneArray(text);
+            const parsed = extractSceneArray(text);
 
-        // Guard against the AI returning the wrong number of scenes — every
-        // downstream stage assumes exactly 4 (the four scene images, the
-        // queue manager's per-scene poll, the stitch ordering). Anything
-        // else means the response was malformed and we should fall back.
-        if (!Array.isArray(parsed) || parsed.length !== 4) {
-            throw new Error(`Script response had ${Array.isArray(parsed) ? parsed.length : 'non-array'} scenes; expected exactly 4.`);
+            // Guard against the AI returning the wrong number of scenes — every
+            // downstream stage assumes exactly 4 (the four scene images, the
+            // queue manager's per-scene poll, the stitch ordering). Anything
+            // else means the response was malformed and we should fall back.
+            if (!Array.isArray(parsed) || parsed.length !== 4) {
+                throw new Error(`Script response had ${Array.isArray(parsed) ? parsed.length : 'non-array'} scenes; expected exactly 4.`);
+            }
+
+            // Backfill voiceover_text from the AUDIO block in visual_prompt when the
+            // model forgets to emit the dedicated field. The Seedance pipeline needs
+            // a clean spoken line for ElevenLabs; the Veo pipeline ignores this field.
+            return parsed.map(s => ({
+                ...s,
+                voiceover_text: s.voiceover_text || extractVoiceoverFromVisualPrompt(s.visual_prompt) || '',
+            }));
+        };
+
+        let scenes = await runScript(prompt);
+
+        // A line that takes longer than the clip to speak is truncated
+        // mid-sentence at mux time, and an audio-only redo CANNOT fix it (same
+        // text in, same over-length audio out). Catching it here — one extra
+        // cheap text call — is the only place it's fixable automatically.
+        const overBudget = findOverBudgetScenes(scenes);
+        if (overBudget.length > 0) {
+            console.warn(`[Script] Over-length voiceover(s): ${overBudget.map(o => `scene ${o.scene} ~${o.estimatedMs}ms`).join(', ')} (budget ${VOICEOVER_BUDGET_MS}ms) — retrying once.`);
+            const retryPrompt = `${prompt}
+
+RETRY — LENGTH FAILURE. Your previous attempt returned voiceover lines that take too long to speak inside an 8-second clip:
+${overBudget.map(o => `- Scene ${o.scene} (~${(o.estimatedMs / 1000).toFixed(1)}s spoken): "${o.text}"`).join("\n")}
+Rewrite the ENTIRE script. Every \`voiceover_text\` must be speakable in under ${(VOICEOVER_BUDGET_MS / 1000).toFixed(1)} seconds at a calm, unhurried pace. Remember rule 2d-i: spec codes like "2.0TDi" and "DSG" are spelled out letter by letter by the voice engine — remove them completely and use the plain model name. Shorten the lines listed above the most.`;
+            try {
+                const retried = await runScript(retryPrompt);
+                if (findOverBudgetScenes(retried).length < overBudget.length) {
+                    scenes = retried;
+                }
+            } catch (retryErr) {
+                console.warn(`[Script] Length retry failed (${retryErr.message}) — keeping the first attempt.`);
+            }
+            const remaining = findOverBudgetScenes(scenes);
+            if (remaining.length > 0) {
+                console.warn(`[Script] Still over budget after retry: ${remaining.map(o => `scene ${o.scene} ~${o.estimatedMs}ms`).join(', ')}. Edit the line in admin and redo that scene's audio.`);
+            }
         }
 
-        // Backfill voiceover_text from the AUDIO block in visual_prompt when the
-        // model forgets to emit the dedicated field. The Seedance pipeline needs
-        // a clean spoken line for ElevenLabs; the Veo pipeline ignores this field.
-        return parsed.map(s => ({
-            ...s,
-            voiceover_text: s.voiceover_text || extractVoiceoverFromVisualPrompt(s.visual_prompt) || '',
-        }));
+        return scenes;
 
     } catch (error) {
         console.error("Error generating script via both providers — using feature-aware fallback:", error.message);
