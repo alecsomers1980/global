@@ -11,10 +11,14 @@ Per "improve, don't replace": this is a maintenance layer over the existing memo
 
 ## Architecture
 
-Two scheduled cloud routines via the `schedule` skill, not one branching routine — separate concerns, independently tunable.
+**Correction (2026-08-06, mid-implementation):** the original draft of this spec assumed the `schedule` skill's cloud routines. Verified during planning that cloud routines run in Anthropic's cloud sandbox and **cannot access local files** — the memory store and session transcripts exist only on the local machine, not in a git repo a cloud routine could clone. Switched to **Windows Task Scheduler running `claude -p` headlessly**, which matches existing precedent (the chat-import script uses the same `schtasks` pattern) and has real local filesystem access. The design itself — cadence, mechanical-only auto-apply boundary, push-notification review flow — is unchanged; only the transport is different.
+
+Two local scheduled tasks via `schtasks`, each invoking `claude -p` non-interactively — separate concerns, independently tunable.
+
+**Unattended execution safety:** both tasks run with `--permission-mode dontAsk` (auto-deny anything not pre-approved — never `--dangerously-skip-permissions`) and a scoped `--allowedTools` allowlist: `Read`/`Write`/`Edit` restricted to the `memory/` directory via `--add-dir`, `Bash` restricted to simple listing/date commands, plus `PushNotification`. This is the technical enforcement of the same "mechanical only, never touches claim substance" boundary already defined below — the process cannot touch anything outside the memory directory even if the prompt were somehow subverted.
 
 ### 1. Nightly scanner
-- **Schedule:** daily, off-round time (e.g. 2:17am)
+- **Schedule:** daily, off-round time (e.g. 2:17am), registered via `schtasks /create`
 - **Reads:** transcripts (`*.jsonl`) written since the last recorded cursor — not a fixed 24h window, so a skipped night doesn't lose data
 - **Diffs against:** the 67 memory files + MEMORY.md
 - **Auto-applies directly** (no approval needed — mechanical only, never touches claim substance):
@@ -25,11 +29,12 @@ Two scheduled cloud routines via the `schedule` skill, not one branching routine
 - **Logs** every auto-applied change to `memory/_dream-log.md` — a visible trail, so nothing rewrites memory silently
 
 ### 2. Monday reviewer
-- **Schedule:** weekly, Monday morning (~8am)
+- **Schedule:** weekly, Monday morning (~8am), registered via `schtasks /create`
 - **Reads:** the week's accumulated `memory/_pending-review.md`
-- **Ends its turn** with the full numbered proposal list as the message body — this is what becomes the push notification. The content itself is in the notification, not a pointer to go check something.
-- **You reply** in plain language ("apply 1, 3, skip 2") to continue the same agent
-- **On reply:** applies approved changes to the memory files, archives all reviewed entries (approved and rejected) into `memory/_dream-log.md` with the outcome noted, clears `_pending-review.md`
+- **Sends a short `PushNotification`** (hard 200-char limit on that tool — cannot carry the full list): a one-line teaser with the count, e.g. "3 memory proposals waiting for review"
+- **Does not apply anything itself** — a one-shot headless run has no way to wait for a reply mid-task
+- **The full list surfaces automatically** at the start of your next Claude Code session (any project), via a global `SessionStart` hook that checks `_pending-review.md` and prints its contents once if non-empty — nothing to type or remember, it's just there next time you're in a session
+- **You respond in that session** ("apply 1, 3, skip 2"); the live session applies approved changes to the memory files, archives all reviewed entries (approved and rejected) into `memory/_dream-log.md` with the outcome noted, clears `_pending-review.md`, and the hook goes quiet again until the next non-empty file
 
 ## Why nightly + weekly, not one weekly pass
 
@@ -47,9 +52,13 @@ memory/*.md, MEMORY.md ┘                     └─► append proposal ─► 
                                                                             ▼
                                                                    Monday reviewer
                                                                             │
-                                                          push notification (full list)
+                                                        push notification (short teaser only)
                                                                             │
-                                                                 reply: "apply 1, 3, skip 2"
+                                                       next Claude Code session, any project
+                                                                            │
+                                                       SessionStart hook prints full list
+                                                                            │
+                                                                 you reply: "apply 1, 3, skip 2"
                                                                             │
                                                         ┌───────────────────┴──────────────────┐
                                                         ▼                                       ▼
@@ -69,12 +78,13 @@ Each nightly run is a real (small) agent invocation with its own usage cost — 
 
 - Obsidian vault maintenance (explicitly deferred)
 - Any auto-apply beyond the mechanical bar defined above — anything touching claim substance always waits for the Monday reply
-- A `/review-memory` slash command — the weekly push notification carries the content directly, so there's nothing to remember to run
+- A `/review-memory` slash command — the SessionStart hook surfaces the content automatically, so there's nothing to remember to run
+- Cloud routines / the `schedule` skill — ruled out during planning, cannot access local files (see Architecture correction above)
 - Duplicate-file merging (auto-detection only; merging is a proposal, never automatic)
 
 ## Testing / verification
 
 No traditional test suite — this is a prompt-driven scheduled routine, not application code. Verification is:
-1. Manually trigger one nightly-scanner run (via the Agent tool, `run_in_background: false`) against the real memory store and inspect: did it correctly identify at least one real index-drift case, and did `_dream-log.md` get an entry?
-2. Manually trigger one Monday-reviewer run against a `_pending-review.md` seeded with 1–2 real proposals, confirm the notification content includes the quotes, then reply and confirm the memory file is actually edited and the log/pending files update correctly.
-3. Let it run for real on schedule for ~1 week before trusting the auto-apply tier unsupervised for longer periods.
+1. Manually run the nightly-scanner's exact `claude -p ...` command (from the wrapper script, run directly in a terminal, not yet via schtasks) against the real memory store and inspect: did it correctly identify at least one real index-drift case, did it stay inside the `--allowedTools` boundary, and did `_dream-log.md` get an entry?
+2. Manually run the Monday-reviewer's command against a `_pending-review.md` seeded with 1–2 real proposals, confirm the `PushNotification` fires with a short teaser (not a truncation error), then start a fresh session and confirm the `SessionStart` hook prints the full list; reply and confirm the memory file is actually edited and the log/pending files update correctly.
+3. Register both via `schtasks /create`, confirm they appear in `schtasks /query`, and let one real nightly cycle run unattended before trusting it further.
