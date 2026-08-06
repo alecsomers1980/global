@@ -3,3 +3,6 @@
 .env*.local
 node_modules/
 .next/
+
+# split into standalone repos (files remain on disk)
+/ember-social/
