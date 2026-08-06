@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Archivo } from "next/font/google";
-import Header from "@/components/site/Header";
-import Footer from "@/components/site/Footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,15 +31,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Bare shell only -- no Header/Footer here. The (storefront) route group
+  // has its own layout that adds them; /admin has its own chrome too; the
+  // auth-only screens (forgot-password, reset-password) deliberately get
+  // neither.
   return (
     <html
       lang="en-ZA"
       className={`${inter.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="grain min-h-full flex flex-col bg-canvas text-text">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );
