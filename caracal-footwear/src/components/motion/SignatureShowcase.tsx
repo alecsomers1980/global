@@ -48,7 +48,13 @@ export default function SignatureShowcase({ products, variant }: SignatureShowca
   }, [shown.length]);
 
   return (
-    <div ref={containerRef} className="bg-canvas">
+    // overflow-x-hidden is load-bearing: the panels' entrance animation
+    // scales in from 1.04, and a below-the-fold panel sits at that scale
+    // (immediateRender) until it's scrolled into view. transform:scale()
+    // visually bleeds past an element's own box regardless of its own
+    // overflow-hidden (that only clips descendants, not its own transformed
+    // extent), so without this the scaled panel widens the page horizontally.
+    <div ref={containerRef} className="bg-canvas overflow-x-hidden">
       {shown.map((product) => {
         const image = product.images.find((i) => i.colour_name === null) ?? product.images[0];
         return (
