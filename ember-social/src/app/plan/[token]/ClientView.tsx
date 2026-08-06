@@ -8,6 +8,7 @@ interface PostData {
     id: string
     scheduled_at: string
     pillar?: string | null
+    video_status?: string | null
     tagline?: string | null
     tagline_accent?: string | null
     client_status?: string
@@ -223,6 +224,10 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
     const igVariant = variants.instagram || {}
     const tkVariant = variants.tiktok || {}
     const mediaUrl = post.media_urls?.[0] || null
+    // No truthy-guard on video_status here — a null/missing value must be
+    // treated as "not ready" too, matching publishPost's own gate
+    // (src/lib/publish.ts), which blocks anything that isn't exactly 'ready'.
+    const videoNotReady = Boolean(post.pillar === 'video' && post.video_status !== 'ready')
 
     return (
         <div className="glass-card overflow-hidden">
@@ -252,6 +257,17 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
 
             <div className="p-5 space-y-4">
                 {post.tagline && renderTagline(post.tagline, post.tagline_accent)}
+
+                {videoNotReady && (
+                    <div className="rounded-xl px-4 py-3 text-xs font-semibold"
+                        style={post.video_status === 'failed'
+                            ? { background: 'rgba(248,113,113,0.08)', color: '#f87171', border: '1px solid rgba(248,113,113,0.25)' }
+                            : { background: 'rgba(251,191,36,0.08)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.25)' }}>
+                        {post.video_status === 'failed'
+                            ? 'Video generation failed — the image below is a reference photo, not the final post. This post cannot be approved until it is regenerated.'
+                            : 'Video still rendering — the image below is a reference photo, not the final post.'}
+                    </div>
+                )}
 
                 {mediaUrl ? (
                     <div className="rounded-xl overflow-hidden" style={{ background: '#13131a' }}>
@@ -358,16 +374,17 @@ function PostCard({ post, index, token, primaryColor, fmtPostDate, fmtPostTime, 
             </div>
 
             {/* Client actions + comments */}
-            <ClientActions post={post} token={token} primaryColor={primaryColor} onImageUpdate={onImageUpdate} />
+            <ClientActions post={post} token={token} primaryColor={primaryColor} onImageUpdate={onImageUpdate} approveDisabled={videoNotReady} />
         </div>
     )
 }
 
-function ClientActions({ post, token, primaryColor, onImageUpdate }: {
+function ClientActions({ post, token, primaryColor, onImageUpdate, approveDisabled }: {
     post: PostData
     token: string
     primaryColor: string
     onImageUpdate: (postId: string, mediaUrl: string, newCount: number) => void
+    approveDisabled?: boolean
 }) {
     const [localStatus, setLocalStatus] = useState<string>(post.client_status || 'pending')
     const [regenCount, setRegenCount] = useState<number>(post.regeneration_count || 0)
@@ -486,8 +503,9 @@ function ClientActions({ post, token, primaryColor, onImageUpdate }: {
                                 </button>
                                 <button
                                     type="button"
-                                    disabled={busy !== null}
+                                    disabled={busy !== null || approveDisabled}
                                     onClick={approve}
+                                    title={approveDisabled ? 'Video is still rendering or failed — nothing to approve yet.' : undefined}
                                     className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-lg disabled:opacity-50"
                                     style={{ background: '#34d399', color: '#064e3b' }}>
                                     <Check className="w-4 h-4" /> {busy === 'approve' ? 'Approving…' : 'Approve'}

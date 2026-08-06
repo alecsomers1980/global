@@ -17,6 +17,7 @@ export interface PublishOutcome {
     success: boolean
     allSuccess: boolean
     results: PublishResult[]
+    skipped?: boolean
 }
 
 // Facebook returns a vague "Please reduce the amount of data..." error when
@@ -516,7 +517,7 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
 
     const { data: post, error: postErr } = await supabase
         .from('posts')
-        .select('id, workspace_id, content, platforms, media_urls, first_comment')
+        .select('id, workspace_id, content, platforms, media_urls, first_comment, pillar, video_status')
         .eq('id', postId)
         .single()
 
@@ -531,6 +532,41 @@ export async function publishPost(postId: string): Promise<PublishOutcome> {
     }
 
     const postAny = post as any
+
+    // A pillar='video' post carries reference stock photos in media_urls from
+    // insert time (so Seedance has something to work from) — it can look like
+    // a normal publishable post even while its video job is still rendering,
+    // or has failed outright. Gate here (not just in the cron's approved-post
+    // query) so every entry point into publishPost — the scheduled-publish
+    // query, the stuck-post recovery path, and the manual "Post Now" route —
+    // is covered by one single check.
+    if (postAny.pillar === 'video' && postAny.video_status !== 'ready') {
+        if (postAny.video_status === 'failed') {
+            // Terminal: this video will never become ready. Flip the post to
+            // failed too so it stops being selected by every future query
+            // (otherwise a permanently-not-ready video post sits in
+            // status='approved' forever, permanently occupying a slot in the
+            // cron's limit(10) window and eventually blocking all publishing).
+            const message = 'Video generation failed — cannot publish (see video job for details)'
+            const { error: failErr } = await supabase
+                .from('posts')
+                .update({ status: 'failed', last_error: message } as never)
+                .eq('id', postId)
+            if (failErr) console.error('publishPost: failed to set failed status for unready video post:', failErr)
+            return { success: false, allSuccess: false, results: [], skipped: true }
+        }
+
+        // Still in progress (pending/generating/rendering/compositing/null) —
+        // not an error, just not ready yet. Revert the 'publishing' flag this
+        // function set at the top so the post goes back to 'approved' and the
+        // cron picks it up again once the video actually finishes.
+        const { error: revertErr } = await supabase
+            .from('posts')
+            .update({ status: 'approved', last_error: null } as never)
+            .eq('id', postId)
+        if (revertErr) console.error('publishPost: failed to revert status for in-progress video post:', revertErr)
+        return { success: false, allSuccess: false, results: [], skipped: true }
+    }
 
     const { data: accounts } = await supabase
         .from('social_accounts')

@@ -11,6 +11,16 @@ export async function POST(req: Request) {
 
         const outcome = await publishPost(postId)
 
+        // A pillar='video' post that isn't ready yet gets skipped (not
+        // failed) by publishPost — surface that distinctly, otherwise it
+        // falls into the empty-results branch below and misreports as
+        // "no connected accounts" even though accounts are fine.
+        if (outcome.skipped) {
+            return NextResponse.json({
+                error: 'This video post is not ready to publish yet — it is still rendering, or its video generation failed. Check the post for its current status.',
+            }, { status: 409 })
+        }
+
         if (!outcome.results.length && !outcome.success) {
             return NextResponse.json({
                 error: 'No connected accounts for the targeted platforms. Connect them on the Platforms page first.',

@@ -19,7 +19,7 @@ function pickSellHeadline(variantIndex = 0) {
 }
 
 function buildPrompt(): string {
-    return `Create a HYPER-REALISTIC, CINEMATIC dark textured background design (1024x1024) for a "We Buy Your Car" tip card.
+    return `Create a HYPER-REALISTIC, CINEMATIC dark textured background design for a "We Buy Your Car" tip card.
 
 STYLE:
 - Pure black background with a subtle dark-grey embossed geometric texture (premium luxury car brand pattern, very subtle diagonal lines or chevrons).
@@ -40,9 +40,9 @@ export async function renderSellYourCar(car: VehicleInput, opts?: RenderOpts): P
     const hl = pickSellHeadline(opts?.variantIndex ?? 0)
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({
+    const headlineSvg = await buildHeadlineSvg({
         W, H, lines: hl.lines, accentWord: hl.accent, position: 'center',
-        subhead: hl.subhead, subheadAccent: hl.subheadAccent,
+        subhead: hl.subhead, subheadAccent: hl.subheadAccent, baseImage: baseBuf,
     })
 
     const finalBuf = await sharp(baseBuf)

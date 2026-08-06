@@ -3,13 +3,16 @@ import { createAdminClient } from '@/lib/supabase/client'
 import { resolveWorkspaceId } from '@/lib/resolve-workspace'
 import { fetchVehiclesForWorkspace } from '@/lib/inventory/fetchVehicles'
 import { uploadCampaignImage } from '@/lib/media/uploadToStorage'
-import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal } from '@/lib/templates'
+import { renderShowcase, renderLifestyle, renderMaintenance, renderSeasonal, renderFinance, renderComparison, renderSeasonalLocal, isAiRenderable } from '@/lib/templates'
 import type { VehicleInput, HeadlineSpec } from '@/lib/templates'
+import { videoCaption, videoHashtags } from '@/lib/templates/captions'
+import { pickRotationSeats } from '@/lib/rotation/pillarHistory'
 import { generateFreshHeadlines } from '@/lib/templates/headlineGenerator'
+import { pickVideoConcepts } from '@/lib/video/concepts'
 import crypto from 'crypto'
 
-const DOW: Record<string, number> = { mon: 1, wed: 3, fri: 5, sat: 6 }
-const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, fri: 9, sat: 8 }
+const DOW: Record<string, number> = { mon: 1, wed: 3, thu: 4, fri: 5, sat: 6 }
+const SAST_UTC: Record<string, number> = { mon: 7, wed: 10, thu: 12, fri: 9, sat: 8 }
 
 // Season for a given 0-indexed month (0=Jan) in the South African calendar.
 function seasonForMonth(m: number): string {
@@ -47,6 +50,12 @@ const PILLARS: PillarDef[] = [
     { name: 'seasonal',    dayName: 'sat', render: renderSeasonal as any,    needsCar: true },
 ]
 
+const ROTATION_RENDERERS: Record<string, (car: VehicleInput, opts?: any) => Promise<any>> = {
+    finance: renderFinance as any,
+    comparison: renderComparison as any, // called specially below — needs 2 cars
+    seasonal_local: renderSeasonalLocal as any,
+}
+
 export async function POST(req: Request) {
     try {
         const { workspaceId, days = 28, month } = await req.json()
@@ -78,7 +87,7 @@ export async function POST(req: Request) {
             clientSupabaseUrl: ws.client_supabase_url,
             clientServiceKey: ws.client_supabase_service_key,
             table: (ws.content_source as any)?.table || 'cars',
-            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url',
+            fields: (ws.content_source as any)?.fields || 'id,make,model,year,price,mileage,transmission,fuel_type,colour,main_image_url,gallery_urls',
             filter: (ws.content_source as any)?.filter || {},
             limit: 60,
             notSharedWithinDays: 0,
@@ -130,6 +139,23 @@ export async function POST(req: Request) {
         // curated pools as a fallback (batch still succeeds).
         const fresh = await generateFreshHeadlines({ count: weeks, season: planSeason })
 
+        const [seatA, seatB] = await pickRotationSeats(supabase, resolvedId)
+
+        // Templates that draw their picture from a text prompt must only be
+        // handed vehicles the image model can actually render (see
+        // isAiRenderable). The comparison template is exempt — it composites the
+        // real inventory photo, so it needs cars that HAVE one. If a filter
+        // would empty a pool, fall back to the full list rather than generate
+        // nothing at all.
+        const scenePool = vehicles.filter(v => isAiRenderable(v as any))
+        const sceneVehicles = scenePool.length ? scenePool : vehicles
+        const photoPool = vehicles.filter(v => (v as any).main_image_url)
+        const photoVehicles = photoPool.length ? photoPool : vehicles
+        const skipped = vehicles.length - scenePool.length
+        if (skipped > 0) {
+            console.log(`[campaign/generate] ${skipped} vehicle(s) excluded from AI-generated scenes (model cannot render them faithfully)`)
+        }
+
         const tasks: Array<Promise<void>> = []
         const errors: string[] = []
         let vehicleIdx = 0
@@ -137,17 +163,54 @@ export async function POST(req: Request) {
 
         for (let week = 0; week < weeks; week++) {
             for (const pillar of PILLARS) {
-                const car = vehicles[vehicleIdx % vehicles.length]
+                const isSeatA = week === 1 && pillar.name === 'seasonal'
+                const isSeatB = week === 3 && pillar.name === 'maintenance'
+                const seatPillarName = isSeatA ? seatA : isSeatB ? seatB : null
+
+                // Comparison shows real photographs, so it draws from the
+                // photo pool; every other template generates its image and
+                // draws from the AI-renderable pool.
+                const pool = seatPillarName === 'comparison' ? photoVehicles : sceneVehicles
+                const car = pool[vehicleIdx % pool.length]
                 if (pillar.needsCar) vehicleIdx++
 
-                const headline = fresh
+                const headline = fresh && !seatPillarName
                     ? (fresh as any)[pillar.name]?.[week] ?? null
                     : null
 
                 tasks.push((async () => {
                     try {
                         const targetDate = computeWeekday(monthStart, week, pillar.dayName)
-                        const result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
+                        const effectivePillarName = seatPillarName || pillar.name
+                        // Finance renders a nonsensical "±R0 / PER MONTH*" headline for a
+                        // vehicle with no valid price — swap in the next priced vehicle for
+                        // this branch only (comparison/seasonal_local are unaffected).
+                        let effectiveCar = car
+                        if (seatPillarName === 'finance' && !(Number(car.price) > 0)) {
+                            effectiveCar = vehicles.find(v => Number(v.price) > 0) || car
+                        }
+
+                        let result: { image: Buffer; caption: string; hashtags: string[]; scheduledAt: Date; ctaUrl?: string }
+                        if (seatPillarName === 'comparison') {
+                            // Runs before any `await` in this async IIFE, so it stays in the
+                            // same synchronous tick as the outer loop's own `vehicleIdx`
+                            // increment above — a future edit that adds an `await` before
+                            // this line could silently break that ordering. Also: `car`
+                            // (carA) and `carB` can be the same vehicle if inventory has
+                            // exactly one vehicle.
+                            //
+                            // The host pillar only advanced vehicleIdx if it needsCar; when
+                            // this seat sits on a car-less pillar (maintenance) it did not,
+                            // so both halves would otherwise show the SAME vehicle.
+                            if (!pillar.needsCar) vehicleIdx++
+                            const carB = photoVehicles[vehicleIdx % photoVehicles.length]
+                            vehicleIdx++
+                            result = await renderComparison(car as VehicleInput, carB as VehicleInput, 'Family', 'Fun', { targetDate, variantIndex: week })
+                        } else if (seatPillarName) {
+                            result = await ROTATION_RENDERERS[seatPillarName](effectiveCar as VehicleInput, { targetDate, variantIndex: week })
+                        } else {
+                            result = await pillar.render(car as VehicleInput, { targetDate, variantIndex: week, headline, season: planSeason })
+                        }
 
                         const postId = crypto.randomUUID()
                         let mediaUrl: string | null = null
@@ -167,8 +230,8 @@ export async function POST(req: Request) {
                                 id: postId,
                                 workspace_id: resolvedId,
                                 campaign_batch_id: batchId,
-                                pillar: pillar.name,
-                                vehicle_id: pillar.needsCar ? (car as any)?.id || null : null,
+                                pillar: effectivePillarName,
+                                vehicle_id: pillar.needsCar ? (effectiveCar as any)?.id || null : null,
                                 content: result.caption,
                                 variants: { facebook: { content: result.caption, hashtags: result.hashtags } },
                                 platforms: ['facebook'],
@@ -182,7 +245,7 @@ export async function POST(req: Request) {
                             } as any)
 
                         if (insertError) {
-                            errors.push(`${pillar.name} week ${week + 1}: ${insertError.message}`)
+                            errors.push(`${effectivePillarName} week ${week + 1}: ${insertError.message}`)
                         } else {
                             inserted++
                         }
@@ -195,14 +258,68 @@ export async function POST(req: Request) {
 
         await Promise.all(tasks)
 
+        // 3 video jobs, concepts picked by least-recently-used so they don't
+        // repeat what recent months already ran. Actual rendering happens
+        // asynchronously via /api/cron/generate-videos — this just reserves
+        // the slots and stores the brief.
+        const videoConcepts = await pickVideoConcepts(supabase, resolvedId, 3)
+        const videoWeeks = [0, 1, 2].filter(w => w < weeks) // one per week 1/2/3, skip if the batch is shorter than 3 weeks
+
+        for (let i = 0; i < videoConcepts.length && i < videoWeeks.length; i++) {
+            const concept = videoConcepts[i]
+            const car = vehicles.find(v =>
+                concept.vehicleKeywords.length === 0 ||
+                concept.vehicleKeywords.some(kw => `${v.make} ${v.model}`.toLowerCase().includes(kw))
+            ) || vehicles[i % vehicles.length]
+
+            // Real stock photos, sent to Seedance as reference_image_urls so it locks
+            // onto the actual vehicle instead of hallucinating one (up to 3, no gaps).
+            const refImageUrls = [(car as any).main_image_url, ...((car as any).gallery_urls || []).slice(0, 2)].filter(Boolean)
+            const imageCount = refImageUrls.length
+
+            const videoPrompt = `${concept.brief} Hero vehicle: the ${(car as any).colour || ''} ${(car as any).year} ${(car as any).make} ${(car as any).model}${imageCount > 0 ? ` shown in the attached reference photo${imageCount > 1 ? `s (Image 1 through Image ${imageCount})` : ' (Image 1)'} — match its exact colour, shape, and details throughout, do not deviate from the reference` : ' — keep its exact colour and shape throughout'}. SOUTH AFRICA — RIGHT-HAND DRIVE, THIS IS CRITICAL: the steering wheel is on the RIGHT-hand side of the cabin and the driver sits on the RIGHT. Any interior, dashboard, driver or over-the-shoulder shot MUST show the steering wheel on the right and the centre console to the driver's LEFT. Never show a left-hand-drive cabin. ROADS: strongly prefer unmarked gravel, dirt or farm roads with NO painted lane markings — the safest way to stay correct. If a marked public road is unavoidable, the vehicle MUST travel in the LEFT-hand lane, hugging the road's left edge, with the opposing lane to its right. MOTION: the vehicle always travels FORWARDS — wheels rotating forwards, scenery moving past consistently in one direction. Never show the vehicle reversing, rolling backwards, or footage that reads as played in reverse. Photorealistic, cinematic, no text, no logos, blank number plates.`
+
+            const targetDate = computeWeekday(monthStart, videoWeeks[i], 'thu')
+            const postId = crypto.randomUUID()
+            const approvalToken = crypto.randomUUID()
+            const caption = videoCaption(concept.title, car as VehicleInput)
+
+            const { error: videoInsertError } = await supabase
+                .from('posts')
+                .insert({
+                    id: postId,
+                    workspace_id: resolvedId,
+                    campaign_batch_id: batchId,
+                    pillar: 'video',
+                    vehicle_id: (car as any)?.id || null,
+                    content: caption,
+                    variants: { facebook: { content: caption, hashtags: videoHashtags() } },
+                    platforms: ['facebook'],
+                    media_urls: imageCount > 0 ? refImageUrls : null,
+                    scheduled_at: targetDate.toISOString(),
+                    status: 'pending_approval',
+                    client_status: 'pending',
+                    approval_token: approvalToken,
+                    video_status: 'pending',
+                    video_concept: concept.id,
+                    video_prompt: videoPrompt,
+                } as any)
+
+            if (videoInsertError) {
+                errors.push(`video ${concept.id}: ${videoInsertError.message}`)
+            } else {
+                inserted++
+            }
+        }
+
         return NextResponse.json({
             ok: true,
             batchId,
             public_token: publicToken,
             count: inserted,
-            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times.`,
-            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal'],
-            totalExpected: weeks * PILLARS.length,
+            strategy_rationale: `4-pillar weekly rotation — ${weeks} weeks of Showcase (Mon), Lifestyle (Wed), Maintenance (Fri), Seasonal (Sat) at peak SA engagement times, with Finance/Comparison/Seasonal-Local angles rotated into select weeks, plus up to ${Math.min(videoConcepts.length, videoWeeks.length)} short-form video posts (Thu).`,
+            pillars: ['Showcase', 'Lifestyle', 'Maintenance', 'Seasonal', 'Rotation Seat', 'Video'],
+            totalExpected: weeks * PILLARS.length + Math.min(videoConcepts.length, videoWeeks.length),
             errors: errors.length > 0 ? errors : undefined,
         })
     } catch (error: any) {

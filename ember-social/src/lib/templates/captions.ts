@@ -93,3 +93,68 @@ export function sellYourCarCaption(freshBody?: string | null): string {
 export function sellYourCarHashtags(): string[] {
     return pickHashtags(3, ['#SellYourCar', '#TradeInSA', '#WeBuyCars'])
 }
+
+// --- FINANCE ---
+export function financeCaption(car: VehicleInput, monthly: number, freshBody?: string | null): string {
+    const name = `${car.year} ${car.make} ${modelTrim(car)}`
+    const url = vehicleUrl(car)
+    const amount = `R${monthly.toLocaleString('en-ZA').replace(/,/g, ' ')}`
+    if (freshBody) {
+        return `${freshBody}\n\n${name} — estimated ${amount}/month*\n\n*Est: no deposit, no balloon, 72 months @ 12.5% p.a. On approved credit. T&Cs apply.\n\nView it today: ${url}${contactStrip()}`
+    }
+    const hook = `Getting into something you love shouldn't mean waiting years.`
+    const body = `The ${name} works out to an estimated ${amount} a month.* Come talk numbers — you might be closer than you think.`
+    const disclaimer = `*Est: no deposit, no balloon, 72 months @ 12.5% p.a. On approved credit. T&Cs apply.`
+    const cta = `View it today: ${url}`
+    return `${hook}\n\n${body}\n\n${disclaimer}\n\n${cta}${contactStrip()}`
+}
+
+export function financeHashtags(): string[] {
+    return pickHashtags(3, ['#CarFinance', '#DriveNow', '#PreOwned'])
+}
+
+// --- COMPARISON ---
+export function comparisonCaption(carA: VehicleInput, carB: VehicleInput, labelA: string, labelB: string, freshBody?: string | null): string {
+    const nameA = `${carA.year} ${carA.make} ${modelTrim(carA)}`
+    const nameB = `${carB.year} ${carB.make} ${modelTrim(carB)}`
+    if (freshBody) {
+        return `${freshBody}\n\nLeft: the ${nameA} ("${labelA}"). Right: the ${nameB} ("${labelB}").\n\nWhich one is you? Tell us in the comments.${contactStrip()}`
+    }
+    const hook = `Two very different kinds of Saturday. 👇`
+    const body = `Left: the ${nameA} — ${labelA.toLowerCase()}. Right: the ${nameB} — ${labelB.toLowerCase()}.`
+    const cta = `Which one is you? Tell us in the comments — we'll help you find it in stock.`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function comparisonHashtags(): string[] {
+    return pickHashtags(3, ['#WhichOneAreYou', '#PreOwned'])
+}
+
+// --- SEASONAL LOCAL ---
+export function seasonalLocalCaption(freshBody?: string | null): string {
+    if (freshBody) {
+        return `${freshBody}\n\nBrowse our inventory: ${CONTACT.website}/inventory${contactStrip()}`
+    }
+    const hook = `Long weekend ahead — where are you headed?`
+    const body = `The Panorama Route, a Kruger day trip, or just a quiet escape into the lowveld — whatever the plan, the right vehicle makes the drive part of the getaway.\n\nTell us where you're headed this weekend, and let's find the car that gets you there.`
+    const cta = `Browse our inventory: ${CONTACT.website}/inventory`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function seasonalLocalHashtags(): string[] {
+    return pickHashtags(3, ['#LongWeekend', '#PanoramaRoute', '#WhereAreYouHeaded'])
+}
+
+// --- VIDEO ---
+export function videoCaption(conceptTitle: string, car: VehicleInput): string {
+    const name = `${car.year} ${car.make} ${modelTrim(car)}`
+    const url = vehicleUrl(car)
+    const hook = `${conceptTitle} 🎬`
+    const body = `Watch the ${name} in motion. Hit play and see why this one won't be sitting on our floor for long.`
+    const cta = `See the full listing: ${url}`
+    return `${hook}\n\n${body}\n\n${cta}${contactStrip()}`
+}
+
+export function videoHashtags(): string[] {
+    return pickHashtags(3, ['#WatchThis', '#ReelDrive', '#PreOwned'])
+}

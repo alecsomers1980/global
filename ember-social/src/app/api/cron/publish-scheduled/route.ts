@@ -33,7 +33,16 @@ export async function GET(req: Request) {
         const now = new Date()
         const nowIso = now.toISOString()
 
-        // Approved posts whose scheduled time has arrived.
+        // Approved posts whose scheduled time has arrived. Selecting only
+        // 'id' (not pillar/video_status) keeps this query independent of
+        // whether the video-job migration has been applied yet — publishPost
+        // itself is the single gate for pillar='video' posts that aren't
+        // ready (see src/lib/publish.ts), covering this query, the stuck-post
+        // recovery query below, and the manual "Post Now" route all at once.
+        // A pre-filter here would just re-select the same not-ready video
+        // posts on every tick without ever letting publishPost's own logic
+        // flip a permanently-failed one to status='failed' — which is what
+        // actually clears it out of this limit(10) window.
         const { data: approvedPosts, error: approvedErr } = await supabase
             .from('posts')
             .select('id')

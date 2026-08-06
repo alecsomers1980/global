@@ -5,53 +5,66 @@ import sharp from 'sharp'
 import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, nextSlot } from './common'
 import { maintenanceCaption, maintenanceHashtags } from './captions'
 
+// Each tip carries its OWN macro subject — a card about brakes shows a brake
+// disc, not a generic icon. This is what made the July tip cards work; a single
+// shared background made every tip card look like the same post twice.
 const TIPS = [
-    { lines: ['CHECK YOUR', 'SPARK PLUGS.'], accent: 'PLUGS', subhead: 'Worn plugs steal up to 30% fuel economy.', subheadAccent: '30%' },
-    { lines: ['TYRE TREAD', 'MATTERS.'], accent: 'MATTERS', subhead: 'Below 3mm is dangerous in SA winter rain.', subheadAccent: '3mm' },
-    { lines: ['FULL SERVICE', 'HISTORY'], accent: 'HISTORY', subhead: "Doesn't guarantee a good car.", subheadAccent: "Doesn't" },
-    { lines: ['NEVER DRIVE', 'ON EMPTY.'], accent: 'EMPTY', subhead: 'Sediment in the tank costs more than fuel.', subheadAccent: 'more' },
-    { lines: ['LISTEN TO', 'YOUR BRAKES.'], accent: 'BRAKES', subhead: 'A squeal means pads are 90% gone.', subheadAccent: '90%' },
-    { lines: ['WIPERS', 'SAVE LIVES.'], accent: 'SAVE', subhead: 'Replace every 6 months.', subheadAccent: '6' },
+    { lines: ['CHECK YOUR', 'SPARK PLUGS.'], accent: 'PLUGS', subhead: 'Worn plugs steal up to 30% fuel economy.', subheadAccent: '30%', subject: 'a single spark plug held in clean workshop tweezers, worn electrode catching the light' },
+    { lines: ['TYRE TREAD', 'MATTERS.'], accent: 'MATTERS', subhead: 'Below 3mm is dangerous in the rain.', subheadAccent: '3mm', subject: 'an extreme close-up of a tyre tread block with a depth gauge resting in the groove, water beading on the rubber' },
+    { lines: ['FULL SERVICE', 'HISTORY'], accent: 'HISTORY', subhead: "Doesn't guarantee a good car.", subheadAccent: "Doesn't", subject: 'a service-history booklet open on a workshop bench beside a set of car keys, stamps visible but text unreadable' },
+    { lines: ['NEVER DRIVE', 'ON EMPTY.'], accent: 'EMPTY', subhead: 'Sediment in the tank costs more than fuel.', subheadAccent: 'more', subject: 'a macro shot of a fuel filler neck with the cap resting alongside, droplet of fuel catching the light' },
+    { lines: ['LISTEN TO', 'YOUR BRAKES.'], accent: 'BRAKES', subhead: 'A squeal means pads are 90% gone.', subheadAccent: '90%', subject: 'a macro shot of a ventilated brake disc and caliper behind alloy spokes, fine metal grain visible' },
+    { lines: ['WIPERS', 'SAVE LIVES.'], accent: 'SAVE', subhead: 'Replace every 6 months.', subheadAccent: '6', subject: 'a macro shot of a wiper blade lifted off a rain-covered windscreen, water droplets sharp in the foreground' },
+    { lines: ['COLD MORNINGS?', 'CHECK THE BATTERY.'], accent: 'BATTERY', subhead: 'Most batteries give up after three years.', subheadAccent: 'three', subject: 'an extreme close-up of a car battery terminal with a clean clamp, faint frost on the metal' },
+    { lines: ['MIND YOUR', 'COOLANT.'], accent: 'COOLANT', subhead: 'Overheating ruins engines fast.', subheadAccent: 'fast', subject: 'a macro shot of a coolant expansion tank with the level line visible, engine bay softly blurred behind' },
 ]
 
 function pickTip(variantIndex = 0) {
     return TIPS[variantIndex % TIPS.length]
 }
 
-function buildPrompt(): string {
-    return `Create a HYPER-REALISTIC, CINEMATIC design background (1024x1024) for a vehicle maintenance tip card.
+function buildPrompt(subject: string): string {
+    return `Create a HYPER-REALISTIC, CINEMATIC macro photograph for a vehicle maintenance tip card.
 
-STYLE:
-- Pure black background with a subtle dark-grey embossed geometric texture (think premium German car brochure texture, very subtle).
-- A SINGLE large yellow #FFE600 magnifying-glass outline icon, centred in the upper half of the canvas. The magnifier circle should be about 35% of canvas width, drawn as a thick yellow outline only (no fill), with a yellow handle extending diagonally to the lower-right.
-- Behind the magnifier circle, the lens area shows a darker recess as if it's truly magnifying part of the background.
-- Cinematic, premium, editorial design feel.
+SUBJECT:
+- ${subject}.
+- Shot on a 100mm macro lens, shallow depth of field, single warm key light against a deep black workshop background. Editorial, premium, calm — a craftsman's detail shot, not a stock photo.
+
+LAYOUT:
+- The subject sits in the UPPER 60% of the frame.
+- The LOWER 40% of the canvas must fall away into CLEAN, NEARLY-BLACK EMPTY SPACE — headline text is composited there later, so it must stay dark and uncluttered.
 
 CRITICAL:
-- NO car, NO vehicle, NO people, NO photograph subject.
-- NO text inside the image. The entire canvas should have NO words. Headlines will be composited later by Sharp.
-- The LOWER 35% of the canvas must be CLEAN EMPTY DARK SPACE (just the background texture) ready for headline text to be composited.
+- NO whole car, NO people, NO hands unless described above.
+- NO text inside the image. The entire canvas must have NO words, numbers or branding.
 
-NEGATIVE: cars, vehicles, people, text, words, letters, illustrations, cartoon, 3D render.`
+NEGATIVE: whole cars, vehicles, people, faces, text, words, letters, logos, watermarks, illustration, cartoon, 3D render, bright backgrounds.`
 }
 
 export async function renderMaintenance(car: VehicleInput, opts?: RenderOpts): Promise<RenderResult> {
     console.log(`  Maintenance: ${car.year} ${car.make} ${car.model}`)
-    const baseBuf = await generateImage(buildPrompt())
+    const curated = pickTip(opts?.variantIndex ?? 0)
+    const tip = opts?.headline ?? curated
+    // An AI-written tip supplies its own macro subject so the picture still
+    // matches the tip; falling back to the curated pair keeps them in sync.
+    const subject = opts?.headline?.imageSubject || curated.subject
+    const baseBuf = await generateImage(buildPrompt(subject))
     const meta = await sharp(baseBuf).metadata()
     const W = meta.width!, H = meta.height!
-    const tip = opts?.headline ?? pickTip(opts?.variantIndex ?? 0)
 
     const labelFs = Math.round(W * 0.020)
-    const labelY = Math.round(H * 0.25)
+    // Sits just above the lower-centre headline, inside the dark lower band the
+    // prompt reserves — at 25% it landed in the middle of the macro subject and
+    // disappeared into it.
+    const labelY = Math.round(H * 0.64)
     const labelSvg = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
         <text x="${W / 2}" y="${labelY}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${labelFs}" fill="#FFE600" letter-spacing="6">WORTH KNOWING</text>
     </svg>`
 
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = buildHeadlineSvg({
+    const headlineSvg = await buildHeadlineSvg({
         W, H, lines: tip.lines, accentWord: tip.accent, position: 'lower-center',
-        subhead: tip.subhead, subheadAccent: tip.subheadAccent,
+        subhead: tip.subhead, subheadAccent: tip.subheadAccent, baseImage: baseBuf,
     })
 
     const finalBuf = await sharp(baseBuf)

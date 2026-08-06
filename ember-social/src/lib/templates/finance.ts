@@ -1,26 +1,16 @@
-// Showcase template — minimal brand voice.
-// Pure black studio, car in lower half, ONE headline top-right with ONE yellow accent word.
-// Logo top-left. NO price box, NO spec list, NO CTA banner.
+// Finance angle — rotation-seat template. Studio hero (reuses showcase's visual
+// language) with an estimated monthly-installment headline instead of a tagline.
 
 import sharp from 'sharp'
-import { VehicleInput, RenderResult, RenderOpts, fmtPrice, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot, vehicleUrl } from './common'
-import { showcaseCaption, showcaseHashtags } from './captions'
+import { VehicleInput, RenderResult, RenderOpts, generateImage, compositeLogo, buildHeadlineSvg, LOGO_PATH, RHD_SPEC, nextSlot } from './common'
+import { financeCaption, financeHashtags } from './captions'
 
-const SHOWCASE_HEADLINES = [
-    { lines: ['NEW KEYS,', "WHO'S THIS?"], accent: 'KEYS' },
-    { lines: ['LESS TALK.', 'MORE TORQUE.'], accent: 'MORE' },
-    { lines: ['DRIVE THE', 'DIFFERENCE.'], accent: 'DIFFERENCE' },
-    { lines: ['QUALITY', 'YOU CAN TRUST.'], accent: 'QUALITY' },
-    { lines: ['BUILT FOR', 'THE LONG ROAD.'], accent: 'LONG' },
-    { lines: ['YOUR NEXT', 'CHAPTER.'], accent: 'CHAPTER' },
-    { lines: ['TURN', 'HEADS.'], accent: 'HEADS' },
-    { lines: ['THE ONE', "YOU'VE WANTED."], accent: 'WANTED' },
-    { lines: ['READY WHEN', 'YOU ARE.'], accent: 'READY' },
-    { lines: ['LOVE AT', 'FIRST DRIVE.'], accent: 'FIRST' },
-]
-
-function pickHeadline(variantIndex = 0) {
-    return SHOWCASE_HEADLINES[variantIndex % SHOWCASE_HEADLINES.length]
+// 72 months @ 12.5% p.a., no deposit, no balloon — matches the estimate formula
+// already used for Everest's July finance post (scripts/revise-july-angles.mjs).
+function estMonthly(price: number): number {
+    const n = 72, r = 0.125 / 12
+    const m = (price * r) / (1 - Math.pow(1 + r, -n))
+    return Math.round(m / 100) * 100
 }
 
 function modelMain(car: VehicleInput): string {
@@ -53,20 +43,29 @@ MAIN SUBJECT:
 
 BACKGROUND:
 - PURE BLACK studio environment. Deep cinematic blacks. Subtle vignette.
-- NO text. NO logos. NO graphics. NO additional design elements. The UPPER half of the canvas must be COMPLETELY EMPTY BLACK SPACE — a headline will be composited there later.
+- NO text. NO logos. NO graphics. The UPPER half of the canvas must be COMPLETELY EMPTY BLACK SPACE — a headline will be composited there later.
 
 NEGATIVE: number plates, registration plates, license plates, plate numbers, people, salesperson, contact details, phone numbers, addresses, websites, text, logos, taglines, watermarks, illustration, cartoon, 3D render, multiple cars, dealership signage.`
 }
 
-export async function renderShowcase(car: VehicleInput, opts?: RenderOpts): Promise<RenderResult> {
-    console.log(`  Showcase: ${car.year} ${car.make} ${car.model}  ${fmtPrice(car.price)}`)
+export async function renderFinance(car: VehicleInput, opts?: RenderOpts): Promise<RenderResult> {
+    console.log(`  Finance: ${car.year} ${car.make} ${car.model}`)
+    const monthly = estMonthly(Number(car.price) || 0)
     const baseBuf = await generateImage(buildPrompt(car))
     const meta = await sharp(baseBuf).metadata()
     const W = meta.width!, H = meta.height!
-    const hl = opts?.headline ?? pickHeadline(opts?.variantIndex ?? 0)
 
+    const amountWord = `±R${monthly}`
     const logoOverlays = await compositeLogo(baseBuf, LOGO_PATH)
-    const headlineSvg = await buildHeadlineSvg({ W, H, lines: hl.lines, accentWord: hl.accent, position: 'top-right', baseImage: baseBuf })
+    const headlineSvg = await buildHeadlineSvg({
+        W, H,
+        lines: [amountWord, 'PER MONTH*'],
+        accentWord: amountWord,
+        position: 'top-right',
+        subhead: 'Est: no deposit, 72mo, 12.5% p.a.',
+        subheadAccent: null,
+        baseImage: baseBuf,
+    })
 
     const finalBuf = await sharp(baseBuf)
         .composite([...logoOverlays, { input: Buffer.from(headlineSvg), top: 0, left: 0 }])
@@ -74,10 +73,9 @@ export async function renderShowcase(car: VehicleInput, opts?: RenderOpts): Prom
 
     return {
         image: finalBuf,
-        caption: showcaseCaption(car, opts?.headline?.caption),
-        hashtags: showcaseHashtags(car),
-        scheduledAt: opts?.targetDate || nextSlot('mon'),
-        ctaUrl: vehicleUrl(car),
-        pillar: 'showcase',
+        caption: financeCaption(car, monthly, opts?.headline?.caption),
+        hashtags: financeHashtags(),
+        scheduledAt: opts?.targetDate || nextSlot('sat'),
+        pillar: 'finance',
     }
 }

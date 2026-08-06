@@ -106,7 +106,25 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         const pillar = String(p.pillar || '')
         const render = RENDERERS[pillar]
         if (!render) {
-            return NextResponse.json({ ok: false, error: `Cannot regenerate: unknown pillar "${pillar}"` }, { status: 400 })
+            // No "regenerate on request" render path exists yet for this pillar
+            // (finance / comparison / seasonal_local / video). The feedback was
+            // already logged above — degrade gracefully via the same
+            // referred-to-agency path used when auto-regenerations are
+            // exhausted, instead of surfacing a raw "unknown pillar" 400 to the
+            // client.
+            await supabase
+                .from('posts')
+                .update({
+                    referred_to_agency: true,
+                    client_status: 'changes_requested',
+                    status: 'draft',
+                } as never)
+                .eq('id', postId)
+            return NextResponse.json({
+                ok: true,
+                referred: true,
+                message: "This post type doesn't support automatic regeneration yet — our team will review your request manually.",
+            })
         }
 
         // Re-fetch the vehicle for car pillars (needed to re-render the image).
