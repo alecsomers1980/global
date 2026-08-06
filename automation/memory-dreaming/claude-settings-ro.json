@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(C:/Users/info/.claude/projects/c--Users-info-OneDrive-Documents-Antigravity/memory/_pending-review.md)",
+      "PushNotification"
+    ]
+  },
+  "permissionMode": "dontAsk"
+}

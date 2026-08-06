@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(C:/Users/info/.claude/projects/c--Users-info-OneDrive-Documents-Antigravity/memory/**)",
+      "Write(C:/Users/info/.claude/projects/c--Users-info-OneDrive-Documents-Antigravity/memory/**)",
+      "Edit(C:/Users/info/.claude/projects/c--Users-info-OneDrive-Documents-Antigravity/memory/**)",
+      "Read(C:/Users/info/.claude/projects/c--Users-info-OneDrive-Documents-Antigravity/*.jsonl)",
+      "Glob",
+      "Bash(date *)"
+    ]
+  },
+  "permissionMode": "dontAsk"
+}
