@@ -69,19 +69,19 @@ export default function ColourSweep({ colours }: ColourSweepProps) {
         </div>
         <div
           ref={trackRef}
-          className="flex gap-6 px-4 md:px-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 [scrollbar-width:thin]"
+          className="flex gap-4 px-4 md:px-6 overflow-x-auto md:overflow-visible pb-4 md:pb-0 [scrollbar-width:thin]"
         >
           {colours.map((colour) => (
             <div
               key={colour.name}
-              className="shrink-0 w-56 md:w-72 flex flex-col items-center gap-4"
+              className="shrink-0 w-28 md:w-36 flex flex-col items-center gap-3"
             >
               <div
                 className="w-full aspect-square rounded-full border border-text/20"
                 style={{ backgroundColor: colour.hex }}
                 aria-hidden="true"
               />
-              <span className="text-sm uppercase tracking-[0.2em] text-text">
+              <span className="text-xs md:text-sm uppercase tracking-[0.2em] text-text">
                 {colour.name}
               </span>
             </div>
