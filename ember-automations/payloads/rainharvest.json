@@ -1,0 +1,333 @@
+{
+  "client_name": "Rainharvest",
+  "project_name": "Rainharvest Website Rebuild",
+  "type": "existing",
+  "modules": [],
+  "custom": [
+    {
+      "id": "RH.prices",
+      "module": "A",
+      "label": "Will you publish live prices on the new site?",
+      "help": "This is the single biggest decision. Right now your page titled 'JoJo Vertical Water Tank Prices' says 'Contact us for a quote' on all 39 lines, while Builders, Leroy Merlin, Cashbuild, Plumblink and Takealot all publish theirs. Almost everything else in the build depends on this answer.",
+      "type": "select",
+      "options": ["Yes — publish all prices", "Yes — but only some ranges", "Show a price range or 'from' price", "No — stay quote-only", "Not sure, advise me"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.pricesWhy",
+      "module": "A",
+      "label": "If you're hesitant to publish prices, what's holding you back?",
+      "help": "Margin protection, a JoJo dealer agreement, competitors undercutting you, prices changing too often — be blunt. There are ways around most of these.",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.priceFeed",
+      "module": "A",
+      "label": "How does JoJo send you the monthly price list, and in what format?",
+      "help": "Excel, PDF, email, a dealer portal login? We want to automate the monthly price update rather than have you retype it.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.channels",
+      "module": "A",
+      "label": "Which contact channels will you actually answer?",
+      "help": "Tick only what you'll genuinely respond to. Your current site has no phone number at all — that is costing you sales on a R5,000–R20,000 purchase.",
+      "type": "multiselect",
+      "options": ["Phone", "WhatsApp", "Email", "Live chat on the site", "Call-back request form only"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.responseTime",
+      "module": "A",
+      "label": "What hours do you answer enquiries, and how quickly do you normally reply?",
+      "type": "text",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.sellOnline",
+      "module": "A",
+      "label": "Do you want customers to buy and pay online, or stay quote-only?",
+      "type": "select",
+      "options": ["Full online checkout", "Online checkout for smaller tanks only", "Deposit online, balance on delivery", "Quote-only (no checkout)", "Not sure, advise me"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.payments",
+      "module": "A",
+      "label": "Which payment methods do you want to accept?",
+      "type": "multiselect",
+      "options": ["EFT / bank transfer", "Card (PayFast / Yoco / Peach)", "Instant EFT (Ozow / Payflex)", "30-day account terms for trade", "Purchase orders for business & government"],
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.exclusive",
+      "module": "A",
+      "label": "Is selling JoJo-only a contractual obligation, or your own choice?",
+      "help": "JoJo doesn't sell direct to the public — they route buyers to distributors like you — so the channel is protected. But if you're free to stock a second brand, it widens your price ladder considerably.",
+      "type": "select",
+      "options": ["Contractual — JoJo only", "Our own choice", "Not sure"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.otherBrands",
+      "module": "A",
+      "label": "Would you consider stocking other brands or accessories (pumps, filters, first-flush diverters, stands, fittings)?",
+      "help": "Accessories usually carry far better margin than the tank itself.",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.priorityCustomer",
+      "module": "A",
+      "label": "Who is the priority customer for the new site?",
+      "help": "Your current homepage says 'BULK ORDER SPECIALISTS' but the site is built for a homeowner buying one tank. We should build for one and accommodate the other.",
+      "type": "select",
+      "options": ["Homeowner buying one or two tanks", "Farm / agricultural", "Commercial, estates, schools & lodges", "Government & tenders", "Genuinely mixed — need all of them"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.notCustomer",
+      "module": "A",
+      "label": "Who do you NOT want as a customer, and which enquiries waste your time?",
+      "help": "Just as useful as knowing who you do want. Tyre-kickers, tiny orders, unreachable delivery addresses, price-shoppers?",
+      "type": "long",
+      "required": true,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.volumes",
+      "module": "A",
+      "label": "Roughly how many enquiries and orders do you get per month now, and what's your average order value?",
+      "help": "Ranges are fine. This tells us what a realistic improvement target looks like.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.conversion",
+      "module": "A",
+      "label": "Of the people who email you for a quote, roughly what share actually buy — and where do the rest fall away?",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.delivery",
+      "module": "A",
+      "label": "Walk us through how delivery actually works today, start to finish.",
+      "help": "Who dispatches (you or the JoJo depot), lead times, who pays, whether the driver offloads, what happens on a farm with no forklift, and which areas you can't reach or won't service.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.deliveryPricing",
+      "module": "A",
+      "label": "How is delivery priced?",
+      "help": "Every competitor hides this behind 'standard delivery fees apply'. If we can show a real number at the customer's postcode, that alone is a differentiator.",
+      "type": "select",
+      "options": ["Free nationwide", "Free above a minimum order", "Flat rate", "Distance-based from the nearest depot", "Quoted per order", "Depends on order size"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.areas",
+      "module": "A",
+      "label": "Which provinces or areas can you deliver to profitably, and which are marginal?",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.stock",
+      "module": "A",
+      "label": "Do you hold any stock yourself, or does everything dispatch from JoJo depots?",
+      "type": "select",
+      "options": ["Everything from JoJo depots", "We hold some stock", "We hold full stock", "Depends on the product"],
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.installers",
+      "module": "A",
+      "label": "Would you build a vetted installer network and take a referral fee, rather than saying 'we don't do installation'?",
+      "help": "Your site currently disclaims installation on five pages, and the 'Recommended Installers' page promises a list and then shows nothing. This is the biggest fixable leak on the site — and it costs you nothing to broker.",
+      "type": "select",
+      "options": ["Yes — let's build it", "Maybe — tell me what's involved", "No — supply only"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.installerContacts",
+      "module": "A",
+      "label": "Do you already know installers you'd happily refer? Who and where?",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.margin",
+      "module": "A",
+      "label": "What's your typical margin band on a tank, and on accessories?",
+      "help": "This will never be published — it tells us how hard you can compete on price and where to push the bundles.",
+      "type": "long",
+      "required": false,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.bulk",
+      "module": "A",
+      "label": "Describe your bulk and commercial orders — who buys, typical sizes, payment terms, and whether you do tender work.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.lose",
+      "module": "A",
+      "label": "Which competitors take deals off you most often, and why do you think you lose?",
+      "help": "Builders and Leroy Merlin? RotoTank? Facebook and Gumtree sellers at R3,999? Another JoJo dealer?",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.win",
+      "module": "A",
+      "label": "When you DO win the deal, why does the customer choose you over the big retailers?",
+      "help": "Whatever you say here becomes the core message of the new homepage.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.proof",
+      "module": "A",
+      "label": "Can we photograph real installations and collect reviews from past customers?",
+      "help": "Every competitor uses JoJo's stock renders. Real South African installs — a smallholding, a suburban side-passage, a school — would separate you instantly.",
+      "type": "select",
+      "options": ["Yes — we have customers who'd agree", "Some — a few we could ask", "No — customers are private", "We already have photos"],
+      "required": true,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.assets",
+      "module": "A",
+      "label": "Upload anything you already have: install photos, logo files, price lists, brochures.",
+      "type": "file",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.features",
+      "module": "A",
+      "label": "Tag each proposed feature by how much you need it.",
+      "help": "Must = we don't launch without it · Should = important · Could = nice to have · Not-yet = a later phase. Be honest — everything tagged Must costs time and money.",
+      "type": "moscow",
+      "options": [
+        "Live prices on every product",
+        "Water Security Planner (roof size + rainfall = tank size)",
+        "Delivery cost & lead time at your postcode",
+        "Complete system packages (tank + stand + pump + filter)",
+        "Online checkout & payment",
+        "Vetted installer network",
+        "Bulk / commercial quote portal",
+        "Customer reviews & real install photos",
+        "WhatsApp enquiries",
+        "Water-security guides & blog"
+      ],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.team",
+      "module": "A",
+      "label": "Who handles enquiries and orders day to day, and how many of you are there?",
+      "help": "A site that generates ten times the enquiries only helps if someone can answer them.",
+      "type": "long",
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.systems",
+      "module": "A",
+      "label": "What do you use to run orders today — email, spreadsheets, Xero, Sage, something else?",
+      "type": "long",
+      "required": false,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.access",
+      "module": "A",
+      "label": "Do you have logins for the domain, hosting, Google Analytics and Google Search Console?",
+      "help": "We need these to migrate without losing the rankings you already have. If you don't know, say so and we'll work it out.",
+      "type": "select",
+      "options": ["Yes — all of them", "Some of them", "No — someone else holds them", "Not sure"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    },
+    {
+      "id": "RH.blog",
+      "module": "A",
+      "label": "Your blog has hundreds of posts across 150+ categories. Keep it, prune it, or drop it?",
+      "help": "Some of it genuinely ranks — a 2017 post of yours sits at #2 for 'rainwater harvesting calculator South Africa'. Most of it is noise diluting the rest.",
+      "type": "select",
+      "options": ["Keep and migrate everything", "Keep only the posts that rank or convert", "Start fresh", "You decide — advise me"],
+      "required": true,
+      "critical": false,
+      "round": 1
+    },
+    {
+      "id": "RH.brand",
+      "module": "A",
+      "label": "Keep the Rainharvest name and blue-drop branding, or is a refresh on the table?",
+      "help": "The brief is 'modern cinematic premium', which the current blue/yellow/green treatment can't carry.",
+      "type": "select",
+      "options": ["Keep name and logo as-is", "Keep name, refresh the look", "Open to a full rebrand", "Not sure"],
+      "required": true,
+      "critical": true,
+      "round": 1
+    }
+  ]
+}
