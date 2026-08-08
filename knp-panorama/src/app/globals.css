@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper text-text font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply uppercase font-semibold tracking-wide2;
+  }
+}
+
+@layer components {
+  .container-kpe {
+    @apply mx-auto w-full max-w-container px-5 md:px-8;
+  }
+
+  .eyebrow {
+    @apply uppercase tracking-wide4 text-sm font-semibold;
+  }
+}

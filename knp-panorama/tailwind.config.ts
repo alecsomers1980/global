@@ -1,0 +1,23 @@
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: ['./src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        amber: '#FFAF19',
+        'amber-soft': '#FFB156',
+        ink: '#141414',
+        paper: '#FFFFFF',
+        text: '#1F1F1F',
+      },
+      borderRadius: { DEFAULT: '3px' },
+      fontFamily: { sans: ['var(--font-josefin)', 'sans-serif'] },
+      letterSpacing: { wide2: '0.08em', wide3: '0.12em', wide4: '0.2em' },
+      maxWidth: { container: '1200px' },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

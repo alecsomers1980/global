@@ -6,7 +6,16 @@
 
 **Architecture:** Next.js 14 App Router, statically generated. Five tours live as typed objects in `src/data/tours.ts` — no database, no CMS. One `QuoteForm` component and one `/api/quote` endpoint serve every conversion point on the site, pre-filled by props or query parameters. Everything except the form, the finder and the carousel is a server component.
 
-**Tech Stack:** Next.js 14 (App Router), TypeScript, Tailwind CSS 3, lucide-react, Resend, Vitest, Josefin Sans via `next/font/google`.
+**Tech Stack:** Next.js 16.3.0 (App Router), React 19, TypeScript, Tailwind CSS 3, lucide-react, Resend, Vitest 4, Josefin Sans via `next/font/google`.
+
+> **Amended 2026-08-08 during execution.** The plan originally pinned Next 14.2.35 to match
+> eastlake-drilling and nyoni. `npm audit` reported 21 advisories against that version —
+> including high-severity SSRF in rewrites, SSRF via WebSocket upgrades, and App Router DoS
+> vectors — plus a critical in Vitest ≤3.2.5. With no code yet written the upgrade was free,
+> so the stack moved to Next 16.3.0 + React 19 + Vitest 4, matching joetsie-lodge. Audit now
+> reports 0 vulnerabilities. **Consequence: in Next 16, `params` and `searchParams` are
+> Promises and must be awaited in async page components** — this changes Tasks 10 and 12,
+> both updated below.
 
 **Spec:** `docs/superpowers/specs/2026-08-08-knp-panorama-design.md` — read §7 before writing any component that displays social proof.
 
@@ -1364,8 +1373,12 @@ export function generateStaticParams() {
   return TOURS.map((tour) => ({ slug: tour.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const tour = getTour(params.slug);
+// Next 16: params is a Promise and must be awaited.
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> },
+): Promise<Metadata> {
+  const { slug } = await params;
+  const tour = getTour(slug);
   if (!tour) return {};
   return {
     title: tour.title,
@@ -1374,8 +1387,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function ExperiencePage({ params }: { params: { slug: string } }) {
-  const tour = getTour(params.slug);
+export default async function ExperiencePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const tour = getTour(slug);
   if (!tour) notFound();
   // …
 }
@@ -1465,18 +1479,22 @@ git commit -m "feat(knp): add accommodation page with partner guesthouses"
 Reads `searchParams` and passes them down as defaults — this is the only place query-parameter pre-fill is interpreted:
 
 ```tsx
-export default function RequestAQuotePage({
+// Next 16: searchParams is a Promise and must be awaited.
+export default async function RequestAQuotePage({
   searchParams,
-}: { searchParams: { experience?: string; destination?: string; comfort?: string } }) {
+}: {
+  searchParams: Promise<{ experience?: string; destination?: string; comfort?: string }>;
+}) {
+  const { experience, destination, comfort } = await searchParams;
   return (
     <main>
       {/* compact hero */}
       <section className="container-kpe py-16">
         <QuoteForm
           variant="full"
-          defaultExperience={searchParams.experience}
-          defaultDestination={searchParams.destination}
-          defaultComfort={searchParams.comfort}
+          defaultExperience={experience}
+          defaultDestination={destination}
+          defaultComfort={comfort}
           sourcePage="/request-a-quote"
         />
       </section>
