@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Josefin_Sans } from 'next/font/google';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import './globals.css';
 
 const josefin = Josefin_Sans({
@@ -22,7 +24,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-ZA" className={josefin.variable}>
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
