@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Josefin_Sans } from 'next/font/google';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { JsonLd, travelAgencyJsonLd } from '@/components/seo/JsonLd';
 import './globals.css';
 
 const josefin = Josefin_Sans({
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-ZA" className={josefin.variable}>
       <body>
+        <JsonLd data={travelAgencyJsonLd()} />
         <Header />
         {children}
         <Footer />

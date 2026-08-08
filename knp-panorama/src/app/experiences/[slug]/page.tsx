@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { JsonLd, touristTripJsonLd } from '@/components/seo/JsonLd';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { PageHero } from '@/components/layout/PageHero';
@@ -35,6 +36,7 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
 
   return (
     <>
+      <JsonLd data={touristTripJsonLd(tour)} />
       {/* Hero */}
       <section className="relative flex h-[55vh] min-h-[380px] items-end">
         <Image
