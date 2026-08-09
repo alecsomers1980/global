@@ -30,7 +30,7 @@ const expectItems = [
 
 export default function TransfersPage() {
   return (
-    <>
+    <main>
       <PageHero
         title="Transfers"
         eyebrow="DOOR TO DOOR"
@@ -79,6 +79,6 @@ export default function TransfersPage() {
       </section>
 
       <CtaBand />
-    </>
+    </main>
   );
 }

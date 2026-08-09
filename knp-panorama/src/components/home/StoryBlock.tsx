@@ -36,7 +36,7 @@ export function StoryBlock() {
           <ul className="mt-6 space-y-4">
             {SITE.partner.funds.map((fund, idx) => (
               <li key={idx} className="flex gap-3">
-                <Leaf size={16} className="mt-0.5 shrink-0 text-amber" />
+                <Leaf size={16} className="mt-0.5 shrink-0 text-amber-text" />
                 <div>
                   <h3 className="text-sm tracking-wide2">{fund.title}</h3>
                   <p className="text-sm text-text/70 normal-case">{fund.body}</p>

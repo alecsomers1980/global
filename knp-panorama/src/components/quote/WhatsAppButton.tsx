@@ -16,7 +16,7 @@ export function WhatsAppButton({ experience, className }: WhatsAppButtonProps) {
       href={`${SITE.whatsappHref}?text=${encodeURIComponent(text)}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2 rounded border border-ink/15 px-6 py-3 text-xs font-semibold uppercase tracking-wide2 transition-colors hover:border-amber hover:text-amber ${className ?? ''}`}
+      className={`inline-flex items-center justify-center gap-2 rounded border border-ink/15 px-6 py-3 text-xs font-semibold uppercase tracking-wide2 transition-colors hover:border-amber hover:text-amber-text-text ${className ?? ''}`}
     >
       <MessageCircle className="h-4 w-4" />
       Chat on WhatsApp

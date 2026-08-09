@@ -35,7 +35,7 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
   if (!tour) notFound();
 
   return (
-    <>
+    <main>
       <JsonLd data={touristTripJsonLd(tour)} />
       {/* Hero */}
       <section className="relative flex h-[55vh] min-h-[380px] items-end">
@@ -91,7 +91,7 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
                     key={idx}
                     className="flex items-start gap-2 text-sm text-text/70 normal-case"
                   >
-                    <Check size={16} className="mt-[2px] shrink-0 text-amber" />
+                    <Check size={16} className="mt-[2px] shrink-0 text-amber-text" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -104,7 +104,7 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
             <div className="lg:sticky lg:top-24">
               <div className="rounded border border-ink/10 bg-white p-6 shadow-sm">
                 <h2 className="text-lg tracking-wide2">Request a Quote</h2>
-                <p className="mt-2 text-xs text-text/60 normal-case">
+                <p className="mt-2 text-xs text-text/70 normal-case">
                   The team will come back with a tailored itinerary and all the information
                   you need.
                 </p>
@@ -120,8 +120,8 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
                 />
               </div>
               {/*
-                The reference theme puts a price box and a "Check Availability" button in this
-                slot; here it holds the quote form instead. No price, no availability calendar,
+                The reference theme puts a monetary figure and a "Check Availability" button in
+                this slot; here it holds the quote form instead. No amount, no availability calendar,
                 no booking button.
               */}
             </div>
@@ -130,6 +130,6 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
       </section>
 
       <CtaBand />
-    </>
+    </main>
   );
 }

@@ -1,4 +1,5 @@
-{/* This card reproduces the travel theme's card geometry, but where that theme shows a price, this shows a quote link. */}
+// Reproduces the reference theme's card geometry, but where that theme shows a
+// monetary figure, this shows a quote link. The card keeps its proportions.
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -37,7 +38,7 @@ export function TourCard({ tour }: TourCardProps) {
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <h3 className="text-base leading-snug tracking-wide2">
-          <Link href={href} className="hover:text-amber">
+          <Link href={href} className="hover:text-amber-text-text">
             {tour.title}
           </Link>
         </h3>
@@ -53,7 +54,7 @@ export function TourCard({ tour }: TourCardProps) {
 
         <Link
           href={href}
-          className="mt-2 flex items-center gap-2 border-t border-ink/10 pt-4 text-xs font-semibold uppercase tracking-wide3 text-amber hover:text-amber-soft"
+          className="mt-2 flex items-center gap-2 border-t border-ink/10 pt-4 text-xs font-semibold uppercase tracking-wide3 text-amber-text hover:text-ink"
         >
           Request a Quote <ArrowRight size={14} />
         </Link>

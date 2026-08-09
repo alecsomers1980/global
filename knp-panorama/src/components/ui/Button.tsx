@@ -26,8 +26,8 @@ export function Button({
 
   const variants = {
     solid: 'bg-amber text-ink hover:bg-amber-soft',
-    outline: 'border border-amber text-amber hover:bg-amber hover:text-ink',
-    ghost: 'text-amber hover:text-amber-soft',
+    outline: 'border border-amber text-amber-text hover:bg-amber hover:text-ink',
+    ghost: 'text-amber-text hover:text-ink',
   };
 
   const classes = `${base} ${sizes[size]} ${variants[variant]} ${className}`;

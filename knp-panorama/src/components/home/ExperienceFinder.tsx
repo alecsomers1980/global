@@ -26,10 +26,10 @@ export function ExperienceFinder() {
         className="grid gap-4 rounded bg-white p-6 shadow-xl md:grid-cols-4 md:items-end"
       >
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
+          <label htmlFor="finder-experience" className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
             Experience
           </label>
-          <select
+          <select id="finder-experience"
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
             className="w-full rounded border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-amber"
@@ -44,10 +44,10 @@ export function ExperienceFinder() {
         </div>
 
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
+          <label htmlFor="finder-destination" className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
             Destination
           </label>
-          <select
+          <select id="finder-destination"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             className="w-full rounded border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-amber"
@@ -62,10 +62,10 @@ export function ExperienceFinder() {
         </div>
 
         <div>
-          <label className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
+          <label htmlFor="finder-comfort" className="mb-2 block text-xs uppercase tracking-wide3 text-text/70">
             Comfort
           </label>
-          <select
+          <select id="finder-comfort"
             value={comfort}
             onChange={(e) => setComfort(e.target.value)}
             className="w-full rounded border border-ink/15 bg-white px-4 py-3 text-sm outline-none focus:border-amber"

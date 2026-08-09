@@ -22,7 +22,7 @@ export default function NotFound() {
         </Link>
         <Link
           href="/request-a-quote"
-          className="inline-flex items-center justify-center gap-2 rounded border border-amber px-8 py-4 text-sm font-semibold uppercase tracking-wide2 text-amber hover:bg-amber hover:text-ink"
+          className="inline-flex items-center justify-center gap-2 rounded border border-amber px-8 py-4 text-sm font-semibold uppercase tracking-wide2 text-amber-text hover:bg-amber hover:text-ink"
         >
           Request a Quote
         </Link>

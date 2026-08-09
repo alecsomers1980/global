@@ -12,7 +12,7 @@ export function IconBadges() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber">
               <Users size={32} color="white" />
             </div>
-            <h3 className="mt-6 text-base tracking-wide2">Local Guides</h3>
+            <h2 className="mt-6 text-base tracking-wide2">Local Guides</h2>
             <p className="mt-3 text-sm leading-relaxed text-text/70 normal-case">
               Our guides were born and raised in Mpumalanga’s communities and guide the Lowveld as
               home rather than as a destination.
@@ -24,7 +24,7 @@ export function IconBadges() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber">
               <Compass size={32} color="white" />
             </div>
-            <h3 className="mt-6 text-base tracking-wide2">Kruger &amp; Panorama Specialists</h3>
+            <h2 className="mt-6 text-base tracking-wide2">Kruger &amp; Panorama Specialists</h2>
             <p className="mt-3 text-sm leading-relaxed text-text/70 normal-case">
               We work two areas properly, the Kruger National Park and the Panorama Route, instead of
               covering the whole country thinly.
@@ -36,7 +36,7 @@ export function IconBadges() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-amber">
               <Sprout size={32} color="white" />
             </div>
-            <h3 className="mt-6 text-base tracking-wide2">Travel That Gives Back</h3>
+            <h2 className="mt-6 text-base tracking-wide2">Travel That Gives Back</h2>
             <p className="mt-3 text-sm leading-relaxed text-text/70 normal-case">
               Every trip helps fund Grow Through Learning’s conservation, youth and community work in
               Mpumalanga.

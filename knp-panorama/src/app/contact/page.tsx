@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <>
+    <main>
       <PageHero
         title="Contact"
         image="/images/heroes/accommodation.webp"
@@ -31,7 +31,7 @@ export default function ContactPage() {
 
             <dl className="mt-8 space-y-6">
               <div className="flex items-start gap-3">
-                <Phone className="mt-0.5 h-5 w-5 text-amber" />
+                <Phone className="mt-0.5 h-5 w-5 text-amber-text" />
                 <dt className="sr-only">Phone</dt>
                 <dd>
                   <a href={SITE.phoneHref} className="hover:underline">
@@ -41,7 +41,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-5 w-5 text-amber" />
+                <Mail className="mt-0.5 h-5 w-5 text-amber-text" />
                 <dt className="sr-only">Email</dt>
                 <dd>
                   <a
@@ -54,7 +54,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <MessageCircle className="mt-0.5 h-5 w-5 text-amber" />
+                <MessageCircle className="mt-0.5 h-5 w-5 text-amber-text" />
                 <dt className="sr-only">WhatsApp</dt>
                 <dd>
                   <a
@@ -69,13 +69,13 @@ export default function ContactPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-amber" />
+                <MapPin className="mt-0.5 h-5 w-5 text-amber-text" />
                 <dt className="sr-only">Region</dt>
                 <dd>{SITE.region}</dd>
               </div>
             </dl>
 
-            <p className="mt-6 text-xs text-text/50">
+            <p className="mt-6 text-xs text-text/70">
               The business trades as Kruger Panorama Experience, {SITE.legalName}.
             </p>
 
@@ -99,6 +99,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

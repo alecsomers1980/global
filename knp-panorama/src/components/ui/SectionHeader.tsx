@@ -18,7 +18,7 @@ export function SectionHeader({
       {viewAllHref && (
         <Link
           href={viewAllHref}
-          className="shrink-0 text-xs uppercase tracking-wide3 text-amber hover:text-amber-soft"
+          className="shrink-0 text-xs uppercase tracking-wide3 text-amber-text hover:text-ink"
         >
           {viewAllLabel}
         </Link>

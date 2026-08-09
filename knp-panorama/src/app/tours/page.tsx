@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function ToursPage() {
   return (
-    <>
+    <main>
       <PageHero
         title="Tours"
         eyebrow="THE PANORAMA ROUTE"
@@ -53,6 +53,6 @@ export default function ToursPage() {
       </section>
 
       <CtaBand />
-    </>
+    </main>
   );
 }

@@ -20,11 +20,14 @@ export const PageHero = ({ title, intro, image, imageAlt, eyebrow }: Props) => {
         sizes="100vw"
       />
       <div className="absolute inset-0 -z-10 bg-ink/50" />
-      <div className="text-center px-4">
+      {/* Constrained to the viewport: a long uppercase title with wide tracking
+          ("ACCOMMODATION") is wider than a 375px screen at the desktop size,
+          so the type scales down and the container cannot exceed the viewport. */}
+      <div className="w-full max-w-full px-5 text-center">
         {eyebrow && (
           <span className="eyebrow text-white/85">{eyebrow}</span>
         )}
-        <h1 className="mt-3 text-4xl md:text-5xl tracking-wide3 text-white">
+        <h1 className="mt-3 break-words text-2xl tracking-wide2 text-white sm:text-4xl sm:tracking-wide3 md:text-5xl">
           {title}
         </h1>
         {intro && (

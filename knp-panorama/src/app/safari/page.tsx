@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function SafariPage() {
   return (
-    <>
+    <main>
       <PageHero
         title="Safari"
         eyebrow="KRUGER NATIONAL PARK"
@@ -67,6 +67,6 @@ export default function SafariPage() {
       </section>
 
       <CtaBand />
-    </>
+    </main>
   );
 }

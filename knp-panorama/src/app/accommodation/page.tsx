@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function AccommodationPage() {
   return (
-    <>
+    <main>
       <PageHero
         title="Accommodation"
         eyebrow="WHERE YOU STAY"
@@ -86,6 +86,6 @@ export default function AccommodationPage() {
       </section>
 
       <CtaBand />
-    </>
+    </main>
   );
 }

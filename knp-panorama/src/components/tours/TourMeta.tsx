@@ -14,7 +14,7 @@ export function TourMeta({
   tone = 'dark',
 }: TourMetaProps) {
   const textColor =
-    tone === 'light' ? 'text-white/80' : 'text-text/60';
+    tone === 'light' ? 'text-white/80' : 'text-text/70';
 
   return (
     <div

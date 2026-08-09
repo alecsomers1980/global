@@ -21,7 +21,7 @@ export default async function RequestAQuotePage({
   const { experience, destination, comfort } = await searchParams;
 
   return (
-    <>
+    <main>
       <PageHero
         title="Request a Quote"
         image="/images/heroes/home.webp"
@@ -50,6 +50,6 @@ export default async function RequestAQuotePage({
           <WhatsAppButton className="mt-6" />
         </div>
       </section>
-    </>
+    </main>
   );
 }

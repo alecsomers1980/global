@@ -149,7 +149,7 @@ export function QuoteForm({
   if (status === 'success') {
     return (
       <div className={`text-center ${className ?? ''}`} role="alert">
-        <CheckCircle2 className="mx-auto h-12 w-12 text-amber" />
+        <CheckCircle2 className="mx-auto h-12 w-12 text-amber-text" />
         <h3 className="mt-4 text-lg font-semibold uppercase tracking-wide2">
           Thank You, We Have Your Request
         </h3>
@@ -161,7 +161,7 @@ export function QuoteForm({
           href={SITE.whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber underline underline-offset-2 hover:text-amber-soft"
+          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-amber-text underline underline-offset-2 hover:text-ink"
         >
           Chat on WhatsApp
         </a>
@@ -194,7 +194,7 @@ export function QuoteForm({
         {/* Name */}
         <div>
           <label htmlFor="quote-name" className={labelClass}>
-            Name <span className="text-amber">*</span>
+            Name <span className="text-amber-text">*</span>
           </label>
           <input
             ref={fieldRefs.name as React.RefObject<HTMLInputElement>}
@@ -218,7 +218,7 @@ export function QuoteForm({
         {/* Email */}
         <div>
           <label htmlFor="quote-email" className={labelClass}>
-            Email <span className="text-amber">*</span>
+            Email <span className="text-amber-text">*</span>
           </label>
           <input
             ref={fieldRefs.email as React.RefObject<HTMLInputElement>}
@@ -242,7 +242,7 @@ export function QuoteForm({
         {/* Phone */}
         <div>
           <label htmlFor="quote-phone" className={labelClass}>
-            Phone <span className="text-amber">*</span>
+            Phone <span className="text-amber-text">*</span>
           </label>
           <input
             ref={fieldRefs.phone as React.RefObject<HTMLInputElement>}
@@ -401,7 +401,7 @@ export function QuoteForm({
             {/* Adults */}
             <div>
               <label htmlFor="quote-adults" className={labelClass}>
-                Adults <span className="text-amber">*</span>
+                Adults <span className="text-amber-text">*</span>
               </label>
               <input
                 ref={fieldRefs.adults as React.RefObject<HTMLInputElement>}

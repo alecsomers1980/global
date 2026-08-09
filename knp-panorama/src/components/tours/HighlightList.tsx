@@ -16,7 +16,7 @@ export function HighlightList({
       <ol className="space-y-6">
         {highlights.map((item, index) => (
           <li key={index} className="flex flex-col gap-1">
-            <span className="text-xs font-semibold tracking-wide3 text-amber">
+            <span className="text-xs font-semibold tracking-wide3 text-amber-text">
               {String(index + 1).padStart(2, '0')}
             </span>
             <h3 className="text-sm tracking-wide2">{item.title}</h3>

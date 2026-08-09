@@ -104,16 +104,16 @@ export default function ImageCreditsPage() {
         <table className="w-full min-w-[560px] border-collapse text-sm">
           <thead>
             <tr>
-              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/60">
+              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/70">
                 File / Use
               </th>
-              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/60">
+              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/70">
                 Artist
               </th>
-              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/60">
+              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/70">
                 Licence
               </th>
-              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/60">
+              <th className="border-b border-ink/15 py-3 text-left text-xs uppercase tracking-wide3 text-text/70">
                 Source
               </th>
             </tr>
@@ -135,7 +135,7 @@ export default function ImageCreditsPage() {
                     href={credit.source}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline hover:text-amber"
+                    className="underline hover:text-amber-text-text"
                   >
                     {credit.source}
                   </a>
