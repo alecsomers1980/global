@@ -141,6 +141,15 @@ export async function pollSeedanceClip(taskId) {
         console.log(`[seedanceService] recordInfo for ${taskId} — state=${data.data?.state}`);
 
         if (!response.ok) {
+            // 401/403/404 mean this taskId will never resolve by polling again
+            // (bad auth or the task doesn't exist) — surface immediately instead
+            // of silently retrying for 20 minutes. 429/5xx are genuinely
+            // transient (rate limit, provider hiccup) so keep those as pending.
+            if ([401, 403, 404].includes(response.status)) {
+                const errorMsg = `Kie API HTTP ${response.status} while polling — task will not recover`;
+                console.error(`[seedanceService] ${errorMsg} (taskId=${taskId})`);
+                return { isComplete: false, error: errorMsg };
+            }
             console.warn(`[seedanceService] Non-OK response while polling ${taskId}: HTTP ${response.status}`);
             return { isComplete: false };
         }
@@ -158,8 +167,13 @@ export async function pollSeedanceClip(taskId) {
             }
 
             if (!videoUrl) {
-                console.warn(`[seedanceService] No video URL found in result for ${taskId}`);
-                return { isComplete: false };
+                // Kie already marked this task terminally 'success' — re-polling
+                // the same taskId will return the same unparseable payload every
+                // time, so this can never resolve on its own. Surface it now
+                // instead of silently retrying for 20 minutes.
+                const errorMsg = `Task ${taskId} marked success but no video URL in result — see payload log above`;
+                console.error(`[seedanceService] ${errorMsg}. Payload: ${JSON.stringify(taskData)}`);
+                return { isComplete: false, error: errorMsg };
             }
 
             console.log(`[seedanceService] Task ${taskId} complete — videoUrl=${videoUrl}`);
