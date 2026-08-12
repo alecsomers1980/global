@@ -99,6 +99,7 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
                 deliver_bakkie = ${body.deliver_bakkie ?? false},
                 deliver_truck = ${body.deliver_truck ?? false},
                 deliver_trailer = ${body.deliver_trailer ?? false},
+                deliver_courier = ${body.deliver_courier ?? false},
                 install_bakkie = ${body.install_bakkie ?? false},
                 install_truck = ${body.install_truck ?? false},
                 install_trailer = ${body.install_trailer ?? false},

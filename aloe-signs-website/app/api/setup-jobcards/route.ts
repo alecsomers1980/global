@@ -82,6 +82,7 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'deliver_bakkie', type: 'BOOLEAN DEFAULT false' },
     { name: 'deliver_truck', type: 'BOOLEAN DEFAULT false' },
     { name: 'deliver_trailer', type: 'BOOLEAN DEFAULT false' },
+    { name: 'deliver_courier', type: 'BOOLEAN DEFAULT false' },
     { name: 'delivery_address', type: 'TEXT' },
     { name: 'courier_address', type: 'TEXT' },
 
