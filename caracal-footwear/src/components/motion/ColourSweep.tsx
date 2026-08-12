@@ -65,7 +65,7 @@ export default function ColourSweep({ colours }: ColourSweepProps) {
       <div ref={stickyRef} className="sticky top-0 overflow-hidden py-20">
         <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
           <p className="text-xs uppercase tracking-[0.35em] text-muted">Every colour</p>
-          <h2 className="display mt-2 text-4xl md:text-5xl text-text">Six colours. One boot.</h2>
+          <h2 className="display mt-2 text-4xl md:text-5xl text-text">Many colours. One boot.</h2>
         </div>
         <div
           ref={trackRef}
