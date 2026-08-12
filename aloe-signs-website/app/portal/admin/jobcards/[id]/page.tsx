@@ -788,6 +788,9 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         <button onClick={handleDelete} disabled={deleting} className="bg-red-500/10 text-red-500 border border-red-500/30 px-4 py-2 rounded-md font-bold shadow-sm hover:bg-red-500/20 disabled:opacity-50">
                             {deleting ? 'Deleting...' : 'Delete'}
                         </button>
+                        <button onClick={() => window.open(`/api/portal/admin/jobcards/${id}/pdf`, '_blank')} className="bg-white/5 backdrop-blur-md border border-white/10 text-white px-4 py-2 rounded-md font-bold shadow-sm hover:bg-white/10">
+                            PDF Jobcard
+                        </button>
                         <button onClick={handleSave} disabled={saving} className="bg-[#84cc16] text-[#0a0a0a] px-6 py-2 rounded-md font-bold shadow-md hover:bg-[#84cc16]/90 disabled:opacity-50">
                             {saving ? 'Saving...' : 'Save Jobcard'}
                         </button>
