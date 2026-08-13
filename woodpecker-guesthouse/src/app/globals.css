@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Woodpecker Guesthouse — "Elevated Woodpecker" design tokens.
+   Warm bushveld neutrals + olive/terracotta/sand accents — deliberately
+   warmer than Booklium's stark black-and-cream, to keep the site's
+   affordable, family, nature-lodge tone. See design spec §5. */
+:root {
+  --paper: #fcf9f4;
+  --surface: #f5efe4;
+  --surface-2: #ede3d2;
+  --ink: #2b2620;
+  --muted: #6b6255;
+  --line: #e3d7c3;
+  --olive: #6e7b4f;
+  --olive-deep: #565f3d;
+  --terracotta: #c1662f;
+  --terracotta-deep: #a34f21;
+  --sand: #d9c7a8;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-olive: var(--olive);
+  --color-olive-deep: var(--olive-deep);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-deep: var(--terracotta-deep);
+  --color-sand: var(--sand);
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-figtree);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
