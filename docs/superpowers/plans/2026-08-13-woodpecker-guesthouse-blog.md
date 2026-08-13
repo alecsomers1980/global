@@ -1100,6 +1100,8 @@ git add "woodpecker-guesthouse/src/app/api/cron/generate-blog/route.ts"
 git commit -m "feat(woodpecker-guesthouse): add monthly blog generation cron"
 ```
 
+> **Correction (found during implementation):** running this route locally with no Supabase env vars set threw `supabaseUrl is required` from `createAdminClient()` — the call sat before the `try` block even started, so it was never caught, and Next returned an empty-body 500 instead of a JSON error. `createAdminClient()`'s only prior caller (the upload route, Plan B) was protected indirectly through an RLS-client check that happens to run first; crons have no session to check. Fixed by adding `supabaseAdminConfigured()` to `src/lib/supabase/admin.ts` (same shape as `supabaseConfigured()`/`supabasePublicConfigured()`) and an early guard — `if (!supabaseAdminConfigured()) return NextResponse.json({ error: "Supabase is not configured yet." }, { status: 503 });` — right after the `CRON_SECRET` check, before `createAdminClient()` is called, in both this route and Task 12's. See commit `711cea07`.
+
 ---
 
 ### Task 12: Daily Publish Cron
