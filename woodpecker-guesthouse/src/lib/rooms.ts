@@ -1,7 +1,8 @@
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, supabasePublicConfigured } from "@/lib/supabase/public";
 import type { Room } from "@/lib/types";
 
 export async function getRooms(): Promise<Room[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("rooms")
@@ -16,6 +17,7 @@ export async function getRooms(): Promise<Room[]> {
 }
 
 export async function getRoomBySlug(slug: string): Promise<Room | null> {
+  if (!supabasePublicConfigured()) return null;
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("rooms")

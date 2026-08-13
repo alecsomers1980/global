@@ -419,12 +419,23 @@ export type GalleryImage = {
 
 - [ ] **Step 2: Create `src/lib/supabase/public.ts`**
 
+> **Correction (found during implementation):** `createClient(undefined, undefined)` throws synchronously (`supabaseUrl is required`) rather than failing gracefully — confirmed by running it directly. Since no live Supabase project exists for this client yet, every data-driven page would crash at build/request time without a guard. Added `supabasePublicConfigured()` below; `rooms.ts`/`gallery.ts` must check it before calling `createPublicClient()`.
+
 ```ts
 import { createClient } from "@supabase/supabase-js";
 
+/** True once both public Supabase env vars are set. Guards every data-layer
+ *  function below so an unconfigured project (no Supabase provisioned yet)
+ *  renders an honest empty state instead of throwing "supabaseUrl is
+ *  required" at build/request time. */
+export function supabasePublicConfigured() {
+  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 /** Anon client, no cookies — public reads only (RLS enforces "published"
  *  filtering server-side regardless of what this client requests). Safe to
- *  call from Server Components and build-time generateStaticParams alike. */
+ *  call from Server Components and build-time generateStaticParams alike.
+ *  Only call after checking supabasePublicConfigured(). */
 export function createPublicClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -437,10 +448,11 @@ export function createPublicClient() {
 - [ ] **Step 3: Create `src/lib/rooms.ts`**
 
 ```ts
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, supabasePublicConfigured } from "@/lib/supabase/public";
 import type { Room } from "@/lib/types";
 
 export async function getRooms(): Promise<Room[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("rooms")
@@ -455,6 +467,7 @@ export async function getRooms(): Promise<Room[]> {
 }
 
 export async function getRoomBySlug(slug: string): Promise<Room | null> {
+  if (!supabasePublicConfigured()) return null;
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("rooms")
@@ -470,10 +483,11 @@ export async function getRoomBySlug(slug: string): Promise<Room | null> {
 - [ ] **Step 4: Create `src/lib/gallery.ts`**
 
 ```ts
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, supabasePublicConfigured } from "@/lib/supabase/public";
 import type { GalleryCategory, GalleryImage } from "@/lib/types";
 
 export async function getGalleryCategories(): Promise<GalleryCategory[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("gallery_categories")
@@ -487,6 +501,7 @@ export async function getGalleryCategories(): Promise<GalleryCategory[]> {
 }
 
 export async function getGalleryImages(): Promise<GalleryImage[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("gallery_images")

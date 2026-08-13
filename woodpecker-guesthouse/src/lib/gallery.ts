@@ -1,7 +1,8 @@
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, supabasePublicConfigured } from "@/lib/supabase/public";
 import type { GalleryCategory, GalleryImage } from "@/lib/types";
 
 export async function getGalleryCategories(): Promise<GalleryCategory[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("gallery_categories")
@@ -15,6 +16,7 @@ export async function getGalleryCategories(): Promise<GalleryCategory[]> {
 }
 
 export async function getGalleryImages(): Promise<GalleryImage[]> {
+  if (!supabasePublicConfigured()) return [];
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("gallery_images")
