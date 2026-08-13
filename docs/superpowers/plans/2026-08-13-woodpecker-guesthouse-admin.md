@@ -423,16 +423,18 @@ export default function PasswordInput({
 
 - [ ] **Step 2: Create `src/app/admin/login/page.tsx`**
 
+> **Correction (found during implementation):** `next build` failed — `useSearchParams()` requires a Suspense boundary for static prerendering. Split the form into an inner `LoginForm` component wrapped in `<Suspense>` by the page's default export.
+
 ```tsx
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import PasswordInput from "@/components/auth/PasswordInput";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -466,58 +468,66 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
-      <div className="bg-paper border border-line rounded-2xl p-8 w-full max-w-sm shadow-sm">
-        <h1 className="font-display text-xl text-ink text-center">Woodpecker Guesthouse</h1>
-        <p className="text-sm text-muted text-center mt-1">Admin</p>
-        <p className="text-xs text-muted text-center mt-4">Staff sign-in</p>
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm text-ink mb-1" htmlFor="email">
-              Email
-            </label>
+    <div className="bg-paper border border-line rounded-2xl p-8 w-full max-w-sm shadow-sm">
+      <h1 className="font-display text-xl text-ink text-center">Woodpecker Guesthouse</h1>
+      <p className="text-sm text-muted text-center mt-1">Admin</p>
+      <p className="text-xs text-muted text-center mt-4">Staff sign-in</p>
+      <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <div>
+          <label className="block text-sm text-ink mb-1" htmlFor="email">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="username"
+            className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-terracotta"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-ink mb-1" htmlFor="password">
+            Password
+          </label>
+          <PasswordInput id="password" value={password} onChange={setPassword} />
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2 text-muted cursor-pointer">
             <input
-              id="email"
-              type="email"
-              required
-              autoComplete="username"
-              className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-terracotta"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="checkbox"
+              className="accent-terracotta"
+              checked={keepSignedIn}
+              onChange={(e) => setKeepSignedIn(e.target.checked)}
             />
-          </div>
-          <div>
-            <label className="block text-sm text-ink mb-1" htmlFor="password">
-              Password
-            </label>
-            <PasswordInput id="password" value={password} onChange={setPassword} />
-          </div>
+            Keep me signed in
+          </label>
+          <Link href="/forgot-password" className="text-terracotta hover:underline">
+            Forgot password?
+          </Link>
+        </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-muted cursor-pointer">
-              <input
-                type="checkbox"
-                className="accent-terracotta"
-                checked={keepSignedIn}
-                onChange={(e) => setKeepSignedIn(e.target.checked)}
-              />
-              Keep me signed in
-            </label>
-            <Link href="/forgot-password" className="text-terracotta hover:underline">
-              Forgot password?
-            </Link>
-          </div>
+        {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-full bg-terracotta text-white px-5 py-2.5 text-sm font-semibold hover:bg-terracotta-deep transition-colors w-full disabled:opacity-50"
+        >
+          {loading ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
+    </div>
+  );
+}
 
-          {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-full bg-terracotta text-white px-5 py-2.5 text-sm font-semibold hover:bg-terracotta-deep transition-colors w-full disabled:opacity-50"
-          >
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
-      </div>
+export default function AdminLoginPage() {
+  return (
+    <div className="min-h-screen bg-surface flex items-center justify-center px-4">
+      <Suspense fallback={<div className="text-muted text-sm">Loading…</div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
