@@ -3,6 +3,7 @@ import { Fraunces, Figtree } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/site/WhatsAppButton";
+import LocalBusinessSchema from "@/components/site/LocalBusinessSchema";
 import "./globals.css";
 
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${fraunces.variable} ${figtree.variable} font-sans antialiased`}>
+        <LocalBusinessSchema />
         <Header />
         {children}
         <Footer />
