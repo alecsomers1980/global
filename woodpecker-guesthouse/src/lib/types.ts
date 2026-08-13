@@ -28,3 +28,20 @@ export type GalleryImage = {
   category_id: string | null;
   sort_order: number;
 };
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  meta_title: string;
+  meta_description: string;
+  content: string;
+  category: string;
+  hero_image: string | null;
+  status: "draft" | "approved" | "published" | "discarded";
+  scheduled_for: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
