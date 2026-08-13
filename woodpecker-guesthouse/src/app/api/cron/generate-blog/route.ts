@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, supabaseAdminConfigured } from "@/lib/supabase/admin";
 import { generateBlogPost } from "@/lib/blog/generator";
 import { pickNextCategory, type BlogCategory } from "@/lib/blog/categories";
 import { sendBlogReviewEmail } from "@/lib/blog/email";
@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}` && process.env.NODE_ENV === "production") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!supabaseAdminConfigured()) {
+    return NextResponse.json({ error: "Supabase is not configured yet." }, { status: 503 });
   }
 
   const supabase = createAdminClient();
