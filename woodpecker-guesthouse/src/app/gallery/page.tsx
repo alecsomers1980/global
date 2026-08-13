@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getGalleryCategories, getGalleryImages } from "@/lib/gallery";
 
+export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
+
 export const metadata: Metadata = {
   title: "Gallery",
   description: "Photos of Woodpecker Guesthouse — rooms, grounds, restaurant and conferencing venue.",

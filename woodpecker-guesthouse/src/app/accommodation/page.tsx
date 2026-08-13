@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { getRooms } from "@/lib/rooms";
 
+export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
+
 export const metadata: Metadata = {
   title: "Accommodation",
   description: "8 room types at Woodpecker Guesthouse, Hazyview — from budget-friendly to family suites.",

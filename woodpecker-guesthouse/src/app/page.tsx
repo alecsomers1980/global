@@ -4,6 +4,8 @@ import Image from "next/image";
 import { getRooms } from "@/lib/rooms";
 import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
 
+export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
+
 export const metadata: Metadata = {
   title: "Home",
   description:

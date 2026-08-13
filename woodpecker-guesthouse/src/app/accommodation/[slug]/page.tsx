@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getRoomBySlug, getRooms } from "@/lib/rooms";
 import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
 
+export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
