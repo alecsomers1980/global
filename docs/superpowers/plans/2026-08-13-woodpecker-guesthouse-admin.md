@@ -142,13 +142,24 @@ export function createClient(persist?: boolean) {
 
 - [ ] **Step 2: Create `src/lib/supabase/server.ts`**
 
+> **Correction (found in Task 7):** originally this threw the same as every other unguarded Supabase constructor. Since `admin/layout.tsx` wraps every `/admin/*` page — including `/admin/login` itself — this 500'd the login page. Fixed by returning `null` when unconfigured instead of throwing; every caller (Task 7, Task 9) must handle the null case.
+
 ```ts
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+/** True once both public Supabase env vars are set. */
+export function supabaseConfigured() {
+  return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 /** Server-side Supabase client (RLS-enforced, uses the anon key + the user's
- *  session cookies). Next 16: cookies() is async. */
+ *  session cookies). Next 16: cookies() is async.
+ *
+ *  Returns null when unconfigured instead of throwing. Every caller must
+ *  handle null. */
 export async function createClient() {
+  if (!supabaseConfigured()) return null;
   const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -1172,15 +1183,15 @@ export default function AdminSidebar({ email }: { email?: string }) {
 
 - [ ] **Step 2: Create `admin/layout.tsx`**
 
+> **Correction (found during implementation):** this wraps every `/admin/*` page including `/admin/login`; calling `createClient()` unguarded 500'd the login page before a Supabase project existed. Handles the `null` return from Task 2's corrected `server.ts`.
+
 ```tsx
 import { createClient } from "@/lib/supabase/server";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = supabase ? (await supabase.auth.getUser()).data.user : null;
 
   return (
     <div className="min-h-screen bg-surface flex">
@@ -1201,10 +1212,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
-  const [{ count: roomCount }, { count: imageCount }] = await Promise.all([
-    supabase.from("rooms").select("*", { count: "exact", head: true }),
-    supabase.from("gallery_images").select("*", { count: "exact", head: true }),
-  ]);
+  const roomCount = supabase
+    ? (await supabase.from("rooms").select("*", { count: "exact", head: true })).count
+    : 0;
+  const imageCount = supabase
+    ? (await supabase.from("gallery_images").select("*", { count: "exact", head: true })).count
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -1522,8 +1535,12 @@ const MAX_DIMENSION = 2400;
 export async function POST(request: Request) {
   // Auth check with the RLS-aware server client — is_staff() gates this the
   // same way it gates table writes, even though Storage itself is bypassed
-  // below via the service-role client.
+  // below via the service-role client. createClient() returns null when no
+  // Supabase project is configured yet — treat that as unauthorized too.
   const supabase = await createClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
   const {
     data: { user },
   } = await supabase.auth.getUser();
