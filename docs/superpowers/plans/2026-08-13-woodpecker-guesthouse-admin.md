@@ -18,6 +18,7 @@
 - **New staff accounts are created via the Supabase dashboard** (Authentication → Users → invite), not a custom signup flow — matches the existing Aloe Signs pattern ("admin = Andre only" precedent) and keeps scope minimal (not requested in spec §6).
 - **SA English spelling**, **no fabricated content**, **explicit git add paths only** — same as Plan A's Global Constraints.
 - **No test framework** — same house convention as Plan A: `npm run build` + running the dev server is the verification method; `node --test` only for pure-logic helpers.
+- **Never construct a Supabase client during render.** `createClient()`/`createServerClient()`/`createBrowserClient()` all throw synchronously when env vars are unset — confirmed three separate times during this plan's implementation (Foundation's data layer, `proxy.ts`, and `useState(() => createClient())` on `/reset-password`, the last of which crashed `next build` specifically because a `useState` initializer runs during Next's prerender pass same as a bare render-time call would). Only ever construct a Supabase client inside an event handler or a `useEffect` body — never at module scope, in a `useState`/`useMemo` initializer, or directly in a component's render path. Server Components that call the async `createClient()` (server) are naturally exempt from this once they call `cookies()`, which forces Next to skip static prerendering for that route — but client components get no such automatic protection.
 
 ---
 
@@ -646,6 +647,8 @@ export default function ForgotPasswordPage() {
 
 - [ ] **Step 2: Create `reset-password/page.tsx`**
 
+> **Correction (found during implementation):** `next build` failed on this page — `useState(() => createClient())` runs its initializer during Next's server-side prerender pass, hitting the same "Supabase client construction during render" crash as `proxy.ts` did. Fixed by never storing the client in `useState`; construct it fresh inside the effect and inside the submit handler instead.
+
 ```tsx
 "use client";
 
@@ -656,7 +659,6 @@ import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const [supabase] = useState(() => createClient());
 
   const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
@@ -666,6 +668,7 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) setReady(true);
     });
@@ -673,7 +676,7 @@ export default function ResetPasswordPage() {
       if (event === "PASSWORD_RECOVERY") setReady(true);
     });
     return () => authListener?.subscription.unsubscribe();
-  }, [supabase]);
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -688,7 +691,7 @@ export default function ResetPasswordPage() {
     }
     setLoading(true);
     try {
-      const { error: updateError } = await supabase.auth.updateUser({ password });
+      const { error: updateError } = await createClient().auth.updateUser({ password });
       if (updateError) setError(updateError.message);
       else setSuccess(true);
     } catch {
