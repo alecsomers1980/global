@@ -248,6 +248,8 @@ git commit -m "feat(woodpecker-guesthouse): add Supabase auth client helpers"
 
 - [ ] **Step 1: Write `src/proxy.ts`**
 
+> **Correction (found during implementation):** `createServerClient()` throws synchronously ("Your project's URL and Key are required") when Supabase env vars are unset — confirmed by running it. `proxy.ts`'s matcher covers nearly every route, so this isn't just an `/admin` problem like Foundation's data-layer guard was: without a live Supabase project, **the entire public site 500s on every request**. Added an early guard: no Supabase configured → pass public pages through untouched, send `/admin/*` straight to `/admin/login` instead of crashing.
+
 ```ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
@@ -256,34 +258,43 @@ import { aalFromAccessToken, hasVerifiedFactor } from "@/lib/auth";
 /** Next 16 renamed `middleware.ts` → `proxy.ts`. Refreshes the Supabase auth
  *  session on every matched request and gates the /admin (staff-only) area. */
 export async function proxy(request: NextRequest) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const path = request.nextUrl.pathname;
+  const isAdmin = path.startsWith("/admin");
+  const isAdminLogin = path === "/admin/login";
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (isAdmin && !isAdminLogin) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const path = request.nextUrl.pathname;
-  const isAdmin = path.startsWith("/admin");
-  const isAdminLogin = path === "/admin/login";
   const isAdminVerify = path === "/admin/verify";
 
   const redirectTo = (pathname: string, withNext = false) => {
