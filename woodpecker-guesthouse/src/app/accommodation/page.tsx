@@ -13,30 +13,57 @@ export const metadata: Metadata = {
 export default async function AccommodationPage() {
   const rooms = await getRooms();
   return (
-    <main className="max-w-6xl mx-auto px-6 py-16">
-      <h1 className="font-display text-3xl text-ink mb-2">Accommodation</h1>
-      <p className="text-muted mb-10 max-w-2xl">
-        Affordable, comfortable rooms for every kind of stay — from a solo overnighter to a family break.
-      </p>
-      <div className="grid md:grid-cols-3 gap-6">
-        {rooms.map((room) => (
-          <Link
-            key={room.id}
-            href={`/accommodation/${room.slug}`}
-            className="rounded-xl border border-line bg-white overflow-hidden hover:shadow-md transition-shadow"
-          >
-            <div className="aspect-[4/3] bg-sand/40 relative">
-              {room.hero_image && <Image src={room.hero_image} alt={room.name} fill className="object-cover" />}
-            </div>
-            <div className="p-4">
-              <p className="text-ink font-medium">{room.name}</p>
-              <p className="text-muted text-sm mt-1">
-                {room.bedrooms} bed{room.bedrooms !== 1 ? "s" : ""} · {room.bathrooms} bathroom
-                {room.bathrooms !== 1 ? "s" : ""}
-              </p>
-            </div>
-          </Link>
-        ))}
+    <main>
+      <section className="relative h-[42vh] min-h-[320px] flex items-center justify-center text-center text-white">
+        <Image
+          src="/images/home-pool.webp"
+          alt="Woodpecker Guesthouse grounds"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 hero-scrim" />
+        <div className="relative z-10 px-6">
+          <p className="text-sand text-sm tracking-[0.3em] uppercase mb-3">Rest Like Royalty</p>
+          <h1 className="font-display text-4xl md:text-5xl">Accommodation</h1>
+        </div>
+      </section>
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <p className="text-muted mb-10 max-w-2xl">
+          Affordable, comfortable rooms for every kind of stay — from a solo overnighter to a family break.
+        </p>
+        <div className="grid md:grid-cols-2 gap-8">
+          {rooms.map((room) => (
+            <Link
+              key={room.id}
+              href={`/accommodation/${room.slug}`}
+              className="group relative block h-[440px] rounded-2xl overflow-hidden"
+            >
+              {room.hero_image && (
+                <Image
+                  src={room.hero_image}
+                  alt={room.name}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              )}
+              <div className="absolute inset-0 card-scrim" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <p className="font-display text-2xl mb-1">{room.name}</p>
+                <p className="text-white/75 text-sm line-clamp-2 mb-3">{room.description}</p>
+                <div className="flex items-center gap-4 text-xs text-white/70">
+                  <span>{room.bed_type}</span>
+                  <span>·</span>
+                  <span>
+                    {room.max_guests} guest{room.max_guests !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </main>
   );

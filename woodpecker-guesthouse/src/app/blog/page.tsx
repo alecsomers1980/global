@@ -15,33 +15,43 @@ export default async function BlogIndexPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-6 py-16">
-      <h1 className="font-display text-3xl text-ink mb-2">Blog</h1>
-      <p className="text-muted mb-10 max-w-2xl">
-        Travel guides and local tips for Hazyview, the Panorama Route and Kruger National Park.
-      </p>
+      <div className="text-center mb-12">
+        <p className="text-terracotta text-sm tracking-widest uppercase mb-3">Community &amp; Travel Tips</p>
+        <h1 className="font-display text-3xl md:text-4xl text-ink">Blog</h1>
+        <p className="text-muted mt-3 max-w-xl mx-auto">
+          Travel guides and local tips for Hazyview, the Panorama Route and Kruger National Park.
+        </p>
+      </div>
       {posts.length === 0 ? (
-        <p className="text-muted">Articles are being added — check back soon.</p>
+        <p className="text-muted text-center">Articles are being added — check back soon.</p>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           {posts.map((post) => (
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
-              className="rounded-xl border border-line bg-white overflow-hidden hover:shadow-md transition-shadow"
+              className="group relative block h-[420px] rounded-2xl overflow-hidden bg-sand/40"
             >
-              <div className="aspect-[4/3] bg-sand/40 relative">
-                {post.hero_image && (
-                  <Image src={post.hero_image} alt={post.title} fill className="object-cover" />
-                )}
-              </div>
-              <div className="p-4">
-                {post.category && (
-                  <p className="text-terracotta text-xs font-medium uppercase tracking-wide mb-1">
+              {post.hero_image && (
+                <Image
+                  src={post.hero_image}
+                  alt={post.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              )}
+              <div className="absolute inset-0 card-scrim" />
+              {post.category && (
+                <div className="absolute top-0 left-0 right-0 p-5">
+                  <span className="text-white text-xs font-medium uppercase tracking-wide bg-black/30 backdrop-blur-sm rounded-full px-3 py-1">
                     {post.category}
-                  </p>
-                )}
-                <p className="text-ink font-medium">{post.title}</p>
-                {post.excerpt && <p className="text-muted text-sm mt-1 line-clamp-2">{post.excerpt}</p>}
+                  </span>
+                </div>
+              )}
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <p className="font-display text-xl mb-2">{post.title}</p>
+                {post.excerpt && <p className="text-white/75 text-sm line-clamp-2">{post.excerpt}</p>}
               </div>
             </Link>
           ))}

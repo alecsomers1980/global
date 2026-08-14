@@ -39,6 +39,21 @@ body {
   color: var(--ink);
 }
 
+/* Full-bleed photo overlays — warm dark (var(--ink) as RGB), not generic
+   black, to stay consistent with the "Elevated Woodpecker" palette. */
+.hero-scrim {
+  background: linear-gradient(
+    to top,
+    rgba(43, 38, 32, 0.75) 0%,
+    rgba(43, 38, 32, 0.25) 45%,
+    rgba(43, 38, 32, 0.05) 70%,
+    transparent 100%
+  );
+}
+.card-scrim {
+  background: linear-gradient(to top, rgba(43, 38, 32, 0.88) 0%, rgba(43, 38, 32, 0.35) 55%, transparent 100%);
+}
+
 /* Blog article typography — bespoke, not raw markdown/Tailwind Typography.
    Fraunces for headings (matches the rest of the site's display font),
    Figtree body copy, warm-palette tokens already defined above. */

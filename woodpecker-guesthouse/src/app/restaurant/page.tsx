@@ -16,37 +16,50 @@ const MENUS = [
 
 export default function RestaurantPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="font-display text-3xl text-ink mb-4">Restaurant</h1>
-      <p className="text-muted mb-8">
-        Come tantalise your tastebuds at our newest facility addition. Taste the most scrumptious, mouthwatering
-        African cuisine and exotic dishes prepared to perfection by our highly trained chefs — the relaxed
-        ambience? That&apos;s a plus.
-      </p>
-      <div className="aspect-[16/9] relative rounded-xl overflow-hidden mb-10 bg-sand/40">
-        <Image src="/images/restaurant-hero.webp" alt="Woodpecker Guesthouse restaurant" fill className="object-cover" />
+    <main>
+      <div className="relative h-[52vh] min-h-[360px]">
+        <Image
+          src="/images/home-garden.webp"
+          alt="Woodpecker Guesthouse grounds"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 hero-scrim" />
+        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
+          <p className="text-sand text-sm tracking-[0.3em] uppercase mb-2">Enjoy Our Homely Meals</p>
+          <h1 className="font-display text-4xl md:text-5xl">Restaurant</h1>
+        </div>
       </div>
-      <h2 className="font-display text-xl text-ink mb-4">Our Menus</h2>
-      <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        {MENUS.map((menu) => (
-          <a
-            key={menu.name}
-            href={menu.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-xl border border-line bg-white p-5 hover:shadow-md transition-shadow flex items-center justify-between"
-          >
-            <span className="text-ink font-medium">{menu.name}</span>
-            <span className="text-terracotta text-sm">View PDF →</span>
-          </a>
-        ))}
+      <div className="max-w-4xl mx-auto px-6 py-16">
+        <p className="text-muted mb-10">
+          Come tantalise your tastebuds at our newest facility addition. Taste the most scrumptious, mouthwatering
+          African cuisine and exotic dishes prepared to perfection by our highly trained chefs — the relaxed
+          ambience? That&apos;s a plus.
+        </p>
+        <h2 className="font-display text-xl text-ink mb-4">Our Menus</h2>
+        <div className="grid sm:grid-cols-2 gap-4 mb-10">
+          {MENUS.map((menu) => (
+            <a
+              key={menu.name}
+              href={menu.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl border border-line bg-white p-5 hover:shadow-md transition-shadow flex items-center justify-between"
+            >
+              <span className="text-ink font-medium">{menu.name}</span>
+              <span className="text-terracotta text-sm">View PDF →</span>
+            </a>
+          ))}
+        </div>
+        <Link
+          href="/contact"
+          className="inline-block rounded-full bg-terracotta text-white px-8 py-3 font-semibold hover:bg-terracotta-deep transition-colors"
+        >
+          Contact Us
+        </Link>
       </div>
-      <Link
-        href="/contact"
-        className="inline-block rounded-full bg-terracotta text-white px-8 py-3 font-semibold hover:bg-terracotta-deep transition-colors"
-      >
-        Contact Us
-      </Link>
     </main>
   );
 }

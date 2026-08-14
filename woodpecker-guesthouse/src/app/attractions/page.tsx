@@ -28,31 +28,44 @@ const ATTRACTIONS = [
 
 export default function AttractionsPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="font-display text-3xl text-ink mb-4">Attractions</h1>
-      <p className="text-muted mb-8">
-        A stay at Woodpecker gives you the perks of exploring and experiencing the most majestic sightings and
-        nature&apos;s wonders of Mpumalanga. Travel into the wonders of the world without leaving the feeling
-        behind — at the end of the day, you retire back home into a sanctuary as spectacular as the day&apos;s
-        sightings.
-      </p>
-      <div className="aspect-[21/9] relative rounded-xl overflow-hidden mb-10 bg-sand/40">
-        <Image src="/images/attractions-hero.webp" alt="Mpumalanga landscape near Woodpecker Guesthouse" fill className="object-cover" />
+    <main>
+      <div className="relative h-[52vh] min-h-[360px]">
+        <Image
+          src="/images/attractions-hero.webp"
+          alt="Mpumalanga landscape near Woodpecker Guesthouse"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 hero-scrim" />
+        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
+          <p className="text-sand text-sm tracking-[0.3em] uppercase mb-2">Why Us</p>
+          <h1 className="font-display text-4xl md:text-5xl">Attractions</h1>
+        </div>
       </div>
-      <div className="grid sm:grid-cols-2 gap-6 mb-10">
-        {ATTRACTIONS.map((a) => (
-          <div key={a.name} className="rounded-xl border border-line bg-white p-5">
-            <p className="text-ink font-medium mb-1">{a.name}</p>
-            <p className="text-muted text-sm">{a.desc}</p>
-          </div>
-        ))}
+      <div className="max-w-4xl mx-auto px-6 py-16">
+        <p className="text-muted mb-10">
+          A stay at Woodpecker gives you the perks of exploring and experiencing the most majestic sightings and
+          nature&apos;s wonders of Mpumalanga. Travel into the wonders of the world without leaving the feeling
+          behind — at the end of the day, you retire back home into a sanctuary as spectacular as the day&apos;s
+          sightings.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-6 mb-10">
+          {ATTRACTIONS.map((a) => (
+            <div key={a.name} className="rounded-xl border border-line bg-white p-5">
+              <p className="text-ink font-medium mb-1">{a.name}</p>
+              <p className="text-muted text-sm">{a.desc}</p>
+            </div>
+          ))}
+        </div>
+        <Link
+          href="/contact"
+          className="inline-block rounded-full bg-terracotta text-white px-8 py-3 font-semibold hover:bg-terracotta-deep transition-colors"
+        >
+          Book Now
+        </Link>
       </div>
-      <Link
-        href="/contact"
-        className="inline-block rounded-full bg-terracotta text-white px-8 py-3 font-semibold hover:bg-terracotta-deep transition-colors"
-      >
-        Book Now
-      </Link>
     </main>
   );
 }
