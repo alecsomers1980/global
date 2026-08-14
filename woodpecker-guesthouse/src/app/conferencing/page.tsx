@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import Reveal from "@/components/site/Reveal";
 
 export const metadata: Metadata = {
   title: "Conferencing",
@@ -20,20 +21,20 @@ const EVENTS = ["Bridal Showers", "Birthday Parties", "Baby Showers"];
 export default function ConferencingPage() {
   return (
     <main>
-      <div className="relative h-[52vh] min-h-[360px]">
+      <div className="relative h-[52vh] min-h-[360px] overflow-hidden">
         <Image
           src="/images/home-entrance.webp"
           alt="Woodpecker Guesthouse venue"
           fill
           priority
-          className="object-cover"
+          className="object-cover hero-photo"
           sizes="100vw"
         />
         <div className="absolute inset-0 hero-scrim" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
+        <Reveal className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
           <p className="text-sand text-sm tracking-[0.3em] uppercase mb-2">Why Us</p>
           <h1 className="font-display text-4xl md:text-5xl">Conferencing</h1>
-        </div>
+        </Reveal>
       </div>
       <div className="max-w-4xl mx-auto px-6 py-16">
         <p className="text-muted mb-10">
@@ -43,13 +44,13 @@ export default function ConferencingPage() {
         </p>
 
         <div className="grid sm:grid-cols-3 gap-6 mb-12">
-          {PILLARS.map((p) => (
-            <div key={p.name} className="rounded-xl border border-line bg-white p-5 text-center">
+          {PILLARS.map((p, i) => (
+            <Reveal key={p.name} delay={i * 100} className="rounded-xl border border-line bg-white p-5 text-center">
               <div className="w-12 h-12 relative mx-auto mb-3">
                 <Image src={p.icon} alt="" fill className="object-contain" />
               </div>
               <p className="text-ink font-medium">{p.name}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
 

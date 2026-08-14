@@ -100,3 +100,63 @@ body {
   color: var(--muted);
   font-style: italic;
 }
+
+/* Nightsbridge booking widget — retheme flatpickr's default blue to the
+   site's terracotta accent so the date picker feels like part of the brand,
+   not a third-party plugin. */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+}
+.flatpickr-day.today {
+  border-color: var(--terracotta);
+}
+.flatpickr-day.today:hover,
+.flatpickr-day.today:focus {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: #fff;
+}
+.flatpickr-day:hover {
+  background: var(--surface-2);
+}
+
+/* Cinematic motion — used in rhythm (section intros, card grids), not on
+   every element. See src/components/site/Reveal.tsx for the scroll-trigger. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slow zoom on hero photography — one-shot, holds at the zoomed frame
+   rather than looping (a looping Ken Burns reads as a screensaver, not a
+   premium hero). */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.hero-photo {
+  animation: ken-burns 16s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-photo {
+    animation: none;
+  }
+}

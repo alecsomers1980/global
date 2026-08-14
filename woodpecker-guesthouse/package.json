@@ -11,6 +11,7 @@
     "@anthropic-ai/sdk": "^0.111.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.8",
+    "flatpickr": "^4.6.13",
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -24,6 +25,7 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "png-to-ico": "^3.0.2",
     "tailwindcss": "^4",
     "typescript": "^5.7"
   }

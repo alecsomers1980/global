@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getRooms } from "@/lib/rooms";
 import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
+import Reveal from "@/components/site/Reveal";
 
 export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
 
@@ -25,39 +26,38 @@ export default async function HomePage() {
 
   return (
     <main>
-      {/* Hero — full-bleed real property photo. Booking widget stays inside the
-          hero's own flow (not absolutely overlapped into the next section)
-          because its rendered height varies a lot: a short fallback card when
-          NEXT_PUBLIC_NIGHTSBRIDGE_PROPERTY_ID is unset vs a 420px iframe once
-          it's set. Revisit this sizing once the real widget is live. */}
-      <section className="relative min-h-[640px] h-[85vh] flex flex-col items-center justify-end pb-16">
+      {/* Hero — full-bleed real property photo, slow one-shot zoom for a
+          cinematic feel. Booking widget stays inside the hero's own flow
+          (not absolutely overlapped into the next section) since its
+          rendered height can change if the booking flow is ever swapped. */}
+      <section className="relative min-h-[640px] h-[85vh] flex flex-col items-center justify-end pb-16 overflow-hidden">
         <Image
           src="/images/home-hero.webp"
           alt="Woodpecker Guesthouse, Hazyview"
           fill
           priority
-          className="object-cover"
+          className="object-cover hero-photo"
           sizes="100vw"
         />
         <div className="absolute inset-0 hero-scrim" />
-        <div className="relative z-10 text-center text-white px-6 mb-10">
+        <Reveal className="relative z-10 text-center text-white px-6 mb-10">
           <p className="text-sand text-sm tracking-[0.3em] uppercase mb-4">Hazyview, Mpumalanga</p>
           <h1 className="font-display text-4xl md:text-6xl mb-4 max-w-3xl mx-auto">
-            A home away from home, minutes from the Kruger.
+            Your home away from home near Kruger.
           </h1>
           <p className="text-white/85 max-w-xl mx-auto">
             Affordable, family-friendly accommodation, conferencing and a restaurant serving homely meals — built for
             guests who live for serene spaces and the outdoors.
           </p>
-        </div>
-        <div className="relative z-10 w-full max-w-md px-6">
+        </Reveal>
+        <Reveal delay={150} className="relative z-10 w-full max-w-2xl px-6">
           <NightsbridgeWidget />
-        </div>
+        </Reveal>
       </section>
 
       {/* Welcome — asymmetric real-photo pairing */}
       <section className="max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
-        <div>
+        <Reveal>
           <p className="text-terracotta text-sm tracking-widest uppercase mb-3">Boutique Guesthouse</p>
           <h2 className="font-display text-3xl md:text-4xl text-ink mb-5">Serene spaces, real character</h2>
           <p className="text-muted mb-8">
@@ -71,8 +71,8 @@ export default async function HomePage() {
           >
             Find A Room
           </Link>
-        </div>
-        <div className="relative h-[420px] md:h-[480px]">
+        </Reveal>
+        <Reveal delay={150} className="relative h-[420px] md:h-[480px]">
           <div className="absolute top-0 right-0 w-[70%] h-[75%] rounded-2xl overflow-hidden shadow-lg">
             <Image
               src="/images/home-pool.webp"
@@ -91,7 +91,7 @@ export default async function HomePage() {
               sizes="(max-width: 768px) 55vw, 28vw"
             />
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Dark contrast band — real facility icons over a dimmed real photo */}
@@ -127,34 +127,35 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {featured.map((room) => (
-              <Link
-                key={room.id}
-                href={`/accommodation/${room.slug}`}
-                className="group relative block h-[420px] rounded-2xl overflow-hidden"
-              >
-                {room.hero_image && (
-                  <Image
-                    src={room.hero_image}
-                    alt={room.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                )}
-                <div className="absolute inset-0 card-scrim" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <p className="font-display text-xl mb-1">{room.name}</p>
-                  <p className="text-white/75 text-sm line-clamp-2 mb-3">{room.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-white/70">
-                    <span>
-                      {room.bedrooms} bed{room.bedrooms !== 1 ? "s" : ""}
-                    </span>
-                    <span>·</span>
-                    <span>{room.max_guests} guests</span>
+            {featured.map((room, i) => (
+              <Reveal key={room.id} delay={i * 100}>
+                <Link
+                  href={`/accommodation/${room.slug}`}
+                  className="group relative block h-[420px] rounded-2xl overflow-hidden"
+                >
+                  {room.hero_image && (
+                    <Image
+                      src={room.hero_image}
+                      alt={room.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  )}
+                  <div className="absolute inset-0 card-scrim" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <p className="font-display text-xl mb-1">{room.name}</p>
+                    <p className="text-white/75 text-sm line-clamp-2 mb-3">{room.description}</p>
+                    <div className="flex items-center gap-4 text-xs text-white/70">
+                      <span>
+                        {room.bedrooms} bed{room.bedrooms !== 1 ? "s" : ""}
+                      </span>
+                      <span>·</span>
+                      <span>{room.max_guests} guests</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </Reveal>
             ))}
           </div>
           <Link href="/accommodation" className="text-terracotta text-sm hover:underline sm:hidden mt-6 inline-block">

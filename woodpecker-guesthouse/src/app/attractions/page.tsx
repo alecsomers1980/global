@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import Reveal from "@/components/site/Reveal";
 
 export const metadata: Metadata = {
   title: "Attractions",
@@ -29,20 +30,20 @@ const ATTRACTIONS = [
 export default function AttractionsPage() {
   return (
     <main>
-      <div className="relative h-[52vh] min-h-[360px]">
+      <div className="relative h-[52vh] min-h-[360px] overflow-hidden">
         <Image
           src="/images/attractions-hero.webp"
           alt="Mpumalanga landscape near Woodpecker Guesthouse"
           fill
           priority
-          className="object-cover"
+          className="object-cover hero-photo"
           sizes="100vw"
         />
         <div className="absolute inset-0 hero-scrim" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
+        <Reveal className="absolute bottom-0 left-0 right-0 max-w-4xl mx-auto px-6 pb-8 text-white">
           <p className="text-sand text-sm tracking-[0.3em] uppercase mb-2">Why Us</p>
           <h1 className="font-display text-4xl md:text-5xl">Attractions</h1>
-        </div>
+        </Reveal>
       </div>
       <div className="max-w-4xl mx-auto px-6 py-16">
         <p className="text-muted mb-10">
@@ -52,11 +53,11 @@ export default function AttractionsPage() {
           sightings.
         </p>
         <div className="grid sm:grid-cols-2 gap-6 mb-10">
-          {ATTRACTIONS.map((a) => (
-            <div key={a.name} className="rounded-xl border border-line bg-white p-5">
+          {ATTRACTIONS.map((a, i) => (
+            <Reveal key={a.name} delay={(i % 2) * 100} className="rounded-xl border border-line bg-white p-5">
               <p className="text-ink font-medium mb-1">{a.name}</p>
               <p className="text-muted text-sm">{a.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
         <Link

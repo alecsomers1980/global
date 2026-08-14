@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getRoomBySlug, getRooms } from "@/lib/rooms";
 import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
+import Reveal from "@/components/site/Reveal";
 
 export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
 
@@ -29,14 +30,14 @@ export default async function RoomDetailPage({ params }: Props) {
 
   return (
     <main>
-      <div className="relative h-[56vh] min-h-[380px]">
+      <div className="relative h-[56vh] min-h-[380px] overflow-hidden">
         {room.hero_image && (
-          <Image src={room.hero_image} alt={room.name} fill priority className="object-cover" sizes="100vw" />
+          <Image src={room.hero_image} alt={room.name} fill priority className="object-cover hero-photo" sizes="100vw" />
         )}
         <div className="absolute inset-0 hero-scrim" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-6 pb-8 text-white">
+        <Reveal className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-6 pb-8 text-white">
           <h1 className="font-display text-4xl md:text-5xl">{room.name}</h1>
-        </div>
+        </Reveal>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-3 gap-10">
@@ -69,17 +70,17 @@ export default async function RoomDetailPage({ params }: Props) {
             <div>
               <p className="font-display text-lg text-ink mb-4">Photos</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {galleryRest.map((src) => (
-                  <div key={src} className="aspect-square relative rounded-lg overflow-hidden bg-sand/40">
+                {galleryRest.map((src, i) => (
+                  <Reveal key={src} delay={(i % 3) * 80} className="aspect-square relative rounded-lg overflow-hidden bg-sand/40">
                     <Image src={src} alt={room.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, 33vw" />
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             </div>
           )}
         </div>
         <div>
-          <div className="sticky top-24">
+          <div className="sticky top-28">
             <NightsbridgeWidget />
           </div>
         </div>
