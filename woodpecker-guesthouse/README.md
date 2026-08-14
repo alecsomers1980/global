@@ -7,8 +7,8 @@ Next.js + Supabase rebuild of woodpeckersguesthouse.co.za. See
 
 1. `npm install`
 2. Copy `.env.example` to `.env.local` and fill in Supabase/Resend/WhatsApp values.
-3. Run the schema: paste `supabase/migrations/0001_init.sql` then `0002_admin_auth.sql` into the Supabase SQL editor, in that order.
-4. Seed sample content: `node scripts/seed.mjs` (requires `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` set).
+3. Run the schema: paste `supabase/migrations/0001_init.sql`, then `0002_admin_auth.sql`, then `0003_blog.sql` into the Supabase SQL editor, in that order.
+4. Seed real content: `node scripts/seed.mjs` (requires `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` set). Seeds all 8 rooms with real copy and real photos already uploaded to Storage — see commit `897db4f8` if you need to re-upload photos from a fresh WP export.
 5. `npm run dev`
 
 ## Admin panel
@@ -43,14 +43,25 @@ from the Vercel env vars above) so `.github/workflows/keep-supabase-alive.yml` c
 
 ## Known follow-ups (see spec §10)
 
-- Real room copy/photos/rates for Double Room 1–3 and Family Room 1–2 — pending the client's WordPress export.
-- Real Nightsbridge property ID — set `NEXT_PUBLIC_NIGHTSBRIDGE_PROPERTY_ID` once known (see
-  `src/components/booking/NightsbridgeWidget.tsx`).
-- Restaurant menu content and full legal page text — pending the WordPress export.
+- **Done 2026-08-14:** all 8 rooms now have real copy, bed/guest details and real photos (recovered from the
+  client's WordPress DB export + uploads folder), the restaurant page links to all 4 real menu PDFs, conferencing
+  and attractions have real copy, and both legal pages have the full real text. A live Supabase project is
+  provisioned, all 3 migrations are applied, and the site has been verified end-to-end against it — real rooms
+  render with real photos, RLS confirmed blocking anonymous writes while allowing public reads, admin routes
+  correctly redirect unauthenticated requests.
+- Real room **rates** were not in the WP export (the old site left pricing to Nightsbridge) — `rate_from` is still
+  null on every room; fill in via `/admin/rooms` once known, or leave null (the room cards handle it gracefully).
+- Real Nightsbridge property ID — genuinely not recoverable from the WP export either (searched the full DB dump;
+  the embedded widget markup has no property-specific ID in it). Set `NEXT_PUBLIC_NIGHTSBRIDGE_PROPERTY_ID` once the
+  client provides it (see `src/components/booking/NightsbridgeWidget.tsx`).
+- Gallery is still empty (`gallery_categories` seeded, `gallery_images` is not) — the WP export used a gallery
+  plugin (FooGallery) whose data wasn't parsed in this pass. Populate via `/admin/gallery`, or ask if you want the
+  FooGallery data parsed too.
+- **No admin account created yet.** Deliberately not done by AI — create your own via the Supabase dashboard
+  (Authentication → Users → Invite) with your real email, then promote it per the "First admin account" step above.
+  Once that's done, the login/rooms-CRUD/gallery-upload/blog-generate/publish flows should get one real logged-in
+  pass before you rely on them daily — RLS and routing are verified, but no one has actually clicked through the
+  admin UI against live data yet.
 - Blog pipeline crons (`vercel.json`) need `ANTHROPIC_API_KEY` and `CRON_SECRET` set in Vercel before they'll run;
   until then the admin's "Generate a draft now" button is the only working entry point, and it needs the same
   `ANTHROPIC_API_KEY`.
-- No live Supabase project provisioned yet for this client — every "unconfigured" fallback path in the code is
-  what's actually been exercised so far, not the real auth/CRUD/upload/generate/publish flow. Full end-to-end
-  verification (login, room edits, gallery upload against production — the Buffer/Blob corruption bug is invisible
-  in dev — plus one real blog draft → approve → publish cycle) is a deploy-time follow-up.
