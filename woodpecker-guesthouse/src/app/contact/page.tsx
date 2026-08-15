@@ -49,7 +49,7 @@ export default function ContactPage() {
               <a href={`mailto:${SITE.email}`} className="hover:text-terracotta transition-colors break-all">{SITE.email}</a>
             </li>
           </ul>
-          <div className="rounded-2xl overflow-hidden border border-line h-64">
+          <div className="overflow-hidden border border-line h-64">
             <iframe
               src={SITE.address.mapsEmbedSrc}
               title={SITE.address.full}

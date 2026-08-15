@@ -160,11 +160,13 @@ const rooms = [
   },
 ];
 
+// Real categories the client organized their own FooGallery photos into on
+// the old site (Gallery page, "ALL / ACCOMMODATION / CONFERENCING AND
+// DINING / EXTERIOR" filter tabs) — not invented groupings.
 const galleryCategories = [
-  { name: "Rooms", sort_order: 1 },
-  { name: "Grounds", sort_order: 2 },
-  { name: "Restaurant", sort_order: 3 },
-  { name: "Conferencing", sort_order: 4 },
+  { name: "Accommodation", sort_order: 1 },
+  { name: "Conferencing and Dining", sort_order: 2 },
+  { name: "Exterior", sort_order: 3 },
 ];
 
 const { error: roomsError } = await supabase.from("rooms").upsert(rooms, { onConflict: "slug" });

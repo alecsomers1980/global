@@ -4,6 +4,8 @@ import Image from "next/image";
 import { getRooms } from "@/lib/rooms";
 import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
 import Reveal from "@/components/site/Reveal";
+import { PoolIcon, BraaiIcon, JumpingCastleIcon, ParkingIcon } from "@/components/site/FacilityIcons";
+import RoomCard from "@/components/site/RoomCard";
 
 export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
 
@@ -14,10 +16,10 @@ export const metadata: Metadata = {
 };
 
 const FACILITIES = [
-  { name: "Swimming Pool", desc: "Cool off after a day on the Panorama Route.", icon: "/images/facility-swimming.png" },
-  { name: "Braai Area", desc: "Fire up an evening braai under the bushveld sky.", icon: "/images/facility-braai.png" },
-  { name: "Jumping Castle", desc: "Kept the kids happy on the old site — kept here too.", icon: "/images/facility-jumping-castle.png" },
-  { name: "Parking", desc: "Secure on-site parking for every guest.", icon: "/images/facility-parking.png" },
+  { name: "Swimming Pool", desc: "Cool off after a day on the Panorama Route.", Icon: PoolIcon },
+  { name: "Braai Area", desc: "Fire up an evening braai under the bushveld sky.", Icon: BraaiIcon },
+  { name: "Jumping Castle", desc: "Kept the kids happy on the old site — kept here too.", Icon: JumpingCastleIcon },
+  { name: "Parking", desc: "Secure on-site parking for every guest.", Icon: ParkingIcon },
 ];
 
 export default async function HomePage() {
@@ -73,7 +75,7 @@ export default async function HomePage() {
           </Link>
         </Reveal>
         <Reveal delay={150} className="relative h-[420px] md:h-[480px]">
-          <div className="absolute top-0 right-0 w-[70%] h-[75%] rounded-2xl overflow-hidden shadow-lg">
+          <div className="absolute top-0 right-0 w-[70%] h-[75%] overflow-hidden shadow-lg">
             <Image
               src="/images/home-pool.webp"
               alt="Pool and courtyard at Woodpecker Guesthouse"
@@ -82,7 +84,7 @@ export default async function HomePage() {
               sizes="(max-width: 768px) 70vw, 35vw"
             />
           </div>
-          <div className="absolute bottom-0 left-0 w-[55%] h-[55%] rounded-2xl overflow-hidden shadow-lg border-4 border-paper">
+          <div className="absolute bottom-0 left-0 w-[55%] h-[55%] overflow-hidden shadow-lg border-4 border-paper">
             <Image
               src="/images/home-room-styled.webp"
               alt="A styled room at Woodpecker Guesthouse"
@@ -103,9 +105,7 @@ export default async function HomePage() {
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
             {FACILITIES.map((f) => (
               <div key={f.name}>
-                <div className="w-12 h-12 relative mb-4">
-                  <Image src={f.icon} alt="" fill className="object-contain" />
-                </div>
+                <f.Icon className="w-9 h-9 mb-4 text-terracotta" />
                 <p className="font-display text-lg mb-1">{f.name}</p>
                 <p className="text-white/60 text-sm">{f.desc}</p>
               </div>
@@ -129,32 +129,7 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-3 gap-6">
             {featured.map((room, i) => (
               <Reveal key={room.id} delay={i * 100}>
-                <Link
-                  href={`/accommodation/${room.slug}`}
-                  className="group relative block h-[420px] rounded-2xl overflow-hidden"
-                >
-                  {room.hero_image && (
-                    <Image
-                      src={room.hero_image}
-                      alt={room.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  )}
-                  <div className="absolute inset-0 card-scrim" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <p className="font-display text-xl mb-1">{room.name}</p>
-                    <p className="text-white/75 text-sm line-clamp-2 mb-3">{room.description}</p>
-                    <div className="flex items-center gap-4 text-xs text-white/70">
-                      <span>
-                        {room.bedrooms} bed{room.bedrooms !== 1 ? "s" : ""}
-                      </span>
-                      <span>·</span>
-                      <span>{room.max_guests} guests</span>
-                    </div>
-                  </div>
-                </Link>
+                <RoomCard room={room} />
               </Reveal>
             ))}
           </div>
@@ -167,7 +142,7 @@ export default async function HomePage() {
       {/* Restaurant teaser — asymmetric real-photo pairing, reversed */}
       <section className="bg-surface">
         <div className="max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative h-[420px] md:h-[480px] order-2 md:order-1 rounded-2xl overflow-hidden shadow-lg">
+          <div className="relative h-[420px] md:h-[480px] order-2 md:order-1 overflow-hidden shadow-lg">
             <Image
               src="/images/home-garden.webp"
               alt="Woodpecker Guesthouse grounds"

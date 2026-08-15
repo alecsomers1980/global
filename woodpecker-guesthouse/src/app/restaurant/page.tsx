@@ -2,18 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Reveal from "@/components/site/Reveal";
+import { MENUS } from "@/lib/menu-data";
 
 export const metadata: Metadata = {
   title: "Restaurant",
-  description: "Homely African cuisine at Woodpecker Guesthouse restaurant, Hazyview.",
+  description: "Breakfast, lunch, dinner and kids menus at Woodpecker Guesthouse restaurant, Hazyview.",
 };
-
-const MENUS = [
-  { name: "Breakfast Menu", href: "/menus/breakfast-menu.pdf" },
-  { name: "Lunch Menu", href: "/menus/lunch-menu.pdf" },
-  { name: "Dinner Menu", href: "/menus/dinner-menu.pdf" },
-  { name: "Kids Menu", href: "/menus/kids-menu.pdf" },
-];
 
 export default function RestaurantPage() {
   return (
@@ -39,22 +33,43 @@ export default function RestaurantPage() {
           African cuisine and exotic dishes prepared to perfection by our highly trained chefs — the relaxed
           ambience? That&apos;s a plus.
         </p>
-        <h2 className="font-display text-xl text-ink mb-4">Our Menus</h2>
-        <div className="grid sm:grid-cols-2 gap-4 mb-10">
-          {MENUS.map((menu, i) => (
-            <Reveal key={menu.name} delay={(i % 2) * 100}>
-              <a
-                href={menu.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-xl border border-line bg-white p-5 hover:shadow-md transition-shadow flex items-center justify-between"
-              >
-                <span className="text-ink font-medium">{menu.name}</span>
-                <span className="text-terracotta text-sm">View PDF →</span>
-              </a>
-            </Reveal>
+
+        <nav className="flex flex-wrap gap-4 border-y border-line py-4 mb-14 text-sm">
+          {MENUS.map((menu) => (
+            <a key={menu.slug} href={`#${menu.slug}`} className="text-ink font-medium hover:text-terracotta transition-colors">
+              {menu.name} Menu
+            </a>
           ))}
-        </div>
+        </nav>
+
+        {MENUS.map((menu, mi) => (
+          <section key={menu.slug} id={menu.slug} className="mb-16 scroll-mt-24">
+            <Reveal className="flex items-baseline justify-between mb-8">
+              <h2 className="font-display text-2xl text-ink">{menu.name} Menu</h2>
+              {menu.priceNote && <p className="text-terracotta font-semibold">{menu.priceNote}</p>}
+            </Reveal>
+            <div className="grid sm:grid-cols-2 gap-x-10">
+              {menu.sections.map((section, si) => (
+                <Reveal key={section.name} delay={(si % 2) * 80} className="mb-8">
+                  <h3 className="text-ink font-semibold tracking-wide uppercase text-sm mb-3">{section.name}</h3>
+                  <ul>
+                    {section.items.map((item) => (
+                      <li key={item.name} className="flex items-baseline justify-between gap-4 border-b border-line py-2.5">
+                        <span>
+                          <span className="text-ink">{item.name}</span>
+                          {item.desc && <span className="block text-muted text-xs mt-0.5">{item.desc}</span>}
+                        </span>
+                        {item.price && <span className="text-ink font-medium whitespace-nowrap">{item.price}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+              ))}
+            </div>
+            {mi < MENUS.length - 1 && <div className="border-t border-line mt-2" />}
+          </section>
+        ))}
+
         <Link
           href="/contact"
           className="inline-block rounded-full bg-terracotta text-white px-8 py-3 font-semibold hover:bg-terracotta-deep transition-colors"

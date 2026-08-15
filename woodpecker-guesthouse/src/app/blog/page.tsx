@@ -31,7 +31,7 @@ export default async function BlogIndexPage() {
             <Reveal key={post.id} delay={(i % 3) * 100}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="group relative block h-[420px] rounded-2xl overflow-hidden bg-sand/40"
+                className="group relative block h-[420px] overflow-hidden bg-sand/40"
               >
                 {post.hero_image && (
                   <Image

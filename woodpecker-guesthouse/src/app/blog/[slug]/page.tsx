@@ -48,11 +48,11 @@ export default async function BlogPostPage({ params }: Props) {
       />
       <main className="max-w-3xl mx-auto px-6 py-16">
         {post.hero_image ? (
-          <div className="aspect-[16/9] relative rounded-xl overflow-hidden mb-8 bg-sand/40">
+          <div className="aspect-[16/9] relative overflow-hidden mb-8 bg-sand/40">
             <Image src={post.hero_image} alt={post.title} fill className="object-cover" />
           </div>
         ) : (
-          <div className="aspect-[16/9] rounded-xl mb-8 bg-sand/40" />
+          <div className="aspect-[16/9] mb-8 bg-sand/40" />
         )}
         {post.category && (
           <p className="text-terracotta text-xs font-medium uppercase tracking-wide mb-2">{post.category}</p>

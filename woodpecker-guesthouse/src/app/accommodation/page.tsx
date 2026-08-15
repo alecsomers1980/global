@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import { getRooms } from "@/lib/rooms";
 import Reveal from "@/components/site/Reveal";
+import RoomCard from "@/components/site/RoomCard";
 
 export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
 
@@ -31,38 +31,14 @@ export default async function AccommodationPage() {
         </Reveal>
       </section>
       <div className="max-w-6xl mx-auto px-6 py-16">
-        <p className="text-muted mb-10 max-w-2xl">
+        <p className="text-muted mb-8 max-w-2xl mx-auto text-center">
           Affordable, comfortable rooms for every kind of stay — from a solo overnighter to a family break.
         </p>
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="border-t border-line mb-12" />
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
           {rooms.map((room, i) => (
-            <Reveal key={room.id} delay={(i % 2) * 100}>
-              <Link
-                href={`/accommodation/${room.slug}`}
-                className="group relative block h-[440px] rounded-2xl overflow-hidden"
-              >
-                {room.hero_image && (
-                  <Image
-                    src={room.hero_image}
-                    alt={room.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                )}
-                <div className="absolute inset-0 card-scrim" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <p className="font-display text-2xl mb-1">{room.name}</p>
-                  <p className="text-white/75 text-sm line-clamp-2 mb-3">{room.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-white/70">
-                    <span>{room.bed_type}</span>
-                    <span>·</span>
-                    <span>
-                      {room.max_guests} guest{room.max_guests !== 1 ? "s" : ""}
-                    </span>
-                  </div>
-                </div>
-              </Link>
+            <Reveal key={room.id} delay={(i % 3) * 100}>
+              <RoomCard room={room} />
             </Reveal>
           ))}
         </div>

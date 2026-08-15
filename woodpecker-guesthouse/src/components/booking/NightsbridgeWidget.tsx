@@ -77,39 +77,56 @@ export default function NightsbridgeWidget() {
     // hero banner on Home, a narrow sidebar on room detail pages) — sizing
     // its own internal grid off container width, not viewport width, is
     // what makes both placements work without a squeezed sidebar layout.
-    <div className="nb-widget @container rounded-2xl bg-white shadow-xl p-5 sm:p-6">
+    // Flat, square-cornered, icon-prefixed fields — matches the reference's
+    // booking bar rather than a rounded floating card.
+    <div className="nb-widget @container bg-white p-5 sm:p-6 shadow-sm">
       <div className="grid @[420px]:grid-cols-[1fr_1fr_auto] gap-4 items-end">
         <div>
           <label htmlFor="nb-checkin" className="block text-xs font-medium tracking-widest uppercase text-muted mb-1.5">
             Arrival
           </label>
-          <input
-            id="nb-checkin"
-            ref={checkInRef}
-            readOnly
-            className="w-full rounded-lg border border-line px-3 py-2.5 text-ink cursor-pointer focus:outline-none focus:ring-2 focus:ring-terracotta/40"
-          />
+          <div className="relative">
+            <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+            <input
+              id="nb-checkin"
+              ref={checkInRef}
+              readOnly
+              className="w-full border-b border-line pl-6 pr-2 py-2 text-ink cursor-pointer focus:outline-none focus:border-terracotta bg-transparent"
+            />
+          </div>
         </div>
         <div>
           <label htmlFor="nb-checkout" className="block text-xs font-medium tracking-widest uppercase text-muted mb-1.5">
             Departure
           </label>
-          <input
-            id="nb-checkout"
-            ref={checkOutRef}
-            readOnly
-            className="w-full rounded-lg border border-line px-3 py-2.5 text-ink cursor-pointer focus:outline-none focus:ring-2 focus:ring-terracotta/40"
-          />
+          <div className="relative">
+            <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+            <input
+              id="nb-checkout"
+              ref={checkOutRef}
+              readOnly
+              className="w-full border-b border-line pl-6 pr-2 py-2 text-ink cursor-pointer focus:outline-none focus:border-terracotta bg-transparent"
+            />
+          </div>
         </div>
         <a
           href={bookingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-lg bg-terracotta text-white px-6 py-2.5 font-semibold text-center hover:bg-terracotta-deep transition-colors whitespace-nowrap"
+          className="bg-terracotta text-white px-6 py-2.5 font-semibold text-center hover:bg-terracotta-deep transition-colors whitespace-nowrap"
         >
           Check Availability
         </a>
       </div>
     </div>
+  );
+}
+
+function CalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="3" y="5" width="18" height="16" rx="1" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
   );
 }
