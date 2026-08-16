@@ -14,8 +14,8 @@ export default function RestaurantPage() {
     <main>
       <div className="relative h-[52vh] min-h-[360px] overflow-hidden">
         <Image
-          src="/images/home-garden.webp"
-          alt="Woodpecker Guesthouse grounds"
+          src="/images/restaurant-dining.webp"
+          alt="Dining room at Woodpecker Guesthouse"
           fill
           priority
           className="object-cover hero-photo"

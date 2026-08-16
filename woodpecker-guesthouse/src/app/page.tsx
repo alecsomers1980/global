@@ -144,8 +144,8 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
           <div className="relative h-[420px] md:h-[480px] order-2 md:order-1 overflow-hidden shadow-lg">
             <Image
-              src="/images/home-garden.webp"
-              alt="Woodpecker Guesthouse grounds"
+              src="/images/restaurant-dining.webp"
+              alt="Dining room at Woodpecker Guesthouse"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"

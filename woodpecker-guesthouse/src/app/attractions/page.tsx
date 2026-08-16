@@ -12,18 +12,26 @@ const ATTRACTIONS = [
   {
     name: "Kruger National Park",
     desc: "Enjoy a day out exploring the biggest park in the country, boasting a high density of wildlife including the Big Five. Explore the rich mountains, bush plains and tropical forests on exciting game drives.",
+    image: "/images/attraction-kruger.webp",
+    credit: "Dietmar Rabich",
   },
   {
     name: "God's Window",
     desc: "God's Window gives a panoramic view of the Lowveld. If you're a lover of wildlife or plants, there are a number of exciting species to spot in what's considered one of the best views on the Panorama Route.",
+    image: "/images/attraction-gods-window.webp",
+    credit: "Marco Schmidt",
   },
   {
     name: "Blyde River Canyon",
     desc: "Take a tour through one of the largest green canyons in the world — the Blyde River Canyon is a sight for sore eyes, with wildlife and astounding views along the way.",
+    image: "/images/attraction-blyde-canyon.webp",
+    credit: "ErwinMeier",
   },
   {
     name: "Bourke's Luck Potholes",
     desc: "Visit one of South Africa's geological wonders. As one of the major tourist attractions in South Africa, the Bourke's Luck Potholes tell a story of the past, centred around the Blyde River.",
+    image: "/images/attraction-bourkes-potholes.webp",
+    credit: "Rudi von Staden",
   },
 ];
 
@@ -45,16 +53,22 @@ export default function AttractionsPage() {
           <h1 className="font-display text-4xl md:text-5xl">Attractions</h1>
         </Reveal>
       </div>
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <p className="text-muted mb-10">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <p className="text-muted mb-10 max-w-2xl">
           A stay at Woodpecker gives you the perks of exploring and experiencing the most majestic sightings and
           nature&apos;s wonders of Mpumalanga. Travel into the wonders of the world without leaving the feeling
           behind — at the end of the day, you retire back home into a sanctuary as spectacular as the day&apos;s
           sightings.
         </p>
-        <div className="grid sm:grid-cols-2 gap-6 mb-10">
+        <div className="grid sm:grid-cols-2 gap-x-8 gap-y-10 mb-10">
           {ATTRACTIONS.map((a, i) => (
-            <Reveal key={a.name} delay={(i % 2) * 100} className="rounded-xl border border-line bg-white p-5">
+            <Reveal key={a.name} delay={(i % 2) * 100}>
+              <div className="relative h-56 overflow-hidden mb-4">
+                <Image src={a.image} alt={a.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 50vw" />
+                <p className="absolute bottom-1.5 right-2 text-[10px] text-white/70">
+                  Photo: {a.credit} / Wikimedia Commons, CC BY-SA
+                </p>
+              </div>
               <p className="text-ink font-medium mb-1">{a.name}</p>
               <p className="text-muted text-sm">{a.desc}</p>
             </Reveal>
