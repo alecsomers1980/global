@@ -14,6 +14,11 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }
     'Completed': { bg: 'rgba(16,185,129,0.2)', text: '#34d399', border: 'rgba(16,185,129,0.3)' },
 };
 
+// Sorting the Status column by workflow order reads better than alphabetical.
+const STATUS_ORDER = Object.keys(STATUS_COLORS);
+
+type SortKey = 'created_at' | 'status' | 'entry_number' | 'client';
+
 export default function JobcardsListPage() {
     const router = useRouter();
     const [jobcards, setJobcards] = useState<any[]>([]);
@@ -21,6 +26,8 @@ export default function JobcardsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'active' | 'completed'>('active');
     const [pricing, setPricing] = useState<any>(null);
+    const [sortKey, setSortKey] = useState<SortKey>('created_at');
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
     const loadJobcards = useCallback(async () => {
         try {
@@ -95,7 +102,7 @@ export default function JobcardsListPage() {
     const displayEntryNo = (s: any) => {
         const v = String(s || '');
         if (!v) return '—';
-        return v.replace(/^JC(\d{4})\./, 'JC');
+        return v.replace(/^JC(\d{4}\.)?0*/, '') || v;
     };
 
     const itemsList = (jc: any): string[] => {
@@ -120,6 +127,26 @@ export default function JobcardsListPage() {
         return subtotal * 1.15;
     };
 
+    const toggleSort = (key: SortKey) => {
+        if (key === sortKey) {
+            setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortKey(key);
+            setSortDir('asc');
+        }
+    };
+
+    const sortArrow = (key: SortKey) => (sortKey === key ? (sortDir === 'asc' ? '▲' : '▼') : '↕');
+
+    const sortValue = (jc: any) => {
+        switch (sortKey) {
+            case 'status': return STATUS_ORDER.indexOf(jc.status);
+            case 'entry_number': return (jc.entry_number || '').toLowerCase();
+            case 'client': return (jc.company || jc.contact_name || '').toLowerCase();
+            default: return new Date(jc.created_at || 0).getTime();
+        }
+    };
+
     const filteredJobcards = jobcards.filter(jc => {
         if (viewMode === 'active' && jc.status === 'Completed') return false;
         if (viewMode === 'completed' && jc.status !== 'Completed') return false;
@@ -133,6 +160,14 @@ export default function JobcardsListPage() {
             (jc.invoice || '').toLowerCase().includes(q) ||
             (jc.entry_number || '').toLowerCase().includes(q)
         );
+    });
+
+    const sortedJobcards = [...filteredJobcards].sort((a, b) => {
+        const av = sortValue(a);
+        const bv = sortValue(b);
+        if (av < bv) return sortDir === 'asc' ? -1 : 1;
+        if (av > bv) return sortDir === 'asc' ? 1 : -1;
+        return 0;
     });
 
     return (
@@ -194,7 +229,7 @@ export default function JobcardsListPage() {
                 {/* List / Table */}
                 {loading ? (
                     <div className="text-center py-16 text-gray-400">Loading Jobcards...</div>
-                ) : filteredJobcards.length === 0 ? (
+                ) : sortedJobcards.length === 0 ? (
                     <div className="text-center py-16 text-gray-400 bg-white/3 backdrop-blur-md border border-white/10 rounded-xl">
                         <div className="text-4xl mb-4">📝</div>
                         <h3 className="text-white font-bold mb-2">No jobcards found</h3>
@@ -206,19 +241,43 @@ export default function JobcardsListPage() {
                             <thead>
                                 <tr>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        Booked
+                                        <button
+                                            onClick={() => toggleSort('created_at')}
+                                            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
+                                        >
+                                            Booked
+                                            <span className={sortKey === 'created_at' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('created_at')}</span>
+                                        </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        Status
+                                        <button
+                                            onClick={() => toggleSort('status')}
+                                            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
+                                        >
+                                            Status
+                                            <span className={sortKey === 'status' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('status')}</span>
+                                        </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Approved
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        JC
+                                        <button
+                                            onClick={() => toggleSort('entry_number')}
+                                            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
+                                        >
+                                            JC
+                                            <span className={sortKey === 'entry_number' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('entry_number')}</span>
+                                        </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        Client
+                                        <button
+                                            onClick={() => toggleSort('client')}
+                                            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
+                                        >
+                                            Client
+                                            <span className={sortKey === 'client' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('client')}</span>
+                                        </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Description
@@ -242,7 +301,7 @@ export default function JobcardsListPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredJobcards.map(jc => {
+                                {sortedJobcards.map(jc => {
                                     const sc = STATUS_COLORS[jc.status] || STATUS_COLORS['Quoted'];
                                     return (
                                         <tr
