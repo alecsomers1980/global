@@ -175,11 +175,11 @@ export default function Header() {
                     ))}
 
                     <Link
-                        href="/get-quote"
+                        href="/artwork"
                         onClick={closeMenu}
                         className="mt-4 px-12 py-5 bg-aloe-green text-black font-black rounded-full text-xl shadow-2xl"
                     >
-                        LET&apos;S START A PROJECT
+                        UPLOAD ARTWORK
                     </Link>
                 </nav>
             </div>
