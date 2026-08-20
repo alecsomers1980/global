@@ -4,11 +4,12 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
-import { Palette, FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper, FolderKanban } from 'lucide-react';
+import { Palette, FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper, FolderKanban, Inbox } from 'lucide-react';
 
 export default function AdminHubPage() {
     const router = useRouter();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [unreadArtwork, setUnreadArtwork] = useState(0);
 
     useEffect(() => {
         createClientSupabase().auth.getUser().then(({ data }) => {
@@ -16,6 +17,13 @@ export default function AdminHubPage() {
             const role = (data.user?.app_metadata as any)?.role;
             setIsAdmin(role === 'admin' || email === 'andre@aloesigns.co.za');
         });
+    }, []);
+
+    useEffect(() => {
+        fetch('/api/portal/admin/artwork-uploads')
+            .then(r => (r.ok ? r.json() : { unread: 0 }))
+            .then(d => setUnreadArtwork(d.unread || 0))
+            .catch(() => { });
     }, []);
 
     async function handleSignOut() {
@@ -46,6 +54,28 @@ export default function AdminHubPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+                    {/* Public Artwork Uploads */}
+                    <Link
+                        href="/portal/admin/artwork-uploads"
+                        className="group p-8 bg-white/3 backdrop-blur-md border border-white/10 hover:border-[#84cc16]/40 hover:bg-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 text-left relative overflow-hidden flex flex-col items-start"
+                    >
+                        {unreadArtwork > 0 && (
+                            <span className="absolute top-6 right-6 bg-[#84cc16] text-black text-xs font-black rounded-full min-w-[26px] h-[26px] px-2 flex items-center justify-center">
+                                {unreadArtwork}
+                            </span>
+                        )}
+                        <div className="w-14 h-14 bg-[#84cc16]/10 text-[#84cc16] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <Inbox size={28} />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2 text-white group-hover:text-[#84cc16] transition-colors">
+                            Artwork Uploads
+                            <ArrowRight size={20} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Public submissions from aloesigns.co.za/artwork. Files auto-delete 7 days after download.
+                        </p>
+                    </Link>
+
                     {/* Artwork Portal */}
                     <Link
                         href="/portal/admin/artwork"

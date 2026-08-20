@@ -75,7 +75,18 @@ export default function PrivacyPolicy() {
                         Our website uses cookies to enhance your browsing experience. You can choose to disable cookies through your browser settings, but this may affect the functionality of usage of the website.
                     </p>
 
-                    <h2 className="text-xl font-bold text-charcoal mt-6 mb-3">8. Contact Us</h2>
+                    <h2 className="text-xl font-bold text-charcoal mt-6 mb-3">8. Artwork Submissions</h2>
+                    <p>
+                        When you send us artwork through our upload page, we collect the contact details you provide (company name, contact person, contact number and email address), any description you write, and the files you attach. We use this information solely to quote on and produce your job, and to contact you about it.
+                    </p>
+                    <p className="mt-3">
+                        We also store a one-way, irreversible hash of your IP address to prevent automated abuse of the upload form. We do not store your IP address itself.
+                    </p>
+                    <p className="mt-3">
+                        Uploaded files and their accompanying details are deleted automatically seven days after a member of our team downloads them, or thirty days after submission if they are never downloaded. If you would like your submission removed sooner, contact us on 011 693 2600 or team@aloesigns.co.za.
+                    </p>
+
+                    <h2 className="text-xl font-bold text-charcoal mt-6 mb-3">9. Contact Us</h2>
                     <p>
                         If you have any questions about this Privacy Policy or wish to exercise your rights, please contact our Information Officer at:
                     </p>

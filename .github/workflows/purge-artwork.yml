@@ -1,0 +1,24 @@
+name: Purge expired artwork
+
+# Vercel Hobby allows only two cron jobs and vercel.json already declares two
+# (generate-news, publish-news), so this schedule lives in GitHub Actions instead.
+on:
+  schedule:
+    - cron: '30 1 * * *'   # 01:30 UTC = 03:30 SAST, daily
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call purge endpoint
+        run: |
+          code=$(curl -s -o /tmp/out -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://aloesigns.co.za/api/cron/purge-artwork)
+          cat /tmp/out
+          echo
+          if [ "$code" != "200" ]; then
+            echo "Purge failed with HTTP $code"
+            exit 1
+          fi
