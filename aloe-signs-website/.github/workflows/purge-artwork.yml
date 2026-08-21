@@ -2,6 +2,19 @@ name: Purge expired artwork
 
 # Vercel Hobby allows only two cron jobs and vercel.json already declares two
 # (generate-news, publish-news), so this schedule lives in GitHub Actions instead.
+#
+# DORMANT UNTIL THE REPO SPLIT. GitHub only runs workflows found in
+# `.github/workflows/` at the *repository root*. While aloe-signs-website is a
+# subdirectory of the `global` monorepo this file is ignored, which is deliberate:
+# it means CRON_SECRET does not have to be added to the monorepo, where every
+# other project's workflows could read it.
+#
+# When aloe-signs-website is split into its own repo, this path becomes the root
+# and the workflow starts running. At that point add CRON_SECRET to the NEW repo's
+# Actions secrets, matching the value in Vercel.
+#
+# Until then, purge manually when needed:
+#   curl -H "Authorization: Bearer $CRON_SECRET" https://aloesigns.co.za/api/cron/purge-artwork
 on:
   schedule:
     - cron: '30 1 * * *'   # 01:30 UTC = 03:30 SAST, daily
