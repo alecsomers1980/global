@@ -131,10 +131,10 @@ export default function Header() {
                     </Link>
 
                     <Link
-                        href="/get-quote"
+                        href="/artwork"
                         className="px-8 py-3 bg-aloe-green text-charcoal text-sm font-black rounded-full hover:scale-105 hover:shadow-[0_0_20px_rgba(0,229,51,0.4)] transition-all active:scale-95"
                     >
-                        LET&apos;S START A PROJECT
+                        UPLOAD ARTWORK
                     </Link>
                 </div>
 
