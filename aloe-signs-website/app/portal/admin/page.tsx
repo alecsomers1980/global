@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
-import { Palette, FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper, FolderKanban, Inbox } from 'lucide-react';
+import { FileSpreadsheet, ArrowRight, Settings, Package, User, Users, ScrollText, Newspaper, FolderKanban, Inbox } from 'lucide-react';
 
 export default function AdminHubPage() {
     const router = useRouter();
@@ -76,22 +76,10 @@ export default function AdminHubPage() {
                         </p>
                     </Link>
 
-                    {/* Artwork Portal */}
-                    <Link
-                        href="/portal/admin/artwork"
-                        className="group p-8 bg-white/3 backdrop-blur-md border border-white/10 hover:border-[#84cc16]/40 hover:bg-white/5 rounded-[2rem] shadow-2xl transition-all duration-500 text-left relative overflow-hidden flex flex-col items-start"
-                    >
-                        <div className="w-14 h-14 bg-[#84cc16]/10 text-[#84cc16] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <Palette size={28} />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2 text-white group-hover:text-[#84cc16] transition-colors">
-                            Client Artwork
-                            <ArrowRight size={20} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
-                        </h3>
-                        <p className="text-gray-400 text-sm leading-relaxed">
-                            Review client uploads, manage design proofs, and send sign-off emails.
-                        </p>
-                    </Link>
+                    {/* Client Artwork tile hidden by request (2026-08-22). The page itself is
+                        untouched and still reachable at /portal/admin/artwork — it holds the
+                        registered-client uploads and the proof sign-off loop. Restore this block
+                        to bring the tile back. */}
 
                     {/* Jobcards Portal */}
                     <Link

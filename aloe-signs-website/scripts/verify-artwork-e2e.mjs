@@ -70,7 +70,16 @@ const { rows } = await sql`SELECT status, notified_at FROM artwork_submissions W
 check(rows[0]?.status === 'received', 'row marked received', rows[0]?.status);
 
 // Clean up storage and row.
-await supabase.storage.from('artwork-uploads').remove([path]);
+// MUST use the service-role key: `supabase` above is the ANON client, and a
+// private bucket refuses its delete *without raising* — which silently littered
+// production with orphaned test files until someone listed the bucket by hand.
+const admin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL.trim(),
+  process.env.SUPABASE_SERVICE_ROLE_KEY.trim(),
+  { auth: { persistSession: false } }
+);
+const { error: rmErr } = await admin.storage.from('artwork-uploads').remove([path]);
+check(!rmErr, 'test file removed from storage', rmErr?.message);
 await sql`DELETE FROM artwork_submissions WHERE id = ${submit.id}`;
 console.log('  cleaned up test submission and file');
 
