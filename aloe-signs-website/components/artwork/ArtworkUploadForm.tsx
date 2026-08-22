@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { HONEYPOT_FIELD } from '@/lib/artwork/antibot';
 
 type Outcome =
   | { kind: 'idle' }
@@ -17,7 +18,7 @@ export default function ArtworkUploadForm({ token }: { token: string }) {
   const [contactNumber, setContactNumber] = useState('');
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState('');
-  const [website, setWebsite] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [outcome, setOutcome] = useState<Outcome>({ kind: 'idle' });
 
@@ -37,7 +38,7 @@ export default function ArtworkUploadForm({ token }: { token: string }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token,
-          website,
+          [HONEYPOT_FIELD]: honeypot,
           companyName,
           contactPerson,
           contactNumber,
@@ -159,13 +160,21 @@ export default function ArtworkUploadForm({ token }: { token: string }) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Honeypot. The name is deliberately meaningless: it was `website`, and
+            Chrome autofilled it from the saved profile, silently discarding real
+            submissions. Do not rename it to anything a browser recognises — and
+            never to `company`, which is a real field on this form. */}
         <div className="absolute left-[-9999px] h-px w-px overflow-hidden" aria-hidden="true">
           <input
-            name="website"
+            name={HONEYPOT_FIELD}
+            type="text"
             tabIndex={-1}
             autoComplete="off"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-form-type="other"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
             disabled={outcome.kind === 'sending'}
           />
         </div>

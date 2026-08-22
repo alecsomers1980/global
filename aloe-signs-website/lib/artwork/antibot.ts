@@ -60,12 +60,24 @@ export function hashIp(ip: string): string {
   return crypto.createHmac('sha256', secret()).update(`ip:${ip}`).digest('hex');
 }
 
+/**
+ * Hidden field bots fill in.
+ *
+ * The name matters more than it looks. It must not be `company` (this form has a
+ * real Company Name field), and it must not be anything a browser recognises as a
+ * profile field. It was originally `website`, and Chrome autofilled it from the
+ * saved profile — silently discarding a genuine submission and showing the client
+ * a fake success. `autoComplete="off"` does not prevent that. Hence a meaningless
+ * name no autofill heuristic matches.
+ */
+export const HONEYPOT_FIELD = 'hp_af_note';
+
 export function honeypotTripped(body: unknown): boolean {
   if (typeof body !== 'object' || body === null) {
     return false;
   }
 
-  const website = (body as Record<string, unknown>).website;
-  return typeof website === 'string' && website.trim().length > 0;
+  const value = (body as Record<string, unknown>)[HONEYPOT_FIELD];
+  return typeof value === 'string' && value.trim().length > 0;
 }
 

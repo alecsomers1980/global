@@ -18,7 +18,7 @@ const checks = [
   [validation, /'\.ai'/,                                              'ai allowed'],
   [antibot,    /MIN_SUBMIT_MS\s*=\s*3000\b/,                          'MIN_SUBMIT_MS is 3000'],
   [antibot,    /timingSafeEqual/,                                     'token signature compared in constant time'],
-  [form,       /name="website"/,                                      'honeypot named website'],
+  [form,       /name={HONEYPOT_FIELD}/,                              "honeypot uses the shared constant"],
 ];
 
 let failed = false;
@@ -27,13 +27,30 @@ for (const [source, re, label] of checks) {
   else console.log(`PASS: ${label}`);
 }
 
-// The honeypot must never be named `company` — this form has a real Company field,
-// and reusing that name would silently discard every genuine submission.
-if (/name="company"/i.test(form)) {
-  console.error('FAIL: a field named "company" is used as the honeypot');
+// The honeypot name is load-bearing. Two names have already caused, or would have
+// caused, real submissions to be silently discarded:
+//   `company` — this form has a genuine Company Name field
+//   `website` — Chrome autofills it from the saved profile (this actually happened)
+// The name must stay meaningless to both humans and browser autofill.
+const BANNED_HONEYPOT_NAMES = ['company', 'website', 'url', 'email', 'name', 'phone', 'address'];
+const declared = (antibot.match(/HONEYPOT_FIELD\s*=\s*'([^']+)'/) || [])[1];
+
+if (!declared) {
+  console.error('FAIL: HONEYPOT_FIELD constant not found in antibot.ts');
+  failed = true;
+} else if (BANNED_HONEYPOT_NAMES.includes(declared.toLowerCase())) {
+  console.error(`FAIL: honeypot named "${declared}" — browser autofill or a real field will collide with it`);
   failed = true;
 } else {
-  console.log('PASS: honeypot is not named company');
+  console.log(`PASS: honeypot name "${declared}" is autofill-safe`);
+}
+
+// The form must carry the password-manager opt-outs too.
+if (!/data-lpignore/.test(form) || !/data-1p-ignore/.test(form)) {
+  console.error('FAIL: honeypot missing password-manager ignore attributes');
+  failed = true;
+} else {
+  console.log('PASS: honeypot opts out of password managers');
 }
 
 process.exit(failed ? 1 : 0);

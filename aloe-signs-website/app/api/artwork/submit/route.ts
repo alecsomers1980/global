@@ -26,6 +26,18 @@ export async function POST(req: NextRequest) {
   }
 
   if (honeypotTripped(body)) {
+    // Logged loudly: a false positive here discards a real client's artwork and
+    // shows them a success screen, so it must never fail invisibly again.
+    const b = body as Record<string, unknown>;
+    console.warn(
+      '[artwork] honeypot tripped — submission discarded',
+      JSON.stringify({
+        contactPerson: b.contactPerson,
+        contactNumber: b.contactNumber,
+        email: b.email,
+        fileCount: Array.isArray(b.files) ? b.files.length : 0,
+      })
+    );
     return NextResponse.json({ id: null, reference: 'AW-OK', uploads: [] });
   }
 
