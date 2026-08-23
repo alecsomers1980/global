@@ -170,6 +170,7 @@ export default function ArtworkUploadForm({ token }: { token: string }) {
             type="text"
             tabIndex={-1}
             autoComplete="off"
+            readOnly
             data-lpignore="true"
             data-1p-ignore="true"
             data-form-type="other"
