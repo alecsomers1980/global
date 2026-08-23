@@ -25,6 +25,7 @@ export default function JobcardsListPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'active' | 'completed'>('active');
+    const [statusFilter, setStatusFilter] = useState<string>('all');
     const [pricing, setPricing] = useState<any>(null);
     const [sortKey, setSortKey] = useState<SortKey>('created_at');
     const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -148,8 +149,15 @@ export default function JobcardsListPage() {
     };
 
     const filteredJobcards = jobcards.filter(jc => {
-        if (viewMode === 'active' && jc.status === 'Completed') return false;
-        if (viewMode === 'completed' && jc.status !== 'Completed') return false;
+        if (statusFilter === 'all') {
+            // No explicit status chosen, so the Active/Completed tabs decide.
+            if (viewMode === 'active' && jc.status === 'Completed') return false;
+            if (viewMode === 'completed' && jc.status !== 'Completed') return false;
+        } else {
+            // An explicit status overrides the tabs — otherwise picking
+            // "Completed" while on "Active Jobs" would silently show nothing.
+            if (jc.status !== statusFilter) return false;
+        }
 
         if (!searchQuery) return true;
         const q = searchQuery.toLowerCase();
@@ -214,17 +222,53 @@ export default function JobcardsListPage() {
                         </button>
                     </div>
 
-                    <div className="relative w-full md:w-80">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Search company, name, order..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full py-2 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50"
-                        />
+                    <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
+                        <div className="relative">
+                            <select
+                                value={statusFilter}
+                                onChange={e => setStatusFilter(e.target.value)}
+                                className={`appearance-none py-2 pl-4 pr-10 rounded-lg border bg-white/5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50 cursor-pointer ${statusFilter === 'all' ? 'border-white/10 text-gray-300' : 'border-[#84cc16]/50 text-[#84cc16]'}`}
+                            >
+                                <option value="all" className="bg-[#1a1a1a] text-white">
+                                    All statuses ({jobcards.length})
+                                </option>
+                                {STATUS_ORDER.map(s => (
+                                    <option key={s} value={s} className="bg-[#1a1a1a] text-white">
+                                        {s} ({jobcards.filter(jc => jc.status === s).length})
+                                    </option>
+                                ))}
+                            </select>
+                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">▼</span>
+                        </div>
+
+                        {statusFilter !== 'all' && (
+                            <button
+                                onClick={() => setStatusFilter('all')}
+                                className="text-xs font-semibold text-gray-400 hover:text-white underline underline-offset-4"
+                            >
+                                Clear filter
+                            </button>
+                        )}
+
+                        <div className="relative w-full md:w-80">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Search company, name, order..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="w-full py-2 pl-10 pr-4 rounded-lg border border-white/10 bg-white/5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50"
+                            />
+                        </div>
                     </div>
                 </div>
+
+                {statusFilter !== 'all' && (
+                    <p className="-mt-4 mb-6 text-xs text-gray-400">
+                        Showing <span className="text-[#84cc16] font-semibold">{statusFilter}</span> jobcards only — the
+                        Active / Completed tabs are ignored while a status is selected.
+                    </p>
+                )}
 
                 {/* List / Table */}
                 {loading ? (
