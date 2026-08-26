@@ -6,3 +6,6 @@ node_modules/
 
 # split into standalone repos (files remain on disk)
 /ember-social/
+
+# launcher run logs (scripts\logs\*.log)
+/scripts/logs/
