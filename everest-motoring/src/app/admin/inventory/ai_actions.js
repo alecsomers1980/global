@@ -5,7 +5,7 @@
 // Server Actions is configured on the admin layout instead:
 // src/app/admin/layout.js → export const maxDuration = 300.
 
-import { createAdminClient } from "@/utils/supabase/server";
+import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { generateVehicleScript, optimizeVehicleDescription, buildFallbackDescription } from "@/utils/ai/scriptGenerator";
 import * as veoEngine from "@/utils/ai/videoEngineProvider";
 import * as seedanceEngine from "@/utils/ai/seedanceVideoEngine";
@@ -17,6 +17,8 @@ import { createStreamFromUrl, enableDownloads } from "@/utils/ai/cloudflareStrea
 import { composeSceneOneImage } from "@/utils/ai/nanoBananaService";
 import { estimateSpokenMs, CLIP_DURATION_MS, VOICEOVER_BUDGET_MS } from "@/utils/ai/voiceoverDuration";
 import { revalidatePath } from "next/cache";
+import { sendVideoApprovalEmail } from "@/utils/video/approvalEmail";
+import { applyVideoDecision } from "@/utils/video/decision";
 
 // Pipeline selector. "seedance" = new Seedance 2 Pro (silent) + ElevenLabs SA
 // voice + Fal mux. "veo" = legacy Veo 3.1 Fast with native audio. Default to
@@ -614,4 +616,36 @@ export async function optimizeDescriptionAction(carPayload, manualDescription) {
         console.error("Failed to optimize description in Server Action — using template fallback:", e);
         return buildFallbackDescription(carPayload, manualDescription);
     }
+}
+
+// Ask the approver to review a walkaround video. The cron pipeline calls the
+// helper directly when a render finishes; this wrapper exists for a manually
+// supplied video link, which never enters the pipeline.
+export async function requestVideoApprovalAction(carId) {
+    return sendVideoApprovalEmail(carId);
+}
+
+// Approve or reject a walkaround from the admin inventory table. The emailed
+// link authorises itself with a signed token; this route authorises with the
+// caller's admin session. Both funnel into applyVideoDecision.
+export async function decideVideoFromAdminAction(carId, action) {
+    if (action !== "approve" && action !== "reject") {
+        return { success: false, error: "Unknown action." };
+    }
+
+    const sessionClient = await createClient();
+    const { data: { user } } = await sessionClient.auth.getUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    const admin = await createAdminClient();
+    const { data: profile } = await admin
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+    if (!profile || profile.role !== "admin") {
+        return { success: false, error: "Unauthorized" };
+    }
+
+    return applyVideoDecision(carId, action);
 }

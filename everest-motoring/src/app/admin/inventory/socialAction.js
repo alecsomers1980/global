@@ -3,6 +3,14 @@
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getVehicleUrl as buildVehicleUrl } from "@/utils/url/vehicleUrl";
+import {
+    REEL_SLOT_UTC,
+    VIDEO_SLOT_UTC,
+    slotIso,
+    postingDay,
+    chooseFeedSlot,
+    feedLookbackFrom,
+} from "@/utils/social/schedule";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 const CONTACT = {
@@ -178,6 +186,18 @@ function getScheduleTimes() {
     };
 }
 
+// Earliest feed slot from tomorrow onward that no other vehicle holds. The
+// slot maths lives in @/utils/social/schedule so it can be tested directly.
+async function nextFeedSlot(admin) {
+    const { data } = await admin
+        .from("cars")
+        .select("feed_post_scheduled_at")
+        .not("feed_post_scheduled_at", "is", null)
+        .gte("feed_post_scheduled_at", feedLookbackFrom());
+
+    return chooseFeedSlot((data || []).map((row) => row.feed_post_scheduled_at));
+}
+
 async function sendToEmber(payload, apiKey, apiUrl) {
     const response = await fetch(`${apiUrl}/api/trigger`, {
         method: "POST",
@@ -323,4 +343,101 @@ Looking for your next car? Browse our showroom at everestmotoring.co.za
   } catch (e) {
     console.warn("[postSoldVideoToEmber] failed:", e.message);
   }
+}
+
+// ── Automatic posting for a newly added vehicle ─────────────────────────────
+
+/**
+ * Schedules the photo + specs feed post for a vehicle that has just been added.
+ * This is the only post that goes out without review; the reel and the full
+ * walkthrough both wait behind the walkaround approval gate.
+ */
+export async function scheduleNewCarFeedPost(car) {
+    const apiKey = process.env.EMBER_SOCIAL_API_KEY;
+    if (!apiKey) {
+        return { success: false, error: "EMBER_SOCIAL_API_KEY is not configured." };
+    }
+    const apiUrl = process.env.EMBER_SOCIAL_URL || "http://localhost:3000";
+
+    const admin = await createAdminClient();
+    const scheduledAt = await nextFeedSlot(admin);
+
+    // Atomic claim on the slot: the filter matches no rows if this vehicle
+    // already has a feed post, so a double save cannot post it twice.
+    const { data: claimed } = await admin
+        .from("cars")
+        .update({ feed_post_scheduled_at: scheduledAt })
+        .eq("id", car.id)
+        .is("feed_post_scheduled_at", null)
+        .select("id");
+
+    if (!claimed || claimed.length === 0) {
+        return { success: false, error: "A feed post is already scheduled for this vehicle." };
+    }
+
+    try {
+        await sendToEmber(
+            { ...buildFeedPost(car), scheduled_at: scheduledAt, vehicle_id: car.id },
+            apiKey,
+            apiUrl
+        );
+    } catch (error) {
+        // Release the slot so a retry can claim it.
+        await admin.from("cars").update({ feed_post_scheduled_at: null }).eq("id", car.id);
+        console.error("[scheduleNewCarFeedPost] ember post failed:", error.message);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath("/admin/inventory");
+    return { success: true, scheduledAt };
+}
+
+/**
+ * Creates the reel + full walkthrough posts for a vehicle whose walkaround has
+ * been approved. Gated on the approved state itself, so calling this directly
+ * cannot bypass the approval.
+ */
+export async function postApprovedVideoPosts(carId) {
+    const apiKey = process.env.EMBER_SOCIAL_API_KEY;
+    if (!apiKey) {
+        return { success: false, error: "EMBER_SOCIAL_API_KEY is not configured." };
+    }
+    const apiUrl = process.env.EMBER_SOCIAL_URL || "http://localhost:3000";
+
+    const admin = await createAdminClient();
+
+    const { data: claimed } = await admin
+        .from("cars")
+        .update({ video_social_posted_at: new Date().toISOString() })
+        .eq("id", carId)
+        .eq("video_approval_status", "approved")
+        .is("video_social_posted_at", null)
+        .select("*");
+
+    if (!claimed || claimed.length === 0) {
+        return {
+            success: false,
+            error: "This vehicle is not approved, or its video posts were already created.",
+        };
+    }
+    const car = claimed[0];
+    const day = postingDay(1);
+
+    const posts = [
+        { ...buildReelPost(car), scheduled_at: slotIso(day, REEL_SLOT_UTC), vehicle_id: car.id },
+        { ...buildVideoPost(car), scheduled_at: slotIso(day, VIDEO_SLOT_UTC), vehicle_id: car.id },
+    ];
+
+    try {
+        for (const post of posts) {
+            await sendToEmber(post, apiKey, apiUrl);
+        }
+    } catch (error) {
+        await admin.from("cars").update({ video_social_posted_at: null }).eq("id", carId);
+        console.error("[postApprovedVideoPosts] ember post failed:", error.message);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath("/admin/inventory");
+    return { success: true, count: posts.length, scheduledFor: day.toISOString().slice(0, 10) };
 }

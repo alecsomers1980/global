@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Car, FileImage, Pencil, Search, Share2 } from "lucide-react";
 import IconButton from "@/components/ui/IconButton";
 import AiVideoStatus from "./AiVideoStatus";
+import VideoApprovalBadge from "./VideoApprovalBadge";
 import SocialPostButton from "./SocialPostButton";
 import MarkSoldButton from "./MarkSoldButton";
 import SeoFixButton from "./SeoFixButton";
@@ -164,6 +165,7 @@ export default function InventoryTable({ initialCars, deleteCarAction }) {
                                                 {car.status}
                                             </span>
                                             <AiVideoStatus carId={car.id} videoUrl={car.video_url} />
+                                            <VideoApprovalBadge carId={car.id} status={car.video_approval_status} />
                                             {car.social_shared_at && (
                                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-label font-semibold uppercase rounded-md">
                                                     <Share2 className="h-3 w-3" />

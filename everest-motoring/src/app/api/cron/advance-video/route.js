@@ -28,6 +28,7 @@ import { synthesizeVoiceover } from "@/utils/ai/elevenLabsService";
 import { muxAudioOntoVideo } from "@/utils/ai/videoAudioMuxer";
 import { stitchVideosWithFal } from "@/utils/ai/videoStitchingService";
 import { createStreamFromUrl, enableDownloads, deleteStream } from "@/utils/ai/cloudflareStreamService";
+import { sendVideoApprovalEmail } from "@/utils/video/approvalEmail";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -523,6 +524,15 @@ export async function GET(request) {
             revalidatePath("/admin/inventory");
             revalidatePath("/inventory");
             console.log(`${logPrefix} complete -> cf:${cfData.uid}`);
+
+            // The finished walkaround needs a human to approve it before its
+            // reel + walkthrough posts are created. The claim inside is atomic,
+            // so a repeat tick cannot send a second email.
+            try {
+                await sendVideoApprovalEmail(car.id);
+            } catch (mailErr) {
+                console.warn(`${logPrefix} approval email failed: ${mailErr.message}`);
+            }
 
             // If this was a redo over an existing live video, delete the old
             // CF Stream entry so we don't orphan storage. Best-effort: a

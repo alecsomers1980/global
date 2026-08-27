@@ -4,7 +4,8 @@ import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { queueAiWalkaround, optimizeDescriptionAction } from "./ai_actions";
+import { queueAiWalkaround, optimizeDescriptionAction, requestVideoApprovalAction } from "./ai_actions";
+import { scheduleNewCarFeedPost } from "./socialAction";
 import { pingVehicleUrls, autoFixSeoForCar } from "./seo_actions";
 import { postCarToGbpAction } from "./gbp_actions";
 
@@ -297,6 +298,16 @@ export default function VehicleForm({ initialData = null }) {
                 if (!carPayload.video_url) {
                     setUploadProgress(95);
                     await queueAiWalkaround(insertedData.id);
+                }
+
+                // The photo + specs post goes out on its own; the reel and the
+                // full walkthrough wait for approval. A manual video link never
+                // enters the render pipeline, so ask for its approval here.
+                scheduleNewCarFeedPost({ ...carPayload, id: insertedData.id })
+                    .catch((err) => console.warn("Feed post scheduling failed:", err));
+                if (carPayload.video_url) {
+                    requestVideoApprovalAction(insertedData.id)
+                        .catch((err) => console.warn("Video approval request failed:", err));
                 }
             }
 
