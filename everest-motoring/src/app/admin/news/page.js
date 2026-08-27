@@ -13,6 +13,7 @@ const CATEGORY_LABEL = {
 
 const STATUS_STYLES = {
     published: "bg-green-100 text-green-700",
+    approved: "bg-blue-100 text-blue-700",
     draft: "bg-yellow-100 text-yellow-700",
     archived: "bg-slate-200 text-slate-600",
 };
@@ -30,7 +31,7 @@ export default async function AdminNewsPage() {
     const admin = await createAdminClient();
     const { data: posts } = await admin
         .from("news_posts")
-        .select("id, slug, title, category, status, published_at, created_at, generated_by_ai, reading_minutes")
+        .select("id, slug, title, category, status, published_at, scheduled_for, created_at, generated_by_ai, reading_minutes")
         .order("created_at", { ascending: false });
 
     return (
@@ -39,7 +40,8 @@ export default async function AdminNewsPage() {
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tight text-black">Editorial <span className="italic">Desk</span></h1>
                     <p className="text-slate-500 text-sm mt-1 font-medium">
-                        SEO articles — auto-generated monthly, plus manual drafts.
+                        Two AI drafts on the 1st of each month. Approve one and it publishes on its
+                        scheduled date — an unapproved draft never goes live.
                     </p>
                 </div>
                 <NewsActionBar />
@@ -52,6 +54,7 @@ export default async function AdminNewsPage() {
                             <th className="p-6">Title</th>
                             <th className="p-6">Category</th>
                             <th className="p-6">Status</th>
+                            <th className="p-6">Scheduled</th>
                             <th className="p-6">Published</th>
                             <th className="p-6">Source</th>
                             <th className="p-6 text-right">Actions</th>
@@ -74,6 +77,7 @@ export default async function AdminNewsPage() {
                                         {p.status}
                                     </span>
                                 </td>
+                                <td className="p-4 text-sm text-slate-600">{formatDate(p.scheduled_for)}</td>
                                 <td className="p-4 text-sm text-slate-600">{formatDate(p.published_at)}</td>
                                 <td className="p-4 text-xs text-slate-500">
                                     {p.generated_by_ai ? (
@@ -92,7 +96,7 @@ export default async function AdminNewsPage() {
                         ))}
                         {(!posts || posts.length === 0) && (
                             <tr>
-                                <td colSpan="6" className="p-12 text-center text-slate-500">
+                                <td colSpan="7" className="p-12 text-center text-slate-500">
                                     No articles yet. Click "Generate Article" to create your first AI-written post.
                                 </td>
                             </tr>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { publishNewsPost, unpublishNewsPost, deleteNewsPost } from "./actions";
+import { approveNewsPost, publishNewsPost, unpublishNewsPost, deleteNewsPost } from "./actions";
 
 export default function NewsRowActions({ post }) {
     const router = useRouter();
@@ -25,9 +25,21 @@ export default function NewsRowActions({ post }) {
     }
 
     const isPublished = post.status === "published";
+    const isDraft = post.status === "draft";
 
     return (
         <div className="flex justify-end gap-2">
+            {isDraft && (
+                <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => run(approveNewsPost, "Approve this article for its scheduled publish date?")}
+                    className="p-2 text-slate-400 hover:text-blue-600 disabled:opacity-40"
+                    title="Approve for scheduled publishing"
+                >
+                    <span className="material-symbols-outlined">check_circle</span>
+                </button>
+            )}
             {isPublished ? (
                 <>
                     <Link

@@ -11,6 +11,7 @@ import {
     estimateReadingMinutes,
 } from "@/utils/ai/newsGenerator";
 import { postNewsToGbp } from "@/utils/google/gbpService";
+import { publishPostRecord } from "@/utils/news/publishPost";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
 
@@ -74,7 +75,7 @@ async function pickFeaturedCar(admin) {
     return cars[Math.floor(Math.random() * cars.length)];
 }
 
-export async function generateNewsPost({ userId, autoPublish = false } = {}) {
+export async function generateNewsPost({ userId, autoPublish = false, scheduledFor = null } = {}) {
     const admin = await createAdminClient();
 
     const { data: recentPosts } = await admin
@@ -124,6 +125,7 @@ export async function generateNewsPost({ userId, autoPublish = false } = {}) {
             reading_minutes: article.reading_minutes,
             status,
             published_at: publishedAt,
+            scheduled_for: scheduledFor,
             generated_by_ai: true,
             created_by: userId || null,
         })
@@ -215,36 +217,39 @@ export async function updateNewsPost(formData) {
     return { success: true };
 }
 
+// Approve a draft so the scheduled-publish cron may take it live on its date.
+// The approval is the human editorial control that the auto-publish path lacked.
+export async function approveNewsPost(id) {
+    await requireAdmin();
+    const admin = await createAdminClient();
+
+    const { error } = await admin
+        .from("news_posts")
+        .update({ status: "approved" })
+        .eq("id", id)
+        .eq("status", "draft");
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath("/admin/news");
+    return { success: true };
+}
+
 export async function publishNewsPost(id) {
     await requireAdmin();
     const admin = await createAdminClient();
 
     const { data: post } = await admin
         .from("news_posts")
-        .select("slug, status, published_at, title, excerpt, hero_image_url")
+        .select("id, slug, status, published_at, title, excerpt, hero_image_url")
         .eq("id", id)
         .maybeSingle();
     if (!post) return { success: false, error: "Post not found" };
 
-    const publishedAt = post.published_at || new Date().toISOString();
-    const { error } = await admin
-        .from("news_posts")
-        .update({ status: "published", published_at: publishedAt })
-        .eq("id", id);
-    if (error) return { success: false, error: error.message };
-
     try {
-        await submitToIndexNow([
-            `${SITE_URL}/news`,
-            `${SITE_URL}/news/${post.slug}`,
-            `${SITE_URL}/sitemap.xml`,
-        ]);
+        await publishPostRecord(admin, post);
     } catch (err) {
-        console.warn("IndexNow ping failed:", err);
+        return { success: false, error: err.message };
     }
-
-    // Best-effort GBP post — fire and forget
-    postNewsToGbp(post).catch((err) => console.warn("GBP news post failed:", err));
 
     revalidatePath("/admin/news");
     revalidatePath("/news");
