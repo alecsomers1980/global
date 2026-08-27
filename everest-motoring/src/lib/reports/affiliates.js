@@ -4,7 +4,8 @@
  *
  * Completed deals and commission are attributed by the lead's created_at, to
  * stay consistent with the affiliate portal (which resets "Completed this month"
- * and commission owed by created_at). Commission is a flat R1000 per closed_won.
+ * and commission owed by created_at). Commission uses each affiliate's own
+ * commission_per_deal rate; an affiliate with no rate set contributes nothing.
  *
  * Returns { available, activeAffiliates, current, previous, topAffiliates,
  * pipeline } or { available: false, error } on failure.
@@ -12,13 +13,16 @@
 
 import { createAdminClient } from "@/utils/supabase/server";
 
-function aggregateLeads(leads) {
+function aggregateLeads(leads, rateById) {
   const completedDeals = leads.filter(l => l.status === 'closed_won');
   const saleValue = completedDeals.reduce((sum, l) => sum + (Number(l.cars?.price) || 0), 0);
   return {
     leads: leads.length,
     completed: completedDeals.length,
-    commission: completedDeals.length * 1000,
+    commission: completedDeals.reduce(
+      (sum, l) => sum + (Number(rateById[l.affiliate_id]) || 0),
+      0
+    ),
     saleValue,
   };
 }
@@ -30,7 +34,7 @@ export async function fetchAffiliateReport({ curr, prev }) {
     // 1. All affiliate profiles
     const { data: profiles, error: profilesError } = await client
       .from('profiles')
-      .select('id, first_name, last_name, is_approved, created_at')
+      .select('id, first_name, last_name, is_approved, created_at, commission_per_deal')
       .eq('role', 'affiliate');
 
     if (profilesError) {
@@ -74,7 +78,10 @@ export async function fetchAffiliateReport({ curr, prev }) {
     const currNew = countNewProfiles(curr);
     const prevNew = countNewProfiles(prev);
 
-    // 6. Name map
+    // 6. Name map + per-affiliate commission rate map
+    const rateById = {};
+    allProfiles.forEach(p => { rateById[p.id] = p.commission_per_deal; });
+
     const nameMap = {};
     allProfiles.forEach(p => {
       const fullName = `${p.first_name || ''} ${p.last_name || ''}`.trim();
@@ -92,7 +99,7 @@ export async function fetchAffiliateReport({ curr, prev }) {
     const topAffiliates = Object.entries(groups)
       .map(([id, leads]) => {
         const name = nameMap[id] || 'Affiliate';
-        const stats = aggregateLeads(leads);
+        const stats = aggregateLeads(leads, rateById);
         return { name, ...stats };
       })
       .sort((a, b) => b.completed - a.completed || b.leads - a.leads)
@@ -106,8 +113,8 @@ export async function fetchAffiliateReport({ curr, prev }) {
     };
 
     // 9. Current and previous aggregates
-    const current = { ...aggregateLeads(currLeads), newAffiliates: currNew };
-    const previous = { ...aggregateLeads(prevLeads), newAffiliates: prevNew };
+    const current = { ...aggregateLeads(currLeads, rateById), newAffiliates: currNew };
+    const previous = { ...aggregateLeads(prevLeads, rateById), newAffiliates: prevNew };
 
     return {
       available: true,

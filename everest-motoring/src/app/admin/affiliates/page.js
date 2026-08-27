@@ -44,8 +44,11 @@ export default async function AdminAffiliatesPage() {
         const affiliateLeads = (leads || []).filter(l => l.affiliate_id === affiliate.id);
         const totalLeads = affiliateLeads.length;
         const closedWon = affiliateLeads.filter(l => l.status === 'closed_won').length;
-        const estPending = affiliateLeads.reduce((sum, lead) => {
-            if (['new', 'contacted', 'finance_pending'].includes(lead.status)) return sum + 1000;
+        // No rate set for this affiliate means no commission figure is shown
+        // for them anywhere — null propagates instead of a misleading R 0.
+        const rate = affiliate.commission_per_deal;
+        const estPending = rate == null ? null : affiliateLeads.reduce((sum, lead) => {
+            if (['new', 'contacted', 'finance_pending'].includes(lead.status)) return sum + Number(rate);
             return sum;
         }, 0);
         return { ...affiliate, totalLeads, closedWon, estPending, leads: affiliateLeads };
@@ -178,6 +181,7 @@ function AffiliatesTable({ affiliates, allLeads, isPending = false }) {
                     <th className="p-6 font-black text-center">Tracking Code</th>
                     <th className="p-6 font-black text-center">Leads</th>
                     <th className="p-6 font-black text-center">Closed Won</th>
+                    <th className="p-6 font-black text-right">Rate / Deal</th>
                     <th className="p-6 font-black text-right">Pending Commission</th>
                     <th className="p-6 font-black text-right">Actions</th>
                 </tr>

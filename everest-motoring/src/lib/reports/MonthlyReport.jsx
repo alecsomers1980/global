@@ -761,7 +761,7 @@ function AffiliateSection({ affiliates }) {
       </TableBlock>
 
       <Text style={{ fontSize: 7, color: '#9ca3af', marginTop: 6 }}>
-        Completed deals and commissions are attributed by lead-creation date, consistent with the affiliate portal. Commission is a flat R1 000 per completed deal.
+        Completed deals and commissions are attributed by lead-creation date, consistent with the affiliate portal. Commission uses each affiliate's own agreed rate per completed deal.
       </Text>
     </View>
   );

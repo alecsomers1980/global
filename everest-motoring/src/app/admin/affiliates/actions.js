@@ -177,3 +177,32 @@ export async function addAffiliateAction(formData) {
     }
 }
 
+// ─── Set an affiliate's commission rate (rands per closed deal) ──────────────
+// A null amount clears the rate, which hides every commission figure from that
+// affiliate's portal.
+export async function setAffiliateCommissionAction(affiliateId, amount) {
+    try {
+        const supabase = await createAdminClient();
+        if (!affiliateId) return { success: false, error: "Missing ID" };
+        if (amount !== null && (!Number.isFinite(amount) || amount < 0)) {
+            return { success: false, error: "Amount must be 0 or more" };
+        }
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ commission_per_deal: amount })
+            .eq('id', affiliateId)
+            .eq('role', 'affiliate');
+
+        if (error) {
+            console.error("Set affiliate commission error:", error);
+            return { success: false, error: error.message };
+        }
+
+        revalidatePath('/admin/affiliates');
+        return { success: true };
+    } catch (err) {
+        console.error("setAffiliateCommissionAction exception:", err);
+        return { success: false, error: "Server Exception" };
+    }
+}

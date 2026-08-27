@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { approveAffiliateAction, declineAffiliateAction, deleteAffiliateAction, getAffiliateBankDetails } from "./actions";
+import CommissionRateCell from "./CommissionRateCell";
 
 const STATUS_STYLES = {
     new: "bg-blue-100 text-blue-700",
@@ -123,9 +124,16 @@ export default function AffiliateRow({ aff, affiliateLeads = [], isPending = fal
                     </span>
                 </td>
 
+                {/* Commission rate — editable, blank hides all amounts */}
+                <td className="p-4 text-right">
+                    <CommissionRateCell affiliateId={aff.id} initialValue={aff.commission_per_deal ?? null} />
+                </td>
+
                 {/* Est. Commission */}
                 <td className="p-4 text-right font-bold text-slate-800">
-                    R {new Intl.NumberFormat('en-ZA').format(aff.estPending)}
+                    {aff.estPending == null
+                        ? <span className="text-slate-300 italic font-normal">—</span>
+                        : `R ${new Intl.NumberFormat('en-ZA').format(aff.estPending)}`}
                 </td>
 
                 {/* Actions */}
@@ -171,7 +179,7 @@ export default function AffiliateRow({ aff, affiliateLeads = [], isPending = fal
             {/* ── Expandable leads panel ── */}
             {expanded && (
                 <tr>
-                    <td colSpan="7" className="bg-slate-50 border-b border-slate-200 p-0">
+                    <td colSpan="8" className="bg-slate-50 border-b border-slate-200 p-0">
                         <div className="mx-4 mb-4 mt-1 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                             <div className="bg-slate-800 px-4 py-2.5 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-amber-400 text-[18px]">assignment</span>

@@ -40,8 +40,13 @@ export default function AffiliateDashboardClient({ profile, leads }) {
         return leadDate < startOfCurrentMonth;
     });
 
-    // Calculate Exact Commissions (R1000 flat fee per completed deal THIS MONTH)
-    const exactCommissionOwed = completedThisMonth.length * 1000;
+    // The commission rate is set per affiliate in the admin section. No rate
+    // set means no rand amounts are shown to this affiliate at all.
+    const commissionRate = profile.commission_per_deal;
+    const showsAmounts = commissionRate != null;
+    const exactCommissionOwed = showsAmounts
+        ? completedThisMonth.length * Number(commissionRate)
+        : null;
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-7xl mx-auto px-4 lg:px-12 py-8">
@@ -73,9 +78,17 @@ export default function AffiliateDashboardClient({ profile, leads }) {
                 <div className="bg-slate-900 p-6 rounded-xl shadow-md border-t-4 border-t-emerald-500 relative overflow-hidden">
                     <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2 relative z-10 flex items-center gap-1">
                         Commissions Owed
-                        <span className="material-symbols-outlined text-[14px] text-emerald-400" title="R1000 per completed sale THIS MONTH">info</span>
+                        {showsAmounts && (
+                            <span className="material-symbols-outlined text-[14px] text-emerald-400" title={`R${new Intl.NumberFormat('en-ZA').format(commissionRate)} per completed sale THIS MONTH`}>info</span>
+                        )}
                     </p>
-                    <span className="text-3xl font-bold text-white relative z-10">R {new Intl.NumberFormat('en-ZA').format(exactCommissionOwed)}</span>
+                    {showsAmounts ? (
+                        <span className="text-3xl font-bold text-white relative z-10">R {new Intl.NumberFormat('en-ZA').format(exactCommissionOwed)}</span>
+                    ) : (
+                        <span className="block text-sm text-slate-400 relative z-10">
+                            Your commission rate hasn&apos;t been set yet — contact Everest Motoring.
+                        </span>
+                    )}
                     <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-6xl text-white/10 rotate-12">payments</span>
                 </div>
             </div>
