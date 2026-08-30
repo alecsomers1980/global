@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand — #6C8781 is the constant across the logo artwork and all five
+     vector product labels. Do not substitute. */
+  --brand: #6C8781;
+  --brand-deep: #4E645F;
+  --brand-ink: #F3FFF8;
+
+  --ground: #FAFCFB;
+  --surface: #EAF2EE;
+  --hairline: #DFE9E4;
+  --ink: #1B2521;
+  --ink-soft: #56635E;
+  --ink-mute: #808D88;
+  --dark-band: #10201C;
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-ink: var(--brand-ink);
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-dark-band: var(--dark-band);
+  --font-display: var(--font-marcellus);
+  --font-body: var(--font-karla);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-karla), "Helvetica Neue", sans-serif;
+  font-weight: 400;
+}
+
+.font-display { font-family: var(--font-marcellus), Georgia, serif; }
+
+/* Every reveal in this build uses one motion, and honours the OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
