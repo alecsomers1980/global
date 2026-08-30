@@ -1,4 +1,3 @@
-import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { Hero } from "@/components/home/Hero";
@@ -10,7 +9,6 @@ import { StockistBand } from "@/components/home/StockistBand";
 export default function HomePage() {
   return (
     <>
-      <Header />
       <main>
         <Hero />
         <VideoBand />

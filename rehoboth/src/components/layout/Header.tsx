@@ -12,7 +12,12 @@ const NAV = [
   { href: "/stockists", label: "Stockists" },
 ];
 
-export function Header() {
+/**
+ * `tone="dark"` renders the header transparently for pages whose banner runs
+ * full-bleed underneath it — a light bar butting against a dark banner reads
+ * as a seam.
+ */
+export function Header({ tone = "light" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
 
   // The cart hydrates from localStorage, so the count only renders after mount
@@ -21,12 +26,20 @@ export function Header() {
   useEffect(() => setMounted(true), []);
   const count = countOf(useCart((s) => s.items));
 
+  const dark = tone === "dark";
+
   return (
-    <header className="border-b border-hairline bg-ground">
+    <header
+      className={
+        dark
+          ? "relative z-20 bg-transparent"
+          : "relative z-20 border-b border-hairline bg-ground"
+      }
+    >
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-5 md:px-16">
         <Link href="/" aria-label="Rehoboth Herbal Co. home">
           <Image
-            src="/brand/wordmark-dark.png"
+            src={dark ? "/brand/wordmark-light.png" : "/brand/wordmark-dark.png"}
             alt="Rehoboth Herbal Co."
             width={620}
             height={118}
@@ -37,18 +50,26 @@ export function Header() {
 
         <nav className="hidden items-center gap-9 text-sm md:flex">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-ink hover:text-brand">
+            <Link
+              key={item.href}
+              href={item.href}
+              className={dark ? "text-white/85 hover:text-white" : "text-ink hover:text-brand"}
+            >
               {item.label}
             </Link>
           ))}
           <Link
             href="/cart"
             aria-label={mounted && count > 0 ? `Cart, ${count} items` : "Cart"}
-            className="relative text-ink hover:text-brand"
+            className={`relative ${dark ? "text-white/85 hover:text-white" : "text-ink hover:text-brand"}`}
           >
             <CartIcon />
             {mounted && count > 0 && (
-              <span className="absolute -right-2 -top-2 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 text-[11px] leading-none text-brand-ink">
+              <span
+                className={`absolute -right-2 -top-2 grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[11px] leading-none ${
+                  dark ? "bg-white text-ink" : "bg-brand text-brand-ink"
+                }`}
+              >
                 {count}
               </span>
             )}
@@ -63,21 +84,27 @@ export function Header() {
           className="grid h-11 w-11 place-items-center md:hidden"
         >
           <span className="flex flex-col gap-[5px]">
-            <span className="block h-px w-6 bg-ink" />
-            <span className="block h-px w-6 bg-ink" />
-            <span className="block h-px w-6 bg-ink" />
+            <span className={`block h-px w-6 ${dark ? "bg-white" : "bg-ink"}`} />
+            <span className={`block h-px w-6 ${dark ? "bg-white" : "bg-ink"}`} />
+            <span className={`block h-px w-6 ${dark ? "bg-white" : "bg-ink"}`} />
           </span>
         </button>
       </div>
 
       {open && (
-        <nav className="flex flex-col border-t border-hairline px-6 pb-4 md:hidden">
+        <nav
+          className={`flex flex-col px-6 pb-4 md:hidden ${
+            dark ? "bg-[#10201C]" : "border-t border-hairline"
+          }`}
+        >
           {[...NAV, { href: "/cart", label: "Cart" }].map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="flex min-h-[44px] items-center border-b border-hairline text-sm last:border-0"
+              className={`flex min-h-[44px] items-center border-b text-sm last:border-0 ${
+                dark ? "border-white/15 text-white/90" : "border-hairline text-ink"
+              }`}
             >
               {item.label}
             </Link>
