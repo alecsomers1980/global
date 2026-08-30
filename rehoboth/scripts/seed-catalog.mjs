@@ -1,5 +1,5 @@
 /**
- * Seed the Rehoboth catalogue: 9 products, 21 variants.
+ * Seed the Rehoboth catalogue: 9 products, 24 variants.
  * Data lives in src/lib/catalog-data.ts.
  *
  * Run: npm run seed

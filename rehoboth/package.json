@@ -12,7 +12,8 @@
     "seed": "node --env-file=.env.local scripts/seed-catalog.mjs",
     "compliance:scan": "node --no-warnings scripts/compliance-scan.mjs",
     "optimise-media": "node scripts/optimise-media.mjs",
-    "cut-video": "node scripts/cut-video.mjs"
+    "cut-video": "node scripts/cut-video.mjs",
+    "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
@@ -31,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "pg": "^8.23.0",
     "sharp": "^0.34.4",
     "tailwindcss": "^4",
     "typescript": "^5",
