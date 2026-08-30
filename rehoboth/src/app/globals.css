@@ -70,3 +70,29 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Background botanicals.
+   The sprigs are the farm's own moringa and artemisia, cut out of the client's
+   plate photography. Fade and drift are split across two elements because a
+   single element can only run one transform at a time — the wrapper carries
+   the settle-in and the static placement rotation, the image carries the
+   drift. Nested opacity multiplies, so each leaf keeps its own inline value. */
+@keyframes reh-leaf-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes reh-leaf-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%      { transform: translate3d(0, -16px, 0) rotate(1.5deg); }
+}
+
+.reh-leaf {
+  animation: reh-leaf-in 1.8s ease both;
+  animation-delay: 0.45s;
+}
+
+.reh-leaf-drift {
+  animation: reh-leaf-drift 19s ease-in-out infinite;
+  will-change: transform;
+}

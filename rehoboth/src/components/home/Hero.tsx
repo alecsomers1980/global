@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
+import { Botanicals } from "@/components/home/Botanicals";
 
 /**
  * Full-bleed banner.
@@ -37,6 +38,18 @@ export function Hero() {
           height: "620px",
           background:
             "radial-gradient(circle, rgba(124,178,160,0.22) 0%, rgba(124,178,160,0.07) 45%, rgba(124,178,160,0) 70%)",
+        }}
+      />
+
+      <Botanicals />
+
+      {/* scrim: keeps the headline off the leaves without flattening them */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10"
+        style={{
+          background:
+            "linear-gradient(100deg, rgba(16,32,28,0.55) 0%, rgba(16,32,28,0.2) 38%, rgba(16,32,28,0) 64%)",
         }}
       />
 
