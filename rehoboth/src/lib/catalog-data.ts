@@ -14,10 +14,37 @@
  * docs/label-claims-note-for-client.md.
  */
 
+export type VariantFormat =
+  | "powder" | "capsules" | "bulk" | "ointment" | "oil" | "bar" | "tincture" | "balm";
+
+export type SeedVariant = {
+  format: VariantFormat;
+  size_label: string;
+  price_retail: number;
+  price_trade: number;
+  barcode: string | null;
+  sort_order: number;
+};
+
+export type SeedProduct = {
+  slug: string;
+  name: string;
+  botanical_name: string | null;
+  accent_hex: string;
+  sort_order: number;
+  summary: string;
+  traditional_use: string | null;
+  ingredients: string;
+  directions: string;
+  storage: string;
+  variants: SeedVariant[];
+};
+
+
 const STORAGE = "Store in a cool dry place in an airtight container.";
 const CAPS_DIRECTIONS = "Take 2–3 capsules daily.";
 
-export const PRODUCTS = [
+export const PRODUCTS: SeedProduct[] = [
   {
     slug: "artemisia-annua-a3",
     name: "Artemisia Annua A3",
@@ -136,13 +163,17 @@ export const PRODUCTS = [
     botanical_name: null,
     accent_hex: "#6C8781",
     sort_order: 7,
-    summary: "A simple 10 g balm that softens and conditions the lips.",
+    summary: "A simple 10 g balm that softens and conditions the lips — marula or spearmint.",
     traditional_use: null,
     ingredients: "[INGREDIENT LIST — from label artwork, pending]",
     directions: "Apply to the lips as often as needed.",
     storage: STORAGE,
+    // Marula and Spearmint are both photographed in the client's own product
+    // shots. Only one Lip Balm barcode exists (6006010600012) — see open
+    // question in docs: does each scent need its own?
     variants: [
-      { format: "balm", size_label: "10 g", price_retail: 52, price_trade: 40, barcode: "6006010600012", sort_order: 1 },
+      { format: "balm", size_label: "Marula · 10 g",    price_retail: 52, price_trade: 40, barcode: null, sort_order: 1 },
+      { format: "balm", size_label: "Spearmint · 10 g", price_retail: 52, price_trade: 40, barcode: null,            sort_order: 2 },
     ],
   },
   {
@@ -151,14 +182,22 @@ export const PRODUCTS = [
     botanical_name: null,
     accent_hex: "#6C8781",
     sort_order: 8,
-    summary: "Traditional South African farm soap, cut into 150–170 g bars.",
+    summary: "Traditional South African farm soap, cut into 150–170 g bars — with moringa, cappuccino or cinnamon.",
     traditional_use:
       "Boerseep is the plain, hard-milled farm soap of South African tradition — made simply, and used for everything.",
     ingredients: "[INGREDIENT LIST — from label artwork, pending]",
     directions: "For external use. Cleanses the skin.",
     storage: "Keep dry between uses.",
+    // Four varieties are photographed: plain, Moringa, Cappuccino, Cinnamon.
+    // Only the plain bar has a barcode (6006010800016).
+    // Three varieties are photographed: Moringa, Cappuccino, Cinnamon. There is
+    // no "plain" bar in the photography, so none is listed. Only one Boerseep
+    // barcode exists (6006010800016) and which variety it belongs to is an open
+    // question for the client — left unassigned rather than guessed.
     variants: [
-      { format: "bar", size_label: "150–170 g", price_retail: 60, price_trade: 46, barcode: "6006010800016", sort_order: 1 },
+      { format: "bar", size_label: "Moringa · 150–170 g",    price_retail: 60, price_trade: 46, barcode: null, sort_order: 1 },
+      { format: "bar", size_label: "Cappuccino · 150–170 g", price_retail: 60, price_trade: 46, barcode: null, sort_order: 2 },
+      { format: "bar", size_label: "Cinnamon · 150–170 g",   price_retail: 60, price_trade: 46, barcode: null, sort_order: 3 },
     ],
   },
   {

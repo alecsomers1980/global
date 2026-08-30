@@ -2,7 +2,7 @@
  * Fail the build if any product copy carries a medical claim.
  *
  * Screens two sources:
- *   1. scripts/catalog-data.mjs — the copy we ship (always checked)
+ *   1. src/lib/catalog-data.ts — the copy we ship (always checked)
  *   2. the live `products` table   — catches anything typed into the admin
  *      (skipped when Supabase env is absent, e.g. on a fresh clone)
  *
@@ -13,7 +13,7 @@
  * Run: npm run compliance:scan
  */
 import { screen } from "../src/lib/compliance.ts";
-import { PRODUCTS } from "./catalog-data.mjs";
+import { PRODUCTS } from "../src/lib/catalog-data.ts";
 
 const FIELDS = [
   "name",

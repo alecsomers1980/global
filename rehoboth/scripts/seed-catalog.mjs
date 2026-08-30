@@ -1,11 +1,11 @@
 /**
  * Seed the Rehoboth catalogue: 9 products, 21 variants.
- * Data lives in scripts/catalog-data.mjs.
+ * Data lives in src/lib/catalog-data.ts.
  *
  * Run: npm run seed
  */
 import { createClient } from "@supabase/supabase-js";
-import { PRODUCTS } from "./catalog-data.mjs";
+import { PRODUCTS } from "../src/lib/catalog-data.ts";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -42,8 +42,8 @@ async function main() {
   }
 
   console.log(`seeded ${products} products, ${variants} variants`);
-  if (variants !== 21) {
-    console.error(`expected 21 variants, wrote ${variants}`);
+  if (variants !== 24) {
+    console.error(`expected 24 variants, wrote ${variants}`);
     process.exit(1);
   }
 }
