@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useCart, countOf } from "@/lib/cart";
 
 const NAV = [
   { href: "/shop", label: "Shop" },
@@ -13,6 +14,12 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+
+  // The cart hydrates from localStorage, so the count only renders after mount
+  // — otherwise the server's 0 and the client's value disagree.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const count = countOf(useCart((s) => s.items));
 
   return (
     <header className="border-b border-hairline bg-ground">
@@ -34,8 +41,17 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <Link href="/cart" aria-label="Cart" className="text-ink hover:text-brand">
+          <Link
+            href="/cart"
+            aria-label={mounted && count > 0 ? `Cart, ${count} items` : "Cart"}
+            className="relative text-ink hover:text-brand"
+          >
             <CartIcon />
+            {mounted && count > 0 && (
+              <span className="absolute -right-2 -top-2 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 text-[11px] leading-none text-brand-ink">
+                {count}
+              </span>
+            )}
           </Link>
         </nav>
 
