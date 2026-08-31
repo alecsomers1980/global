@@ -109,6 +109,10 @@ const COLUMNS: { name: string; type: string }[] = [
     // Report / approval tracking
     { name: 'approved_at', type: 'TIMESTAMP WITH TIME ZONE' },
 
+    // SLA alert de-duplication (cron sends each breach email once)
+    { name: 'sla_captured_alert_sent_at', type: 'TIMESTAMP WITH TIME ZONE' },
+    { name: 'sla_quote_approved_alert_sent_at', type: 'TIMESTAMP WITH TIME ZONE' },
+
     // Engineering / civil material sections
     { name: 'mat_section_digital', type: 'BOOLEAN DEFAULT false' },
     { name: 'mat_section_engineering', type: 'BOOLEAN DEFAULT false' },

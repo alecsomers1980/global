@@ -306,6 +306,43 @@ export async function notifyAdminProofResponse(opts: {
   });
 }
 
+// ─── Admin: Jobcard SLA Breach ─────────────────────────────────────────────────
+
+export async function notifyAdminJobcardSlaBreach(opts: {
+  jobcardId: string;
+  entryNumber: string;
+  clientName: string;
+  reason: string;
+}) {
+  const to = process.env.UPLOAD_NOTIFICATION_EMAIL || 'melissa@aloesigns.co.za';
+  const link = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://aloesigns.co.za'}/portal/admin/jobcards/${opts.jobcardId}`;
+
+  const body = `
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:${brand.textDark};">⏰ Jobcard Needs Attention</h1>
+    <p style="margin:0 0 32px;font-size:15px;color:${brand.textMuted};">A jobcard has stalled past its SLA threshold.</p>
+
+    ${buildSectionHeading('Details')}
+    ${buildDetailsTable([
+    buildInfoRow('Jobcard', opts.entryNumber),
+    buildInfoRow('Client', opts.clientName),
+    buildInfoRow('Issue', `<strong style="color:#b45309;">${opts.reason}</strong>`),
+  ].join(''))}
+
+    <div style="text-align:center;margin-top:32px;">
+      ${buildButton('Open Jobcard', link)}
+    </div>
+  `;
+
+  await sendPortalEmail({
+    to,
+    subject: `⏰ Jobcard Overdue — ${opts.entryNumber}`,
+    title: 'Jobcard Needs Attention',
+    preview: `${opts.entryNumber}: ${opts.reason}`,
+    body,
+    text: `Jobcard ${opts.entryNumber} (${opts.clientName}) needs attention: ${opts.reason}. View: ${link}`,
+  });
+}
+
 // ─── Admin: Artwork Upload ────────────────────────────────────────────────────
 
 export async function notifyAdminArtworkUpload(opts: {

@@ -9,6 +9,10 @@
     {
       "path": "/api/cron/publish-news",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/jobcard-alerts",
+      "schedule": "0 * * * *"
     }
   ]
 }
