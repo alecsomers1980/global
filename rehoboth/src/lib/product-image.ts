@@ -20,19 +20,33 @@ export function isUploaded(value: string | null | undefined): boolean {
 }
 
 /**
- * Products the client has not photographed. Every artemisia shot in the
- * library is ANNUA A3 (verified by reading the bottle labels), and the
- * tinctures were never shot. These render a brand panel rather than borrowing
- * another product's bottle — showing an A3 bottle on the Afra page would
- * misrepresent what is being sold.
+ * The seven products photographed in the client's shoot, which ship as
+ * optimised webp in public/products.
  *
- * Uploading a photo through the admin clears this: hero_image wins, which is
- * the whole point of the upload existing.
+ * An allowlist rather than a list of exceptions. The exceptions version was
+ * right for a fixed catalogue of nine, but the admin can now add products, and
+ * a new one has no repo asset — so "everything except Afra and the tinctures
+ * has a photo" silently pointed every new product at a file that does not
+ * exist, giving a broken image until someone uploaded one.
+ *
+ * Artemisia Afra and the tinctures are absent for a different reason: every
+ * artemisia shot in the library is ANNUA A3 (verified by reading the bottle
+ * labels) and the tinctures were never shot. They render a brand panel rather
+ * than borrowing another product's bottle, which would misrepresent what is
+ * being sold.
  */
-const NO_PHOTOGRAPH = new Set(["artemisia-afra", "tinctures"]);
+const SHIPPED_PHOTOGRAPH = new Set([
+  "artemisia-annua-a3",
+  "boerseep",
+  "lip-balm",
+  "moringa-oleifera",
+  "neem",
+  "rosemary",
+  "turmeric-with-pepper",
+]);
 
-/** The photo a product shows, upload first and the shipped asset behind it. */
+/** The photo a product shows: an upload first, the shipped asset behind it. */
 export function heroFor(slug: string, heroImage: string | null): string | null {
   if (heroImage) return heroImage;
-  return NO_PHOTOGRAPH.has(slug) ? null : `/products/${slug}`;
+  return SHIPPED_PHOTOGRAPH.has(slug) ? `/products/${slug}` : null;
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useCart, subtotalOf } from "@/lib/cart";
 import { rands } from "@/lib/money";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 
 export default function CartPage() {
@@ -22,8 +23,8 @@ export default function CartPage() {
   return (
     <>
       <Header />
+      <PageBanner eyebrow="Your basket" title="Your cart" />
       <main className="mx-auto max-w-[1000px] px-6 py-14 md:px-16">
-        <h1 className="font-display text-4xl text-ink md:text-[52px]">Your cart</h1>
 
         {!ready ? (
           <p className="mt-10 text-ink-mute">Loading…</p>

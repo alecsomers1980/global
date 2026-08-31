@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getProducts, priceFrom } from "@/lib/catalog";
 import { rands } from "@/lib/money";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { ProductImage } from "@/components/product/ProductImage";
@@ -21,18 +22,14 @@ export default async function ShopPage() {
   return (
     <>
       <Header />
-      <div className="bg-brand-wash">
-        <div className="mx-auto max-w-[1440px] px-6 py-16 md:px-16">
-          <p className="mb-4 text-xs uppercase tracking-[0.2em] text-brand-night">The range</p>
-          <h1 className="font-display text-4xl text-ink md:text-[56px]">Everything we grow</h1>
-          <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-ink-soft">
-            {/* One string, not text interleaved with expressions: JSX drops the
-                space on each side of an expression, which rendered "24sizes"
-                and then "sizes.Grown" when only half of it was fixed. */}
-            {`${products.length} products, ${variantCount} sizes. Grown, dried and packed on one farm at Low’s Creek, Mpumalanga.`}
-          </p>
-        </div>
-      </div>
+      {/* One string, not text interleaved with expressions: JSX drops the
+          space on each side of an expression, which rendered "24sizes" and
+          then "sizes.Grown" when only half of it was fixed. */}
+      <PageBanner
+        eyebrow="The range"
+        title="Everything we grow"
+        lead={`${products.length} products, ${variantCount} sizes. Grown, dried and packed on one farm at Low’s Creek, Mpumalanga.`}
+      />
 
       <main className="mx-auto max-w-[1440px] px-6 md:px-16">
         <div className="grid gap-8 py-14 sm:grid-cols-2 lg:grid-cols-3">

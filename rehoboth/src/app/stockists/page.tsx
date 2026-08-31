@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { StockistForm } from "./StockistForm";
 
@@ -13,16 +14,19 @@ export default function StockistsPage() {
   return (
     <>
       <Header />
-      <main>
-        <div className="mx-auto max-w-[900px] px-6 py-16 md:px-16 md:py-24">
-          <p className="mb-6 text-xs uppercase tracking-[0.2em] text-brand">Wholesale</p>
-          <h1 className="font-display text-4xl leading-tight text-ink md:text-[60px]">
+      <PageBanner
+        eyebrow="Wholesale"
+        title={
+          <>
             Room on your shelf
             <br />
             for something grown slowly.
-          </h1>
-
-          <div className="mt-8 flex flex-col gap-5 text-[17px] leading-relaxed text-ink-soft">
+          </>
+        }
+      />
+      <main>
+        <div className="mx-auto max-w-[900px] px-6 py-16 md:px-16 md:py-20">
+          <div className=" flex flex-col gap-5 text-[17px] leading-relaxed text-ink-soft">
             <p>
               Everything we sell is grown, dried, milled and packed on one farm at
               Low&rsquo;s Creek in Mpumalanga. One plant to a bottle, picked by hand

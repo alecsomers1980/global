@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 
 export default function ForgotPasswordPage() {
@@ -35,9 +36,9 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[440px] px-6 py-20">
-        <h1 className="font-display text-4xl text-ink">Reset your password</h1>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">
+      <PageBanner eyebrow="Your account" title="Reset your password" />
+      <main className="mx-auto w-full max-w-[440px] px-6 py-16">
+        <p className=" text-[15px] leading-relaxed text-ink-soft">
           Give us the email you signed up with and we will send you a link.
         </p>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { SocialRow } from "@/components/layout/SocialRow";
 import { getSocialLinks } from "@/lib/social";
@@ -18,21 +19,26 @@ export default async function ContactPage() {
   return (
     <>
       <Header />
-      <main>
-        <div className="mx-auto max-w-[1100px] px-6 py-16 md:px-16 md:py-24">
-          <p className="mb-6 text-xs uppercase tracking-[0.2em] text-brand">Get in touch</p>
-          <h1 className="font-display text-4xl leading-tight text-ink md:text-[60px]">
+      <PageBanner
+        eyebrow="Get in touch"
+        title={
+          <>
             There is someone
             <br />
             on the other end.
-          </h1>
-          <p className="mt-6 max-w-[560px] text-[17px] leading-relaxed text-ink-soft">
-            A question about a plant, an order on its way, or a shop that would like
-            to stock us — it all comes to the same farm at Low&rsquo;s Creek, and a
-            person reads it.
-          </p>
-
-          <div className="mt-14 grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+          </>
+        }
+        lead={
+          <>
+            A question about a plant, an order on its way, or a shop that would
+            like to stock us — it all comes to the same farm at Low&rsquo;s Creek,
+            and a person reads it.
+          </>
+        }
+      />
+      <main>
+        <div className="mx-auto max-w-[1100px] px-6 py-16 md:px-16 md:py-20">
+          <div className=" grid gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
             <div className="flex flex-col gap-10">
               <div className="flex flex-col gap-2">
                 <h2 className="font-display text-xl text-ink">Phone</h2>

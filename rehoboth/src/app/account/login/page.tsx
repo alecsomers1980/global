@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { PasswordInput } from "@/components/form/PasswordInput";
 
@@ -55,8 +56,8 @@ export default function LoginPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[440px] px-6 py-20">
-        <h1 className="font-display text-4xl text-ink">Welcome back</h1>
+      <PageBanner eyebrow="Your account" title="Welcome back" />
+      <main className="mx-auto w-full max-w-[440px] px-6 py-16">
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
           <div className="flex flex-col gap-2">

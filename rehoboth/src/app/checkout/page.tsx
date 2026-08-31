@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { getShippingSettings } from "@/lib/shipping";
 import { CheckoutForm } from "./CheckoutForm";
@@ -21,8 +22,8 @@ export default async function CheckoutPage({
   return (
     <>
       <Header />
+      <PageBanner eyebrow="Almost there" title="Checkout" />
       <main className="mx-auto max-w-[1100px] px-6 py-14 md:px-16">
-        <h1 className="font-display text-4xl text-ink md:text-[52px]">Checkout</h1>
 
         {cancelled && (
           <p role="status" className="mt-6 border-l-2 border-brand bg-surface p-4 text-[15px] text-ink-soft">

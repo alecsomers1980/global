@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { PasswordInput } from "@/components/form/PasswordInput";
 
@@ -48,10 +49,9 @@ export default function SignupPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[440px] px-6 py-20">
-        <h1 className="font-display text-4xl text-ink">Create an account</h1>
-
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">
+      <PageBanner eyebrow="Your account" title="Create an account" />
+      <main className="mx-auto w-full max-w-[440px] px-6 py-16">
+        <p className=" text-[15px] leading-relaxed text-ink-soft">
           An account is optional — you are welcome to check out as a guest — but it
           keeps your order history in one place.
         </p>

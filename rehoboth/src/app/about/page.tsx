@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { ClipBand } from "@/components/home/ClipBand";
@@ -15,15 +16,19 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main>
-        <section className="mx-auto max-w-[820px] px-6 py-16 md:px-16 md:py-24">
-          <p className="mb-6 text-xs uppercase tracking-[0.2em] text-brand">Genesis 26:22</p>
-          <h1 className="font-display text-4xl leading-tight text-ink md:text-[60px]">
+      <PageBanner
+        eyebrow="Genesis 26:22"
+        title={
+          <>
             He called it Rehoboth,
             <br />
             for now there is room.
-          </h1>
-          <div className="mt-8 flex flex-col gap-5 text-[17px] leading-relaxed text-ink-soft">
+          </>
+        }
+      />
+      <main>
+        <section className="mx-auto max-w-[820px] px-6 py-16 md:px-16 md:py-20">
+          <div className=" flex flex-col gap-5 text-[17px] leading-relaxed text-ink-soft">
             <p>
               Isaac dug three wells. The first two were fought over and taken. The
               third nobody contested, and he named it Rehoboth — <em>room</em>.

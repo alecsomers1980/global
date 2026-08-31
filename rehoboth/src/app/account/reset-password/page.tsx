@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { PasswordInput } from "@/components/form/PasswordInput";
 
@@ -81,7 +82,8 @@ export default function ResetPasswordPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[440px] px-6 py-20">
+      <PageBanner eyebrow="Your account" title="Choose a new password" />
+      <main className="mx-auto w-full max-w-[440px] px-6 py-16">
         {!ready && !error ? (
           <div className="border-l-2 border-brand bg-surface p-4 text-[15px] text-ink-soft">
             Checking your reset link…
@@ -99,9 +101,7 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <>
-            <h1 className="font-display text-4xl text-ink">Choose a new password</h1>
-
-            <form className="mt-8 flex flex-col gap-5" onSubmit={handleSubmit}>
+            <form className=" flex flex-col gap-5" onSubmit={handleSubmit}>
               {error && (
                 <p role="alert" className="border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
                   {error}

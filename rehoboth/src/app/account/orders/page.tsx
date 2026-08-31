@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
+import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { rands } from "@/lib/money";
 import { getMyOrders, type MyOrder } from "./actions";
@@ -54,9 +55,9 @@ export default function AccountOrdersPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-[820px] px-6 py-16 md:px-16 md:py-20">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <h1 className="font-display text-4xl text-ink md:text-[52px]">Your orders</h1>
+      <PageBanner eyebrow="Your account" title="Your orders" />
+      <main className="mx-auto w-full max-w-[820px] px-6 py-14 md:px-16">
+        <div className="flex flex-wrap items-baseline justify-end gap-4">
           {state.phase === "ready" && (
             <button
               type="button"

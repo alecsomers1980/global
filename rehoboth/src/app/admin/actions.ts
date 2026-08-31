@@ -1,10 +1,12 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { asAdmin, RefusedError } from "@/lib/admin";
 import { getServerClient } from "@/lib/supabase/server";
 import { screen } from "@/lib/compliance";
 import { cleanSocial, type SocialLinks } from "@/lib/social";
 import { uploadProductImage, deleteProductImage } from "@/lib/storage";
+import { VARIANT_FORMATS } from "@/lib/variant-formats";
 
 export type ProductCopy = {
   name: string;
@@ -19,6 +21,25 @@ export type ProductCopy = {
 };
 
 export type ActionResult<T = null> = { ok: true; data: T } | { ok: false; error: string };
+
+/**
+ * Push a catalogue change out to the live site.
+ *
+ * The shop, the home page and every product page are built ahead of time,
+ * which is most of why they are fast — but it also means a price changed in
+ * here is invisible to customers until something tells Next the pages are
+ * stale. Without this, the admin edits a database nobody is reading.
+ *
+ * "layout" scope rather than a list of paths: a product touches the home page,
+ * the shop index and its own page, and a rename changes which paths exist at
+ * all. Rebuilding a nine-product catalogue on demand costs nothing, and
+ * getting this subtly wrong means a shopkeeper trusting a price that is not
+ * the one being charged.
+ */
+function refreshShop() {
+  revalidatePath("/", "layout");
+}
+
 
 /* ------------------------------------------------------------------ orders */
 
@@ -218,6 +239,7 @@ export async function saveProduct(
     if (before?.hero_image && before.hero_image !== fields.hero_image) {
       await deleteProductImage(before.hero_image);
     }
+    refreshShop();
     return null;
   });
 }
@@ -259,6 +281,172 @@ export async function saveVariant(
     if (before?.image_url && before.image_url !== fields.image_url) {
       await deleteProductImage(before.image_url);
     }
+    refreshShop();
+    return null;
+  });
+}
+
+
+/* ------------------------------------------------- adding and removing */
+
+/** URL-safe, lower case, no runs of dashes. */
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
+
+/**
+ * Add a product.
+ *
+ * It arrives hidden. A new row has no photograph, no ingredients and no price,
+ * and putting that in front of a customer the instant someone types a name is
+ * the wrong default — the operator turns it on when it is ready.
+ */
+export async function createProduct(token: string, name: string): Promise<ActionResult<string>> {
+  return asAdmin(token, async () => {
+    const clean = name.trim();
+    if (clean.length < 2) throw new RefusedError("Give the product a name first.");
+
+    const hit = screen(clean);
+    if (hit.flagged) {
+      throw new RefusedError(
+        `That name cannot be published: ${hit.hits.join(", ")}. ` +
+          `We may name the plant, but not what it treats.`
+      );
+    }
+
+    const db = getServerClient();
+    const base = slugify(clean);
+    if (!base) throw new RefusedError("That name has no letters or numbers in it.");
+
+    // Slugs are the product's URL and are unique in the schema. Two soaps
+    // called "Boerseep" is a normal thing to want, so suffix rather than
+    // refuse.
+    const { data: taken, error: takenError } = await db
+      .from("products")
+      .select("slug")
+      .like("slug", `${base}%`);
+    if (takenError) throw new Error(takenError.message);
+
+    const used = new Set((taken ?? []).map((r) => r.slug as string));
+    let slug = base;
+    for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
+
+    const { data: last, error: lastError } = await db
+      .from("products")
+      .select("sort_order")
+      .order("sort_order", { ascending: false })
+      .limit(1);
+    if (lastError) throw new Error(lastError.message);
+
+    const { data, error } = await db
+      .from("products")
+      .insert({
+        slug,
+        name: clean,
+        sort_order: (last?.[0]?.sort_order ?? 0) + 1,
+        active: false,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    refreshShop();
+    return data.id as string;
+  });
+}
+
+/**
+ * Remove products, and the sizes under them.
+ *
+ * Orders are safe: order_items copies the product name, size and price at the
+ * time of sale and its variant_id is "on delete set null" (see 0003), so a
+ * deleted product leaves every invoice intact.
+ */
+export async function deleteProducts(token: string, ids: string[]): Promise<ActionResult<number>> {
+  return asAdmin(token, async () => {
+    if (ids.length === 0) throw new RefusedError("Nothing was selected.");
+
+    const db = getServerClient();
+
+    // Read the photographs before the rows go, or they are orphaned in the
+    // bucket with nothing left pointing at them.
+    const { data: products } = await db.from("products").select("hero_image").in("id", ids);
+    const { data: variants } = await db.from("product_variants").select("image_url").in("product_id", ids);
+
+    const { data, error } = await db.from("products").delete().in("id", ids).select("id");
+    if (error) throw new Error(error.message);
+
+    for (const url of [
+      ...(products ?? []).map((r) => r.hero_image as string | null),
+      ...(variants ?? []).map((r) => r.image_url as string | null),
+    ]) {
+      await deleteProductImage(url);
+    }
+
+    refreshShop();
+    return data?.length ?? 0;
+  });
+}
+
+/** Add a size to a product. */
+export async function createVariant(
+  token: string,
+  productId: string,
+  fields: { format: string; size_label: string; price_retail: number }
+): Promise<ActionResult> {
+  return asAdmin(token, async () => {
+    const label = fields.size_label.trim();
+    if (!label) throw new RefusedError("Give the size a label, like \u201c100 g\u201d.");
+    if (!(VARIANT_FORMATS as readonly string[]).includes(fields.format)) {
+      throw new RefusedError("That is not one of the formats we sell in.");
+    }
+    if (!Number.isFinite(fields.price_retail) || fields.price_retail < 0) {
+      throw new RefusedError("That retail price is not a number.");
+    }
+
+    const db = getServerClient();
+    const { data: last } = await db
+      .from("product_variants")
+      .select("sort_order")
+      .eq("product_id", productId)
+      .order("sort_order", { ascending: false })
+      .limit(1);
+
+    const { error } = await db.from("product_variants").insert({
+      product_id: productId,
+      format: fields.format,
+      size_label: label,
+      price_retail: fields.price_retail,
+      sort_order: (last?.[0]?.sort_order ?? 0) + 1,
+    });
+    if (error) {
+      // The schema is unique on (product_id, format, size_label).
+      if (error.code === "23505") throw new RefusedError(`This product already has a ${label} in that format.`);
+      throw new Error(error.message);
+    }
+
+    refreshShop();
+    return null;
+  });
+}
+
+/** Remove one size. */
+export async function deleteVariant(token: string, id: string): Promise<ActionResult> {
+  return asAdmin(token, async () => {
+    const db = getServerClient();
+    const { data: before } = await db.from("product_variants").select("image_url").eq("id", id).single();
+
+    const { error } = await db.from("product_variants").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+
+    await deleteProductImage(before?.image_url);
+    refreshShop();
     return null;
   });
 }
