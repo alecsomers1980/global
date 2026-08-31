@@ -9,6 +9,8 @@ import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { VariantSelector } from "@/components/product/VariantSelector";
 import { ProductMedia } from "@/components/product/ProductMedia";
 import { SelectedVariantProvider } from "@/components/product/SelectedVariant";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { absoluteUrl, breadcrumbJsonLd, productImageUrl, productJsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const products = await getProducts();
@@ -33,7 +35,26 @@ export async function generateMetadata({
     );
   }
 
-  return { title: product.name, description: product.summary };
+  const url = absoluteUrl(`/product/${product.slug}`);
+  const image = productImageUrl(product);
+  return {
+    title: product.name,
+    description: product.summary,
+    alternates: { canonical: url },
+    openGraph: {
+      title: product.name,
+      description: product.summary,
+      url,
+      type: "website",
+      images: [{ url: image, alt: product.name }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: product.summary,
+      images: [image],
+    },
+  };
 }
 
 export default async function ProductPage({
@@ -47,6 +68,14 @@ export default async function ProductPage({
 
   return (
     <>
+      <JsonLd data={productJsonLd(product)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Shop", path: "/shop" },
+          { name: product.name, path: `/product/${product.slug}` },
+        ])}
+      />
       <Header />
       <main className="mx-auto max-w-[1440px] px-6 md:px-16">
         <nav className="py-6 text-sm text-ink-mute">

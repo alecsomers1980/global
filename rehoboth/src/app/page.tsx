@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { Hero } from "@/components/home/Hero";
@@ -6,6 +7,11 @@ import { RangeGrid } from "@/components/home/RangeGrid";
 import { ProofBeats } from "@/components/home/ProofBeats";
 import { LatestNews } from "@/components/home/LatestNews";
 import { StockistBand } from "@/components/home/StockistBand";
+import { absoluteUrl } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl("/") },
+};
 
 export default function HomePage() {
   return (

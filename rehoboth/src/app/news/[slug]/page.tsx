@@ -7,6 +7,8 @@ import { screen } from "@/lib/compliance";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { absoluteUrl, breadcrumbJsonLd, DEFAULT_OG_IMAGE, newsArticleJsonLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const posts = await getNews();
@@ -23,14 +25,25 @@ export async function generateMetadata({
   if (!post) return {};
 
   const description = post.excerpt?.trim() || plainText(post.body).slice(0, 155);
+  const url = absoluteUrl(`/news/${post.slug}`);
+  const image = post.heroImage ?? DEFAULT_OG_IMAGE.url;
   return {
     title: post.title,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title: post.title,
       description,
+      url,
       type: "article",
-      images: post.heroImage ? [post.heroImage] : undefined,
+      publishedTime: post.publishedAt ?? undefined,
+      images: [{ url: image, alt: post.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: [image],
     },
   };
 }
@@ -59,6 +72,14 @@ export default async function NewsArticlePage({
 
   return (
     <>
+      <JsonLd data={newsArticleJsonLd(post)} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "News", path: "/news" },
+          { name: post.title, path: `/news/${post.slug}` },
+        ])}
+      />
       <Header />
       <main>
         <article className="mx-auto max-w-[760px] px-6 md:px-16">

@@ -8,11 +8,26 @@ import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { ProductImage } from "@/components/product/ProductImage";
 import { Reveal } from "@/components/motion/Reveal";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+
+const TITLE = "Shop";
+const DESCRIPTION =
+  "Artemisia, moringa, turmeric, rosemary, neem, boerseep and lip balm — grown, dried and packed at Rehoboth Farm in Mpumalanga.";
 
 export const metadata: Metadata = {
-  title: "Shop",
-  description:
-    "Artemisia, moringa, turmeric, rosemary, neem, boerseep and lip balm — grown, dried and packed at Rehoboth Farm in Mpumalanga.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/shop") },
+  // Next does not merge openGraph with the layout's — a page that sets its
+  // own openGraph replaces the whole object, so the default share image has
+  // to be repeated here, not just relied on from the root layout.
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: absoluteUrl("/shop"),
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default async function ShopPage() {

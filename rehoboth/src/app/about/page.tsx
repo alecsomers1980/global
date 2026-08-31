@@ -5,11 +5,23 @@ import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { ClipBand } from "@/components/home/ClipBand";
 import { Reveal } from "@/components/motion/Reveal";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+
+const TITLE = "Our Story";
+const DESCRIPTION =
+  "Rehoboth Farm at Low's Creek, Mpumalanga — where the plants are grown, dried, milled and packed, and how every purchase backs rural training through Foundations for Farming.";
 
 export const metadata: Metadata = {
-  title: "Our Story",
-  description:
-    "Rehoboth Farm at Low's Creek, Mpumalanga — where the plants are grown, dried, milled and packed, and how every purchase backs rural training through Foundations for Farming.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/about") },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: absoluteUrl("/about"),
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function AboutPage() {

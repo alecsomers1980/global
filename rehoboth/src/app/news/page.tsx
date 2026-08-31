@@ -5,11 +5,23 @@ import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { NewsCard } from "@/components/news/NewsCard";
 import { Reveal } from "@/components/motion/Reveal";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+
+const TITLE = "News";
+const DESCRIPTION =
+  "Harvests, new products and what is happening at Rehoboth Farm in Low's Creek, Mpumalanga.";
 
 export const metadata: Metadata = {
-  title: "News",
-  description:
-    "Harvests, new products and what is happening at Rehoboth Farm in Low's Creek, Mpumalanga.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/news") },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: absoluteUrl("/news"),
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default async function NewsIndexPage() {

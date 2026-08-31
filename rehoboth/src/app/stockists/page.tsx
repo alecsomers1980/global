@@ -3,11 +3,23 @@ import { Header } from "@/components/layout/Header";
 import { PageBanner } from "@/components/layout/PageBanner";
 import { Footer } from "@/components/layout/Footer";
 import { StockistForm } from "./StockistForm";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+
+const TITLE = "Become a Stockist";
+const DESCRIPTION =
+  "Apply to stock Rehoboth Herbal Co. — grown, dried, milled and packed on one farm at Low's Creek, Mpumalanga. Wholesale from 10 units a line.";
 
 export const metadata: Metadata = {
-  title: "Become a Stockist",
-  description:
-    "Apply to stock Rehoboth Herbal Co. — grown, dried, milled and packed on one farm at Low's Creek, Mpumalanga. Wholesale from 10 units a line.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/stockists") },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: absoluteUrl("/stockists"),
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function StockistsPage() {

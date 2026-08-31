@@ -5,11 +5,23 @@ import { Footer } from "@/components/layout/Footer";
 import { SocialRow } from "@/components/layout/SocialRow";
 import { getSocialLinks } from "@/lib/social";
 import { ContactForm } from "./ContactForm";
+import { absoluteUrl, DEFAULT_OG_IMAGE } from "@/lib/seo";
+
+const TITLE = "Contact";
+const DESCRIPTION =
+  "Talk to Rehoboth Herbal Co. — phone, email, or a message to the farm at Low's Creek, Mpumalanga.";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description:
-    "Talk to Rehoboth Herbal Co. — phone, email, or a message to the farm at Low's Creek, Mpumalanga.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/contact") },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: absoluteUrl("/contact"),
+    type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default async function ContactPage() {

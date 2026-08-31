@@ -30,6 +30,30 @@ const nextConfig: NextConfig = {
         ]
       : [],
   },
+  // The Content-Security-Policy is set per request in src/middleware.ts (it
+  // needs a fresh nonce every time); these are the headers that don't, so
+  // they live here instead of being recomputed on every request.
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+          // includeSubDomains but not preload: preload submits the domain to
+          // browsers' baked-in HSTS lists, which is close to irreversible —
+          // that step should be a deliberate choice once the real domain is
+          // live, not a side effect of a security pass on a Vercel preview.
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
