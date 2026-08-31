@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useAdminToken } from "../AdminGate";
-import { getSettings, saveShipping } from "../actions";
+import { getSettings, saveShipping, saveSocial } from "../actions";
 import { SHIPPING_FALLBACK, type ShippingSettings } from "@/lib/shipping";
+import { PLATFORMS, EMPTY_SOCIAL, cleanSocial, type SocialLinks } from "@/lib/social";
 
 const FIELD =
   "min-h-[44px] w-full border border-hairline bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none";
@@ -13,9 +14,13 @@ const SMALL_BTN =
 export default function AdminSettingsPage() {
   const token = useAdminToken();
   const [shipping, setShipping] = useState<ShippingSettings | null>(null);
+  const [social, setSocial] = useState<SocialLinks>(EMPTY_SOCIAL);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [socialError, setSocialError] = useState<string | null>(null);
+  const [socialSaved, setSocialSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [socialBusy, setSocialBusy] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -23,6 +28,7 @@ export default function AdminSettingsPage() {
       const result = await getSettings(token);
       if (result.ok) {
         setShipping({ ...SHIPPING_FALLBACK, ...((result.data.shipping as Partial<ShippingSettings>) ?? {}) });
+        setSocial(cleanSocial((result.data.social as Record<string, unknown>) ?? {}));
       } else {
         setError(result.error);
       }
@@ -48,6 +54,23 @@ export default function AdminSettingsPage() {
       setError(result.error);
     }
     setBusy(false);
+  }
+
+  async function onSaveSocial(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSocialBusy(true);
+    setSocialError(null);
+    setSocialSaved(false);
+    const fd = new FormData(e.currentTarget);
+    const links = Object.fromEntries(PLATFORMS.map((p) => [p.key, String(fd.get(p.key) ?? "")]));
+    const result = await saveSocial(token, links);
+    if (result.ok) {
+      setSocial(result.data);
+      setSocialSaved(true);
+    } else {
+      setSocialError(result.error);
+    }
+    setSocialBusy(false);
   }
 
   if (!shipping) return <p className="mt-10 text-ink-mute">Loading…</p>;
@@ -105,7 +128,51 @@ export default function AdminSettingsPage() {
         </label>
 
         <button type="submit" disabled={busy} className={`${SMALL_BTN} w-fit`}>
-          {busy ? "Saving…" : "Save settings"}
+          {busy ? "Saving…" : "Save delivery settings"}
+        </button>
+      </form>
+
+      <hr className="my-14 border-hairline" />
+
+      <h2 className="font-display text-2xl text-ink">Social media</h2>
+      <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+        Paste the full web address of each page you are on — starting with
+        https://. Leave a box empty and that icon simply does not appear.
+        These show in the footer of every page and on the contact page.
+      </p>
+
+      {socialError && (
+        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
+          {socialError}
+        </div>
+      )}
+      {socialSaved && (
+        <p role="status" className="mt-6 border-l-2 border-brand bg-surface p-3 text-[14px] text-ink-soft">
+          Saved.
+        </p>
+      )}
+
+      <form onSubmit={onSaveSocial} className="mt-8 flex flex-col gap-5">
+        {PLATFORMS.map((p) => (
+          <div key={p.key} className="flex flex-col gap-2">
+            <label htmlFor={p.key} className="text-[13px] uppercase tracking-[0.08em] text-ink-mute">
+              {p.label}
+              <span className="normal-case tracking-normal"> (optional)</span>
+            </label>
+            <input
+              id={p.key}
+              name={p.key}
+              type="url"
+              inputMode="url"
+              placeholder={p.placeholder}
+              defaultValue={social[p.key]}
+              className={FIELD}
+            />
+          </div>
+        ))}
+
+        <button type="submit" disabled={socialBusy} className={`${SMALL_BTN} w-fit`}>
+          {socialBusy ? "Saving…" : "Save social links"}
         </button>
       </form>
     </div>

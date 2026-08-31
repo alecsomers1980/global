@@ -1,7 +1,22 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { SocialRow } from "./SocialRow";
+import { fetchSocialLinks } from "@/app/_actions/social";
+import { EMPTY_SOCIAL, type SocialLinks } from "@/lib/social";
 
 export function Footer() {
+  const [social, setSocial] = useState<SocialLinks>(EMPTY_SOCIAL);
+
+  useEffect(() => {
+    fetchSocialLinks().then(setSocial).catch(() => {
+      // Leaving the icons out is the right failure: a row of links that go
+      // nowhere reads worse than no row at all.
+    });
+  }, []);
+
   return (
     <footer className="mt-24 border-t border-hairline">
       <div className="mx-auto max-w-[1440px] px-6 py-14 md:px-16">
@@ -34,6 +49,10 @@ export function Footer() {
             <a href="mailto:friedsgrobler@gmail.com" className="break-all text-ink-soft hover:text-brand">
               friedsgrobler@gmail.com
             </a>
+            <Link href="/contact" className="text-ink-soft hover:text-brand">Contact us</Link>
+            <div className="-ml-3 mt-1">
+              <SocialRow links={social} />
+            </div>
           </div>
         </div>
 

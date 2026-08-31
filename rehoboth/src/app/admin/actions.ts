@@ -3,6 +3,7 @@
 import { asAdmin, RefusedError } from "@/lib/admin";
 import { getServerClient } from "@/lib/supabase/server";
 import { screen } from "@/lib/compliance";
+import { cleanSocial, type SocialLinks } from "@/lib/social";
 
 export type ProductCopy = {
   name: string;
@@ -247,5 +248,71 @@ export async function saveShipping(
       .upsert({ key: "shipping", value, updated_at: new Date().toISOString() });
     if (error) throw new Error(error.message);
     return null;
+  });
+}
+
+/* ---------------------------------------------------------------- messages */
+
+export type AdminMessage = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string | null;
+  message: string;
+  handled: boolean;
+  emailed: boolean;
+  created_at: string;
+};
+
+export async function listMessages(token: string, filter?: string): Promise<ActionResult<AdminMessage[]>> {
+  return asAdmin(token, async () => {
+    let q = getServerClient()
+      .from("contact_messages")
+      .select("id, name, email, phone, subject, message, handled, emailed, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (filter === "open") q = q.eq("handled", false);
+    if (filter === "handled") q = q.eq("handled", true);
+    const { data, error } = await q;
+    if (error) throw new Error(error.message);
+    return (data ?? []) as AdminMessage[];
+  });
+}
+
+export async function setMessageHandled(
+  token: string,
+  id: string,
+  handled: boolean
+): Promise<ActionResult> {
+  return asAdmin(token, async () => {
+    const { error } = await getServerClient()
+      .from("contact_messages")
+      .update({ handled })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return null;
+  });
+}
+
+/* ------------------------------------------------------------------ social */
+
+export async function saveSocial(token: string, links: Record<string, string>): Promise<ActionResult<SocialLinks>> {
+  return asAdmin(token, async () => {
+    // Anything that is not an http(s) URL is dropped rather than stored — a
+    // stored "javascript:" would be rendered as a link in the footer.
+    const value = cleanSocial(links);
+    const supplied = Object.entries(links).filter(([, v]) => String(v).trim() !== "").length;
+    const kept = Object.values(value).filter(Boolean).length;
+    if (kept < supplied) {
+      throw new RefusedError(
+        "One of those is not a web address. Paste the full link, starting with https://"
+      );
+    }
+    const { error } = await getServerClient()
+      .from("site_settings")
+      .upsert({ key: "social", value, updated_at: new Date().toISOString() });
+    if (error) throw new Error(error.message);
+    return value;
   });
 }
