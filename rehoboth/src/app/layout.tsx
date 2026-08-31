@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Marcellus, Karla } from "next/font/google";
 import "./globals.css";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 
 const marcellus = Marcellus({
   weight: "400",
@@ -30,7 +31,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-ZA" className={`${marcellus.variable} ${karla.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* In the layout rather than per page so it survives every route,
+            including checkout — which is exactly where someone stops to ask a
+            question. It reads its link in the browser, so no page is pushed
+            off static generation to render it. */}
+        <FloatingWhatsApp />
+      </body>
     </html>
   );
 }
