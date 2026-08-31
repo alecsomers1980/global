@@ -26,8 +26,10 @@ export default async function ShopPage() {
           <p className="mb-4 text-xs uppercase tracking-[0.2em] text-brand">The range</p>
           <h1 className="font-display text-4xl text-ink md:text-[56px]">Everything we grow</h1>
           <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-ink-soft">
-            {products.length} products, {variantCount} sizes. Grown, dried and packed
-            on one farm at Low&rsquo;s Creek, Mpumalanga.
+            {/* One string, not text interleaved with expressions: JSX drops the
+                space on each side of an expression, which rendered "24sizes"
+                and then "sizes.Grown" when only half of it was fixed. */}
+            {`${products.length} products, ${variantCount} sizes. Grown, dried and packed on one farm at Low’s Creek, Mpumalanga.`}
           </p>
         </div>
 
