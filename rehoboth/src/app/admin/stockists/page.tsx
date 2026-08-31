@@ -3,6 +3,15 @@
 import { useEffect, useState } from "react";
 import { useAdminToken } from "../AdminGate";
 import { listStockists, setStockistStatus, type AdminStockist } from "../actions";
+import {
+  BTN_QUIET,
+  Card,
+  EmptyState,
+  FilterChips,
+  Notice,
+  PageHeader,
+  StatusPill,
+} from "@/components/admin/ui";
 
 const FILTERS = [
   { value: "new", label: "New" },
@@ -12,10 +21,9 @@ const FILTERS = [
   { value: "all", label: "All" },
 ];
 
-const TH = "border-b border-hairline px-3 py-3 text-left text-[12px] uppercase tracking-[0.08em] text-ink-mute";
-const TD = "border-b border-hairline px-3 py-3 align-top text-ink";
-const SMALL_BTN =
-  "min-h-[40px] border border-hairline px-3 text-[13px] text-ink-soft hover:border-brand hover:text-brand disabled:opacity-50";
+const TH =
+  "border-b border-hairline px-4 py-3 text-left text-[11px] uppercase tracking-[0.16em] text-ink-mute";
+const TD = "border-b border-hairline px-4 py-4 align-top text-ink";
 
 export default function AdminStockistsPage() {
   const token = useAdminToken();
@@ -42,8 +50,6 @@ export default function AdminStockistsPage() {
     };
   }, [token, filter]);
 
-  const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-
   async function change(id: string, status: "new" | "contacted" | "approved" | "declined") {
     if (!token || busyId) return;
     setBusyId(id);
@@ -60,38 +66,31 @@ export default function AdminStockistsPage() {
   }
 
   return (
-    <div>
-      <h1 className="font-display text-3xl text-ink">Stockist applications</h1>
+    <>
+      <PageHeader
+        eyebrow="Enquiries"
+        title="Stockist applications"
+        description="Shops asking to carry the range. Marking one approved is a note to yourself — it does not send anything or open a trade account."
+      />
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setFilter(f.value)}
-            className={
-              filter === f.value
-                ? "min-h-[40px] bg-brand px-4 text-[13px] uppercase tracking-[0.06em] text-brand-ink"
-                : "min-h-[40px] border border-hairline px-4 text-[13px] uppercase tracking-[0.06em] text-ink-soft hover:border-brand"
-            }
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="mt-8">
+        <FilterChips options={FILTERS} value={filter} onChange={setFilter} />
       </div>
 
       {error && (
-        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
-          {error}
+        <div className="mt-6">
+          <Notice tone="error">{error}</Notice>
         </div>
       )}
 
       {loading ? (
         <p className="mt-10 text-ink-mute">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="mt-10 text-ink-mute">No applications here yet.</p>
+        <Card className="mt-6">
+          <EmptyState message="No applications here yet." />
+        </Card>
       ) : (
-        <div className="mt-6 overflow-x-auto">
+        <Card className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-[14px]">
             <thead>
               <tr>
@@ -125,21 +124,23 @@ export default function AdminStockistsPage() {
                       year: "numeric",
                     })}
                   </td>
-                  <td className={TD}>{titleCase(s.status)}</td>
+                  <td className={TD}>
+                    <StatusPill status={s.status} />
+                  </td>
                   <td className={TD}>
                     <div className="flex flex-wrap gap-2">
                       {s.status !== "contacted" && (
-                        <button type="button" onClick={() => change(s.id, "contacted")} disabled={busyId === s.id} className={SMALL_BTN}>
+                        <button type="button" onClick={() => change(s.id, "contacted")} disabled={busyId === s.id} className={BTN_QUIET}>
                           Contacted
                         </button>
                       )}
                       {s.status !== "approved" && (
-                        <button type="button" onClick={() => change(s.id, "approved")} disabled={busyId === s.id} className={SMALL_BTN}>
+                        <button type="button" onClick={() => change(s.id, "approved")} disabled={busyId === s.id} className={BTN_QUIET}>
                           Approve
                         </button>
                       )}
                       {s.status !== "declined" && (
-                        <button type="button" onClick={() => change(s.id, "declined")} disabled={busyId === s.id} className={SMALL_BTN}>
+                        <button type="button" onClick={() => change(s.id, "declined")} disabled={busyId === s.id} className={BTN_QUIET}>
                           Decline
                         </button>
                       )}
@@ -149,8 +150,8 @@ export default function AdminStockistsPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
-    </div>
+    </>
   );
 }

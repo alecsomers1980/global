@@ -3,15 +3,21 @@
 import { useEffect, useState } from "react";
 import { useAdminToken } from "../AdminGate";
 import { listMessages, setMessageHandled, type AdminMessage } from "../actions";
+import {
+  BTN_QUIET,
+  Card,
+  EmptyState,
+  FilterChips,
+  CARD,
+  Notice,
+  PageHeader,
+} from "@/components/admin/ui";
 
 const FILTERS = [
   { value: "open", label: "To answer" },
   { value: "handled", label: "Answered" },
   { value: "all", label: "All" },
 ];
-
-const SMALL_BTN =
-  "min-h-[40px] border border-hairline px-3 text-[13px] text-ink-soft hover:border-brand hover:text-brand disabled:opacity-50";
 
 export default function AdminMessagesPage() {
   const token = useAdminToken();
@@ -52,45 +58,33 @@ export default function AdminMessagesPage() {
   }
 
   return (
-    <div>
-      <h1 className="font-display text-3xl text-ink">Messages</h1>
-      <p className="mt-3 max-w-[640px] text-[15px] leading-relaxed text-ink-soft">
-        Everything sent through the contact form is kept here, whether or not the
-        notification email went out. This list is the record — nothing is lost if
-        email stops working.
-      </p>
+    <>
+      <PageHeader
+        eyebrow="Enquiries"
+        title="Messages"
+        description="Everything sent through the contact form is kept here, whether or not the notification email went out. This list is the record — nothing is lost if email stops working."
+      />
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setFilter(f.value)}
-            className={
-              filter === f.value
-                ? "min-h-[40px] bg-brand px-4 text-[13px] uppercase tracking-[0.06em] text-brand-ink"
-                : "min-h-[40px] border border-hairline px-4 text-[13px] uppercase tracking-[0.06em] text-ink-soft hover:border-brand"
-            }
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="mt-8">
+        <FilterChips options={FILTERS} value={filter} onChange={setFilter} />
       </div>
 
       {error && (
-        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
-          {error}
+        <div className="mt-6">
+          <Notice tone="error">{error}</Notice>
         </div>
       )}
 
       {loading ? (
         <p className="mt-10 text-ink-mute">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="mt-10 text-ink-mute">Nothing here.</p>
+        <Card className="mt-6">
+          <EmptyState message="Nothing here." />
+        </Card>
       ) : (
-        <ul className="mt-8 flex flex-col gap-4">
+        <ul className="mt-6 flex flex-col gap-4">
           {rows.map((m) => (
-            <li key={m.id} className="border border-hairline bg-white p-6">
+            <li key={m.id} className={`${CARD} p-6`}>
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <div>
                   <span className="text-[15px] font-medium text-ink">{m.name}</span>
@@ -123,10 +117,10 @@ export default function AdminMessagesPage() {
               </p>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                <a href={`mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject ?? "Your message")}`} className={SMALL_BTN}>
+                <a href={`mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject ?? "Your message")}`} className={BTN_QUIET}>
                   Reply by email
                 </a>
-                <button type="button" onClick={() => toggle(m.id, !m.handled)} disabled={busyId === m.id} className={SMALL_BTN}>
+                <button type="button" onClick={() => toggle(m.id, !m.handled)} disabled={busyId === m.id} className={BTN_QUIET}>
                   {m.handled ? "Move back to answer" : "Mark answered"}
                 </button>
               </div>
@@ -134,6 +128,6 @@ export default function AdminMessagesPage() {
           ))}
         </ul>
       )}
-    </div>
+    </>
   );
 }

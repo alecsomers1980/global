@@ -36,21 +36,38 @@ const BEATS = [
   },
 ];
 
+/**
+ * The three beats sit on a full-width teal wash rather than the page ground.
+ * It is the one band between the product grid and the stockist call to action,
+ * and giving it the brand colour is what stops the middle of the homepage
+ * reading as a stretch of white.
+ */
 export function ProofBeats() {
   return (
-    <section className="mx-auto max-w-[1440px] px-6 pt-24 md:px-16">
-      <div className="grid gap-12 md:grid-cols-3 md:gap-14">
-        {BEATS.map((beat, i) => (
-          <Reveal key={beat.title} delay={i * 0.08}>
-            <div className="flex flex-col gap-4">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="1.2">
-                {beat.icon}
-              </svg>
-              <h3 className="font-display text-2xl text-ink">{beat.title}</h3>
-              <p className="text-[15px] leading-relaxed text-ink-soft">{beat.body}</p>
-            </div>
-          </Reveal>
-        ))}
+    <section className="mt-24 bg-brand-wash py-20 md:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-16">
+        <div className="grid gap-12 md:grid-cols-3 md:gap-14">
+          {BEATS.map((beat, i) => (
+            <Reveal key={beat.title} delay={i * 0.08}>
+              <div className="flex flex-col gap-4">
+                <span className="flex h-14 w-14 items-center justify-center bg-brand text-brand-ink">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  >
+                    {beat.icon}
+                  </svg>
+                </span>
+                <h3 className="font-display text-2xl text-ink">{beat.title}</h3>
+                <p className="text-[15px] leading-relaxed text-ink-soft">{beat.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -4,9 +4,11 @@ import { asAdmin, RefusedError } from "@/lib/admin";
 import { getServerClient } from "@/lib/supabase/server";
 import { screen } from "@/lib/compliance";
 import { cleanSocial, type SocialLinks } from "@/lib/social";
+import { uploadProductImage, deleteProductImage } from "@/lib/storage";
 
 export type ProductCopy = {
   name: string;
+  hero_image: string | null;
   botanical_name: string;
   summary: string;
   traditional_use: string;
@@ -127,13 +129,17 @@ export type AdminProduct = {
   ingredients: string | null;
   directions: string | null;
   storage: string | null;
+  hero_image: string | null;
   active: boolean;
   product_variants: {
     id: string;
     size_label: string;
+    format: string;
     price_retail: number;
     price_trade: number | null;
     stock: number | null;
+    image_url: string | null;
+    sort_order: number;
     active: boolean;
   }[];
 };
@@ -143,11 +149,16 @@ export async function listProducts(token: string): Promise<ActionResult<AdminPro
     const { data, error } = await getServerClient()
       .from("products")
       .select(
-        "id, slug, name, botanical_name, summary, traditional_use, ingredients, directions, storage, active, product_variants(id, size_label, price_retail, price_trade, stock, active)"
+        "id, slug, name, botanical_name, summary, traditional_use, ingredients, directions, storage, hero_image, active, product_variants(id, size_label, format, price_retail, price_trade, stock, image_url, sort_order, active)"
       )
       .order("name");
     if (error) throw new Error(error.message);
-    return (data ?? []) as unknown as AdminProduct[];
+    const products = (data ?? []) as unknown as AdminProduct[];
+    // Postgrest does not order an embedded table for us, and a size list that
+    // reshuffles between loads makes it impossible to be sure which row you
+    // just edited.
+    for (const p of products) p.product_variants.sort((a, b) => a.sort_order - b.sort_order);
+    return products;
   });
 }
 
@@ -182,7 +193,12 @@ export async function saveProduct(
       );
     }
 
-    const { error } = await getServerClient()
+    const db = getServerClient();
+    // Read the outgoing photo before overwriting it, so a replaced upload can
+    // be swept afterwards rather than left in the bucket forever.
+    const { data: before } = await db.from("products").select("hero_image").eq("id", id).single();
+
+    const { error } = await db
       .from("products")
       .update({
         name: fields.name.trim(),
@@ -192,11 +208,16 @@ export async function saveProduct(
         ingredients: fields.ingredients.trim() || null,
         directions: fields.directions.trim() || null,
         storage: fields.storage.trim() || null,
+        hero_image: fields.hero_image,
         active: fields.active,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);
     if (error) throw new Error(error.message);
+
+    if (before?.hero_image && before.hero_image !== fields.hero_image) {
+      await deleteProductImage(before.hero_image);
+    }
     return null;
   });
 }
@@ -204,23 +225,68 @@ export async function saveProduct(
 export async function saveVariant(
   token: string,
   id: string,
-  fields: { price_retail: number; price_trade: number | null; stock: number | null; active: boolean }
+  fields: {
+    price_retail: number;
+    price_trade: number | null;
+    stock: number | null;
+    image_url: string | null;
+    active: boolean;
+  }
 ): Promise<ActionResult> {
   return asAdmin(token, async () => {
     if (!Number.isFinite(fields.price_retail) || fields.price_retail < 0) {
       throw new RefusedError("That retail price is not a number.");
     }
-    const { error } = await getServerClient()
+    const db = getServerClient();
+    const { data: before } = await db
+      .from("product_variants")
+      .select("image_url")
+      .eq("id", id)
+      .single();
+
+    const { error } = await db
       .from("product_variants")
       .update({
         price_retail: fields.price_retail,
         price_trade: fields.price_trade,
         stock: fields.stock,
+        image_url: fields.image_url,
         active: fields.active,
       })
       .eq("id", id);
     if (error) throw new Error(error.message);
+
+    if (before?.image_url && before.image_url !== fields.image_url) {
+      await deleteProductImage(before.image_url);
+    }
     return null;
+  });
+}
+
+/* ------------------------------------------------------------------ photos */
+
+// SVG is deliberately absent: it can carry script, and nothing here needs it.
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_UPLOAD_BYTES = 6 * 1024 * 1024;
+
+/**
+ * Take a photograph from the admin and put it in the bucket.
+ *
+ * The browser has already shrunk it (lib/image-resize.ts), so a normal upload
+ * arrives around 200KB and these limits are a backstop for a browser where
+ * that failed — not the main control.
+ */
+export async function uploadImage(token: string, form: FormData): Promise<ActionResult<string>> {
+  return asAdmin(token, async () => {
+    const file = form.get("file");
+    if (!(file instanceof File)) throw new RefusedError("No photo came through. Try again.");
+    if (!IMAGE_TYPES.includes(file.type)) {
+      throw new RefusedError("Photos need to be JPEG, PNG or WebP.");
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new RefusedError("That photo is too big. Anything under 6MB is fine.");
+    }
+    return uploadProductImage(await file.arrayBuffer(), file.name, file.type);
   });
 }
 
@@ -314,5 +380,69 @@ export async function saveSocial(token: string, links: Record<string, string>): 
       .upsert({ key: "social", value, updated_at: new Date().toISOString() });
     if (error) throw new Error(error.message);
     return value;
+  });
+}
+
+/* --------------------------------------------------------------- dashboard */
+
+export type DashboardSummary = {
+  toSend: number;
+  awaitingPayment: number;
+  messagesToAnswer: number;
+  newStockists: number;
+  productsLive: number;
+  recent: {
+    id: string;
+    reference: string;
+    customer_name: string;
+    total: number;
+    status: string;
+    created_at: string;
+  }[];
+};
+
+/**
+ * The first screen after signing in.
+ *
+ * Every figure here answers "is anything waiting for me?" — a paid order not
+ * yet sent, an unanswered message. Lifetime totals are a vanity number and
+ * would push the two counts that actually need acting on off the top row.
+ */
+export async function getDashboard(token: string): Promise<ActionResult<DashboardSummary>> {
+  return asAdmin(token, async () => {
+    const db = getServerClient();
+    const count = async (table: string, column: string, value: string | boolean) => {
+      const { count: n, error } = await db
+        .from(table)
+        .select("id", { count: "exact", head: true })
+        .eq(column, value);
+      if (error) throw new Error(error.message);
+      return n ?? 0;
+    };
+
+    const [toSend, awaitingPayment, messagesToAnswer, newStockists, productsLive, recent] =
+      await Promise.all([
+        count("orders", "status", "paid"),
+        count("orders", "status", "pending"),
+        count("contact_messages", "handled", false),
+        count("stockist_applications", "status", "new"),
+        count("products", "active", true),
+        db
+          .from("orders")
+          .select("id, reference, customer_name, total, status, created_at")
+          .order("created_at", { ascending: false })
+          .limit(5),
+      ]);
+
+    if (recent.error) throw new Error(recent.error.message);
+
+    return {
+      toSend,
+      awaitingPayment,
+      messagesToAnswer,
+      newStockists,
+      productsLive,
+      recent: (recent.data ?? []) as DashboardSummary["recent"],
+    };
   });
 }

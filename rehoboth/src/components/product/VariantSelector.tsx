@@ -3,23 +3,27 @@
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { rands } from "@/lib/money";
-import type { Product } from "@/lib/catalog";
+import type { Product, Variant } from "@/lib/catalog";
+import { useSelectedVariant } from "./SelectedVariant";
 
 export function VariantSelector({ product }: { product: Product }) {
-  const [selectedId, setSelectedId] = useState(product.variants[0]?.id);
+  // The chosen size lives above this component because the photograph in the
+  // other column follows it too.
+  const { selected, select } = useSelectedVariant();
   const [added, setAdded] = useState(false);
   const add = useCart((s) => s.add);
 
-  const selected = product.variants.find((v) => v.id === selectedId) ?? product.variants[0];
   if (!selected) return null;
 
-  function addToCart() {
+  // Takes the size as an argument rather than closing over it: the guard above
+  // narrows `selected` for the JSX below, but not inside a function body.
+  function addToCart(variant: Variant) {
     add({
-      variantId: selected.id,
+      variantId: variant.id,
       productSlug: product.slug,
       name: product.name,
-      sizeLabel: selected.sizeLabel,
-      priceRetail: selected.priceRetail,
+      sizeLabel: variant.sizeLabel,
+      priceRetail: variant.priceRetail,
     });
     setAdded(true);
     window.setTimeout(() => setAdded(false), 2000);
@@ -37,7 +41,7 @@ export function VariantSelector({ product }: { product: Product }) {
                 <button
                   key={v.id}
                   type="button"
-                  onClick={() => setSelectedId(v.id)}
+                  onClick={() => select(v.id)}
                   aria-pressed={active}
                   className={`min-h-[48px] border px-5 text-sm transition-colors ${
                     active
@@ -58,7 +62,7 @@ export function VariantSelector({ product }: { product: Product }) {
 
       <button
         type="button"
-        onClick={addToCart}
+        onClick={() => addToCart(selected)}
         className="flex min-h-[54px] w-full items-center justify-center bg-brand px-9 text-sm uppercase tracking-[0.06em] text-brand-ink hover:bg-brand-deep sm:w-auto"
       >
         {added ? "Added to cart" : "Add to cart"}

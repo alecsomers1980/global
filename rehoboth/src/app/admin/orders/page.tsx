@@ -4,6 +4,16 @@ import { Fragment, useEffect, useState } from "react";
 import { useAdminToken } from "../AdminGate";
 import { rands } from "@/lib/money";
 import { listOrders, markFulfilled, type AdminOrder } from "../actions";
+import {
+  BTN_QUIET,
+  BTN_SECONDARY,
+  Card,
+  EmptyState,
+  FilterChips,
+  Notice,
+  PageHeader,
+  StatusPill,
+} from "@/components/admin/ui";
 
 const FILTERS = [
   { value: "paid", label: "Paid" },
@@ -14,10 +24,9 @@ const FILTERS = [
   { value: "all", label: "All" },
 ];
 
-const TH = "border-b border-hairline px-3 py-3 text-left text-[12px] uppercase tracking-[0.08em] text-ink-mute";
-const TD = "border-b border-hairline px-3 py-3 align-top text-ink";
-const SMALL_BTN =
-  "min-h-[40px] border border-hairline px-3 text-[13px] text-ink-soft hover:border-brand hover:text-brand disabled:opacity-50";
+const TH =
+  "border-b border-hairline px-4 py-3 text-left text-[11px] uppercase tracking-[0.16em] text-ink-mute";
+const TD = "border-b border-hairline px-4 py-4 align-top text-ink";
 
 const date = (d: string) =>
   new Date(d).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" });
@@ -47,8 +56,6 @@ export default function AdminOrdersPage() {
       cancelled = true;
     };
   }, [token, filter]);
-
-  const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   async function markSent(id: string) {
     if (!token || busyId) return;
@@ -101,43 +108,36 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-3xl text-ink">Orders</h1>
-        <button type="button" onClick={downloadCsv} disabled={orders.length === 0} className={SMALL_BTN}>
-          Download CSV
-        </button>
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {FILTERS.map((f) => (
-          <button
-            key={f.value}
-            type="button"
-            onClick={() => setFilter(f.value)}
-            className={
-              filter === f.value
-                ? "min-h-[40px] bg-brand px-4 text-[13px] uppercase tracking-[0.06em] text-brand-ink"
-                : "min-h-[40px] border border-hairline px-4 text-[13px] uppercase tracking-[0.06em] text-ink-soft hover:border-brand"
-            }
-          >
-            {f.label}
+    <>
+      <PageHeader
+        eyebrow="Selling"
+        title="Orders"
+        description="Everything started through the checkout. Only an order PayFast has confirmed as paid can be marked sent."
+        action={
+          <button type="button" onClick={downloadCsv} disabled={orders.length === 0} className={BTN_SECONDARY}>
+            Download CSV
           </button>
-        ))}
+        }
+      />
+
+      <div className="mt-8">
+        <FilterChips options={FILTERS} value={filter} onChange={setFilter} />
       </div>
 
       {error && (
-        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
-          {error}
+        <div className="mt-6">
+          <Notice tone="error">{error}</Notice>
         </div>
       )}
 
       {loading ? (
         <p className="mt-10 text-ink-mute">Loading…</p>
       ) : orders.length === 0 ? (
-        <p className="mt-10 text-ink-mute">No orders here yet.</p>
+        <Card className="mt-6">
+          <EmptyState message="No orders here yet." />
+        </Card>
       ) : (
-        <div className="mt-6 overflow-x-auto">
+        <Card className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-[14px]">
             <thead>
               <tr>
@@ -168,10 +168,17 @@ export default function AdminOrdersPage() {
                     <td className={TD}>{o.customer_name}</td>
                     <td className={TD}>{o.collect_from_farm ? "Collect" : (o.ship_city ?? "")}</td>
                     <td className={TD}>{rands(Number(o.total))}</td>
-                    <td className={TD}>{o.status === "fulfilled" ? "Sent" : titleCase(o.status)}</td>
+                    <td className={TD}>
+                      <StatusPill status={o.status === "fulfilled" ? "sent" : o.status} />
+                    </td>
                     <td className={TD}>
                       {o.status === "paid" && (
-                        <button type="button" onClick={() => markSent(o.id)} disabled={busyId === o.id} className={SMALL_BTN}>
+                        <button
+                          type="button"
+                          onClick={() => markSent(o.id)}
+                          disabled={busyId === o.id}
+                          className={BTN_QUIET}
+                        >
                           Mark sent
                         </button>
                       )}
@@ -180,7 +187,7 @@ export default function AdminOrdersPage() {
 
                   {expandedId === o.id && (
                     <tr>
-                      <td colSpan={7} className="border-b border-hairline bg-surface px-3 py-5 align-top text-ink">
+                      <td colSpan={7} className="border-b border-hairline bg-brand-wash/50 px-4 py-5 align-top text-ink">
                         <p className="text-[15px]">
                           {o.collect_from_farm
                             ? "Collecting from the farm"
@@ -217,8 +224,8 @@ export default function AdminOrdersPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
-    </div>
+    </>
   );
 }

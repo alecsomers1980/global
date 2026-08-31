@@ -3,6 +3,18 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Botanicals } from "@/components/home/Botanicals";
 
+/** The range as the client words it — their list, their order. */
+const RANGE = [
+  "Tinctures",
+  "Ointments",
+  "Herbal Oils",
+  "Infusions",
+  "Decoctions",
+  "Dried Herbs",
+  "Handmade Soaps",
+  "Kombucha",
+];
+
 /**
  * Full-bleed banner.
  *
@@ -57,7 +69,7 @@ export function Hero() {
 
       <div className="mx-auto grid w-full max-w-[1440px] flex-1 items-center gap-4 px-6 pb-10 pt-2 sm:gap-6 md:gap-10 md:px-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pb-20 lg:pt-4">
         <div className="reh-in-left flex flex-col">
-          <div className="mb-7 flex items-center gap-4">
+          <div className="mb-6 flex items-center gap-4">
             <Image
               src="/brand/emblem-light.png"
               alt=""
@@ -70,17 +82,37 @@ export function Hero() {
             </span>
           </div>
 
-          <h1 className="font-display text-[42px] leading-[1.04] tracking-tight text-[#F3FFF8] sm:text-6xl lg:text-[76px]">
+          <h1 className="font-display text-[38px] leading-[1.04] tracking-tight text-[#F3FFF8] sm:text-5xl lg:text-[64px]">
             Room enough
             <br />
             to do it slowly.
           </h1>
 
-          <p className="mt-6 max-w-[470px] md:mt-7 text-[17px] leading-relaxed text-white/70">
-            Five plants — artemisia, moringa, turmeric, rosemary and neem — grown,
-            dried and packed at Rehoboth Farm, Low&rsquo;s Creek, Mpumalanga. 100%
-            natural, one ingredient in the bottle.
+          {/* The client's own words, from their Canva deck. One substitution:
+              their copy reads "medicinal plants", and "medicinal" is on the
+              screened list — under Act 101 of 1965 it is the word that turns a
+              herb into a medicine. Everything else is verbatim. */}
+          <p className="mt-6 max-w-[470px] font-display text-[19px] tracking-wide text-[#9CCBBA] md:mt-7">
+            Natural Products. Sustainable Impact.
           </p>
+
+          <div className="mt-4 flex max-w-[470px] flex-col gap-4 text-[16px] leading-relaxed text-white/70">
+            <p>
+              At Rehoboth Herbal Co. we craft 100% natural herbal products using
+              plants grown on our farm in Low&rsquo;s Creek, Mpumalanga, together
+              with carefully sourced quality natural ingredients.
+            </p>
+            <p>Known for our Moringa and Artemisia, our range includes:</p>
+          </div>
+
+          <ul className="mt-4 flex max-w-[470px] flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-white/60">
+            {RANGE.map((item, i) => (
+              <li key={item} className="flex items-center gap-2">
+                {i > 0 && <span aria-hidden className="text-white/25">&middot;</span>}
+                {item}
+              </li>
+            ))}
+          </ul>
 
           <div className="mt-8 flex flex-wrap md:mt-10 items-center gap-4">
             <Link

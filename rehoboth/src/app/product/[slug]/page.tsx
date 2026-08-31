@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -8,6 +7,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { VariantSelector } from "@/components/product/VariantSelector";
+import { ProductMedia } from "@/components/product/ProductMedia";
+import { SelectedVariantProvider } from "@/components/product/SelectedVariant";
 
 export async function generateStaticParams() {
   const products = await getProducts();
@@ -56,34 +57,9 @@ export default async function ProductPage({
           <span className="text-ink">{product.name}</span>
         </nav>
 
+        <SelectedVariantProvider product={product}>
         <div className="grid gap-12 pb-16 lg:grid-cols-2 lg:gap-20">
-          <div className="relative aspect-[4/5] overflow-hidden bg-surface">
-            {product.heroImage ? (
-              <Image
-                src={`${product.heroImage}-1600.webp`}
-                alt={`${product.name} by Rehoboth Herbal Co.`}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full flex-col items-center justify-center gap-4">
-                <Image
-                  src="/brand/emblem-dark.png"
-                  alt=""
-                  width={260}
-                  height={247}
-                  className="h-20 w-auto opacity-25"
-                />
-                <p className="text-[13px] text-ink-mute">Photograph to come</p>
-              </div>
-            )}
-            <span
-              className="absolute bottom-0 left-0 h-1.5 w-full"
-              style={{ backgroundColor: product.accentHex }}
-            />
-          </div>
+          <ProductMedia product={product} />
 
           <div className="flex flex-col gap-8">
             <div>
@@ -128,6 +104,7 @@ export default async function ProductPage({
             <DisclaimerBlock />
           </div>
         </div>
+        </SelectedVariantProvider>
       </main>
       <Footer />
     </>

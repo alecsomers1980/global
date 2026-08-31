@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getBrowserClient } from "@/lib/supabase/browser";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 /**
  * Navigation guard for the admin.
@@ -16,18 +17,10 @@ import { getBrowserClient } from "@/lib/supabase/browser";
 const TokenContext = createContext<string>("");
 export const useAdminToken = () => useContext(TokenContext);
 
-const NAV = [
-  { href: "/admin/orders", label: "Orders" },
-  { href: "/admin/products", label: "Products" },
-  { href: "/admin/stockists", label: "Stockists" },
-  { href: "/admin/messages", label: "Messages" },
-  { href: "/admin/settings", label: "Settings" },
-];
-
 export function AdminGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [token, setToken] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
   const [refused, setRefused] = useState(false);
 
   useEffect(() => {
@@ -47,6 +40,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
           setRefused(true);
           return;
         }
+        setEmail(session.user.email ?? "");
         setToken(session.access_token);
       } catch {
         setRefused(true);
@@ -75,33 +69,13 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
 
   return (
     <TokenContext.Provider value={token}>
-      <div className="min-h-screen bg-ground">
-        <header className="border-b border-hairline bg-white">
-          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-4">
-            <Link href="/admin/orders" className="font-display text-lg text-ink">
-              Rehoboth admin
-            </Link>
-            <nav className="flex flex-wrap gap-6 text-sm">
-              {NAV.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={
-                    pathname.startsWith(item.href)
-                      ? "text-brand"
-                      : "text-ink-soft hover:text-brand"
-                  }
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/" className="ml-auto text-[13px] text-ink-mute hover:text-brand">
-              View site
-            </Link>
-          </div>
-        </header>
-        <main className="mx-auto max-w-[1200px] px-6 py-10">{children}</main>
+      <div className="flex min-h-screen flex-col bg-surface lg:flex-row">
+        <AdminNav email={email} />
+        {/* min-w-0: without it a wide orders table stretches this column
+            instead of scrolling inside it. */}
+        <main className="min-w-0 flex-1 px-6 py-10 md:px-10 lg:px-12 lg:py-14">
+          <div className="mx-auto max-w-5xl">{children}</div>
+        </main>
       </div>
     </TokenContext.Provider>
   );

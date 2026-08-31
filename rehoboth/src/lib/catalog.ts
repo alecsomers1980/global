@@ -1,4 +1,5 @@
 import { PRODUCTS, type SeedProduct } from "./catalog-data";
+import { heroFor } from "./product-image";
 
 export type Variant = {
   id: string;
@@ -7,16 +8,9 @@ export type Variant = {
   barcode: string | null;
   priceRetail: number;
   stock: number;
+  /** A photo of this size specifically, where one has been uploaded. */
+  imageUrl: string | null;
 };
-
-/**
- * Products the client has not photographed. Every artemisia shot in the
- * library is ANNUA A3 (verified by reading the bottle labels), and tinctures
- * were never shot. These render a brand panel rather than borrowing another
- * product's bottle — showing an A3 bottle on the Afra page would misrepresent
- * what is being sold.
- */
-const NO_PHOTOGRAPH = new Set(["artemisia-afra", "tinctures"]);
 
 export type Product = {
   id: string;
@@ -50,7 +44,7 @@ function fromSeed(p: SeedProduct): Product {
     ingredients: p.ingredients,
     directions: p.directions,
     storage: p.storage,
-    heroImage: NO_PHOTOGRAPH.has(p.slug) ? null : `/products/${p.slug}`,
+    heroImage: heroFor(p.slug, null),
     variants: p.variants.map((v) => ({
       id: `${p.slug}-${v.format}-${v.size_label}`,
       format: v.format,
@@ -58,6 +52,7 @@ function fromSeed(p: SeedProduct): Product {
       barcode: v.barcode,
       priceRetail: v.price_retail,
       stock: 0,
+      imageUrl: null,
     })),
   };
 }
@@ -96,7 +91,7 @@ export async function getProducts(): Promise<Product[]> {
     ingredients: row.ingredients,
     directions: row.directions,
     storage: row.storage,
-    heroImage: row.hero_image ?? (NO_PHOTOGRAPH.has(row.slug) ? null : `/products/${row.slug}`),
+    heroImage: heroFor(row.slug, row.hero_image),
     variants: (row.product_variants ?? [])
       .filter((v: { active: boolean }) => v.active)
       .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
@@ -107,6 +102,7 @@ export async function getProducts(): Promise<Product[]> {
         barcode: (v.barcode as string) ?? null,
         priceRetail: Number(v.price_retail),
         stock: Number(v.stock),
+        imageUrl: (v.image_url as string) ?? null,
       })),
   }));
 }

@@ -21,9 +21,9 @@ export default async function ShopPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-[1440px] px-6 md:px-16">
-        <div className="border-b border-hairline py-14">
-          <p className="mb-4 text-xs uppercase tracking-[0.2em] text-brand">The range</p>
+      <div className="bg-brand-wash">
+        <div className="mx-auto max-w-[1440px] px-6 py-16 md:px-16">
+          <p className="mb-4 text-xs uppercase tracking-[0.2em] text-brand-night">The range</p>
           <h1 className="font-display text-4xl text-ink md:text-[56px]">Everything we grow</h1>
           <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-ink-soft">
             {/* One string, not text interleaved with expressions: JSX drops the
@@ -32,7 +32,9 @@ export default async function ShopPage() {
             {`${products.length} products, ${variantCount} sizes. Grown, dried and packed on one farm at Low’s Creek, Mpumalanga.`}
           </p>
         </div>
+      </div>
 
+      <main className="mx-auto max-w-[1440px] px-6 md:px-16">
         <div className="grid gap-8 py-14 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 3) * 0.06}>

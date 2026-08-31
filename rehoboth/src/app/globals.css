@@ -6,6 +6,14 @@
   --brand: #6C8781;
   --brand-deep: #4E645F;
   --brand-ink: #F3FFF8;
+  /* The teal carried all the way down. Deep enough that white at 70% still
+     clears 4.5:1, which is what lets the footer and the admin rail use the
+     brand colour as a ground rather than only as an accent. */
+  --brand-night: #24403A;
+  --brand-lift: #32544B;
+  /* A tint with the teal still visible in it — surface is nearly neutral and
+     reads as grey once a section is large. */
+  --brand-wash: #DCEAE5;
 
   --ground: #FAFCFB;
   --surface: #EAF2EE;
@@ -20,6 +28,9 @@
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
   --color-brand-ink: var(--brand-ink);
+  --color-brand-night: var(--brand-night);
+  --color-brand-lift: var(--brand-lift);
+  --color-brand-wash: var(--brand-wash);
   --color-ground: var(--ground);
   --color-surface: var(--surface);
   --color-hairline: var(--hairline);

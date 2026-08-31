@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { imageSrc } from "@/lib/product-image";
 
 /**
  * A product's hero shot, or a brand panel where the client has not
@@ -38,7 +39,7 @@ export function ProductImage({
 
   return (
     <Image
-      src={`${src}-800.webp`}
+      src={imageSrc(src, 800)}
       alt={alt}
       fill
       priority={priority}

@@ -5,11 +5,14 @@ import { useAdminToken } from "../AdminGate";
 import { getSettings, saveShipping, saveSocial } from "../actions";
 import { SHIPPING_FALLBACK, type ShippingSettings } from "@/lib/shipping";
 import { PLATFORMS, EMPTY_SOCIAL, cleanSocial, type SocialLinks } from "@/lib/social";
-
-const FIELD =
-  "min-h-[44px] w-full border border-hairline bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none";
-const SMALL_BTN =
-  "min-h-[40px] border border-hairline px-3 text-[13px] text-ink-soft hover:border-brand hover:text-brand disabled:opacity-50";
+import {
+  BTN_PRIMARY,
+  Card,
+  FIELD,
+  FIELD_LABEL,
+  Notice,
+  PageHeader,
+} from "@/components/admin/ui";
 
 export default function AdminSettingsPage() {
   const token = useAdminToken();
@@ -73,37 +76,33 @@ export default function AdminSettingsPage() {
     setSocialBusy(false);
   }
 
-  if (!shipping) return <p className="mt-10 text-ink-mute">Loading…</p>;
+  if (!shipping) return <p className="text-ink-mute">Loading…</p>;
 
   return (
-    <div className="max-w-[560px]">
-      <h1 className="font-display text-3xl text-ink">Settings</h1>
-      <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
-        Delivery charges take effect straight away — the checkout reads them on
-        every order, so there is nothing to redeploy.
-      </p>
+    <>
+      <PageHeader
+        eyebrow="Setup"
+        title="Settings"
+        description="Delivery charges take effect straight away — the checkout reads them on every order, so there is nothing to redeploy."
+      />
 
-      {error && (
-        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
-          {error}
+      <Card title="Delivery" className="mt-8 max-w-[620px]">
+        <div className="px-7 py-6">
+        <div className="flex flex-col gap-4">
+          {error && <Notice tone="error">{error}</Notice>}
+          {saved && <Notice tone="ok">Saved.</Notice>}
         </div>
-      )}
-      {saved && (
-        <p role="status" className="mt-6 border-l-2 border-brand bg-surface p-3 text-[14px] text-ink-soft">
-          Saved.
-        </p>
-      )}
 
-      <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5">
+      <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <label htmlFor="flat" className="text-[13px] uppercase tracking-[0.08em] text-ink-mute">
+          <label htmlFor="flat" className={FIELD_LABEL}>
             Delivery charge (rand)
           </label>
           <input id="flat" name="flat" type="number" step="1" min="0" defaultValue={shipping.flat} className={FIELD} />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="free_over" className="text-[13px] uppercase tracking-[0.08em] text-ink-mute">
+          <label htmlFor="free_over" className={FIELD_LABEL}>
             Free delivery over (rand)
           </label>
           <input
@@ -127,35 +126,28 @@ export default function AdminSettingsPage() {
           Offer collection from the farm
         </label>
 
-        <button type="submit" disabled={busy} className={`${SMALL_BTN} w-fit`}>
+        <button type="submit" disabled={busy} className={`${BTN_PRIMARY} w-fit`}>
           {busy ? "Saving…" : "Save delivery settings"}
         </button>
       </form>
-
-      <hr className="my-14 border-hairline" />
-
-      <h2 className="font-display text-2xl text-ink">Social media</h2>
-      <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
-        Paste the full web address of each page you are on — starting with
-        https://. Leave a box empty and that icon simply does not appear.
-        These show in the footer of every page and on the contact page.
-      </p>
-
-      {socialError && (
-        <div role="alert" className="mt-6 border-l-2 border-red-700 bg-red-50 p-3 text-[14px] text-red-800">
-          {socialError}
         </div>
-      )}
-      {socialSaved && (
-        <p role="status" className="mt-6 border-l-2 border-brand bg-surface p-3 text-[14px] text-ink-soft">
-          Saved.
-        </p>
-      )}
+      </Card>
 
-      <form onSubmit={onSaveSocial} className="mt-8 flex flex-col gap-5">
+      <Card
+        title="Social media"
+        description="Paste the full web address of each page you are on — starting with https://. Leave a box empty and that icon simply does not appear. These show in the footer of every page and on the contact page."
+        className="mt-5 max-w-[620px]"
+      >
+        <div className="px-7 py-6">
+        <div className="flex flex-col gap-4">
+          {socialError && <Notice tone="error">{socialError}</Notice>}
+          {socialSaved && <Notice tone="ok">Saved.</Notice>}
+        </div>
+
+      <form onSubmit={onSaveSocial} className="mt-2 flex flex-col gap-5">
         {PLATFORMS.map((p) => (
           <div key={p.key} className="flex flex-col gap-2">
-            <label htmlFor={p.key} className="text-[13px] uppercase tracking-[0.08em] text-ink-mute">
+            <label htmlFor={p.key} className={FIELD_LABEL}>
               {p.label}
               <span className="normal-case tracking-normal"> (optional)</span>
             </label>
@@ -171,10 +163,12 @@ export default function AdminSettingsPage() {
           </div>
         ))}
 
-        <button type="submit" disabled={socialBusy} className={`${SMALL_BTN} w-fit`}>
+        <button type="submit" disabled={socialBusy} className={`${BTN_PRIMARY} w-fit`}>
           {socialBusy ? "Saving…" : "Save social links"}
         </button>
       </form>
-    </div>
+        </div>
+      </Card>
+    </>
   );
 }
