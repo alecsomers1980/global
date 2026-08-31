@@ -55,9 +55,15 @@ export async function POST(req: Request) {
         const todayISO = new Date().toISOString().slice(0, 10);
         const jobDate = (typeof body.date === 'string' && body.date.trim().length > 0) ? body.date : todayISO;
 
+        // A jobcard is "Captured" the moment it's created — set this server-side
+        // (not just locally on the detail page's first view) so the list's status
+        // and the SLA alert cron never disagree with what the detail page shows.
+        const nowISO = new Date().toISOString();
+        const initialWorkflow = JSON.stringify({ captured: { ticked: true, ticked_at: nowISO } });
+
         const { rows } = await sql`
             INSERT INTO jobcards (
-                invoice, address, email, company, contact_name, contact_phone, entry_number, date, status, material
+                invoice, address, email, company, contact_name, contact_phone, entry_number, date, status, material, status_workflow_json
             ) VALUES (
                 ${body.invoice || ''},
                 ${body.address || ''},
@@ -67,8 +73,9 @@ export async function POST(req: Request) {
                 ${body.contact_phone || ''},
                 ${entryNumber},
                 ${jobDate},
-                'Quoted',
-                ''
+                'Captured',
+                '',
+                ${initialWorkflow}
             ) RETURNING id
         `;
 

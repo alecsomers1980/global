@@ -6,30 +6,12 @@ import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
 import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexCharge, getHpLatexRows, getHpLatexRowRate, getVinylCutMaterials, getVinylCutRowRate, computeVinylCutCharge, computeInstallCharge, getInstallBreakdown, syncAutoLines } from '@/lib/jobcard-charges';
+import { calculateWorkflowStatus } from '@/lib/jobcard-sla';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
 interface FileEntry { id: string; file: File | null; name: string; description: string; }
 function createEntry(): FileEntry { return { id: Math.random().toString(36).slice(2), file: null, name: '', description: '' }; }
-
-const calculateWorkflowStatus = (workflow: any) => {
-    if (!workflow) return 'Quoted';
-
-    if (workflow.completed?.ticked) return 'Completed';
-    if (workflow.ready_collection?.ticked) return 'Ready';
-
-    const top6 = ['captured', 'quote_sent', 'quote_approved', 'deposit_paid', 'proof_sent', 'approved'];
-    const allTop6Ticked = top6.every(k => workflow[k]?.ticked);
-    if (allTop6Ticked) return 'In-Production';
-
-    if (workflow.approved?.ticked) return 'Approved';
-    if (workflow.proof_sent?.ticked) return 'Proof Sent';
-    if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
-    if (workflow.quote_approved?.ticked) return 'Quote Approved';
-    if (workflow.quote_sent?.ticked) return 'Quote Sent';
-    if (workflow.captured?.ticked) return 'Captured';
-    return 'Quoted';
-};
 
 const JOBCARD_ITEM_OPTIONS = [
     { label: 'ABS', description: 'Single Sided Print' },
@@ -116,8 +98,8 @@ const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; n
     };
 
     return (
-        <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
-            <label className="flex items-center gap-2 cursor-pointer">
+        <div className="flex flex-col items-center gap-1 justify-start min-w-[68px] shrink-0 border-r border-gray-300 last:border-r-0 px-1.5 py-1">
+            <label className="flex flex-col items-center gap-1 cursor-pointer">
                 <input
                     type="checkbox"
                     checked={!!item.ticked}
@@ -125,14 +107,14 @@ const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; n
                     disabled={name === 'captured'}
                     className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
                 />
-                <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
+                <span className="font-bold text-[10px] leading-tight text-gray-700 text-center">{label}</span>
             </label>
             {item.ticked && dateTicked && (
                 <input
                     type="date"
                     value={dateTicked.toISOString().slice(0, 10)}
                     onChange={handleDateChange}
-                    className="text-[9px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 w-full focus:outline-none"
+                    className="text-[8px] text-gray-500 border border-gray-200 rounded px-0.5 py-0.5 w-full focus:outline-none"
                 />
             )}
         </div>
@@ -893,11 +875,11 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {/* Status Workflow Checklist Bar */}
-                    <div className="border border-black bg-white mb-6 flex divide-x divide-gray-300 shadow-sm">
-                        <div className="p-2 bg-gray-50 flex items-center border-r border-black">
+                    <div className="border border-black bg-white mb-6 flex divide-x divide-gray-300 shadow-sm overflow-x-auto">
+                        <div className="p-2 bg-gray-50 flex items-center border-r border-black shrink-0">
                             <span className="text-[10px] font-bold text-gray-600 uppercase">Workflow</span>
                         </div>
-                        <div className="flex-1 flex justify-around p-1 flex-wrap gap-1">
+                        <div className="flex-1 flex justify-around p-1 gap-1">
                             <StatusCheckbox label="Captured" name="captured" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Quote Sent" name="quote_sent" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Quote Approved" name="quote_approved" jobcard={jobcard} setJobcard={setJobcard} />
