@@ -6,12 +6,22 @@ import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
 import { computeDigitalCharge, computeInstallCharge } from '@/lib/jobcard-charges';
 
+// Colors are picked for pairwise contrast (validated against a #0a0a0a surface,
+// normal-vision + colorblind-simulated distance) rather than eyeballed — see
+// dataviz skill. Ready/Completed intentionally share the green hue family
+// (a two-step "success" ramp); every badge also renders its text label, so no
+// status ever depends on color alone.
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
     'Quoted': { bg: 'rgba(75,85,99,0.2)', text: '#9ca3af', border: 'rgba(75,85,99,0.3)' },
-    'Approved': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
-    'In Production': { bg: 'rgba(245,158,11,0.2)', text: '#fbbf24', border: 'rgba(245,158,11,0.3)' },
-    'On Hold': { bg: 'rgba(239,68,68,0.2)', text: '#f87171', border: 'rgba(239,68,68,0.3)' },
-    'Completed': { bg: 'rgba(16,185,129,0.2)', text: '#34d399', border: 'rgba(16,185,129,0.3)' },
+    'Captured': { bg: 'rgba(8,145,178,0.2)', text: '#0891b2', border: 'rgba(8,145,178,0.3)' },
+    'Quote Sent': { bg: 'rgba(37,99,235,0.2)', text: '#2563eb', border: 'rgba(37,99,235,0.3)' },
+    'Deposit Paid / PO': { bg: 'rgba(144,133,233,0.2)', text: '#9085e9', border: 'rgba(144,133,233,0.3)' },
+    'Proof Sent': { bg: 'rgba(162,28,175,0.2)', text: '#a21caf', border: 'rgba(162,28,175,0.3)' },
+    'Approved': { bg: 'rgba(201,133,0,0.2)', text: '#c98500', border: 'rgba(201,133,0,0.3)' },
+    'In-Production': { bg: 'rgba(234,88,12,0.2)', text: '#ea580c', border: 'rgba(234,88,12,0.3)' },
+    'On Hold': { bg: 'rgba(190,18,60,0.2)', text: '#be123c', border: 'rgba(190,18,60,0.3)' },
+    'Ready': { bg: 'rgba(22,163,74,0.2)', text: '#16a34a', border: 'rgba(22,163,74,0.3)' },
+    'Completed': { bg: 'rgba(0,131,0,0.2)', text: '#008300', border: 'rgba(0,131,0,0.3)' },
 };
 
 // Sorting the Status column by workflow order reads better than alphabetical.
@@ -223,33 +233,6 @@ export default function JobcardsListPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
-                        <div className="relative">
-                            <select
-                                value={statusFilter}
-                                onChange={e => setStatusFilter(e.target.value)}
-                                className={`appearance-none py-2 pl-4 pr-10 rounded-lg border bg-white/5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50 cursor-pointer ${statusFilter === 'all' ? 'border-white/10 text-gray-300' : 'border-[#84cc16]/50 text-[#84cc16]'}`}
-                            >
-                                <option value="all" className="bg-[#1a1a1a] text-white">
-                                    All statuses ({jobcards.length})
-                                </option>
-                                {STATUS_ORDER.map(s => (
-                                    <option key={s} value={s} className="bg-[#1a1a1a] text-white">
-                                        {s} ({jobcards.filter(jc => jc.status === s).length})
-                                    </option>
-                                ))}
-                            </select>
-                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">▼</span>
-                        </div>
-
-                        {statusFilter !== 'all' && (
-                            <button
-                                onClick={() => setStatusFilter('all')}
-                                className="text-xs font-semibold text-gray-400 hover:text-white underline underline-offset-4"
-                            >
-                                Clear filter
-                            </button>
-                        )}
-
                         <div className="relative w-full md:w-80">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
                             <input
@@ -294,13 +277,26 @@ export default function JobcardsListPage() {
                                         </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        <button
-                                            onClick={() => toggleSort('status')}
-                                            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
-                                        >
-                                            Status
-                                            <span className={sortKey === 'status' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('status')}</span>
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <span>Status</span>
+                                            <div className="relative">
+                                                <select
+                                                    value={statusFilter}
+                                                    onChange={e => setStatusFilter(e.target.value)}
+                                                    className={`appearance-none normal-case tracking-normal py-1 pl-2 pr-6 rounded-md border bg-white/5 text-[11px] font-semibold focus:outline-none focus:ring-2 focus:ring-[#84cc16]/50 cursor-pointer ${statusFilter === 'all' ? 'border-white/10 text-gray-300' : 'border-[#84cc16]/50 text-[#84cc16]'}`}
+                                                >
+                                                    <option value="all" className="bg-[#1a1a1a] text-white">
+                                                        All ({jobcards.length})
+                                                    </option>
+                                                    {STATUS_ORDER.map(s => (
+                                                        <option key={s} value={s} className="bg-[#1a1a1a] text-white">
+                                                            {s} ({jobcards.filter(jc => jc.status === s).length})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-500 text-[9px]">▼</span>
+                                            </div>
+                                        </div>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Approved
@@ -325,9 +321,6 @@ export default function JobcardsListPage() {
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Description
-                                    </th>
-                                    <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
-                                        Location
                                     </th>
                                     <th className="text-right px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Digital
@@ -385,9 +378,6 @@ export default function JobcardsListPage() {
                                                         ))}
                                                     </div>
                                                 )}
-                                            </td>
-                                            <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
-                                                {jc.installation_address || ''}
                                             </td>
                                             <td className="px-3 py-2.5 text-gray-200 text-right whitespace-nowrap">
                                                 {formatMoney(computeDigitalCharge(jc, pricing || {}))}
