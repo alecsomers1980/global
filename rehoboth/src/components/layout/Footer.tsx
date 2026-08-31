@@ -46,6 +46,7 @@ export function Footer() {
             <Link href="/shop" className="text-white/70 transition-colors hover:text-white">All products</Link>
             <Link href="/stockists" className="text-white/70 transition-colors hover:text-white">Become a stockist</Link>
             <Link href="/about" className="text-white/70 transition-colors hover:text-white">Our story</Link>
+            <Link href="/news" className="text-white/70 transition-colors hover:text-white">Latest news</Link>
           </div>
 
           <div className="flex flex-col gap-3 text-sm">

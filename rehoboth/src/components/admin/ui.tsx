@@ -47,7 +47,7 @@ const WRONG = new Set(["failed", "cancelled", "declined"]);
 // Not a warning and not an achievement — a product being off the site is
 // simply a state, and colouring it amber would make nine ordinary rows look
 // like nine problems.
-const QUIET = new Set(["hidden", "contacted"]);
+const QUIET = new Set(["hidden", "draft", "contacted"]);
 
 export function StatusPill({ status }: { status: string }) {
   const tone = DONE.has(status)

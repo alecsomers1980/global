@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAdminToken } from "@/app/admin/AdminGate";
-import { uploadImage } from "@/app/admin/actions";
+import { uploadImage, uploadNewsImage } from "@/app/admin/actions";
 import { shrinkForUpload } from "@/lib/image-resize";
 import { imageSrc, isUploaded } from "@/lib/product-image";
 
@@ -24,6 +24,7 @@ export function ImageUpload({
   value,
   fallback,
   fallbackNote,
+  bucket = "product",
   className = "h-40 w-32",
 }: {
   name: string;
@@ -32,6 +33,9 @@ export function ImageUpload({
   /** Shown when nothing is uploaded — a repo asset, or the product's own photo. */
   fallback: string | null;
   fallbackNote: string;
+  /** Which store the file belongs in. Article images are kept apart from
+   *  product photography so a tidy-up of one cannot reach into the other. */
+  bucket?: "product" | "news";
   className?: string;
 }) {
   const token = useAdminToken();
@@ -48,7 +52,7 @@ export function ImageUpload({
     try {
       const form = new FormData();
       form.set("file", await shrinkForUpload(file));
-      const result = await uploadImage(token, form);
+      const result = await (bucket === "news" ? uploadNewsImage : uploadImage)(token, form);
       if (!result.ok) throw new Error(result.error);
       setUrl(result.data);
     } catch (e) {

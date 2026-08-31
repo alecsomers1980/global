@@ -5,8 +5,15 @@ import { asAdmin, RefusedError } from "@/lib/admin";
 import { getServerClient } from "@/lib/supabase/server";
 import { screen } from "@/lib/compliance";
 import { cleanSocial, type SocialLinks } from "@/lib/social";
-import { uploadProductImage, deleteProductImage } from "@/lib/storage";
+import {
+  NEWS_BUCKET,
+  deleteImage,
+  deleteProductImage,
+  putImage,
+  uploadProductImage,
+} from "@/lib/storage";
 import { VARIANT_FORMATS } from "@/lib/variant-formats";
+import { plainText } from "@/lib/news";
 
 export type ProductCopy = {
   name: string;
@@ -632,5 +639,166 @@ export async function getDashboard(token: string): Promise<ActionResult<Dashboar
       productsLive,
       recent: (recent.data ?? []) as DashboardSummary["recent"],
     };
+  });
+}
+
+/* ---------------------------------------------------------------- news */
+
+export type AdminNewsPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  body: string;
+  hero_image: string | null;
+  published: boolean;
+  published_at: string | null;
+  updated_at: string;
+};
+
+export type NewsFields = {
+  title: string;
+  excerpt: string;
+  body: string;
+  hero_image: string | null;
+  published: boolean;
+};
+
+export async function listNews(token: string): Promise<ActionResult<AdminNewsPost[]>> {
+  return asAdmin(token, async () => {
+    const { data, error } = await getServerClient()
+      .from("news_posts")
+      .select("id, slug, title, excerpt, body, hero_image, published, published_at, updated_at")
+      .order("updated_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as AdminNewsPost[];
+  });
+}
+
+/**
+ * Screen everything a post says.
+ *
+ * The body arrives as HTML, so it is stripped to text first — a claim wrapped
+ * in <strong> is still a claim, and matching against the markup would let it
+ * through wherever a tag happened to fall inside a phrase.
+ */
+function screenPost(fields: { title: string; excerpt: string; body: string }) {
+  const hit = screen(fields.title, fields.excerpt, plainText(fields.body));
+  if (hit.flagged) {
+    throw new RefusedError(
+      `That wording cannot be published: ${hit.hits.join(", ")}. ` +
+        `We may write about the plants and the farm, but not about treating anything.`
+    );
+  }
+}
+
+export async function createNewsPost(token: string, title: string): Promise<ActionResult<string>> {
+  return asAdmin(token, async () => {
+    const clean = title.trim();
+    if (clean.length < 3) throw new RefusedError("Give the article a headline first.");
+    screenPost({ title: clean, excerpt: "", body: "" });
+
+    const db = getServerClient();
+    const base = slugify(clean);
+    if (!base) throw new RefusedError("That headline has no letters or numbers in it.");
+
+    const { data: taken, error: takenError } = await db
+      .from("news_posts")
+      .select("slug")
+      .like("slug", `${base}%`);
+    if (takenError) throw new Error(takenError.message);
+
+    const used = new Set((taken ?? []).map((r) => r.slug as string));
+    let slug = base;
+    for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
+
+    const { data, error } = await db
+      .from("news_posts")
+      .insert({ slug, title: clean, published: false })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    refreshShop();
+    return data.id as string;
+  });
+}
+
+export async function saveNewsPost(
+  token: string,
+  id: string,
+  fields: NewsFields
+): Promise<ActionResult> {
+  return asAdmin(token, async () => {
+    if (!fields.title.trim()) throw new RefusedError("An article needs a headline.");
+    screenPost(fields);
+
+    const db = getServerClient();
+    const { data: before } = await db
+      .from("news_posts")
+      .select("hero_image, published_at")
+      .eq("id", id)
+      .single();
+
+    const { error } = await db
+      .from("news_posts")
+      .update({
+        title: fields.title.trim(),
+        excerpt: fields.excerpt.trim() || null,
+        body: fields.body,
+        hero_image: fields.hero_image,
+        published: fields.published,
+        // Stamped the first time it goes live and kept from then on, so
+        // unpublishing to fix a typo does not shuffle it to the top of the
+        // page when it comes back.
+        published_at:
+          fields.published && !before?.published_at
+            ? new Date().toISOString()
+            : (before?.published_at ?? null),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+
+    if (before?.hero_image && before.hero_image !== fields.hero_image) {
+      await deleteImage(NEWS_BUCKET, before.hero_image);
+    }
+    refreshShop();
+    return null;
+  });
+}
+
+export async function deleteNewsPosts(token: string, ids: string[]): Promise<ActionResult<number>> {
+  return asAdmin(token, async () => {
+    if (ids.length === 0) throw new RefusedError("Nothing was selected.");
+
+    const db = getServerClient();
+    const { data: posts } = await db.from("news_posts").select("hero_image").in("id", ids);
+
+    const { data, error } = await db.from("news_posts").delete().in("id", ids).select("id");
+    if (error) throw new Error(error.message);
+
+    // Only the hero. Images inside the body are left alone on purpose: finding
+    // them means parsing HTML, and deleting one that a draft still references
+    // would break that article silently.
+    for (const row of posts ?? []) await deleteImage(NEWS_BUCKET, row.hero_image as string | null);
+
+    refreshShop();
+    return data?.length ?? 0;
+  });
+}
+
+/** Upload for the article editor and the hero picker. */
+export async function uploadNewsImage(token: string, form: FormData): Promise<ActionResult<string>> {
+  return asAdmin(token, async () => {
+    const file = form.get("file");
+    if (!(file instanceof File)) throw new RefusedError("No photo came through. Try again.");
+    if (!IMAGE_TYPES.includes(file.type)) {
+      throw new RefusedError("Photos need to be JPEG, PNG or WebP.");
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new RefusedError("That photo is too big. Anything under 6MB is fine.");
+    }
+    return putImage(NEWS_BUCKET, await file.arrayBuffer(), file.name, file.type);
   });
 }

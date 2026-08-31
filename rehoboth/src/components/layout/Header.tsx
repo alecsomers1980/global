@@ -8,6 +8,7 @@ import { useCart, countOf } from "@/lib/cart";
 const NAV = [
   { href: "/shop", label: "Shop" },
   { href: "/about", label: "Our Story" },
+  { href: "/news", label: "News" },
   { href: "/stockists", label: "Stockists" },
   { href: "/contact", label: "Contact" },
 ];

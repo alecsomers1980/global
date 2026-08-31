@@ -30,6 +30,10 @@ const GROUPS: NavGroup[] = [
     ],
   },
   {
+    heading: "Content",
+    items: [{ href: "/admin/news", label: "Latest news" }],
+  },
+  {
     heading: "Enquiries",
     items: [
       { href: "/admin/messages", label: "Messages" },

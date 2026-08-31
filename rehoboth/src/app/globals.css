@@ -107,3 +107,44 @@ body {
   animation: reh-leaf-drift 19s ease-in-out infinite;
   will-change: transform;
 }
+
+/* Article body.
+   One stylesheet for both the editor and the published page, so what a writer
+   sees while typing is what a reader gets. Hand-rolled rather than the
+   typography plugin: this is six rules, and the plugin would bring a whole
+   scale that fights the one already set above. */
+.reh-prose { color: var(--ink-soft); font-size: 17px; line-height: 1.75; }
+.reh-prose > * + * { margin-top: 1.15em; }
+.reh-prose h2,
+.reh-prose h3 {
+  font-family: var(--font-marcellus), Georgia, serif;
+  color: var(--ink);
+  line-height: 1.25;
+  margin-top: 1.8em;
+}
+.reh-prose h2 { font-size: 30px; }
+.reh-prose h3 { font-size: 23px; }
+.reh-prose strong { font-weight: 600; color: var(--ink); }
+.reh-prose a { color: var(--brand-deep); text-decoration: underline; }
+.reh-prose ul,
+.reh-prose ol { padding-left: 1.4em; }
+.reh-prose ul { list-style: disc; }
+.reh-prose ol { list-style: decimal; }
+.reh-prose li + li { margin-top: 0.4em; }
+.reh-prose blockquote {
+  border-left: 2px solid var(--brand);
+  padding-left: 1.2em;
+  font-style: italic;
+  color: var(--ink);
+}
+.reh-prose img { max-width: 100%; height: auto; }
+.reh-prose img[data-align="left"]  { float: left;  max-width: 45%; margin: 0.4em 1.6em 0.9em 0; }
+.reh-prose img[data-align="right"] { float: right; max-width: 45%; margin: 0.4em 0 0.9em 1.6em; }
+
+/* A floated image must not hang out of the bottom of the article. */
+.reh-prose::after { content: ""; display: block; clear: both; }
+
+@media (max-width: 640px) {
+  /* A 45% float in a phone column is a thumbnail nobody can see. */
+  .reh-prose img[data-align] { float: none; max-width: 100%; margin: 1.4em 0; }
+}
