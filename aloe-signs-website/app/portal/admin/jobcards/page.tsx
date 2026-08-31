@@ -349,7 +349,8 @@ export default function JobcardsListPage() {
                                         <tr
                                             key={jc.id}
                                             onClick={() => router.push(`/portal/admin/jobcards/${jc.id}`)}
-                                            className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
+                                            className={`border-b border-white/5 cursor-pointer transition-colors ${flag?.color === 'red' ? 'hover:bg-[#d03b3b]/25' : 'hover:bg-white/5'}`}
+                                            style={flag?.color === 'red' ? { backgroundColor: 'rgba(208,59,59,0.15)' } : undefined}
                                         >
                                             <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
                                                 {formatDate(jc.created_at)}
