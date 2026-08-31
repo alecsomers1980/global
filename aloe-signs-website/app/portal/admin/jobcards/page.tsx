@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClientSupabase } from '@/lib/supabase';
 import { computeDigitalCharge, computeInstallCharge } from '@/lib/jobcard-charges';
+import { getSlaFlag } from '@/lib/jobcard-sla';
 
 // Colors are picked for pairwise contrast (validated against a #0a0a0a surface,
 // normal-vision + colorblind-simulated distance) rather than eyeballed — see
@@ -15,6 +16,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }
     'Quoted': { bg: 'rgba(75,85,99,0.2)', text: '#9ca3af', border: 'rgba(75,85,99,0.3)' },
     'Captured': { bg: 'rgba(8,145,178,0.2)', text: '#0891b2', border: 'rgba(8,145,178,0.3)' },
     'Quote Sent': { bg: 'rgba(37,99,235,0.2)', text: '#2563eb', border: 'rgba(37,99,235,0.3)' },
+    'Quote Approved': { bg: 'rgba(101,163,13,0.2)', text: '#65a30d', border: 'rgba(101,163,13,0.3)' },
     'Deposit Paid / PO': { bg: 'rgba(144,133,233,0.2)', text: '#9085e9', border: 'rgba(144,133,233,0.3)' },
     'Proof Sent': { bg: 'rgba(162,28,175,0.2)', text: '#a21caf', border: 'rgba(162,28,175,0.3)' },
     'Approved': { bg: 'rgba(201,133,0,0.2)', text: '#c98500', border: 'rgba(201,133,0,0.3)' },
@@ -188,6 +190,8 @@ export default function JobcardsListPage() {
         return 0;
     });
 
+    const nowMs = Date.now();
+
     return (
         <div className="min-h-[100dvh] bg-transparent font-inter">
             {/* Header */}
@@ -340,6 +344,7 @@ export default function JobcardsListPage() {
                             <tbody>
                                 {sortedJobcards.map(jc => {
                                     const sc = STATUS_COLORS[jc.status] || STATUS_COLORS['Quoted'];
+                                    const flag = getSlaFlag(jc, nowMs);
                                     return (
                                         <tr
                                             key={jc.id}
@@ -351,13 +356,20 @@ export default function JobcardsListPage() {
                                             </td>
                                             <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
                                                 <span
-                                                    className="px-3 py-1 rounded-full text-xs font-bold"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
                                                     style={{
                                                         backgroundColor: sc.bg,
                                                         color: sc.text,
                                                         border: `1px solid ${sc.border}`,
                                                     }}
+                                                    title={flag?.reason}
                                                 >
+                                                    {flag && (
+                                                        <span
+                                                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                                                            style={{ backgroundColor: flag.color === 'red' ? '#d03b3b' : '#0ca30c' }}
+                                                        />
+                                                    )}
                                                     {jc.status}
                                                 </span>
                                             </td>

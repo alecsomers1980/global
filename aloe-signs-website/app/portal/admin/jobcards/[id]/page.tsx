@@ -14,17 +14,18 @@ function createEntry(): FileEntry { return { id: Math.random().toString(36).slic
 
 const calculateWorkflowStatus = (workflow: any) => {
     if (!workflow) return 'Quoted';
-    
+
     if (workflow.completed?.ticked) return 'Completed';
     if (workflow.ready_collection?.ticked) return 'Ready';
-    
-    const top5 = ['captured', 'quote_sent', 'deposit_paid', 'proof_sent', 'approved'];
-    const allTop5Ticked = top5.every(k => workflow[k]?.ticked);
-    if (allTop5Ticked) return 'In-Production';
-    
+
+    const top6 = ['captured', 'quote_sent', 'quote_approved', 'deposit_paid', 'proof_sent', 'approved'];
+    const allTop6Ticked = top6.every(k => workflow[k]?.ticked);
+    if (allTop6Ticked) return 'In-Production';
+
     if (workflow.approved?.ticked) return 'Approved';
     if (workflow.proof_sent?.ticked) return 'Proof Sent';
     if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
+    if (workflow.quote_approved?.ticked) return 'Quote Approved';
     if (workflow.quote_sent?.ticked) return 'Quote Sent';
     if (workflow.captured?.ticked) return 'Captured';
     return 'Quoted';
@@ -899,6 +900,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                         <div className="flex-1 flex justify-around p-1 flex-wrap gap-1">
                             <StatusCheckbox label="Captured" name="captured" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Quote Sent" name="quote_sent" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Quote Approved" name="quote_approved" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Deposit Paid / PO" name="deposit_paid" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Proof Sent" name="proof_sent" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Approved" name="approved" jobcard={jobcard} setJobcard={setJobcard} />
