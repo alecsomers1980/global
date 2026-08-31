@@ -17,7 +17,7 @@ import { Botanicals } from "@/components/home/Botanicals";
  */
 export function Hero() {
   return (
-    <section className="relative isolate flex w-full flex-col overflow-hidden bg-[#10201C] lg:min-h-[740px]">
+    <section className="relative isolate flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#10201C]">
       {/* ground: a soft vertical lift, so the band is not a flat fill */}
       <div
         aria-hidden
@@ -55,7 +55,7 @@ export function Hero() {
 
       <Header tone="dark" />
 
-      <div className="mx-auto grid w-full max-w-[1440px] flex-1 items-center gap-6 px-6 pb-12 pt-6 md:gap-10 md:px-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pb-20 lg:pt-4">
+      <div className="mx-auto grid w-full max-w-[1440px] flex-1 items-center gap-4 px-6 pb-10 pt-2 sm:gap-6 md:gap-10 md:px-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pb-20 lg:pt-4">
         <div className="reh-in-left flex flex-col">
           <div className="mb-7 flex items-center gap-4">
             <Image
