@@ -14,6 +14,7 @@ import {
 } from "@/lib/storage";
 import { VARIANT_FORMATS } from "@/lib/variant-formats";
 import { plainText } from "@/lib/news";
+import { optimiseArticle } from "@/lib/news-optimizer";
 
 export type ProductCopy = {
   name: string;
@@ -690,6 +691,25 @@ function screenPost(fields: { title: string; excerpt: string; body: string }) {
         `We may write about the plants and the farm, but not about treating anything.`
     );
   }
+}
+
+/**
+ * Rewrites a draft headline/summary/body for SEO/GEO. The model is told not
+ * to add a medical claim, but that instruction living only in a prompt isn't
+ * a legal guarantee — screenPost() re-checks the result exactly as it would
+ * check a save, and a flagged rewrite is refused before it ever reaches the
+ * editor. Nothing changes on screen if this throws.
+ */
+export async function optimiseNewsArticle(
+  token: string,
+  fields: { title: string; excerpt: string; body: string }
+): Promise<ActionResult<{ title: string; excerpt: string; body: string }>> {
+  return asAdmin(token, async () => {
+    if (!fields.title.trim()) throw new RefusedError("Write a headline first — there is nothing to optimise yet.");
+    const optimised = await optimiseArticle(fields);
+    screenPost(optimised);
+    return optimised;
+  });
 }
 
 export async function createNewsPost(token: string, title: string): Promise<ActionResult<string>> {

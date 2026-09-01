@@ -16,6 +16,7 @@
     "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.5",
     "@tiptap/extension-image": "^3.30.5",

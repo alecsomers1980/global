@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
 import { useAdminToken } from "../AdminGate";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import {
   BTN_PRIMARY,
+  BTN_SECONDARY,
   Card,
   EmptyState,
   FIELD,
@@ -18,6 +20,7 @@ import {
   createNewsPost,
   deleteNewsPosts,
   listNews,
+  optimiseNewsArticle,
   saveNewsPost,
   type AdminNewsPost,
 } from "../actions";
@@ -38,6 +41,7 @@ export default function AdminNewsPage() {
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [optimizingId, setOptimizingId] = useState<string | null>(null);
 
   /**
    * The editor is controlled, so its HTML lives here rather than in the form.
@@ -86,6 +90,38 @@ export default function AdminNewsPage() {
       setError(result.error);
     }
     setBusy(false);
+  }
+
+  /**
+   * Rewrites the headline, summary and body in place for SEO/GEO — the
+   * headline/summary inputs are uncontrolled (defaultValue), so their new
+   * text is written straight onto the DOM elements the same way the browser
+   * would; the body has to go through setBodies since RichTextEditor only
+   * ever re-reads its content from that state.
+   */
+  async function onOptimize(post: AdminNewsPost, form: HTMLFormElement) {
+    setBusy(true);
+    setOptimizingId(post.id);
+    setError(null);
+    setSaved(null);
+    const fd = new FormData(form);
+    const result = await optimiseNewsArticle(token, {
+      title: String(fd.get("title") ?? ""),
+      excerpt: String(fd.get("excerpt") ?? ""),
+      body: bodies[post.id] ?? "",
+    });
+    if (result.ok) {
+      const titleInput = form.elements.namedItem("title") as HTMLInputElement | null;
+      const excerptInput = form.elements.namedItem("excerpt") as HTMLTextAreaElement | null;
+      if (titleInput) titleInput.value = result.data.title;
+      if (excerptInput) excerptInput.value = result.data.excerpt;
+      setBodies((b) => ({ ...b, [post.id]: result.data.body }));
+      setSaved("Optimised for SEO — have a read, then Save article to keep it.");
+    } else {
+      setError(result.error);
+    }
+    setBusy(false);
+    setOptimizingId(null);
   }
 
   async function onAdd(form: HTMLFormElement) {
@@ -290,6 +326,25 @@ export default function AdminNewsPage() {
                         className={FIELD}
                         placeholder="One or two lines, shown on the card rather than the start of the article."
                       />
+                    </div>
+
+                    <div className="flex flex-col items-start gap-2">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={(e) => onOptimize(post, e.currentTarget.closest("form") as HTMLFormElement)}
+                        className={BTN_SECONDARY}
+                      >
+                        <Sparkles size={14} />
+                        {optimizingId === post.id ? "Optimising…" : "Optimise for SEO"}
+                      </button>
+                      <p className="max-w-[520px] text-[13px] leading-relaxed text-ink-mute">
+                        Rewrites the headline, summary and article below for search and AI
+                        answer engines — headings, keywords, a stronger opening line. It only
+                        restructures what you&rsquo;ve already written, never adds a new claim,
+                        and is checked the same way a save is before it lands here. Have a read
+                        and Save article when you&rsquo;re happy.
+                      </p>
                     </div>
 
                     <div className="flex flex-col gap-2">
