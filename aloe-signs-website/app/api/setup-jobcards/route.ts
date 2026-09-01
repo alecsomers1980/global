@@ -163,6 +163,20 @@ export async function GET() {
             WHERE approved_at IS NULL AND status IN ('Approved', 'In Production', 'Completed')
         `;
 
+        // One-time (idempotent) backfill: jobcards created before "Captured" was
+        // set server-side at creation are stuck showing "Quoted" forever unless
+        // someone happened to open the detail page AND click Save. Catch them up
+        // using created_at as the capture time — status = 'Quoted' only ever
+        // happens when nothing in the workflow is ticked yet, so this is safe.
+        await sql`
+            UPDATE jobcards
+            SET status = 'Captured',
+                status_workflow_json = COALESCE(status_workflow_json, '{}'::jsonb)
+                    || jsonb_build_object('captured', jsonb_build_object('ticked', true, 'ticked_at', created_at))
+            WHERE status = 'Quoted'
+              AND (status_workflow_json IS NULL OR NOT (status_workflow_json ? 'captured'))
+        `;
+
         return NextResponse.json({
             success: true,
             message: `jobcards table is up to date (${COLUMNS.length} managed columns).`,
