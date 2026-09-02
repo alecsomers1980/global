@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }
     'On Hold': { bg: 'rgba(190,18,60,0.2)', text: '#be123c', border: 'rgba(190,18,60,0.3)' },
     'Ready': { bg: 'rgba(22,163,74,0.2)', text: '#16a34a', border: 'rgba(22,163,74,0.3)' },
     'Completed': { bg: 'rgba(0,131,0,0.2)', text: '#008300', border: 'rgba(0,131,0,0.3)' },
+    'Cancelled': { bg: 'rgba(220,38,38,0.2)', text: '#dc2626', border: 'rgba(220,38,38,0.3)' },
 };
 
 // Sorting the Status column by workflow order reads better than alphabetical.
@@ -36,7 +37,7 @@ export default function JobcardsListPage() {
     const [jobcards, setJobcards] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [viewMode, setViewMode] = useState<'active' | 'completed'>('active');
+    const [viewMode, setViewMode] = useState<'active' | 'completed' | 'cancelled'>('active');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [pricing, setPricing] = useState<any>(null);
     const [sortKey, setSortKey] = useState<SortKey>('created_at');
@@ -162,9 +163,10 @@ export default function JobcardsListPage() {
 
     const filteredJobcards = jobcards.filter(jc => {
         if (statusFilter === 'all') {
-            // No explicit status chosen, so the Active/Completed tabs decide.
-            if (viewMode === 'active' && jc.status === 'Completed') return false;
+            // No explicit status chosen, so the Active/Completed/Cancelled tabs decide.
+            if (viewMode === 'active' && (jc.status === 'Completed' || jc.status === 'Cancelled')) return false;
             if (viewMode === 'completed' && jc.status !== 'Completed') return false;
+            if (viewMode === 'cancelled' && jc.status !== 'Cancelled') return false;
         } else {
             // An explicit status overrides the tabs — otherwise picking
             // "Completed" while on "Active Jobs" would silently show nothing.
@@ -232,7 +234,7 @@ export default function JobcardsListPage() {
                     <div>
                         <h1 className="text-xl font-extrabold text-black m-0">Production Jobcards</h1>
                         <p className="text-xs text-gray-600 m-0">
-                            {viewMode === 'active' ? 'Active Jobs' : 'Completed Jobs'}
+                            {viewMode === 'active' ? 'Active Jobs' : viewMode === 'completed' ? 'Completed Jobs' : 'Cancelled Jobs'}
                             {statusFilter !== 'all' ? ` · ${statusFilter}` : ''} — {sortedJobcards.length} job{sortedJobcards.length === 1 ? '' : 's'}
                         </p>
                     </div>
@@ -280,11 +282,17 @@ export default function JobcardsListPage() {
                         >
                             Active Jobs
                         </button>
-                        <button 
+                        <button
                             onClick={() => setViewMode('completed')}
                             className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${viewMode === 'completed' ? 'bg-[#84cc16] text-[#0a0a0a] shadow-md' : 'text-gray-400 hover:text-white'}`}
                         >
                             Completed Jobs
+                        </button>
+                        <button
+                            onClick={() => setViewMode('cancelled')}
+                            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${viewMode === 'cancelled' ? 'bg-[#84cc16] text-[#0a0a0a] shadow-md' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            Cancelled
                         </button>
                     </div>
 
