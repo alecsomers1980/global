@@ -12,6 +12,7 @@ const QUOTE_APPROVED_STALL_HOURS = 24;
 export function calculateWorkflowStatus(workflow: any): string {
   if (!workflow) return 'Quoted';
 
+  if (workflow.cancelled?.ticked) return 'Cancelled';
   if (workflow.completed?.ticked) return 'Completed';
   if (workflow.ready_collection?.ticked) return 'Ready';
 

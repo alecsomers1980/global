@@ -904,6 +904,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             <StatusCheckbox label="Approved" name="approved" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Ready" name="ready_collection" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Completed" name="completed" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Cancelled" name="cancelled" jobcard={jobcard} setJobcard={setJobcard} />
                         </div>
                     </div>
 
