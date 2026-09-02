@@ -68,6 +68,12 @@ These rules apply to ALL presets. They are what make the output premium.
 - Default easing: `power3.out` for entrances, `power2.inOut` for morphs.
 - Stagger value: `0.08` for text, `0.15` for cards/containers.
 
+### Animation Correctness (not just presence)
+Owning presets covers *what* moves; this covers whether a given motion is *correct* — the gap named in the learning digest (2026-08-27, `emilkowalski/skills`, MIT).
+- **Duration is a tell.** Anything past ~300ms on a UI micro-interaction (hover, press, toggle) reads as sluggish rather than premium — reserve longer durations for scroll-triggered entrances and hero reveals, not for feedback to a direct interaction.
+- **Never ship a CSS default easing** (`ease`, `ease-in-out`, `linear`) on anything intentional — every motion in this skill's Fixed Design System already specifies a custom cubic-bezier or GSAP power curve; hold new additions to the same bar rather than falling back to the browser default.
+- **Not every element deserves motion.** Before animating something, ask whether the motion communicates state (something changed, something is loading, something is now interactive) or is decoration for its own sake — decoration is what the "alternating static/animated sections" rhythm rule in [[design-self-audit]] category 4 exists to catch.
+
 ---
 
 ## Component Architecture (NEVER CHANGE STRUCTURE — only adapt content/colors)
