@@ -87,6 +87,11 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'delivery_address', type: 'TEXT' },
     { name: 'courier_address', type: 'TEXT' },
 
+    // Scheduled dates (shown under "Booked" in the dashboard list)
+    { name: 'installation_date', type: 'VARCHAR(255)' },
+    { name: 'collection_date', type: 'VARCHAR(255)' },
+    { name: 'delivery_date', type: 'VARCHAR(255)' },
+
     // Installation
     { name: 'install_bakkie', type: 'BOOLEAN DEFAULT false' },
     { name: 'install_truck', type: 'BOOLEAN DEFAULT false' },
