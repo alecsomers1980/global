@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { NextResponse } from 'next/server';
+import { calculateWorkflowStatus } from '@/lib/jobcard-sla';
 
 /**
  * Authoritative schema for the `jobcards` table.
@@ -86,6 +87,11 @@ const COLUMNS: { name: string; type: string }[] = [
     { name: 'delivery_address', type: 'TEXT' },
     { name: 'courier_address', type: 'TEXT' },
 
+    // Scheduled dates (shown under "Booked" in the dashboard list)
+    { name: 'installation_date', type: 'VARCHAR(255)' },
+    { name: 'collection_date', type: 'VARCHAR(255)' },
+    { name: 'delivery_date', type: 'VARCHAR(255)' },
+
     // Installation
     { name: 'install_bakkie', type: 'BOOLEAN DEFAULT false' },
     { name: 'install_truck', type: 'BOOLEAN DEFAULT false' },
@@ -108,6 +114,10 @@ const COLUMNS: { name: string; type: string }[] = [
 
     // Report / approval tracking
     { name: 'approved_at', type: 'TIMESTAMP WITH TIME ZONE' },
+
+    // SLA alert de-duplication (cron sends each breach email once)
+    { name: 'sla_captured_alert_sent_at', type: 'TIMESTAMP WITH TIME ZONE' },
+    { name: 'sla_quote_approved_alert_sent_at', type: 'TIMESTAMP WITH TIME ZONE' },
 
     // Engineering / civil material sections
     { name: 'mat_section_digital', type: 'BOOLEAN DEFAULT false' },
@@ -159,9 +169,43 @@ export async function GET() {
             WHERE approved_at IS NULL AND status IN ('Approved', 'In Production', 'Completed')
         `;
 
+        // One-time (idempotent) backfill: sync the stored `status` with what the
+        // workflow actually says. Two things cause drift here: (a) jobcards
+        // created before "Captured" was set server-side at creation, whose
+        // workflow is still empty, and (b) the detail page's auto-tick-on-view
+        // effect only ever writes status_workflow_json, never `status` — so a
+        // job can end up with captured ticked in the DB while `status` is stuck
+        // at whatever it was before. Recompute every row from its workflow with
+        // the same calculateWorkflowStatus the app itself uses, so the list, the
+        // detail page, and the SLA cron can never disagree again.
+        //
+        // Skip jobs already at 'In-Production': that status now requires the
+        // "Quote Approved" step, which didn't exist when older jobs went
+        // through the workflow, so recomputing them would wrongly demote every
+        // pre-existing In-Production job back to 'Approved'.
+        const { rows: allJobcards } = await sql`SELECT id, status, status_workflow_json, created_at FROM jobcards WHERE status != 'In-Production'`;
+        let statusFixed = 0;
+        for (const jc of allJobcards) {
+            let workflow = jc.status_workflow_json || {};
+            let workflowChanged = false;
+            if (!workflow.captured?.ticked) {
+                workflow = { ...workflow, captured: { ticked: true, ticked_at: jc.created_at } };
+                workflowChanged = true;
+            }
+            const correctStatus = calculateWorkflowStatus(workflow);
+            if (correctStatus !== jc.status || workflowChanged) {
+                await sql`
+                    UPDATE jobcards
+                    SET status = ${correctStatus}, status_workflow_json = ${JSON.stringify(workflow)}
+                    WHERE id = ${jc.id}
+                `;
+                statusFixed++;
+            }
+        }
+
         return NextResponse.json({
             success: true,
-            message: `jobcards table is up to date (${COLUMNS.length} managed columns).`,
+            message: `jobcards table is up to date (${COLUMNS.length} managed columns). ${statusFixed} jobcard status(es) resynced with their workflow.`,
         });
     } catch (error) {
         return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });

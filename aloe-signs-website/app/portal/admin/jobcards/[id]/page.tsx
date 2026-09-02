@@ -6,29 +6,12 @@ import Link from 'next/link';
 
 import { createClientSupabase } from '@/lib/supabase';
 import { getHpLatexMaterials, getArtworkRate, computeArtworkCharge, computeHpLatexCharge, getHpLatexRows, getHpLatexRowRate, getVinylCutMaterials, getVinylCutRowRate, computeVinylCutCharge, computeInstallCharge, getInstallBreakdown, syncAutoLines } from '@/lib/jobcard-charges';
+import { calculateWorkflowStatus } from '@/lib/jobcard-sla';
 const FLATBED_MATERIALS = ['Correx 3.0', 'Correx 3.5', 'Correx 4.0', 'Correx 5.0', '3mm FOAM', '5mm FOAM', '10mm FOAM', '15mm FOAM', '20mm FOAM', '3mm ACM', '0.6 CHROMADEK', '3mm PERSPEX', 'WOOD', 'GLASS', 'OTHER'];
 const STATUSES = ['Quoted', 'Approved', 'In Production', 'On Hold', 'Completed'];
 
 interface FileEntry { id: string; file: File | null; name: string; description: string; }
 function createEntry(): FileEntry { return { id: Math.random().toString(36).slice(2), file: null, name: '', description: '' }; }
-
-const calculateWorkflowStatus = (workflow: any) => {
-    if (!workflow) return 'Quoted';
-    
-    if (workflow.completed?.ticked) return 'Completed';
-    if (workflow.ready_collection?.ticked) return 'Ready';
-    
-    const top5 = ['captured', 'quote_sent', 'deposit_paid', 'proof_sent', 'approved'];
-    const allTop5Ticked = top5.every(k => workflow[k]?.ticked);
-    if (allTop5Ticked) return 'In-Production';
-    
-    if (workflow.approved?.ticked) return 'Approved';
-    if (workflow.proof_sent?.ticked) return 'Proof Sent';
-    if (workflow.deposit_paid?.ticked) return 'Deposit Paid / PO';
-    if (workflow.quote_sent?.ticked) return 'Quote Sent';
-    if (workflow.captured?.ticked) return 'Captured';
-    return 'Quoted';
-};
 
 const JOBCARD_ITEM_OPTIONS = [
     { label: 'ABS', description: 'Single Sided Print' },
@@ -115,8 +98,8 @@ const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; n
     };
 
     return (
-        <div className="flex flex-col items-center gap-1 justify-center min-w-[100px] border-r border-gray-300 last:border-r-0 px-3 py-1">
-            <label className="flex items-center gap-2 cursor-pointer">
+        <div className="flex flex-col items-center gap-1 justify-start min-w-[68px] shrink-0 border-r border-gray-300 last:border-r-0 px-1.5 py-1">
+            <label className="flex flex-col items-center gap-1 cursor-pointer">
                 <input
                     type="checkbox"
                     checked={!!item.ticked}
@@ -124,14 +107,14 @@ const StatusCheckbox = ({ label, name, jobcard, setJobcard }: { label: string; n
                     disabled={name === 'captured'}
                     className="w-4 h-4 text-aloe-green/80 rounded border-gray-300 cursor-pointer"
                 />
-                <span className="font-bold text-[11px] text-gray-700 text-center">{label}</span>
+                <span className="font-bold text-[10px] leading-tight text-gray-700 text-center">{label}</span>
             </label>
             {item.ticked && dateTicked && (
                 <input
                     type="date"
                     value={dateTicked.toISOString().slice(0, 10)}
                     onChange={handleDateChange}
-                    className="text-[9px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 w-full focus:outline-none"
+                    className="text-[8px] text-gray-500 border border-gray-200 rounded px-0.5 py-0.5 w-full focus:outline-none"
                 />
             )}
         </div>
@@ -236,6 +219,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const [uploadEntries, setUploadEntries] = useState<FileEntry[]>([createEntry()]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
     const [uploadingScan, setUploadingScan] = useState(false);
+    const [uploadingProof, setUploadingProof] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -330,6 +314,21 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         
         setJobcard((prev: any) => ({ ...prev, scanned_jobcard_path: path }));
         setUploadingScan(false);
+    };
+
+    const handleProofPdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingProof(true);
+        const supabase = createClientSupabase();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `jobcards/${id}/proof_${Date.now()}_${safeName}`;
+
+        const { error: err } = await supabase.storage.from('client-uploads').upload(path, file);
+        if (err) { alert('Upload failed: ' + err.message); setUploadingProof(false); return; }
+
+        handleArtworkChange('proof_pdf_path', path);
+        setUploadingProof(false);
     };
 
     const handleEngChange = (name: string, value: any) => {
@@ -892,13 +891,14 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {/* Status Workflow Checklist Bar */}
-                    <div className="border border-black bg-white mb-6 flex divide-x divide-gray-300 shadow-sm">
-                        <div className="p-2 bg-gray-50 flex items-center border-r border-black">
+                    <div className="border border-black bg-white mb-6 flex divide-x divide-gray-300 shadow-sm overflow-x-auto">
+                        <div className="p-2 bg-gray-50 flex items-center border-r border-black shrink-0">
                             <span className="text-[10px] font-bold text-gray-600 uppercase">Workflow</span>
                         </div>
-                        <div className="flex-1 flex justify-around p-1 flex-wrap gap-1">
+                        <div className="flex-1 flex justify-around p-1 gap-1">
                             <StatusCheckbox label="Captured" name="captured" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Quote Sent" name="quote_sent" jobcard={jobcard} setJobcard={setJobcard} />
+                            <StatusCheckbox label="Quote Approved" name="quote_approved" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Deposit Paid / PO" name="deposit_paid" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Proof Sent" name="proof_sent" jobcard={jobcard} setJobcard={setJobcard} />
                             <StatusCheckbox label="Approved" name="approved" jobcard={jobcard} setJobcard={setJobcard} />
@@ -1161,6 +1161,23 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                         </label>
                                                     );
                                                 })}
+                                            </div>
+                                            {/* Proof PDF */}
+                                            <div className="flex items-center justify-between py-1 px-1">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Proof PDF</span>
+                                                <div className="flex items-center gap-2">
+                                                    {jobcard.artwork_details_json?.proof_pdf_path && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openLightbox(jobcard.artwork_details_json.proof_pdf_path)}
+                                                            className="text-[10px] font-bold text-blue-600 hover:underline"
+                                                        >📄 View</button>
+                                                    )}
+                                                    <label className="text-[10px] font-bold text-gray-600 border border-gray-300 rounded px-2 py-1 cursor-pointer hover:bg-gray-100 bg-white">
+                                                        {uploadingProof ? 'Uploading...' : jobcard.artwork_details_json?.proof_pdf_path ? 'Replace' : '+ Upload'}
+                                                        <input type="file" accept="application/pdf" onChange={handleProofPdfUpload} className="hidden" disabled={uploadingProof} />
+                                                    </label>
+                                                </div>
                                             </div>
                                             {/* Hours row */}
                                             <div className="flex items-center justify-between">
@@ -1640,6 +1657,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <Toggle label="Deliver" name="track_deliver" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_deliver && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                        <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                                            <span className="uppercase font-bold text-gray-500">Delivery Date</span>
+                                            <input type="date" name="delivery_date" value={jobcard.delivery_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                        </div>
                                         <textarea name="delivery_address" value={jobcard.delivery_address || ''} onChange={handleChange} placeholder="Delivery Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-2 gap-2 mt-1">
                                             <label className="flex items-center gap-2"><input type="checkbox" name="deliver_car" checked={!!jobcard.deliver_car} onChange={handleChange} className="text-aloe-green" /> Car</label>
@@ -1654,6 +1675,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <Toggle label="Installation" name="track_installation" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_installation && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-3">
+                                        <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                                            <span className="uppercase font-bold text-gray-500">Installation Date</span>
+                                            <input type="date" name="installation_date" value={jobcard.installation_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                        </div>
                                         <span className="text-[10px] uppercase font-bold text-gray-500 block">Installation address &amp; vehicles</span>
                                         <textarea name="installation_address" value={jobcard.installation_address || ''} onChange={handleChange} placeholder="Installation Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-3 gap-2">
@@ -1801,6 +1826,12 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             )}
                                 
                                 <Toggle label="Collect" name="track_collect" jobcard={jobcard} handleChange={handleChange} />
+                                {jobcard.track_collect && (
+                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex items-center justify-between text-[10px] sm:text-xs">
+                                        <span className="uppercase font-bold text-gray-500">Collection Date</span>
+                                        <input type="date" name="collection_date" value={jobcard.collection_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                    </div>
+                                )}
                             </div>
 
 
