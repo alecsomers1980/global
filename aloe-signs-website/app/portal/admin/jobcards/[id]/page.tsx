@@ -219,6 +219,7 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
     const [uploadEntries, setUploadEntries] = useState<FileEntry[]>([createEntry()]);
     const [uploadingFiles, setUploadingFiles] = useState(false);
     const [uploadingScan, setUploadingScan] = useState(false);
+    const [uploadingProof, setUploadingProof] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -313,6 +314,21 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
         
         setJobcard((prev: any) => ({ ...prev, scanned_jobcard_path: path }));
         setUploadingScan(false);
+    };
+
+    const handleProofPdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingProof(true);
+        const supabase = createClientSupabase();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `jobcards/${id}/proof_${Date.now()}_${safeName}`;
+
+        const { error: err } = await supabase.storage.from('client-uploads').upload(path, file);
+        if (err) { alert('Upload failed: ' + err.message); setUploadingProof(false); return; }
+
+        handleArtworkChange('proof_pdf_path', path);
+        setUploadingProof(false);
     };
 
     const handleEngChange = (name: string, value: any) => {
@@ -1146,6 +1162,23 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                                     );
                                                 })}
                                             </div>
+                                            {/* Proof PDF */}
+                                            <div className="flex items-center justify-between py-1 px-1">
+                                                <span className="text-[10px] uppercase font-bold text-gray-500">Proof PDF</span>
+                                                <div className="flex items-center gap-2">
+                                                    {jobcard.artwork_details_json?.proof_pdf_path && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openLightbox(jobcard.artwork_details_json.proof_pdf_path)}
+                                                            className="text-[10px] font-bold text-blue-600 hover:underline"
+                                                        >📄 View</button>
+                                                    )}
+                                                    <label className="text-[10px] font-bold text-gray-600 border border-gray-300 rounded px-2 py-1 cursor-pointer hover:bg-gray-100 bg-white">
+                                                        {uploadingProof ? 'Uploading...' : jobcard.artwork_details_json?.proof_pdf_path ? 'Replace' : '+ Upload'}
+                                                        <input type="file" accept="application/pdf" onChange={handleProofPdfUpload} className="hidden" disabled={uploadingProof} />
+                                                    </label>
+                                                </div>
+                                            </div>
                                             {/* Hours row */}
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] uppercase font-bold text-gray-500">Hours</span>
@@ -1624,6 +1657,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <Toggle label="Deliver" name="track_deliver" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_deliver && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-2">
+                                        <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                                            <span className="uppercase font-bold text-gray-500">Delivery Date</span>
+                                            <input type="date" name="delivery_date" value={jobcard.delivery_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                        </div>
                                         <textarea name="delivery_address" value={jobcard.delivery_address || ''} onChange={handleChange} placeholder="Delivery Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-2 gap-2 mt-1">
                                             <label className="flex items-center gap-2"><input type="checkbox" name="deliver_car" checked={!!jobcard.deliver_car} onChange={handleChange} className="text-aloe-green" /> Car</label>
@@ -1638,6 +1675,10 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                                 <Toggle label="Installation" name="track_installation" jobcard={jobcard} handleChange={handleChange} />
                                 {jobcard.track_installation && (
                                     <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex flex-col gap-3">
+                                        <div className="flex items-center justify-between text-[10px] sm:text-xs">
+                                            <span className="uppercase font-bold text-gray-500">Installation Date</span>
+                                            <input type="date" name="installation_date" value={jobcard.installation_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                        </div>
                                         <span className="text-[10px] uppercase font-bold text-gray-500 block">Installation address &amp; vehicles</span>
                                         <textarea name="installation_address" value={jobcard.installation_address || ''} onChange={handleChange} placeholder="Installation Address..." className="w-full border border-gray-300 p-1 text-xs mt-1 resize-none h-16 bg-white" />
                                         <div className="grid grid-cols-3 gap-2">
@@ -1785,6 +1826,12 @@ export default function JobcardEditPage({ params }: { params: Promise<{ id: stri
                             )}
                                 
                                 <Toggle label="Collect" name="track_collect" jobcard={jobcard} handleChange={handleChange} />
+                                {jobcard.track_collect && (
+                                    <div className="bg-blue-50/50 pl-6 pr-3 py-2 text-sm border-b border-gray-100 flex items-center justify-between text-[10px] sm:text-xs">
+                                        <span className="uppercase font-bold text-gray-500">Collection Date</span>
+                                        <input type="date" name="collection_date" value={jobcard.collection_date || ''} onChange={handleChange} className="border border-gray-300 p-1 bg-white text-gray-800" />
+                                    </div>
+                                )}
                             </div>
 
 

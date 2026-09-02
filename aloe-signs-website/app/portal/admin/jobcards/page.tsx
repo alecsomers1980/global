@@ -194,8 +194,55 @@ export default function JobcardsListPage() {
 
     return (
         <div className="min-h-[100dvh] bg-transparent font-inter">
+            <style>{`
+                .jobcards-print-header { display: none; }
+                @media print {
+                    @page { size: landscape; margin: 12mm 10mm; }
+                    .no-print { display: none !important; }
+                    html, body { background: #fff !important; }
+
+                    .jobcards-print-header { display: flex !important; }
+
+                    .jobcards-print-panel {
+                        background: #fff !important;
+                        backdrop-filter: none !important;
+                        border: 1px solid #1a1a1a !important;
+                        border-radius: 0 !important;
+                        box-shadow: none !important;
+                    }
+                    .jobcards-print-panel table { border-collapse: collapse; width: 100%; }
+                    .jobcards-print-panel thead th {
+                        color: #000 !important;
+                        background: #fff !important;
+                        border-bottom: 2px solid #000 !important;
+                        font-size: 9px;
+                    }
+                    .jobcards-print-panel tbody td {
+                        color: #000 !important;
+                        font-size: 10px;
+                    }
+                    .jobcards-print-panel tbody tr { border-bottom: 1px solid #ddd !important; }
+                    .jobcards-print-panel tbody tr:nth-child(even) { background: #f7f7f5; }
+                }
+            `}</style>
+            {/* Print-only branded header */}
+            <div className="jobcards-print-header items-center justify-between border-b-2 border-black pb-3 mb-4">
+                <div className="flex items-center gap-3">
+                    <Image src="/aloe-logo.png" alt="Aloe Signs" width={110} height={36} className="object-contain" />
+                    <div>
+                        <h1 className="text-xl font-extrabold text-black m-0">Production Jobcards</h1>
+                        <p className="text-xs text-gray-600 m-0">
+                            {viewMode === 'active' ? 'Active Jobs' : 'Completed Jobs'}
+                            {statusFilter !== 'all' ? ` · ${statusFilter}` : ''} — {sortedJobcards.length} job{sortedJobcards.length === 1 ? '' : 's'}
+                        </p>
+                    </div>
+                </div>
+                <div className="text-xs text-gray-500 text-right">
+                    Printed {new Date().toLocaleDateString('en-ZA', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </div>
+            </div>
             {/* Header */}
-            <div className="bg-black/40 backdrop-blur-md border-b border-white/5 py-5">
+            <div className="no-print bg-black/40 backdrop-blur-md border-b border-white/5 py-5">
                 <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Image src="/aloe-logo.png" alt="Aloe Signs" width={140} height={46} className="object-contain filter brightness-0 invert" />
@@ -214,13 +261,18 @@ export default function JobcardsListPage() {
                         <h1 className="text-3xl font-extrabold text-[#fff] m-0 letter-spacing-[-0.5px]">Production Jobcards</h1>
                         <p className="text-gray-400 mt-1 text-sm">Manage physical workflows and production stages.</p>
                     </div>
-                    <button onClick={createNewJobcard} className="bg-[#84cc16] text-[#0a0a0a] font-bold py-3 px-6 rounded-lg shadow-[0_4px_24px_rgba(132,204,22,0.3)] hover:bg-[#a3e635] hover:shadow-[0_4px_32px_rgba(132,204,22,0.4)] transition-all">
-                        ＋ New Jobcard
-                    </button>
+                    <div className="no-print flex gap-3">
+                        <button onClick={() => window.print()} className="bg-white/5 backdrop-blur-md border border-white/10 text-white font-bold py-3 px-6 rounded-lg hover:bg-white/10 transition-all">
+                            🖨 Print
+                        </button>
+                        <button onClick={createNewJobcard} className="bg-[#84cc16] text-[#0a0a0a] font-bold py-3 px-6 rounded-lg shadow-[0_4px_24px_rgba(132,204,22,0.3)] hover:bg-[#a3e635] hover:shadow-[0_4px_32px_rgba(132,204,22,0.4)] transition-all">
+                            ＋ New Jobcard
+                        </button>
+                    </div>
                 </div>
 
                 {/* Search & Tabs */}
-                <div className="flex flex-wrap gap-4 mb-8 justify-between items-center">
+                <div className="no-print flex flex-wrap gap-4 mb-8 justify-between items-center">
                     <div className="flex bg-white/5 border border-white/10 p-1 rounded-lg backdrop-blur-md">
                         <button 
                             onClick={() => setViewMode('active')}
@@ -267,7 +319,7 @@ export default function JobcardsListPage() {
                         <p className="text-sm text-gray-400">Create a new jobcard to start tracking production.</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto bg-white/3 backdrop-blur-md border border-white/5 rounded-xl">
+                    <div className="jobcards-print-panel overflow-x-auto bg-white/3 backdrop-blur-md border border-white/5 rounded-xl">
                         <table className="w-full text-sm">
                             <thead>
                                 <tr>
@@ -277,13 +329,13 @@ export default function JobcardsListPage() {
                                             className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
                                         >
                                             Booked
-                                            <span className={sortKey === 'created_at' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('created_at')}</span>
+                                            <span className={`no-print ${sortKey === 'created_at' ? 'text-[#84cc16]' : 'text-gray-600'}`}>{sortArrow('created_at')}</span>
                                         </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         <div className="flex items-center gap-2">
                                             <span>Status</span>
-                                            <div className="relative">
+                                            <div className="no-print relative">
                                                 <select
                                                     value={statusFilter}
                                                     onChange={e => setStatusFilter(e.target.value)}
@@ -311,7 +363,7 @@ export default function JobcardsListPage() {
                                             className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
                                         >
                                             JC
-                                            <span className={sortKey === 'entry_number' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('entry_number')}</span>
+                                            <span className={`no-print ${sortKey === 'entry_number' ? 'text-[#84cc16]' : 'text-gray-600'}`}>{sortArrow('entry_number')}</span>
                                         </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
@@ -320,7 +372,7 @@ export default function JobcardsListPage() {
                                             className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide hover:text-white transition-colors"
                                         >
                                             Client
-                                            <span className={sortKey === 'client' ? 'text-[#84cc16]' : 'text-gray-600'}>{sortArrow('client')}</span>
+                                            <span className={`no-print ${sortKey === 'client' ? 'text-[#84cc16]' : 'text-gray-600'}`}>{sortArrow('client')}</span>
                                         </button>
                                     </th>
                                     <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
@@ -338,7 +390,7 @@ export default function JobcardsListPage() {
                                     <th className="text-right px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10">
                                         Total
                                     </th>
-                                    <th className="text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10"></th>
+                                    <th className="no-print text-left px-3 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-400 border-b border-white/10"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -352,8 +404,25 @@ export default function JobcardsListPage() {
                                             className={`border-b border-white/5 cursor-pointer transition-colors ${flag?.color === 'red' ? 'hover:bg-[#d03b3b]/25' : 'hover:bg-white/5'}`}
                                             style={flag?.color === 'red' ? { backgroundColor: 'rgba(208,59,59,0.15)' } : undefined}
                                         >
-                                            <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
-                                                {formatDate(jc.created_at)}
+                                            <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap align-top">
+                                                {jc.installation_date && (
+                                                    <div className="leading-tight">
+                                                        <div className="text-[10px] uppercase text-gray-400">Installation</div>
+                                                        <div>{formatDate(jc.installation_date)}</div>
+                                                    </div>
+                                                )}
+                                                {jc.collection_date && (
+                                                    <div className="leading-tight">
+                                                        <div className="text-[10px] uppercase text-gray-400">Collection</div>
+                                                        <div>{formatDate(jc.collection_date)}</div>
+                                                    </div>
+                                                )}
+                                                {jc.delivery_date && (
+                                                    <div className="leading-tight">
+                                                        <div className="text-[10px] uppercase text-gray-400">Delivery</div>
+                                                        <div>{formatDate(jc.delivery_date)}</div>
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
                                                 <span
@@ -404,7 +473,7 @@ export default function JobcardsListPage() {
                                             <td className="px-3 py-2.5 text-[#84cc16] font-bold text-right whitespace-nowrap">
                                                 {formatMoney(clientTotal(jc))}
                                             </td>
-                                            <td className="px-3 py-2.5 text-gray-200 whitespace-nowrap">
+                                            <td className="no-print px-3 py-2.5 text-gray-200 whitespace-nowrap">
                                                 <button
                                                     onClick={(e) => deleteJobcard(e, jc.id)}
                                                     className="text-red-400 hover:text-red-600 text-xs"
