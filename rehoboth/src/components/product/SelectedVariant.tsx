@@ -8,13 +8,16 @@ type Selection = { selected: Variant | undefined; select: (id: string) => void }
 const Ctx = createContext<Selection | null>(null);
 
 /**
- * Which size is chosen, shared between the photograph and the buy box.
+ * Which size is chosen, shared by everything on the product page that changes
+ * with it: the photograph in one column, the buy box in the other, and the
+ * wording in between.
  *
- * Those two sit in opposite columns of the product page and everything between
- * them — ingredients, directions, the disclaimer — is static copy. A provider
- * wrapped around the grid keeps that copy on the server; lifting the state
- * into a component that owned both columns would drag all of it into the
- * client bundle to make one picture change.
+ * The wording used to be static and server-rendered, which is what this
+ * provider was originally shaped to protect. It is not static any more — a
+ * size can carry its own description, directions and so on (0009), so those
+ * sections read the selection too. The provider still wraps the whole grid
+ * rather than one column, and the parts that genuinely do not vary — the
+ * heading, the botanical name, the disclaimer — stay on the server.
  */
 export function SelectedVariantProvider({
   product,

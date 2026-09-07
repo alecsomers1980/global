@@ -5,6 +5,7 @@ import { asAdmin, RefusedError } from "@/lib/admin";
 import { getServerClient } from "@/lib/supabase/server";
 import { screen } from "@/lib/compliance";
 import { cleanSocial, type SocialLinks } from "@/lib/social";
+import { maskYoco, modeOf, type YocoStatus } from "@/lib/yoco";
 import {
   NEWS_BUCKET,
   deleteImage,
@@ -170,6 +171,11 @@ export type AdminProduct = {
     image_url: string | null;
     sort_order: number;
     active: boolean;
+    summary: string | null;
+    traditional_use: string | null;
+    ingredients: string | null;
+    directions: string | null;
+    storage: string | null;
   }[];
 };
 
@@ -178,7 +184,7 @@ export async function listProducts(token: string): Promise<ActionResult<AdminPro
     const { data, error } = await getServerClient()
       .from("products")
       .select(
-        "id, slug, name, botanical_name, summary, traditional_use, ingredients, directions, storage, hero_image, active, product_variants(id, size_label, format, price_retail, price_trade, stock, image_url, sort_order, active)"
+        "id, slug, name, botanical_name, summary, traditional_use, ingredients, directions, storage, hero_image, active, product_variants(id, size_label, format, price_retail, price_trade, stock, image_url, sort_order, active, summary, traditional_use, ingredients, directions, storage)"
       )
       .order("name");
     if (error) throw new Error(error.message);
@@ -252,6 +258,25 @@ export async function saveProduct(
   });
 }
 
+export type VariantCopy = {
+  summary: string;
+  traditional_use: string;
+  ingredients: string;
+  directions: string;
+  storage: string;
+};
+
+/**
+ * Save one size: its price, stock, photograph and its own wording.
+ *
+ * The wording goes through the same screen() as the product's. A claim is no
+ * less published for being written against the 60-capsule size rather than the
+ * product, and this is the second door into the same page — leaving it
+ * unguarded would make the check on saveProduct decorative.
+ *
+ * An empty box is stored as null, which the page reads as "use the product's
+ * wording" rather than as an empty section. See lib/product-copy.ts.
+ */
 export async function saveVariant(
   token: string,
   id: string,
@@ -261,12 +286,27 @@ export async function saveVariant(
     stock: number | null;
     image_url: string | null;
     active: boolean;
-  }
+  } & VariantCopy
 ): Promise<ActionResult> {
   return asAdmin(token, async () => {
     if (!Number.isFinite(fields.price_retail) || fields.price_retail < 0) {
       throw new RefusedError("That retail price is not a number.");
     }
+
+    const hit = screen(
+      fields.summary,
+      fields.traditional_use,
+      fields.ingredients,
+      fields.directions,
+      fields.storage
+    );
+    if (hit.flagged) {
+      throw new RefusedError(
+        `That wording cannot be published: ${hit.hits.join(", ")}. ` +
+          `We may describe the plant and how it is traditionally used, but not what it treats.`
+      );
+    }
+
     const db = getServerClient();
     const { data: before } = await db
       .from("product_variants")
@@ -282,6 +322,11 @@ export async function saveVariant(
         stock: fields.stock,
         image_url: fields.image_url,
         active: fields.active,
+        summary: fields.summary.trim() || null,
+        traditional_use: fields.traditional_use.trim() || null,
+        ingredients: fields.ingredients.trim() || null,
+        directions: fields.directions.trim() || null,
+        storage: fields.storage.trim() || null,
       })
       .eq("id", id);
     if (error) throw new Error(error.message);
@@ -488,11 +533,83 @@ export async function uploadImage(token: string, form: FormData): Promise<Action
 
 /* ---------------------------------------------------------------- settings */
 
+/**
+ * Every settings row, with the payment credentials replaced by a description
+ * of them.
+ *
+ * This result is rendered by a client component, so whatever it returns
+ * travels to the browser. The Yoco secret key and webhook secret are swapped
+ * for maskYoco()'s summary before they can get there — the operator needs to
+ * know a key is saved and whether it is the live one, not what it says.
+ */
 export async function getSettings(token: string): Promise<ActionResult<Record<string, unknown>>> {
   return asAdmin(token, async () => {
     const { data, error } = await getServerClient().from("site_settings").select("key, value");
     if (error) throw new Error(error.message);
-    return Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+    const rows = Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+    rows.yoco = maskYoco(rows.yoco);
+    return rows;
+  });
+}
+
+/**
+ * Save the Yoco credentials.
+ *
+ * A blank box means "leave what is stored alone", because the form can never
+ * show the operator the current value to type back. That makes saving the
+ * webhook secret on its own possible without pasting the API key again, and
+ * it is why there is a separate explicit clearing path below.
+ */
+export async function saveYoco(
+  token: string,
+  fields: { secret_key: string; webhook_secret: string; clear: boolean }
+): Promise<ActionResult<YocoStatus>> {
+  return asAdmin(token, async () => {
+    const db = getServerClient();
+    const { data: row } = await db
+      .from("site_settings")
+      .select("value")
+      .eq("key", "yoco")
+      .maybeSingle();
+    const current = (row?.value ?? {}) as { secret_key?: string; webhook_secret?: string };
+
+    const secret = fields.secret_key.trim();
+    const webhook = fields.webhook_secret.trim();
+
+    if (fields.clear) {
+      const empty = { secret_key: "", webhook_secret: "" };
+      const { error } = await db
+        .from("site_settings")
+        .upsert({ key: "yoco", value: empty, updated_at: new Date().toISOString() });
+      if (error) throw new Error(error.message);
+      return maskYoco(empty);
+    }
+
+    // Catch the two pastes that look right and silently take the shop offline:
+    // a publishable key where the secret key goes, and the two secrets swapped.
+    if (secret && !/^sk_(test|live)_/.test(secret)) {
+      throw new RefusedError(
+        "That is not a Yoco secret key. It starts with sk_test_ or sk_live_ — the pk_ key is a different one."
+      );
+    }
+    if (webhook && !webhook.startsWith("whsec_")) {
+      throw new RefusedError(
+        "That is not a Yoco webhook secret. It starts with whsec_ and is shown once, when the webhook is created."
+      );
+    }
+
+    const value = {
+      secret_key: secret || (current.secret_key ?? ""),
+      webhook_secret: webhook || (current.webhook_secret ?? ""),
+    };
+
+    const { error } = await db
+      .from("site_settings")
+      .upsert({ key: "yoco", value, updated_at: new Date().toISOString() });
+    if (error) throw new Error(error.message);
+
+    console.info(`[admin] Yoco credentials updated (${modeOf(value.secret_key)})`);
+    return maskYoco(value);
   });
 }
 

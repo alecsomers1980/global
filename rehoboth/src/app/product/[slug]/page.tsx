@@ -9,6 +9,7 @@ import { DisclaimerBlock } from "@/components/layout/DisclaimerBlock";
 import { VariantSelector } from "@/components/product/VariantSelector";
 import { ProductMedia } from "@/components/product/ProductMedia";
 import { SelectedVariantProvider } from "@/components/product/SelectedVariant";
+import { VariantDetails, VariantSummary } from "@/components/product/ProductCopy";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, breadcrumbJsonLd, productImageUrl, productJsonLd } from "@/lib/seo";
 
@@ -96,39 +97,12 @@ export default async function ProductPage({
               {product.botanicalName && (
                 <p className="mt-2 text-[15px] italic text-ink-mute">{product.botanicalName}</p>
               )}
-              <p className="mt-5 text-[17px] leading-relaxed text-ink-soft">{product.summary}</p>
+              <VariantSummary product={product} />
             </div>
 
             <VariantSelector product={product} />
 
-            <dl className="flex flex-col gap-6 border-t border-hairline pt-8">
-              {product.traditionalUse && (
-                <div>
-                  <dt className="mb-2 text-xs uppercase tracking-[0.18em] text-ink-mute">
-                    Traditional use
-                  </dt>
-                  <dd className="text-[15px] leading-relaxed text-ink-soft">
-                    {product.traditionalUse}
-                  </dd>
-                </div>
-              )}
-              <div>
-                <dt className="mb-2 text-xs uppercase tracking-[0.18em] text-ink-mute">
-                  Ingredients
-                </dt>
-                <dd className="text-[15px] leading-relaxed text-ink-soft">{product.ingredients}</dd>
-              </div>
-              <div>
-                <dt className="mb-2 text-xs uppercase tracking-[0.18em] text-ink-mute">
-                  Directions
-                </dt>
-                <dd className="text-[15px] leading-relaxed text-ink-soft">{product.directions}</dd>
-              </div>
-              <div>
-                <dt className="mb-2 text-xs uppercase tracking-[0.18em] text-ink-mute">Storage</dt>
-                <dd className="text-[15px] leading-relaxed text-ink-soft">{product.storage}</dd>
-              </div>
-            </dl>
+            <VariantDetails product={product} />
 
             <DisclaimerBlock />
           </div>

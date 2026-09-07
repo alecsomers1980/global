@@ -43,9 +43,9 @@ export default function TermsPage() {
         <h2>Prices and payment</h2>
         <ul>
           <li>Prices are in South African rand and include VAT where applicable.</li>
-          <li>Payment is taken by PayFast. We never see or store your card details.</li>
+          <li>Payment is taken by Yoco. We never see or store your card details.</li>
           <li>
-            Your order is only confirmed once PayFast tells us the payment succeeded.
+            Your order is only confirmed once Yoco tells us the payment succeeded.
             Until then it is held as pending.
           </li>
           <li>

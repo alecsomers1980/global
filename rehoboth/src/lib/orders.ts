@@ -133,7 +133,7 @@ export async function createOrder(input: CheckoutInput): Promise<CreatedOrder> {
     .from("order_items")
     .insert(items.map((i) => ({ order_id: order.id, ...i })));
   if (ie) {
-    // An order with no lines is worse than no order: PayFast would take money
+    // An order with no lines is worse than no order: Yoco would take money
     // against a total nobody can itemise.
     await db.from("orders").delete().eq("id", order.id);
     throw new Error(`createOrder items: ${ie.message}`);
@@ -143,13 +143,29 @@ export async function createOrder(input: CheckoutInput): Promise<CreatedOrder> {
 }
 
 /**
+ * Record which Yoco checkout is collecting payment for an order.
+ *
+ * Reconciliation only — it is what matches a row here to a line in the Yoco
+ * dashboard. A failure to write it must not stop the customer reaching the
+ * payment page, so the caller does not await a result.
+ */
+export async function attachCheckout(orderId: string, checkoutId: string): Promise<void> {
+  const db = getServerClient();
+  const { error } = await db
+    .from("orders")
+    .update({ yoco_checkout_id: checkoutId })
+    .eq("id", orderId);
+  if (error) console.error(`attachCheckout: ${error.message}`);
+}
+
+/**
  * Settle a paid order. Returns false when the order was not in `pending`,
- * which is the replay case: PayFast re-sends an ITN until it gets a 200, and
+ * which is the replay case: Yoco re-sends a webhook until it gets a 2xx, and
  * the same notification must not be applied twice.
  */
 export async function markOrderPaid(
   orderId: string,
-  payfastPaymentId: string
+  yocoPaymentId: string
 ): Promise<boolean> {
   const db = getServerClient();
   const { data, error } = await db
@@ -157,7 +173,7 @@ export async function markOrderPaid(
     .update({
       status: "paid",
       paid_at: new Date().toISOString(),
-      payfast_payment_id: payfastPaymentId,
+      yoco_payment_id: yocoPaymentId,
     })
     .eq("id", orderId)
     .eq("status", "pending")

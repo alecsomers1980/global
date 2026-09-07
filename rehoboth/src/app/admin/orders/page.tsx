@@ -112,7 +112,7 @@ export default function AdminOrdersPage() {
       <PageHeader
         eyebrow="Selling"
         title="Orders"
-        description="Everything started through the checkout. Only an order PayFast has confirmed as paid can be marked sent."
+        description="Everything started through the checkout. Only an order Yoco has confirmed as paid can be marked sent."
         action={
           <button type="button" onClick={downloadCsv} disabled={orders.length === 0} className={BTN_SECONDARY}>
             Download CSV

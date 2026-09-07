@@ -48,9 +48,9 @@ export function CheckoutForm({ settings }: { settings: ShippingSettings }) {
     }
 
     // The order is recorded as pending; the basket has done its job. Clearing
-    // now means the back button from PayFast cannot resubmit it.
+    // now means the back button from Yoco cannot resubmit it.
     clear();
-    postToPayFast(result.action, result.fields);
+    window.location.assign(result.redirectUrl);
   }
 
   if (!ready) {
@@ -199,11 +199,11 @@ export function CheckoutForm({ settings }: { settings: ShippingSettings }) {
           disabled={busy}
           className="mt-7 flex min-h-[54px] w-full items-center justify-center bg-brand px-8 text-sm uppercase tracking-[0.06em] text-brand-ink hover:bg-brand-deep disabled:opacity-60"
         >
-          {busy ? "Taking you to PayFast…" : `Pay ${rands(total)}`}
+          {busy ? "Taking you to Yoco…" : `Pay ${rands(total)}`}
         </button>
 
         <p className="mt-4 text-center text-[13px] text-ink-mute">
-          You will pay securely on PayFast. We never see your card details.
+          You will pay securely on Yoco. We never see your card details.
         </p>
       </aside>
     </form>
@@ -235,23 +235,4 @@ function Field({
       />
     </div>
   );
-}
-
-/**
- * PayFast takes a form POST, not a redirect — the signed fields have to travel
- * in a body. Build one, submit it, and let the browser leave the site.
- */
-function postToPayFast(action: string, fields: Record<string, string>) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = action;
-  for (const [k, v] of Object.entries(fields)) {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = k;
-    input.value = v;
-    form.appendChild(input);
-  }
-  document.body.appendChild(form);
-  form.submit();
 }

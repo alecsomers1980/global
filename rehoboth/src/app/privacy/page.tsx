@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         </ul>
         <p>
           We do not collect or store your card details. Payments are processed by
-          PayFast, who handle your card information directly.
+          Yoco, who handle your card information directly.
         </p>
       </section>
 
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
         <h2>Who we share it with</h2>
         <p>
           Only with the parties needed to fulfil your order: our payment processor
-          (PayFast), our delivery partner, and our email provider. We do not sell
+          (Yoco), our delivery partner, and our email provider. We do not sell
           your personal information to anyone.
         </p>
       </section>

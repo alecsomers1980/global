@@ -104,6 +104,11 @@ export default function AdminProductsPage() {
           stock: stock === "" ? null : Number(stock),
           image_url: String(fd.get("image_url") ?? "").trim() || null,
           active: fd.get("variant_active") === "on",
+          summary: String(fd.get("v_summary") ?? ""),
+          traditional_use: String(fd.get("v_traditional_use") ?? ""),
+          ingredients: String(fd.get("v_ingredients") ?? ""),
+          directions: String(fd.get("v_directions") ?? ""),
+          storage: String(fd.get("v_storage") ?? ""),
         }),
       `Saved ${label}.`
     );
@@ -358,9 +363,11 @@ export default function AdminProductsPage() {
                   <div className="mt-12 border-t border-hairline pt-8">
                     <h3 className="font-display text-xl text-ink">Sizes</h3>
                     <p className="mt-2 max-w-xl text-[14px] leading-relaxed text-ink-soft">
-                      Each size can carry its own photograph — the scents of a soap or a balm
-                      genuinely look different, and the shop swaps the picture when a shopper
-                      picks that size. Leave it empty and the product photo above is used.
+                      Each size can carry its own photograph and its own wording — the scents
+                      of a soap or a balm genuinely look different, and a dose of loose powder
+                      is not a dose of capsules. The shop swaps the picture and the words when
+                      a shopper picks that size. Leave a box empty and what you wrote above
+                      for the whole product is used, so there is no need to repeat yourself.
                     </p>
 
                     <div className="mt-6 flex flex-col gap-4">
@@ -435,6 +442,55 @@ export default function AdminProductsPage() {
                               </button>
                             </div>
                           </div>
+
+                          <details className="mt-6 border-t border-hairline pt-5">
+                            <summary className="cursor-pointer text-[13px] uppercase tracking-[0.1em] text-ink-mute">
+                              {`Wording for ${v.size_label}`}
+                              {hasOwnCopy(v) ? " — set" : " — using the whole product's"}
+                            </summary>
+                            <div className="mt-5 flex flex-col gap-5">
+                              <p className="text-[13px] leading-relaxed text-ink-mute">
+                                Anything left empty falls back to the wording above. Fill in
+                                only what is genuinely different about this size.
+                              </p>
+                              <Area
+                                name="v_summary"
+                                label="Summary"
+                                defaultValue={v.summary ?? ""}
+                                id={`v_summary_${v.id}`}
+                              />
+                              <Area
+                                name="v_traditional_use"
+                                label="Traditional use"
+                                defaultValue={v.traditional_use ?? ""}
+                                id={`v_traditional_use_${v.id}`}
+                              />
+                              <Area
+                                name="v_ingredients"
+                                label="Ingredients"
+                                defaultValue={v.ingredients ?? ""}
+                                rows={2}
+                                id={`v_ingredients_${v.id}`}
+                              />
+                              <Area
+                                name="v_directions"
+                                label="Directions"
+                                defaultValue={v.directions ?? ""}
+                                rows={2}
+                                id={`v_directions_${v.id}`}
+                              />
+                              <Area
+                                name="v_storage"
+                                label="Storage"
+                                defaultValue={v.storage ?? ""}
+                                rows={2}
+                                id={`v_storage_${v.id}`}
+                              />
+                              <button type="submit" disabled={busy} className={`${BTN_QUIET} w-fit`}>
+                                Save size
+                              </button>
+                            </div>
+                          </details>
                         </form>
                       ))}
 
@@ -501,25 +557,37 @@ function Field({ name, label, defaultValue }: { name: string; label: string; def
   );
 }
 
+/** `id` is separate from `name` because the size forms repeat these fields once
+ *  per size on the same page, and a duplicated id points every label at the
+ *  first one. */
 function Area({
   name,
   label,
   defaultValue,
   rows = 3,
+  id,
 }: {
   name: string;
   label: string;
   defaultValue: string;
   rows?: number;
+  id?: string;
 }) {
+  const fieldId = id ?? name;
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={name} className={FIELD_LABEL}>
+      <label htmlFor={fieldId} className={FIELD_LABEL}>
         {label}
       </label>
-      <textarea id={name} name={name} rows={rows} defaultValue={defaultValue} className={FIELD} />
+      <textarea id={fieldId} name={name} rows={rows} defaultValue={defaultValue} className={FIELD} />
     </div>
   );
+}
+
+/** Whether a size overrides any of the product wording — drives the summary line
+ *  so it is visible at a glance which sizes have been given their own. */
+function hasOwnCopy(v: AdminProduct["product_variants"][number]): boolean {
+  return Boolean(v.summary || v.traditional_use || v.ingredients || v.directions || v.storage);
 }
 
 function SmallField({

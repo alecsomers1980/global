@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 /**
- * The customer usually arrives here before PayFast's ITN does, so an order
+ * The customer usually arrives here before Yoco's webhook does, so an order
  * still reading `pending` is the normal case and not a failure. The page says
  * so plainly rather than claiming a payment it cannot yet confirm.
  */
@@ -56,7 +56,7 @@ export default async function SuccessPage({
                 </>
               ) : (
                 <>
-                  We have your order and are waiting for PayFast to confirm the
+                  We have your order and are waiting for Yoco to confirm the
                   payment — that usually takes a moment. You will get an email at{" "}
                   {order.customer_email} as soon as it clears.
                 </>

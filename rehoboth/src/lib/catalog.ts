@@ -10,6 +10,16 @@ export type Variant = {
   stock: number;
   /** A photo of this size specifically, where one has been uploaded. */
   imageUrl: string | null;
+  /**
+   * Wording for this size specifically. Null means inherit the product's —
+   * see copyFor() in product-copy.ts, and 0009_variant_copy.sql for why the
+   * absence of a value is the useful default rather than a gap to fill.
+   */
+  summary: string | null;
+  traditionalUse: string | null;
+  ingredients: string | null;
+  directions: string | null;
+  storage: string | null;
 };
 
 export type Product = {
@@ -53,6 +63,13 @@ function fromSeed(p: SeedProduct): Product {
       priceRetail: v.price_retail,
       stock: 0,
       imageUrl: null,
+      // The seed catalogue carries one set of words per product; per-size
+      // wording is entered in the admin, so every size inherits here.
+      summary: null,
+      traditionalUse: null,
+      ingredients: null,
+      directions: null,
+      storage: null,
     })),
   };
 }
@@ -103,6 +120,11 @@ export async function getProducts(): Promise<Product[]> {
         priceRetail: Number(v.price_retail),
         stock: Number(v.stock),
         imageUrl: (v.image_url as string) ?? null,
+        summary: (v.summary as string) ?? null,
+        traditionalUse: (v.traditional_use as string) ?? null,
+        ingredients: (v.ingredients as string) ?? null,
+        directions: (v.directions as string) ?? null,
+        storage: (v.storage as string) ?? null,
       })),
   }));
 }

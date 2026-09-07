@@ -57,7 +57,7 @@ export default function ReturnsPage() {
       <section>
         <h2>Refunds</h2>
         <p>
-          Refunds are paid back to the method you paid with, through PayFast, within
+          Refunds are paid back to the method you paid with, through Yoco, within
           ten working days of us approving the return.
         </p>
       </section>

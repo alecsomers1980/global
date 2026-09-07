@@ -44,7 +44,7 @@ export async function getMyOrders(accessToken: string): Promise<MyOrdersResult> 
       "reference, status, total, created_at, collect_from_farm, order_items(product_name, size_label, unit_price, qty)"
     )
     .eq("customer_email", email)
-    // A pending order is one PayFast never confirmed. Showing it as an order
+    // A pending order is one Yoco never confirmed. Showing it as an order
     // would have people believe they had bought something they had not.
     .in("status", ["paid", "fulfilled"])
     .order("created_at", { ascending: false });

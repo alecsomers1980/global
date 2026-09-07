@@ -70,7 +70,7 @@ export default function AdminDashboard() {
               value={summary.productsLive}
               href="/admin/products"
               note={
-                // Baskets that never reached PayFast. Worth seeing, but not
+                // Baskets that never reached Yoco. Worth seeing, but not
                 // worth a tile of its own — nobody acts on an abandoned basket.
                 summary.awaitingPayment > 0
                   ? `${summary.awaitingPayment} basket${summary.awaitingPayment === 1 ? "" : "s"} unpaid`

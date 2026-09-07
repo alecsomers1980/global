@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useAdminToken } from "../AdminGate";
-import { getSettings, saveShipping, saveSocial } from "../actions";
+import { getSettings, saveShipping, saveSocial, saveYoco } from "../actions";
 import { SHIPPING_FALLBACK, type ShippingSettings } from "@/lib/shipping";
 import { PLATFORMS, EMPTY_SOCIAL, cleanSocial, type SocialLinks } from "@/lib/social";
+import type { YocoStatus } from "@/lib/yoco";
 import {
   BTN_PRIMARY,
   Card,
@@ -22,6 +23,10 @@ export default function AdminSettingsPage() {
   const [saved, setSaved] = useState(false);
   const [socialError, setSocialError] = useState<string | null>(null);
   const [socialSaved, setSocialSaved] = useState(false);
+  const [yoco, setYoco] = useState<YocoStatus | null>(null);
+  const [yocoError, setYocoError] = useState<string | null>(null);
+  const [yocoSaved, setYocoSaved] = useState<string | null>(null);
+  const [yocoBusy, setYocoBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [socialBusy, setSocialBusy] = useState(false);
 
@@ -32,6 +37,7 @@ export default function AdminSettingsPage() {
       if (result.ok) {
         setShipping({ ...SHIPPING_FALLBACK, ...((result.data.shipping as Partial<ShippingSettings>) ?? {}) });
         setSocial(cleanSocial((result.data.social as Record<string, unknown>) ?? {}));
+        setYoco((result.data.yoco as YocoStatus) ?? null);
       } else {
         setError(result.error);
       }
@@ -57,6 +63,31 @@ export default function AdminSettingsPage() {
       setError(result.error);
     }
     setBusy(false);
+  }
+
+  async function onSaveYoco(form: HTMLFormElement, clear = false) {
+    if (clear && !window.confirm("Remove the Yoco keys? The shop cannot take payments until new ones are entered.")) {
+      return;
+    }
+    setYocoBusy(true);
+    setYocoError(null);
+    setYocoSaved(null);
+    const fd = new FormData(form);
+    const result = await saveYoco(token, {
+      secret_key: String(fd.get("secret_key") ?? ""),
+      webhook_secret: String(fd.get("webhook_secret") ?? ""),
+      clear,
+    });
+    if (result.ok) {
+      setYoco(result.data);
+      setYocoSaved(clear ? "Keys removed." : "Saved.");
+      // The boxes are write-only; leaving a secret key sitting in the DOM
+      // after it has been stored serves no purpose.
+      form.reset();
+    } else {
+      setYocoError(result.error);
+    }
+    setYocoBusy(false);
   }
 
   async function onSaveSocial(e: React.FormEvent<HTMLFormElement>) {
@@ -130,6 +161,120 @@ export default function AdminSettingsPage() {
           {busy ? "Saving…" : "Save delivery settings"}
         </button>
       </form>
+        </div>
+      </Card>
+
+      <Card
+        title="Card payments (Yoco)"
+        description="Where the money goes. These come from your Yoco account and are stored on the server only — once saved, a key can never be read back out of this screen, so it is shown as a description rather than as text you can copy."
+        className="mt-5 max-w-[620px]"
+      >
+        <div className="px-7 py-6">
+          <div className="flex flex-col gap-4">
+            {yocoError && <Notice tone="error">{yocoError}</Notice>}
+            {yocoSaved && <Notice tone="ok">{yocoSaved}</Notice>}
+            {yoco && !yoco.has_secret_key && (
+              <Notice tone="error">
+                No Yoco key saved, so the shop cannot take payment. A customer reaching
+                the checkout is asked to phone instead.
+              </Notice>
+            )}
+            {yoco?.mode === "test" && (
+              <Notice tone="error">
+                This is a test key. Orders will go through the motions without money
+                moving. Paste the sk_live_ key when you are ready to trade.
+              </Notice>
+            )}
+            {yoco?.has_secret_key && yoco.mode === "live" && !yoco.has_webhook_secret && (
+              <Notice tone="error">
+                The live key is in, but there is no webhook secret — nothing will tell
+                the site a payment succeeded, so paid orders will sit as pending.
+              </Notice>
+            )}
+          </div>
+
+          {yoco && (
+            <dl className="mt-2 flex flex-col gap-3 border border-hairline bg-ground px-5 py-4 text-[14px]">
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="text-ink-mute">Secret key</dt>
+                <dd className="text-ink">
+                  {yoco.has_secret_key
+                    ? `${yoco.mode === "live" ? "Live" : yoco.mode === "test" ? "Test" : "Unrecognised"} key ending ${yoco.secret_key_tail}`
+                    : "Not set"}
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="text-ink-mute">Webhook secret</dt>
+                <dd className="text-ink">{yoco.has_webhook_secret ? "Saved" : "Not set"}</dd>
+              </div>
+            </dl>
+          )}
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSaveYoco(e.currentTarget);
+            }}
+            className="mt-5 flex flex-col gap-5"
+          >
+            <div className="flex flex-col gap-2">
+              <label htmlFor="secret_key" className={FIELD_LABEL}>
+                Secret key
+                <span className="normal-case tracking-normal"> (leave empty to keep the current one)</span>
+              </label>
+              <input
+                id="secret_key"
+                name="secret_key"
+                type="password"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="sk_live_…"
+                className={FIELD}
+              />
+              <p className="text-[13px] leading-relaxed text-ink-mute">
+                Yoco dashboard → Sell Online → Payment Gateway → API keys. Copy the
+                secret key, not the one starting pk_.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="webhook_secret" className={FIELD_LABEL}>
+                Webhook secret
+                <span className="normal-case tracking-normal"> (leave empty to keep the current one)</span>
+              </label>
+              <input
+                id="webhook_secret"
+                name="webhook_secret"
+                type="password"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="whsec_…"
+                className={FIELD}
+              />
+              <p className="text-[13px] leading-relaxed text-ink-mute">
+                Given once when the webhook is created, pointing at{" "}
+                <code className="text-ink">/api/yoco/webhook</code>. This is what proves a
+                payment notice really came from Yoco — without it no order is ever marked
+                paid. If it was not written down, create the webhook again for a new one.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="submit" disabled={yocoBusy} className={`${BTN_PRIMARY} w-fit`}>
+                {yocoBusy ? "Saving…" : "Save Yoco keys"}
+              </button>
+              {yoco?.has_secret_key && (
+                <button
+                  type="button"
+                  onClick={(e) => onSaveYoco(e.currentTarget.form!, true)}
+                  disabled={yocoBusy}
+                  className="inline-flex min-h-[38px] items-center justify-center border border-red-700/30 bg-white px-4 text-[12px] uppercase tracking-[0.1em] text-red-800 transition-colors hover:bg-red-50 disabled:opacity-40"
+                >
+                  Remove keys
+                </button>
+              )}
+            </div>
+          </form>
         </div>
       </Card>
 
