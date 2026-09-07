@@ -37,8 +37,8 @@ postApprovedVideoPosts(carId)
                                                    │
                                                    ▼
                                            status → 'approved'
-                                           (both routes call one
-                                            shared helper)
+                                           (admin Approve button
+                                            calls the helper)
                                                    │
                                                    ▼
                                            if post_kind='walkthrough':
@@ -64,7 +64,8 @@ email (best-effort per affiliate)
    - On a successful claim, `POST`s to `${EVEREST_SITE_URL}/api/affiliate/notify-approved` with `{ carId: vehicle_id }` and `Authorization: Bearer ${AFFILIATE_NOTIFY_SECRET}`.
    - On a thrown/non-2xx response, rolls the claim back to `null` so the next approve action on that post retries it (mirrors the exact claim → call → rollback-on-failure idiom already used in Everest's own `postApprovedVideoPosts`).
    - If `EVEREST_SITE_URL` or `AFFILIATE_NOTIFY_SECRET` isn't configured, no-ops with a `console.warn` — same missing-config pattern `createSocialPost` already uses for `EMBER_SOCIAL_API_KEY` — rather than claiming a post it can't actually notify for.
-4. **Two call sites**: `/api/workspaces/posts/update/route.ts` (admin Approve button) and `/api/posts/[id]/client-action/route.ts` (client token-link approve) both call the helper immediately after a successful `status: 'approved'` write — mirroring Everest's own "both approval routes funnel through one function" pattern (`applyVideoDecision`).
+4. **One call site**: `/api/workspaces/posts/update/route.ts` (the admin Approve button on `/approvals`) calls the helper immediately after a successful `status: 'approved'` write.
+   - **Correction from the original design pass:** `/api/posts/[id]/client-action/route.ts` (the client token-link approve) was assumed to be a second path worth wiring, mirroring Everest's own "both approval routes funnel through one function" pattern. Reading the full route showed it 400s with `"Not part of a campaign batch"` unless the post has a `campaign_batch_id` — and Everest's `/api/trigger` payload never sets one for vehicle posts. That route cannot process a feed/reel/walkthrough post today, so wiring the helper into it would be dead code. One call site is correct as of this writing; if vehicle posts ever gain campaign-batch support, add the same one-line call there then.
 5. **New env vars**: `EVEREST_SITE_URL`, `AFFILIATE_NOTIFY_SECRET` — same shape as the existing `EMBER_SOCIAL_URL` / `EMBER_SOCIAL_API_KEY` pair, pointed the other direction.
 
 ## Changes — Everest Motoring
