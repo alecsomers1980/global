@@ -524,9 +524,12 @@ const baseCar = {
 
 describe("buildAffiliateVehiclePayload", () => {
     it("formats price and mileage as en-ZA strings", () => {
+        // en-ZA's Intl.NumberFormat uses U+00A0 (non-breaking space) as the
+        // thousands separator, not a comma — verify against the actual
+        // runtime output rather than assuming comma formatting.
         const result = buildAffiliateVehiclePayload(baseCar, "AFF123", "https://everestmotoring.co.za");
-        expect(result.price).toBe("R 749,900");
-        expect(result.mileage).toBe("12,500 km");
+        expect(result.price).toBe("R 749 900");
+        expect(result.mileage).toBe("12 500 km");
     });
 
     it("builds tracking/flyer/media-kit links keyed to the affiliate's ref", () => {
