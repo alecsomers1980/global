@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getRoomByIdAdmin, updateRoom } from "@/lib/admin/rooms";
 import type { Room } from "@/lib/types";
+import AmenitiesPicker from "@/components/admin/AmenitiesPicker";
+import RoomPhotoManager from "@/components/admin/RoomPhotoManager";
 
 export default function AdminRoomEditPage() {
   const params = useParams<{ id: string }>();
@@ -32,7 +34,9 @@ export default function AdminRoomEditPage() {
       bathrooms: room.bathrooms,
       max_guests: room.max_guests,
       rate_from: room.rate_from,
+      amenities: room.amenities,
       hero_image: room.hero_image,
+      gallery_images: room.gallery_images,
       published: room.published,
     });
     setSaving(false);
@@ -114,12 +118,18 @@ export default function AdminRoomEditPage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm text-ink mb-1">Hero image URL</label>
-          <input
-            className="rounded-lg border border-line bg-white px-4 py-2.5 text-sm w-full outline-none focus:border-terracotta"
-            placeholder="Uploaded via the Gallery admin, or paste a site-media URL"
-            value={room.hero_image ?? ""}
-            onChange={(e) => setRoom({ ...room, hero_image: e.target.value || null })}
+          <label className="block text-sm text-ink mb-2">Amenities</label>
+          <AmenitiesPicker value={room.amenities} onChange={(amenities) => setRoom({ ...room, amenities })} />
+        </div>
+        <div>
+          <label className="block text-sm text-ink mb-2">Photos</label>
+          <RoomPhotoManager
+            roomId={room.id}
+            galleryImages={room.gallery_images}
+            heroImage={room.hero_image}
+            onChange={({ galleryImages, heroImage }) =>
+              setRoom({ ...room, gallery_images: galleryImages, hero_image: heroImage })
+            }
           />
         </div>
         <label className="flex items-center gap-2 text-sm text-ink cursor-pointer">
