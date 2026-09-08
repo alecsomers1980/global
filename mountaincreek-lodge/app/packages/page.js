@@ -56,7 +56,7 @@ export default function PackagesPage() {
   return (
     <main className="bg-linen min-h-screen">
       <HeroHeader
-        eyebrow="Mountaincreek Lodge"
+        eyebrow="Mountain Creek Lodge"
         title="Curated Stay Packages"
         description="Whether you're here for a quick countryside escape, a safari adventure, or a romantic weekend away, we've designed experiences to make your stay effortless, memorable, and uniquely Mountain Creek."
       />

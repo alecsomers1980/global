@@ -38,7 +38,7 @@ export default function Header() {
     { href: '/packages', label: 'PACKAGES' },
     { href: '/experiences', label: 'EXPERIENCES' },
     { href: '/gallery', label: 'GALLERY' },
-    { href: '/red-litchi', label: 'RED LITCHI CAFE' },
+    { href: '/red-litchi', label: 'RED LITCHI CAFÉ' },
     { href: '/contact', label: 'CONTACT US' },
   ];
 

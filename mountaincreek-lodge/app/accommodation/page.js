@@ -172,7 +172,7 @@ function UnitCard({ unit, index }) {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi Mountaincreek Lodge, I would like to enquire about ${unit.name}...`
+    `Hi Mountain Creek Lodge, I would like to enquire about ${unit.name}...`
   );
   const whatsappUrl = `https://wa.me/27829594643?text=${whatsappMessage}`;
   const bookingUrl = "https://www.nightsbridge.co.za/bridge/book?bbid=27902";
@@ -471,7 +471,7 @@ export default function AccommodationPage() {
   return (
     <main className="bg-linen min-h-screen">
       <HeroHeader
-        eyebrow="Mountaincreek Lodge — Hazyview"
+        eyebrow="Mountain Creek Lodge — Hazyview"
         title={
           <>
             Our Spaces — <span className="italic text-accent">Tailored for Rest</span>
@@ -482,7 +482,7 @@ export default function AccommodationPage() {
         description={
           <>
             With {units.length} unique self-catering units accommodating up to{" "}
-            {totalGuests} guests, Mountain Creek Lodge offers the perfect base
+            {totalGuests}{" "}guests, Mountain Creek Lodge offers the perfect base
             for family gatherings, couples&apos; getaways, or solo escapes in
             the heart of Hazyview.
             <span className="block mt-4">
@@ -549,7 +549,7 @@ export default function AccommodationPage() {
             Ready to Escape?
           </h2>
           <p className="font-sans text-primary/60 text-sm md:text-base max-w-lg mx-auto mb-6">
-            Book your stay at Mountaincreek Lodge and experience the beauty of
+            Book your stay at Mountain Creek Lodge and experience the beauty of
             Hazyview, Mpumalanga.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -572,7 +572,7 @@ export default function AccommodationPage() {
             </a>
             <a
               href={`https://wa.me/27829594643?text=${encodeURIComponent(
-                "Hi Mountaincreek Lodge, I would like to enquire about availability..."
+                "Hi Mountain Creek Lodge, I would like to enquire about availability..."
               )}`}
               target="_blank"
               rel="noopener noreferrer"

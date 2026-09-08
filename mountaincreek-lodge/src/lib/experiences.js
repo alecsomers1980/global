@@ -4,7 +4,7 @@ export const experiences = [
     slug: "kruger-national-park",
     title: "Kruger National Park",
     shortDescription: "Only 20 minutes away, making it the perfect base for guided safaris and self-drive adventures.",
-    fullDescription: "Mountaincreek Lodge is situated a mere 20-minute drive from the Phabeni Gate of the world-renowned Kruger National Park. Whether you choose the independence of a self-drive safari or the expertise of a guided open-vehicle tour, the Kruger offers an unparalleled wildlife experience. Home to the legendary Big Five—lion, leopard, rhino, elephant, and buffalo—as well as hundreds of other mammal and bird species, every visit is a unique adventure. The varied landscapes, from dense bushveld to open plains, provide endless opportunities for incredible photography and wildlife viewing.",
+    fullDescription: "Mountain Creek Lodge is situated a mere 20-minute drive from the Phabeni Gate of the world-renowned Kruger National Park. Whether you choose the independence of a self-drive safari or the expertise of a guided open-vehicle tour, the Kruger offers an unparalleled wildlife experience. Home to the legendary Big Five—lion, leopard, rhino, elephant, and buffalo—as well as hundreds of other mammal and bird species, every visit is a unique adventure. The varied landscapes, from dense bushveld to open plains, provide endless opportunities for incredible photography and wildlife viewing.",
     image: "/images/experiences/kruger_safari.png",
     category: "Wildlife & Nature",
     distance: "20 Minutes to Phabeni Gate",

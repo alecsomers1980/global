@@ -59,7 +59,7 @@ export default function RedLitchiPage() {
   return (
     <main className="bg-linen min-h-screen">
       <HeroHeader
-        eyebrow="Mountaincreek Lodge"
+        eyebrow="Mountain Creek Lodge"
         title="Red Litchi Farm Café"
         description="An exquisite dining experience nestled within the scenic Sabie River Valley."
       >
@@ -67,7 +67,7 @@ export default function RedLitchiPage() {
           <div className="relative w-40 h-40 md:w-48 md:h-48">
             <Image
               src="/images/Red Litchi/logo.png"
-              alt="Red Litchi Farm Cafe Logo"
+              alt="Red Litchi Farm Café Logo"
               fill
               quality={100}
               className="object-contain"

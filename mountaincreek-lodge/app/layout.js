@@ -4,31 +4,31 @@ import LayoutShell from '@/components/LayoutShell';
 export const metadata = {
   metadataBase: new URL('https://mountaincreeklodge.vercel.app'),
   title: {
-    default: 'Mountaincreek Lodge — Sabie River Valley Luxury',
-    template: '%s | Mountaincreek Lodge'
+    default: 'Mountain Creek Lodge — Sabie River Valley Luxury',
+    template: '%s | Mountain Creek Lodge'
   },
   description:
-    'Mountaincreek Lodge offers a premium self-catering bush and river lodge stay in Sabie River Valley, Hazyview. Perfect for family adventures, bird watching, litchi farm visits, and Kruger Park safaris.',
+    'Mountain Creek Lodge offers a premium self-catering bush and river lodge stay in Sabie River Valley, Hazyview. Perfect for family adventures, bird watching, litchi farm visits, and Kruger Park safaris.',
   keywords: [
-    'Mountaincreek Lodge',
+    'Mountain Creek Lodge',
     'Hazyview self catering',
     'Sabie River Valley accommodation',
     'Mpumalanga bush lodge',
     'family lodge South Africa',
     'Kruger Park proximity stay',
-    'Red Litchi Cafe',
+    'Red Litchi Café',
   ],
   openGraph: {
-    title: 'Mountaincreek Lodge — Luxury Lowveld Stays',
+    title: 'Mountain Creek Lodge — Luxury Lowveld Stays',
     description: 'Experience premium self-catering escapes near Kruger National Park.',
     url: 'https://mountaincreeklodge.vercel.app',
-    siteName: 'Mountaincreek Lodge',
+    siteName: 'Mountain Creek Lodge',
     images: [
       {
         url: '/images/accommodation/IMG_8185.jpg',
         width: 1200,
         height: 630,
-        alt: 'Mountaincreek Lodge Hero',
+        alt: 'Mountain Creek Lodge Hero',
       },
     ],
     locale: 'en_ZA',
@@ -36,7 +36,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mountaincreek Lodge — Luxury Lowveld Stays',
+    title: 'Mountain Creek Lodge — Luxury Lowveld Stays',
     description: 'Experience premium self-catering escapes near Kruger National Park.',
     images: ['/images/accommodation/IMG_8185.jpg'],
   },
@@ -56,9 +56,9 @@ export const metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': ['LodgingBusiness', 'Resort'],
-  name: 'Mountaincreek Lodge',
+  name: 'Mountain Creek Lodge',
   description:
-    'Mountaincreek Lodge offers a premium self-catering bush and river lodge stay in Sabie River Valley, Hazyview. Perfect for family adventures, bird watching, litchi farm visits, and Kruger Park safaris.',
+    'Mountain Creek Lodge offers a premium self-catering bush and river lodge stay in Sabie River Valley, Hazyview. Perfect for family adventures, bird watching, litchi farm visits, and Kruger Park safaris.',
   url: 'https://mountaincreeklodge.vercel.app',
   telephone: '+27829594643',
   email: 'info@mountaincreeklodge.co.za',

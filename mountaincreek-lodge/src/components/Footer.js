@@ -100,8 +100,8 @@ export default function Footer() {
                 Red Litchi Farm Café
               </p>
               <p className="text-xs text-linen/50 mt-1 leading-relaxed max-w-[220px]">
-                A delightful country kitchen serving wholesome fare beneath the
-                shade of ancient litchi trees.
+                Fresh, farm-to-table delights in a cosy setting. Perfect for
+                coffee dates, breakfast, lunch, cake events, and kids at play.
               </p>
             </div>
             <div className="border-t border-linen/10 pt-4">
@@ -208,7 +208,7 @@ export default function Footer() {
 
       {/* Copyright / Bottom strip */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-16 pt-8 border-t border-linen/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-linen/40 font-medium tracking-wider">
-        <p>&copy; {new Date().getFullYear()} Mountaincreek Lodge. All Rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Mountain Creek Lodge. All Rights Reserved.</p>
         <div className="flex items-center gap-6">
           <a href="/privacy" className="hover:text-accent transition-colors">Privacy Policy</a>
           <a href="/terms" className="hover:text-accent transition-colors">Terms of Use</a>

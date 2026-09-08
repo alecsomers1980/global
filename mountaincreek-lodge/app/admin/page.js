@@ -139,7 +139,7 @@ function LoginScreen({ onLogin }) {
         </form>
 
         <p className="text-center text-white/20 text-xs mt-8">
-          &copy; {new Date().getFullYear()} Mountaincreek Lodge
+          &copy; {new Date().getFullYear()} Mountain Creek Lodge
         </p>
       </div>
     </div>
