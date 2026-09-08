@@ -5,6 +5,7 @@ import NightsbridgeWidget from "@/components/booking/NightsbridgeWidget";
 import Reveal from "@/components/site/Reveal";
 import RoomGallery from "@/components/site/RoomGallery";
 import { GuestsIcon, BedIcon, RoomsIcon, BathIcon, AmenitiesIcon } from "@/components/site/DetailIcons";
+import { findAmenityByLabel } from "@/lib/room-amenities";
 
 export const revalidate = 60; // ISR: admin edits go live within a minute, no redeploy needed
 
@@ -63,11 +64,19 @@ export default async function RoomDetailPage({ params }: Props) {
                 </div>
               ))}
               {room.amenities.length > 0 && (
-                <div className="flex items-start gap-3 sm:col-span-2">
-                  <AmenitiesIcon className="w-5 h-5 text-terracotta shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-muted text-xs">Amenities</p>
-                    <p className="text-ink font-medium">{room.amenities.join(", ")}</p>
+                <div className="sm:col-span-2">
+                  <p className="text-muted text-xs mb-2">Amenities</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2">
+                    {room.amenities.map((label) => {
+                      const match = findAmenityByLabel(label);
+                      const Icon = match?.Icon ?? AmenitiesIcon;
+                      return (
+                        <div key={label} className="flex items-center gap-1.5 text-sm text-ink">
+                          <Icon className="w-4 h-4 text-terracotta shrink-0" />
+                          {label}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
