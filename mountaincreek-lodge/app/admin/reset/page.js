@@ -3,6 +3,10 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput from "@/components/admin/ui/TextInput";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -70,17 +74,15 @@ function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-        New Password
-      </label>
+      <FieldLabel>New Password</FieldLabel>
       <div className="relative mb-4">
-        <input
+        <TextInput
           type={showPassword ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           autoComplete="new-password"
-          className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 pr-16 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+          className="pr-16"
         />
         <button
           type="button"
@@ -91,27 +93,21 @@ function ResetPasswordForm() {
         </button>
       </div>
 
-      <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-        Confirm New Password
-      </label>
-      <input
+      <FieldLabel>Confirm New Password</FieldLabel>
+      <TextInput
         type={showPassword ? "text" : "password"}
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
         required
         autoComplete="new-password"
-        className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg mb-4 focus:outline-none focus:border-[#C07750] transition-colors"
+        className="mb-4"
       />
 
       {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full bg-[#C07750] text-white py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors disabled:opacity-60"
-      >
+      <Button type="submit" disabled={submitting} className="w-full">
         {submitting ? "UPDATING…" : "UPDATE PASSWORD"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -129,11 +125,11 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        <div className="bg-[#1a1d27] p-8 rounded-xl border border-white/5">
+        <Card>
           <Suspense fallback={<p className="text-white/40 text-sm text-center">Loading...</p>}>
             <ResetPasswordForm />
           </Suspense>
-        </div>
+        </Card>
       </div>
     </div>
   );

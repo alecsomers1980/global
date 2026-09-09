@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput from "@/components/admin/ui/TextInput";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -35,7 +39,7 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        <div className="bg-[#1a1d27] p-8 rounded-xl border border-white/5">
+        <Card>
           {sent ? (
             <p className="text-white/70 text-sm text-center">
               If that email matches our admin account, a reset link is on its
@@ -43,28 +47,22 @@ export default function ForgotPasswordPage() {
             </p>
           ) : (
             <form onSubmit={handleSubmit}>
-              <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-                Admin Email
-              </label>
-              <input
+              <FieldLabel>Admin Email</FieldLabel>
+              <TextInput
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="username"
-                className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg mb-4 focus:outline-none focus:border-[#C07750] transition-colors"
+                className="mb-4"
                 placeholder="you@example.com"
               />
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-[#C07750] text-white py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors disabled:opacity-60"
-              >
+              <Button type="submit" disabled={submitting} className="w-full">
                 {submitting ? "SENDING…" : "SEND RESET LINK"}
-              </button>
+              </Button>
             </form>
           )}
-        </div>
+        </Card>
 
         <p className="text-center mt-6">
           <Link href="/admin" className="text-white/40 hover:text-white/70 text-sm transition-colors">
