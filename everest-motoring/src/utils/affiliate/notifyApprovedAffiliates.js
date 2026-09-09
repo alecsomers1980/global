@@ -26,7 +26,7 @@ export async function notifyApprovedAffiliates(carId) {
 
   const { data: affiliates, error: affiliatesError } = await supabase
     .from("profiles")
-    .select("id, first_name, email, affiliate_code")
+    .select("id, first_name, affiliate_code")
     .eq("role", "affiliate")
     .eq("is_approved", true)
     .not("affiliate_code", "is", null);
@@ -39,11 +39,22 @@ export async function notifyApprovedAffiliates(carId) {
   let notified = 0;
 
   for (const affiliate of affiliates || []) {
+    // profiles has no email column — it only exists on the Supabase Auth
+    // user, keyed by the same id (see admin/affiliates/actions.js's
+    // deleteAffiliateAction, which uses this id as the auth user id too).
+    const { data: userData, error: userError } = await supabase.auth.admin.getUserById(affiliate.id);
+    const email = userData?.user?.email;
+
+    if (userError || !email) {
+      console.warn(`notifyApprovedAffiliates: no auth email for affiliate ${affiliate.id}:`, userError?.message);
+      continue;
+    }
+
     const vehicle = buildAffiliateVehiclePayload(car, affiliate.affiliate_code, siteUrl);
 
     try {
       const result = await sendEmail({
-        to: affiliate.email,
+        to: email,
         subject: `New Media Kit: ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
         react: React.createElement(AffiliateMediaKit, {
           vehicle,
