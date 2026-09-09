@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput from "@/components/admin/ui/TextInput";
 
 export default function AccountManager() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -46,51 +50,48 @@ export default function AccountManager() {
   };
 
   return (
-    <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8 max-w-lg">
+    <Card className="max-w-lg">
       <h2 className="text-white text-xl font-serif mb-6">Change Password</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
+          <FieldLabel>
             Current Password
-          </label>
-          <input
+          </FieldLabel>
+          <TextInput
             type={showPasswords ? "text" : "password"}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             required
             autoComplete="current-password"
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
+          <FieldLabel>
             New Password
-          </label>
-          <input
+          </FieldLabel>
+          <TextInput
             type={showPasswords ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
             minLength={8}
             autoComplete="new-password"
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
+          <FieldLabel>
             Confirm New Password
-          </label>
-          <input
+          </FieldLabel>
+          <TextInput
             type={showPasswords ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={8}
             autoComplete="new-password"
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
@@ -107,14 +108,10 @@ export default function AccountManager() {
         {error && <p className="text-red-400 text-sm">{error}</p>}
         {success && <p className="text-green-400 text-sm">{success}</p>}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="bg-[#C07750] text-white px-8 py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors disabled:opacity-60"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? "UPDATING…" : "UPDATE PASSWORD"}
-        </button>
+        </Button>
       </form>
-    </div>
+    </Card>
   );
 }
