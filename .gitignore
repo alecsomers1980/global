@@ -8,6 +8,7 @@ node_modules/
 /ember-social/
 /aloe-signs-website/
 /woodpecker-guesthouse/
+/knp-panorama/
 
 # launcher run logs (scripts\logs\*.log)
 /scripts/logs/
