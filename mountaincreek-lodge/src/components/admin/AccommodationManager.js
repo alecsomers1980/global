@@ -8,6 +8,10 @@ import {
   deleteUnit,
 } from "@/lib/accommodation";
 import { uploadFiles } from "@/lib/upload";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput, { inputClass } from "@/components/admin/ui/TextInput";
 
 export default function AccommodationManager() {
   const [units, setUnits] = useState([]);
@@ -194,90 +198,74 @@ export default function AccommodationManager() {
   // --- Render helpers ---
 
   const renderForm = () => (
-    <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8">
+    <Card>
       <h2 className="text-white text-xl font-serif mb-6">
         {editingUnit ? "Edit Unit" : "Create New Unit"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* name */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Name
-          </label>
-          <input
+          <FieldLabel>Name</FieldLabel>
+          <TextInput
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         {/* tagline */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Tagline
-          </label>
-          <input
+          <FieldLabel>Tagline</FieldLabel>
+          <TextInput
             type="text"
             value={tagline}
             onChange={(e) => setTagline(e.target.value)}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         {/* sleeps */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Sleeps
-          </label>
-          <input
+          <FieldLabel>Sleeps</FieldLabel>
+          <TextInput
             type="number"
             value={sleeps}
             onChange={(e) => setSleeps(e.target.value)}
             min="1"
             required
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         {/* bedrooms */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Bedrooms
-          </label>
-          <input
+          <FieldLabel>Bedrooms</FieldLabel>
+          <TextInput
             type="number"
             value={bedrooms}
             onChange={(e) => setBedrooms(e.target.value)}
             min="0"
             required
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
         </div>
 
         {/* description */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Description
-          </label>
+          <FieldLabel>Description</FieldLabel>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors resize-y"
+            className={`${inputClass} resize-y`}
           />
         </div>
 
         {/* size */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Size
-          </label>
+          <FieldLabel>Size</FieldLabel>
           <select
             value={size}
             onChange={(e) => setSize(e.target.value)}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+            className={inputClass}
           >
             <option value="premium">Premium</option>
             <option value="large">Large</option>
@@ -288,13 +276,11 @@ export default function AccommodationManager() {
 
         {/* span */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Card Width
-          </label>
+          <FieldLabel>Card Width</FieldLabel>
           <select
             value={span}
             onChange={(e) => setSpan(e.target.value)}
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+            className={inputClass}
           >
             <option value="col-span-1">Standard width</option>
             <option value="col-span-2">Wide (spans 2 columns)</option>
@@ -316,25 +302,22 @@ export default function AccommodationManager() {
 
         {/* features dynamic list */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Features
-          </label>
+          <FieldLabel>Features</FieldLabel>
           {features.map((feat, idx) => (
             <div key={idx} className="flex items-center gap-2 mb-2">
-              <input
+              <TextInput
                 type="text"
                 value={feat}
                 onChange={(e) => updateFeature(idx, e.target.value)}
-                className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
                 placeholder="e.g. Expansive Deck"
               />
-              <button
+              <Button
                 type="button"
+                variant="danger"
                 onClick={() => removeFeature(idx)}
-                className="text-red-400/60 hover:text-red-400 px-3 transition-colors"
               >
                 ✕
-              </button>
+              </Button>
             </div>
           ))}
           <button
@@ -348,9 +331,7 @@ export default function AccommodationManager() {
 
         {/* images */}
         <div>
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            Images
-          </label>
+          <FieldLabel>Images</FieldLabel>
 
           {images.some((img) => img.trim() !== "") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4">
@@ -417,20 +398,19 @@ export default function AccommodationManager() {
             <div className="mt-2 space-y-2">
               {images.map((img, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  <input
+                  <TextInput
                     type="text"
                     value={img}
                     onChange={(e) => updateImage(idx, e.target.value)}
-                    className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-2 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors text-sm"
                     placeholder="/images/accommodation/IMG_8185.jpg"
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="danger"
                     onClick={() => removeImage(idx)}
-                    className="text-red-400/60 hover:text-red-400 px-3 transition-colors"
                   >
                     ✕
-                  </button>
+                  </Button>
                 </div>
               ))}
               <button
@@ -446,36 +426,20 @@ export default function AccommodationManager() {
 
         {/* form actions */}
         <div className="flex items-center gap-4 pt-4">
-          <button
-            type="submit"
-            className="bg-[#C07750] text-white px-8 py-3 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors"
-          >
-            {editingUnit ? "UPDATE" : "CREATE"}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancelForm}
-            className="text-white/40 hover:text-white/70 px-6 py-3 text-sm transition-colors"
-          >
+          <Button type="submit">{editingUnit ? "UPDATE" : "CREATE"}</Button>
+          <Button type="button" variant="secondary" onClick={handleCancelForm}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 
   const renderList = () => (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-white text-xl font-serif">
-          Accommodation Units ({units.length})
-        </h2>
-        <button
-          onClick={handleNew}
-          className="bg-[#C07750] text-white px-6 py-2.5 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors"
-        >
-          + NEW UNIT
-        </button>
+        <p className="text-white/40 text-sm">{units.length} unit{units.length !== 1 ? "s" : ""}</p>
+        <Button onClick={handleNew}>+ NEW UNIT</Button>
       </div>
 
       {units.length === 0 ? (
@@ -483,9 +447,10 @@ export default function AccommodationManager() {
       ) : (
         <div className="space-y-4">
           {units.map((unit) => (
-            <div
+            <Card
               key={unit.id}
-              className="bg-[#1a1d27] rounded-xl border border-white/5 p-5 flex flex-col md:flex-row items-start md:items-center gap-5"
+              padding="p-5"
+              className="flex flex-col md:flex-row items-start md:items-center gap-5"
             >
               {/* thumbnail */}
               {unit.images && unit.images.length > 0 && (
@@ -549,7 +514,7 @@ export default function AccommodationManager() {
                   Delete
                 </button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
@@ -561,7 +526,7 @@ export default function AccommodationManager() {
     if (!deleteTarget) return null;
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div className="bg-[#1a1d27] rounded-xl border border-white/10 p-8 max-w-sm mx-4">
+        <Card padding="p-8" className="max-w-sm mx-4">
           <h3 className="text-white text-lg font-serif mb-3">
             Delete {deleteTarget.name}?
           </h3>
@@ -569,20 +534,14 @@ export default function AccommodationManager() {
             This action cannot be undone.
           </p>
           <div className="flex gap-3">
-            <button
-              onClick={confirmDelete}
-              className="bg-red-500 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors"
-            >
+            <Button variant="dangerFilled" onClick={confirmDelete}>
               DELETE
-            </button>
-            <button
-              onClick={cancelDelete}
-              className="text-white/40 hover:text-white/70 px-4 py-2.5 text-sm transition-colors"
-            >
+            </Button>
+            <Button variant="secondary" onClick={cancelDelete}>
               Cancel
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       </div>
     );
   };
