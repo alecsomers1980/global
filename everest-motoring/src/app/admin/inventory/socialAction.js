@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getVehicleUrl as buildVehicleUrl } from "@/utils/url/vehicleUrl";
+import { notifyApprovedAffiliates } from "@/utils/affiliate/notifyApprovedAffiliates";
 import {
     REEL_SLOT_UTC,
     VIDEO_SLOT_UTC,
@@ -436,6 +437,16 @@ export async function postApprovedVideoPosts(carId) {
         await admin.from("cars").update({ video_social_posted_at: null }).eq("id", carId);
         console.error("[postApprovedVideoPosts] ember post failed:", error.message);
         return { success: false, error: error.message };
+    }
+
+    // The walkaround is approved and posted — safe to hand affiliates their
+    // media kit now. Best-effort: a failure here must not undo the social
+    // post, which already succeeded and is claimed via video_social_posted_at
+    // above (so this can never double-fire for the same car).
+    try {
+        await notifyApprovedAffiliates(carId);
+    } catch (err) {
+        console.error("[postApprovedVideoPosts] affiliate notify failed:", err.message);
     }
 
     revalidatePath("/admin/inventory");
