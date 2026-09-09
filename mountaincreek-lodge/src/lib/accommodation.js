@@ -9,6 +9,7 @@ function fromRow(row) {
     id: row.id,
     name: row.name,
     sleeps: row.sleeps,
+    bedrooms: row.bedrooms,
     tagline: row.tagline,
     description: row.description,
     features: row.features || [],
@@ -23,6 +24,7 @@ function toRow(unit) {
   return {
     name: unit.name,
     sleeps: unit.sleeps,
+    bedrooms: unit.bedrooms,
     tagline: unit.tagline,
     description: unit.description,
     features: unit.features,

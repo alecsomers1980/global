@@ -298,11 +298,9 @@ function UnitCard({ unit, index }) {
               <BedIcon />
             </span>
             <span className="font-sans text-sm text-primary font-medium">
-              {unit.sleeps <= 2
+              {unit.bedrooms === 0
                 ? "Studio"
-                : unit.sleeps <= 4
-                ? `${Math.ceil(unit.sleeps / 2)} Bedrooms`
-                : `${Math.ceil(unit.sleeps / 2)} Bedrooms`}
+                : `${unit.bedrooms} Bedroom${unit.bedrooms === 1 ? "" : "s"}`}
             </span>
           </div>
           <div className="flex items-center gap-2 bg-linen/60 px-3 py-2 rounded-sm">

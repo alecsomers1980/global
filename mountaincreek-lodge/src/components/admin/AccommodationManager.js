@@ -32,6 +32,7 @@ export default function AccommodationManager() {
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
   const [sleeps, setSleeps] = useState(1);
+  const [bedrooms, setBedrooms] = useState(1);
   const [description, setDescription] = useState("");
   const [size, setSize] = useState("medium");
   const [span, setSpan] = useState("col-span-1");
@@ -47,6 +48,7 @@ export default function AccommodationManager() {
       setName(unit.name || "");
       setTagline(unit.tagline || "");
       setSleeps(unit.sleeps || 1);
+      setBedrooms(unit.bedrooms || 1);
       setDescription(unit.description || "");
       setSize(unit.size || "medium");
       setSpan(unit.span || "col-span-1");
@@ -57,6 +59,7 @@ export default function AccommodationManager() {
       setName("");
       setTagline("");
       setSleeps(1);
+      setBedrooms(1);
       setDescription("");
       setSize("medium");
       setSpan("col-span-1");
@@ -105,6 +108,7 @@ export default function AccommodationManager() {
       name,
       tagline,
       sleeps: Number(sleeps),
+      bedrooms: Number(bedrooms),
       description,
       size,
       span,
@@ -232,6 +236,21 @@ export default function AccommodationManager() {
             value={sleeps}
             onChange={(e) => setSleeps(e.target.value)}
             min="1"
+            required
+            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+          />
+        </div>
+
+        {/* bedrooms */}
+        <div>
+          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
+            Bedrooms
+          </label>
+          <input
+            type="number"
+            value={bedrooms}
+            onChange={(e) => setBedrooms(e.target.value)}
+            min="0"
             required
             className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
           />
