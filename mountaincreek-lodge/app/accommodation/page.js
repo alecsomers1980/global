@@ -213,6 +213,29 @@ function UnitCard({ unit, index }) {
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
 
+          {/* Preload the neighboring slides so Prev/Next feel instant instead
+              of waiting on a fresh image-optimization round trip. */}
+          {unit.images.length > 1 && (
+            <div className="hidden relative">
+              <Image
+                src={unit.images[(currentImageIndex + 1) % unit.images.length]}
+                alt=""
+                fill
+                loading="eager"
+                quality={90}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+              <Image
+                src={unit.images[(currentImageIndex - 1 + unit.images.length) % unit.images.length]}
+                alt=""
+                fill
+                loading="eager"
+                quality={90}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          )}
+
           {unit.images.length > 1 && (
             <button
               onClick={handlePrevImage}
@@ -415,6 +438,29 @@ function UnitCard({ unit, index }) {
               sizes="100vw"
             />
           </div>
+
+          {/* Preload the neighboring slides so Prev/Next feel instant instead
+              of waiting on a fresh image-optimization round trip. */}
+          {unit.images.length > 1 && (
+            <div className="hidden relative">
+              <Image
+                src={unit.images[(currentImageIndex + 1) % unit.images.length]}
+                alt=""
+                fill
+                loading="eager"
+                quality={95}
+                sizes="100vw"
+              />
+              <Image
+                src={unit.images[(currentImageIndex - 1 + unit.images.length) % unit.images.length]}
+                alt=""
+                fill
+                loading="eager"
+                quality={95}
+                sizes="100vw"
+              />
+            </div>
+          )}
 
           {unit.images.length > 1 && (
             <button
