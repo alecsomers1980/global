@@ -9,6 +9,10 @@ import {
   setMenuUrl,
 } from "@/lib/red-litchi";
 import { uploadFile, uploadFiles } from "@/lib/upload";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput from "@/components/admin/ui/TextInput";
 
 export default function RedLitchiManager() {
   const fileInputRef = useRef(null);
@@ -144,12 +148,10 @@ export default function RedLitchiManager() {
   return (
     <div>
       {/* Menu Section */}
-      <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8">
+      <Card>
         <h2 className="text-white text-xl font-serif mb-6">Menu</h2>
 
-        <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-          CURRENT MENU PDF
-        </label>
+        <FieldLabel>CURRENT MENU PDF</FieldLabel>
         <div className="flex items-center justify-between bg-[#0f1117] border border-white/10 rounded-lg px-4 py-3 mb-8">
           <span className="text-white/40 text-sm truncate mr-4">
             {currentUrl}
@@ -164,9 +166,7 @@ export default function RedLitchiManager() {
           </a>
         </div>
 
-        <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-          UPLOAD NEW MENU PDF
-        </label>
+        <FieldLabel>UPLOAD NEW MENU PDF</FieldLabel>
         <input
           type="file"
           accept="application/pdf"
@@ -184,32 +184,24 @@ export default function RedLitchiManager() {
         )}
 
         <div className="mt-8">
-          <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-            OR PASTE MENU PATH
-          </label>
+          <FieldLabel>OR PASTE MENU PATH</FieldLabel>
           <div className="flex gap-3">
-            <input
-              className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+            <TextInput
               placeholder="/Red Litchi Official Menu.pdf"
               value={menuInputUrl}
               onChange={(e) => setMenuInputUrl(e.target.value)}
             />
-            <button
-              onClick={handleSaveUrl}
-              className="bg-[#C07750] text-white px-6 py-2.5 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors flex-shrink-0"
-            >
-              SAVE
-            </button>
+            <Button onClick={handleSaveUrl} className="flex-shrink-0">SAVE</Button>
           </div>
         </div>
 
         {successMessage && (
           <p className="text-green-400 text-sm mt-2">{successMessage}</p>
         )}
-      </div>
+      </Card>
 
       {/* Gallery Section */}
-      <div className="mt-10 bg-[#1a1d27] rounded-xl border border-white/5 p-8">
+      <Card className="mt-10">
         <h2 className="text-white text-xl font-serif mb-6">Gallery Images</h2>
 
         <p className="text-white/60 text-sm mb-4">
@@ -217,18 +209,12 @@ export default function RedLitchiManager() {
         </p>
 
         <div className="flex gap-3 mb-8">
-          <input
-            className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+          <TextInput
             placeholder="/images/Red Litchi/Gallery/IMG-20241029-WA0008.jpg"
             value={gallerySrcInput}
             onChange={(e) => setGallerySrcInput(e.target.value)}
           />
-          <button
-            onClick={handleAddImage}
-            className="bg-[#C07750] text-white px-6 py-2.5 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors flex-shrink-0"
-          >
-            + ADD IMAGE
-          </button>
+          <Button onClick={handleAddImage} className="flex-shrink-0">+ ADD IMAGE</Button>
         </div>
 
         <div className="flex items-center gap-3 mb-8">
@@ -266,18 +252,19 @@ export default function RedLitchiManager() {
                       onChange={(e) => setEditNewSrc(e.target.value)}
                     />
                     <div className="flex gap-2 mt-3">
-                      <button
+                      <Button
+                        className="text-xs px-4 py-2"
                         onClick={() => saveEditing(img.id)}
-                        className="bg-[#C07750] text-white text-xs px-4 py-2 rounded-lg font-semibold tracking-wider hover:bg-[#a8654a] transition-colors"
                       >
                         Save
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        className="text-xs px-4 py-2"
                         onClick={cancelEditing}
-                        className="text-white/40 hover:text-white/70 text-xs px-4 py-2 rounded-lg transition-colors"
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
@@ -307,7 +294,7 @@ export default function RedLitchiManager() {
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
