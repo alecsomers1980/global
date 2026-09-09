@@ -510,10 +510,13 @@ export default function AccommodationPage() {
             <BedIcon />
             {units.length} Units
           </span>
-          <span className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm">
+          <Link
+            href="/packages/self-catering"
+            className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm hover:bg-linen/20 transition-colors"
+          >
             <TreeIcon />
             Self-Catering
-          </span>
+          </Link>
           <Link
             href="/packages/bed-and-breakfast"
             className="inline-flex items-center gap-2 bg-linen/10 border border-linen/15 text-linen/80 font-sans text-xs uppercase tracking-wider px-4 py-2 rounded-sm hover:bg-linen/20 transition-colors"
