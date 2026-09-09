@@ -12,6 +12,10 @@ import {
   deleteImage,
 } from "@/lib/gallery";
 import { uploadFiles } from "@/lib/upload";
+import Card from "@/components/admin/ui/Card";
+import Button from "@/components/admin/ui/Button";
+import FieldLabel from "@/components/admin/ui/FieldLabel";
+import TextInput, { inputClass } from "@/components/admin/ui/TextInput";
 
 export default function GalleryManager() {
   const [categories, setCategories] = useState([]);
@@ -183,12 +187,12 @@ export default function GalleryManager() {
   return (
     <>
       {/* Categories Section */}
-      <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8">
+      <Card>
         <h2 className="text-white text-xl font-serif mb-6">Categories</h2>
 
         {/* Add category row */}
         <div className="flex items-center gap-3 mb-4">
-          <input
+          <TextInput
             type="text"
             placeholder="New category name"
             value={newCategoryName}
@@ -196,14 +200,11 @@ export default function GalleryManager() {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleAddCategory();
             }}
-            className="flex-1 bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+            className="flex-1"
           />
-          <button
-            onClick={handleAddCategory}
-            className="bg-[#C07750] text-white px-6 py-2.5 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors whitespace-nowrap"
-          >
+          <Button onClick={handleAddCategory} className="whitespace-nowrap">
             + ADD CATEGORY
-          </button>
+          </Button>
         </div>
 
         {/* Category list */}
@@ -247,32 +248,30 @@ export default function GalleryManager() {
                   >
                     {cat.name}
                   </span>
-                  <button
+                  <Button
+                    variant="danger"
                     onClick={() => handleDeleteCategory(cat.id)}
-                    className="text-red-400/60 hover:text-red-400 px-3 transition-colors"
                     title="Delete category"
                   >
                     ✕
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Images Section */}
-      <div className="bg-[#1a1d27] rounded-xl border border-white/5 p-8 mt-10">
+      <Card className="mt-10">
         <h2 className="text-white text-xl font-serif mb-6">Images</h2>
         <p className="text-white/50 text-sm mb-6">{images.length} images</p>
 
         {/* Add image row */}
         <div className="flex flex-wrap sm:flex-nowrap items-end gap-3 mb-6">
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-              Image Path
-            </label>
-            <input
+            <FieldLabel>Image Path</FieldLabel>
+            <TextInput
               type="text"
               placeholder="/images/accommodation/IMG_8185.jpg"
               value={newImageSrc}
@@ -280,17 +279,14 @@ export default function GalleryManager() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddImage();
               }}
-              className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
             />
           </div>
           <div className="min-w-[160px]">
-            <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">
-              Category
-            </label>
+            <FieldLabel>Category</FieldLabel>
             <select
               value={newImageCategoryId}
               onChange={(e) => setNewImageCategoryId(e.target.value)}
-              className="w-full bg-[#0f1117] border border-white/10 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-[#C07750] transition-colors"
+              className={inputClass}
             >
               <option value="">Uncategorized</option>
               {categories.map((cat) => (
@@ -300,12 +296,12 @@ export default function GalleryManager() {
               ))}
             </select>
           </div>
-          <button
+          <Button
             onClick={handleAddImage}
-            className="bg-[#C07750] text-white px-6 py-2.5 rounded-lg font-semibold tracking-wider text-sm hover:bg-[#a8654a] transition-colors whitespace-nowrap self-end"
+            className="whitespace-nowrap self-end"
           >
             + ADD IMAGE
-          </button>
+          </Button>
         </div>
 
         {/* Upload image row — uses the same category selected above */}
@@ -368,12 +364,13 @@ export default function GalleryManager() {
               >
                 Clear ({selectedIds.size})
               </button>
-              <button
+              <Button
+                variant="dangerFilled"
+                className="px-4 py-1.5 text-xs"
                 onClick={handleBulkDelete}
-                className="bg-red-500 text-white px-4 py-1.5 rounded-lg font-semibold tracking-wider text-xs uppercase hover:bg-red-600 transition-colors"
               >
                 Delete Selected ({selectedIds.size})
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -429,7 +426,7 @@ export default function GalleryManager() {
             );
           })}
         </div>
-      </div>
+      </Card>
     </>
   );
 }
