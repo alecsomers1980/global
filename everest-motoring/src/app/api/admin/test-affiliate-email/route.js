@@ -2,6 +2,7 @@ import * as React from "react";
 import { createAdminClient } from "@/utils/supabase/server";
 import { sendEmail } from "@/lib/resend";
 import { AffiliateMediaKit } from "@/emails/AffiliateMediaKit";
+import { buildAffiliateVehiclePayload } from "@/utils/affiliate/mediaKit";
 
 export async function GET() {
     const supabase = await createAdminClient();
@@ -19,29 +20,7 @@ export async function GET() {
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://everestmotoring.co.za";
-    const ref = "TEST123";
-    const trackingLink = `${siteUrl}/inventory/${car.id}?ref=${ref}`;
-    const mediaKitUrl = `${siteUrl}/affiliate/media/${car.id}`;
-    const flyerUrl = `${siteUrl}/api/affiliate/flyer/${car.id}?ref=${ref}`;
-    const hasVideo = typeof car.video_url === "string" && car.video_url.startsWith("cf:");
-    const videoUrl = hasVideo ? `${siteUrl}/api/affiliate/video-download/${car.id}?ref=${ref}&redirect=1` : null;
-
-    const vehicle = {
-        make: car.make,
-        model: car.model,
-        year: car.year,
-        price: `R ${new Intl.NumberFormat("en-ZA").format(car.price)}`,
-        mileage: car.mileage ? `${new Intl.NumberFormat("en-ZA").format(car.mileage)} km` : null,
-        transmission: car.transmission,
-        fuelType: car.fuel_type,
-        colour: car.colour,
-        features: car.features || [],
-        image: car.main_image_url,
-        mediaKitUrl,
-        trackingLink,
-        flyerUrl,
-        videoUrl,
-    };
+    const vehicle = buildAffiliateVehiclePayload(car, "TEST123", siteUrl);
 
     const result = await sendEmail({
         to: "alec@firewireit.co.za",

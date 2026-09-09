@@ -229,9 +229,9 @@ export async function createSocialPost(car) {
         // Send all 3 post types with preferred times — the trigger API will
         // assign the actual date (today or next available day, max 2 cars/day)
         const posts = [
-            { ...buildFeedPost(car), preferred_time: times.feedTime, vehicle_id: car.id },
-            { ...buildReelPost(car), preferred_time: times.reelTime, vehicle_id: car.id },
-            { ...buildVideoPost(car), preferred_time: times.videoTime, vehicle_id: car.id },
+            { ...buildFeedPost(car), preferred_time: times.feedTime, vehicle_id: car.id, post_kind: "feed" },
+            { ...buildReelPost(car), preferred_time: times.reelTime, vehicle_id: car.id, post_kind: "reel" },
+            { ...buildVideoPost(car), preferred_time: times.videoTime, vehicle_id: car.id, post_kind: "walkthrough" },
         ];
 
         const results = [];
@@ -377,7 +377,7 @@ export async function scheduleNewCarFeedPost(car) {
 
     try {
         await sendToEmber(
-            { ...buildFeedPost(car), scheduled_at: scheduledAt, vehicle_id: car.id },
+            { ...buildFeedPost(car), scheduled_at: scheduledAt, vehicle_id: car.id, post_kind: "feed" },
             apiKey,
             apiUrl
         );
@@ -424,8 +424,8 @@ export async function postApprovedVideoPosts(carId) {
     const day = postingDay(1);
 
     const posts = [
-        { ...buildReelPost(car), scheduled_at: slotIso(day, REEL_SLOT_UTC), vehicle_id: car.id },
-        { ...buildVideoPost(car), scheduled_at: slotIso(day, VIDEO_SLOT_UTC), vehicle_id: car.id },
+        { ...buildReelPost(car), scheduled_at: slotIso(day, REEL_SLOT_UTC), vehicle_id: car.id, post_kind: "reel" },
+        { ...buildVideoPost(car), scheduled_at: slotIso(day, VIDEO_SLOT_UTC), vehicle_id: car.id, post_kind: "walkthrough" },
     ];
 
     try {
