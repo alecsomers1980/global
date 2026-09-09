@@ -12,3 +12,4 @@ node_modules/
 
 # launcher run logs (scripts\logs\*.log)
 /scripts/logs/
+/mountaincreek-lodge/
