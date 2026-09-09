@@ -298,9 +298,14 @@ function UnitCard({ unit, index }) {
               <BedIcon />
             </span>
             <span className="font-sans text-sm text-primary font-medium">
-              {unit.bedrooms === 0
-                ? "Studio"
-                : `${unit.bedrooms} Bedroom${unit.bedrooms === 1 ? "" : "s"}`}
+              {(() => {
+                // Falls back to the old estimate if the `bedrooms` migration
+                // hasn't been applied yet (column not selected -> undefined).
+                const bedrooms = unit.bedrooms ?? Math.ceil(unit.sleeps / 2);
+                return bedrooms === 0
+                  ? "Studio"
+                  : `${bedrooms} Bedroom${bedrooms === 1 ? "" : "s"}`;
+              })()}
             </span>
           </div>
           <div className="flex items-center gap-2 bg-linen/60 px-3 py-2 rounded-sm">
