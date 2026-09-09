@@ -1,6 +1,16 @@
 import { createAdminClient } from "@/utils/supabase/server";
 import { enableDownloads, getMp4Url } from "@/utils/ai/cloudflareStreamService";
 
+// Cloudflare's own download URL always ends in "default.mp4" and a redirect
+// or cross-origin link can't rename it, so we proxy the file through our own
+// origin and set the filename ourselves. Model names can contain "/" (e.g.
+// "Land Cruiser 79 4.2D P/U S/C"), so anything non-alphanumeric collapses to
+// a single hyphen.
+function buildVideoFilename(car) {
+    const safe = `${car.year} ${car.make} ${car.model}`.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    return `${safe}.mp4`;
+}
+
 export async function GET(request, { params }) {
     const { carId } = await params;
     const { searchParams } = new URL(request.url);
@@ -9,7 +19,7 @@ export async function GET(request, { params }) {
     const supabase = await createAdminClient();
     const { data: car, error } = await supabase
         .from("cars")
-        .select("id, video_url")
+        .select("id, make, model, year, video_url")
         .eq("id", carId)
         .single();
 
@@ -31,7 +41,24 @@ export async function GET(request, { params }) {
     try {
         await enableDownloads(uid);
         const mp4Url = getMp4Url(uid);
-        return wantsRedirect ? Response.redirect(mp4Url, 302) : Response.json({ ready: true, url: mp4Url });
+
+        if (!wantsRedirect) {
+            // Point at our own proxy below, not Cloudflare's URL directly, so
+            // the on-site "Download MP4" button also gets the right filename.
+            return Response.json({ ready: true, url: `/api/affiliate/video-download/${carId}?redirect=1` });
+        }
+
+        const cfResponse = await fetch(mp4Url);
+        if (!cfResponse.ok || !cfResponse.body) {
+            return new Response("Video not ready", { status: 502 });
+        }
+        const headers = new Headers({
+            "Content-Type": "video/mp4",
+            "Content-Disposition": `attachment; filename="${buildVideoFilename(car)}"`,
+        });
+        const length = cfResponse.headers.get("content-length");
+        if (length) headers.set("Content-Length", length);
+        return new Response(cfResponse.body, { headers });
     } catch (err) {
         return wantsRedirect
             ? new Response(`Video not ready: ${err.message}`, { status: 500 })
