@@ -18,13 +18,12 @@ export default function PrivacyPage() {
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         {/* Placeholder notice */}
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-900 mb-10">
-          <strong>⚠️ Important:</strong> This privacy policy must be finalised
-          with your legal entity details and Information Officer appointment
-          before go-live. All placeholders indicated in{" "}
+          <strong>⚠️ Important:</strong> One detail is still outstanding before
+          go-live: our{" "}
           <span className="font-mono bg-amber-100 px-1 rounded">
-            [square brackets]
+            [COMPANY REGISTRATION NUMBER]
           </span>{" "}
-          need to be replaced with your actual information.
+          below. Please supply it and we&apos;ll remove this notice.
         </div>
 
         {/* 1. Introduction & who we are */}
@@ -34,11 +33,16 @@ export default function PrivacyPage() {
         <p className="text-muted-foreground leading-relaxed mb-4">
           This privacy policy applies to the website Doing Business in
           Bushbuckridge (DBiB), a business directory and listing platform
-          accessible at [WEBSITE URL]. The website is operated by{" "}
-          <strong>[COMPANY LEGAL NAME]</strong> (Registration number:{" "}
+          accessible at dbib.co.za. The website is operated by{" "}
+          <strong>Langa Media CC</strong> (Registration number:{" "}
           <strong>[COMPANY REGISTRATION NUMBER]</strong>), the responsible party
           under the Protection of Personal Information Act 4 of 2013 (POPIA). Our
-          registered physical address is <strong>[PHYSICAL ADDRESS]</strong>.
+          registered physical address is{" "}
+          <strong>
+            Unit no. 1 Kwamahle, 175 Woodpecker&apos;s limb, Vakansiedorp, Hazyview
+            1242
+          </strong>
+          .
         </p>
         <p className="text-muted-foreground leading-relaxed mb-4">
           We are committed to protecting your personal information and processing
@@ -59,10 +63,10 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
           <li>
-            <strong>Name:</strong> [INFORMATION OFFICER NAME]
+            <strong>Name:</strong> Nelisiwe Ndlovu
           </li>
           <li>
-            <strong>Email:</strong> [INFORMATION OFFICER EMAIL]
+            <strong>Email:</strong> wecare@rimintsu.com
           </li>
         </ul>
 
@@ -219,7 +223,7 @@ export default function PrivacyPage() {
             – host the website and store user data.
           </li>
           <li>
-            <strong>Email delivery provider:</strong> [EMAIL PROVIDER NAME] – used
+            <strong>Email delivery provider:</strong> Resend – used
             to send transactional and service emails.
           </li>
         </ul>
@@ -367,19 +371,20 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-6 space-y-2 text-muted-foreground mb-4">
           <li>
-            <strong>Email:</strong> [CONTACT EMAIL]
+            <strong>Email:</strong> wecare@rimintsu.com
           </li>
           <li>
-            <strong>Phone:</strong> [CONTACT PHONE]
+            <strong>Phone:</strong> 0027 72 517 3847
           </li>
           <li>
-            <strong>Post:</strong> The Information Officer, [COMPANY LEGAL NAME],
-            [PHYSICAL ADDRESS]
+            <strong>Post:</strong> The Information Officer, Langa Media CC,
+            Unit no. 1 Kwamahle, 175 Woodpecker&apos;s limb, Vakansiedorp,
+            Hazyview 1242
           </li>
         </ul>
 
         <p className="text-sm text-muted-foreground italic mt-10">
-          This policy was last updated on: <strong>[LAST UPDATED DATE]</strong>.
+          This policy was last updated on: <strong>15 September 2026</strong>.
         </p>
       </div>
     </>
