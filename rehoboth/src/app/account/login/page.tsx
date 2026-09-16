@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Header } from "@/components/layout/Header";
 import { PageBanner } from "@/components/layout/PageBanner";
@@ -10,7 +10,16 @@ import { Footer } from "@/components/layout/Footer";
 import { PasswordInput } from "@/components/form/PasswordInput";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -45,7 +54,11 @@ export default function LoginPage() {
         window.sessionStorage.setItem("reh-session-only", "1");
       }
 
-      router.push("/account/orders");
+      // Only ever an internal path — a raw query param is not a safe redirect target.
+      const redirect = searchParams.get("redirect");
+      const destination = redirect?.startsWith("/") && !redirect.startsWith("//") ? redirect : "/account/orders";
+
+      router.push(destination);
       router.refresh();
     } catch {
       setError("We could not sign you in just now. Please try again.");

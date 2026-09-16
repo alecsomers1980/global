@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { AdminNav } from "@/components/admin/AdminNav";
@@ -19,6 +19,7 @@ export const useAdminToken = () => useContext(TokenContext);
 
 export function AdminGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [token, setToken] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [refused, setRefused] = useState(false);
@@ -30,7 +31,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
           data: { session },
         } = await getBrowserClient().auth.getSession();
         if (!session) {
-          router.replace("/account/login");
+          router.replace(`/account/login?redirect=${encodeURIComponent(pathname)}`);
           return;
         }
         // Reading the role here only decides what to draw; the server checks it
@@ -46,7 +47,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
         setRefused(true);
       }
     })();
-  }, [router]);
+  }, [router, pathname]);
 
   if (refused) {
     return (
