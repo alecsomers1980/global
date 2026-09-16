@@ -5,12 +5,13 @@ import { useCart } from "@/lib/cart";
 import { rands } from "@/lib/money";
 import type { Product, Variant } from "@/lib/catalog";
 import { useSelectedVariant } from "./SelectedVariant";
+import { CartToast, type CartToastItem } from "@/components/cart/CartToast";
 
 export function VariantSelector({ product }: { product: Product }) {
   // The chosen size lives above this component because the photograph in the
   // other column follows it too.
   const { selected, select } = useSelectedVariant();
-  const [added, setAdded] = useState(false);
+  const [toastItem, setToastItem] = useState<CartToastItem | null>(null);
   const add = useCart((s) => s.add);
 
   if (!selected) return null;
@@ -25,8 +26,7 @@ export function VariantSelector({ product }: { product: Product }) {
       sizeLabel: variant.sizeLabel,
       priceRetail: variant.priceRetail,
     });
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 2000);
+    setToastItem({ name: product.name, sizeLabel: variant.sizeLabel });
   }
 
   return (
@@ -65,12 +65,14 @@ export function VariantSelector({ product }: { product: Product }) {
         onClick={() => addToCart(selected)}
         className="flex min-h-[54px] w-full items-center justify-center bg-brand px-9 text-sm uppercase tracking-[0.06em] text-brand-ink hover:bg-brand-deep sm:w-auto"
       >
-        {added ? "Added to cart" : "Add to cart"}
+        Add to cart
       </button>
 
       {selected.barcode && (
         <p className="text-[13px] text-ink-mute">Barcode {selected.barcode}</p>
       )}
+
+      <CartToast item={toastItem} onClose={() => setToastItem(null)} />
     </div>
   );
 }

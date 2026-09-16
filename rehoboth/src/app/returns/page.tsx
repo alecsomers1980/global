@@ -13,7 +13,7 @@ export default function ReturnsPage() {
       <section>
         <p>
           If something is wrong with your order, tell us and we will put it right.
-          Email <a href="mailto:friedsgrobler@gmail.com">friedsgrobler@gmail.com</a> or
+          Email <a href="mailto:info@rehobothherbal.co.za">info@rehobothherbal.co.za</a> or
           call 082 824 9023 with your order reference.
         </p>
       </section>

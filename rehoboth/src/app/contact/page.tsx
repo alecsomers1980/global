@@ -68,10 +68,10 @@ export default async function ContactPage() {
               <div className="flex flex-col gap-2">
                 <h2 className="font-display text-xl text-ink">Email</h2>
                 <a
-                  href="mailto:friedsgrobler@gmail.com"
+                  href="mailto:info@rehobothherbal.co.za"
                   className="break-all text-[15px] leading-relaxed text-ink-soft underline hover:text-brand"
                 >
-                  friedsgrobler@gmail.com
+                  info@rehobothherbal.co.za
                 </a>
               </div>
 

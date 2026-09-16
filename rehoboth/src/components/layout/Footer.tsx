@@ -54,10 +54,10 @@ export function Footer() {
             <p className="text-white/70">Frieda Grobler</p>
             <a href="tel:+27828249023" className="text-white/70 transition-colors hover:text-white">082 824 9023</a>
             <a
-              href="mailto:friedsgrobler@gmail.com"
+              href="mailto:info@rehobothherbal.co.za"
               className="break-all text-white/70 transition-colors hover:text-white"
             >
-              friedsgrobler@gmail.com
+              info@rehobothherbal.co.za
             </a>
             <Link href="/contact" className="text-white/70 transition-colors hover:text-white">Contact us</Link>
             <div className="-ml-3 mt-1">
