@@ -21,7 +21,7 @@ export default function TermsPage() {
         <h2>Who you are buying from</h2>
         <p>
           Rehoboth Herbal Co., Portion 21 of Farm 277JU Lovedale, Honeybird,
-          Low&rsquo;s Creek, Mpumalanga. Registration number [REG NUMBER]. VAT number
+          Low&rsquo;s Creek, Mpumalanga. VAT number
           [VAT NUMBER, or remove if not registered]. Contact: Frieda Grobler, 082 824
           9023, friedsgrobler@gmail.com.
         </p>

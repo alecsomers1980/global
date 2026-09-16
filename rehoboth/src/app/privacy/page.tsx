@@ -22,7 +22,7 @@ export default function PrivacyPage() {
         <h2>Who is responsible</h2>
         <p>
           Rehoboth Herbal Co., Portion 21 of Farm 277JU Lovedale, Honeybird,
-          Low&rsquo;s Creek, Mpumalanga. Registration number [REG NUMBER].
+          Low&rsquo;s Creek, Mpumalanga.
         </p>
         <p>
           Information Officer: [INFORMATION OFFICER NAME], [INFORMATION OFFICER

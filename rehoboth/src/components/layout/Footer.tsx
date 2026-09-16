@@ -67,7 +67,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-3 border-t border-white/15 pt-7 text-[13px] text-white/70 md:flex-row md:items-center md:justify-between">
-          <p>&copy; {new Date().getFullYear()} Rehoboth Herbal Co. &middot; [REG NUMBER]</p>
+          <p>&copy; {new Date().getFullYear()} Rehoboth Herbal Co.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="transition-colors hover:text-white">Privacy</Link>
             <Link href="/terms" className="transition-colors hover:text-white">Terms</Link>
