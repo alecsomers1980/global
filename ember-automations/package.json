@@ -6,12 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:mcp": "node --test \"src/lib/mcp/*.test.mts\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.126.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.7",
+    "mcp-handler": "^2.1.1",
     "next": "^15.5.20",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
