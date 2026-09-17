@@ -6,6 +6,8 @@ import { StaleWriteError } from "@/lib/spine/types";
 import { triageAndQueue } from "@/lib/spine/triageRun";
 import { answerQuestions, cleanAnswers } from "@/lib/spine/questions";
 
+export const maxDuration = 60; // AI triage runs inline and can take ~25s
+
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ token: string }> }) {

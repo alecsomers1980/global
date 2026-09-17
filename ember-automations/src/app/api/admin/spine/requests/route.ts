@@ -4,6 +4,8 @@ import { errorResponse, json } from "../_lib";
 import { createRequest } from "@/lib/spine/requests";
 import { triageAndQueue } from "@/lib/spine/triageRun";
 
+export const maxDuration = 60; // AI triage runs inline and can take ~25s
+
 export async function POST(req: NextRequest) {
   try {
     const body = await json<{
