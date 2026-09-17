@@ -4,6 +4,7 @@ import { resolveLink } from "@/lib/spine/links";
 import { transition } from "@/lib/spine/requests";
 import { StaleWriteError } from "@/lib/spine/types";
 import { triageAndQueue } from "@/lib/spine/triageRun";
+import { answerQuestions, cleanAnswers } from "@/lib/spine/questions";
 
 export const dynamic = "force-dynamic";
 
@@ -56,47 +57,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         return NextResponse.json({ error: "invalid action" }, { status: 400 });
       }
 
-      const cleaned = (answers ?? []).filter(
-        (a) => a && a.question_id && a.answer && a.answer.trim() !== ""
-      );
-
+      const cleaned = cleanAnswers(answers);
       if (cleaned.length === 0) {
         return NextResponse.json({ error: "answers must not be empty" }, { status: 400 });
       }
 
-      const now = new Date().toISOString();
-
-      for (const answer of cleaned) {
-        const { error } = await db
-          .from("questions")
-          .update({
-            answer: answer.answer.trim(),
-            status: "answered",
-            answered_via: "link",
-            answered_at: now,
-          })
-          .eq("id", answer.question_id)
-          .eq("batch_id", link.ref_id);
-
-        if (error) throw new Error(error.message);
-      }
-
-      const { data: target, error: targetError } = await db
-        .from("requests")
-        .select("id")
-        .eq("client_id", link.client_id)
-        .eq("status", "needs_info")
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-      if (targetError) throw new Error(targetError.message);
-
-      const retriageId = target?.[0]?.id as string | undefined;
+      const { answered, retriageId } = await answerQuestions(db, link.client_id, cleaned, "link", link.ref_id);
       if (retriageId) {
         void triageAndQueue(db, retriageId).catch((e) => console.error("retriage failed:", e));
       }
 
-      return NextResponse.json({ ok: true, answered: cleaned.length });
+      return NextResponse.json({ ok: true, answered });
     }
 
     return NextResponse.json({ error: "invalid action" }, { status: 400 });
