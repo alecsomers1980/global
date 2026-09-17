@@ -35,7 +35,7 @@ function LoginForm() {
 
     try {
       // Constructed here, never during render — it throws when env is unset.
-      const { error } = await getBrowserClient().auth.signInWithPassword({
+      const { data, error } = await getBrowserClient().auth.signInWithPassword({
         email,
         password,
       });
@@ -54,9 +54,13 @@ function LoginForm() {
         window.sessionStorage.setItem("reh-session-only", "1");
       }
 
-      // Only ever an internal path — a raw query param is not a safe redirect target.
+      // Staff land in the admin, customers on their orders — unless they were
+      // bounced here from a specific page. Only ever an internal path: a raw
+      // query param is not a safe redirect target.
+      const role = (data.session?.user.app_metadata as { role?: string } | null)?.role;
+      const home = role === "admin" ? "/admin" : "/account/orders";
       const redirect = searchParams.get("redirect");
-      const destination = redirect?.startsWith("/") && !redirect.startsWith("//") ? redirect : "/account/orders";
+      const destination = redirect?.startsWith("/") && !redirect.startsWith("//") ? redirect : home;
 
       router.push(destination);
       router.refresh();
