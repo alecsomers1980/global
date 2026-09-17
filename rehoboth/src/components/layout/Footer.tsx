@@ -10,8 +10,9 @@ import { EMPTY_SOCIAL, type SocialLinks } from "@/lib/social";
 /**
  * The footer carries the brand teal as a ground rather than an accent — it is
  * the one full-width block on every page where the colour can do that without
- * competing with product photography. --brand-night is deep enough that white
- * at 70% still clears 4.5:1, which is what makes the fine print legible on it.
+ * competing with product photography. --footer-ground (see globals.css) is
+ * #6C8781 blended toward brand-night, deep enough that white at 80% still
+ * clears 4.5:1, which is what makes the fine print legible on it.
  */
 export function Footer() {
   const [social, setSocial] = useState<SocialLinks>(EMPTY_SOCIAL);
@@ -24,7 +25,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className="mt-24 bg-brand-night text-white">
+    <footer className="mt-24 bg-footer-ground text-white">
       <div className="mx-auto max-w-[1440px] px-6 py-16 md:px-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -35,7 +36,7 @@ export function Footer() {
               height={118}
               className="h-7 w-auto"
             />
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/70">
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-white/80">
               Grown, dried and packed at Rehoboth Farm — Portion 21 of Farm 277JU
               Lovedale, Honeybird, Low&rsquo;s Creek, Mpumalanga.
             </p>
@@ -43,30 +44,30 @@ export function Footer() {
 
           <div className="flex flex-col gap-3 text-sm">
             <h2 className="font-display text-base text-white">Shop</h2>
-            <Link href="/shop" className="text-white/70 transition-colors hover:text-white">All products</Link>
-            <Link href="/stockists" className="text-white/70 transition-colors hover:text-white">Become a stockist</Link>
-            <Link href="/about" className="text-white/70 transition-colors hover:text-white">Our story</Link>
-            <Link href="/news" className="text-white/70 transition-colors hover:text-white">Latest news</Link>
+            <Link href="/shop" className="text-white/80 transition-colors hover:text-white">All products</Link>
+            <Link href="/stockists" className="text-white/80 transition-colors hover:text-white">Become a stockist</Link>
+            <Link href="/about" className="text-white/80 transition-colors hover:text-white">Our story</Link>
+            <Link href="/news" className="text-white/80 transition-colors hover:text-white">Latest news</Link>
           </div>
 
           <div className="flex flex-col gap-3 text-sm">
             <h2 className="font-display text-base text-white">Contact</h2>
-            <p className="text-white/70">Frieda Grobler</p>
-            <a href="tel:+27828249023" className="text-white/70 transition-colors hover:text-white">082 824 9023</a>
+            <p className="text-white/80">Frieda Grobler</p>
+            <a href="tel:+27828249023" className="text-white/80 transition-colors hover:text-white">082 824 9023</a>
             <a
               href="mailto:info@rehobothherbal.co.za"
-              className="break-all text-white/70 transition-colors hover:text-white"
+              className="break-all text-white/80 transition-colors hover:text-white"
             >
               info@rehobothherbal.co.za
             </a>
-            <Link href="/contact" className="text-white/70 transition-colors hover:text-white">Contact us</Link>
+            <Link href="/contact" className="text-white/80 transition-colors hover:text-white">Contact us</Link>
             <div className="-ml-3 mt-1">
               <SocialRow links={social} tone="dark" />
             </div>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-white/15 pt-7 text-[13px] text-white/70 md:flex-row md:items-center md:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-white/15 pt-7 text-[13px] text-white/80 md:flex-row md:items-center md:justify-between">
           <p>&copy; {new Date().getFullYear()} Rehoboth Herbal Co.</p>
           <div className="flex gap-6">
             <Link href="/privacy" className="transition-colors hover:text-white">Privacy</Link>
