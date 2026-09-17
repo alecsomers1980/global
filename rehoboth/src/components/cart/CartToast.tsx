@@ -26,27 +26,33 @@ export function CartToast({
 
   return (
     <div
-      role="status"
-      aria-live="polite"
-      className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-sm flex-col gap-3 border border-hairline bg-ground p-5 shadow-lg sm:inset-x-auto sm:right-6 sm:bottom-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      onClick={onClose}
     >
-      <p className="text-sm text-ink">
-        <strong>Added to cart</strong> — {item.name}, {item.sizeLabel}
-      </p>
-      <div className="flex gap-3">
-        <Link
-          href="/cart"
-          className="flex-1 bg-brand px-4 py-2 text-center text-xs uppercase tracking-[0.06em] text-brand-ink hover:bg-brand-deep"
-        >
-          View cart
-        </Link>
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 border border-hairline px-4 py-2 text-xs uppercase tracking-[0.06em] text-ink hover:border-brand"
-        >
-          Continue shopping
-        </button>
+      <div
+        role="status"
+        aria-live="polite"
+        onClick={(e) => e.stopPropagation()}
+        className="flex w-full max-w-sm flex-col gap-3 border border-hairline bg-ground p-5 shadow-lg"
+      >
+        <p className="text-sm text-ink">
+          <strong>Added to cart</strong> — {item.name}, {item.sizeLabel}
+        </p>
+        <div className="flex gap-3">
+          <Link
+            href="/cart"
+            className="flex-1 bg-brand px-4 py-2 text-center text-xs uppercase tracking-[0.06em] text-brand-ink hover:bg-brand-deep"
+          >
+            View cart
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 border border-hairline px-4 py-2 text-xs uppercase tracking-[0.06em] text-ink hover:border-brand"
+          >
+            Continue shopping
+          </button>
+        </div>
       </div>
     </div>
   );
