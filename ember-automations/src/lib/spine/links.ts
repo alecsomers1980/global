@@ -4,6 +4,7 @@ import { makeToken, tokenExpiry, isExpired } from "./tokens";
 import { getRequest, listRequests } from "./requests";
 import { queuePosition } from "./state";
 import { getClient } from "./record";
+import type { ReportBody } from "@/lib/reports/summary";
 
 type LinkKind = LinkToken["kind"];
 
@@ -30,7 +31,8 @@ export async function resolveLink(db: SupabaseClient, token: string, now: Date =
 export type LinkPayload =
   | { kind: "request"; request: RequestRow; queue_position: number | null; client_name: string }
   | { kind: "estimate"; request: RequestRow; client_name: string }
-  | { kind: "question_batch"; questions: Question[]; client_name: string };
+  | { kind: "question_batch"; questions: Question[]; client_name: string }
+  | { kind: "report"; body: ReportBody; client_name: string };
 
 export async function linkPayload(db: SupabaseClient, link: LinkToken): Promise<LinkPayload> {
   const client = await getClient(db, link.client_id);
@@ -42,6 +44,13 @@ export async function linkPayload(db: SupabaseClient, link: LinkToken): Promise<
     const siblings = await listRequests(db, link.client_id);
     const queue_position = queuePosition(siblings, request.id);
     return { kind: "request", request, queue_position, client_name };
+  }
+
+  if (link.kind === "report") {
+    const { data, error } = await db.from("reports").select("body").eq("id", link.ref_id).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error("report not found");
+    return { kind: "report", body: data.body as ReportBody, client_name };
   }
 
   if (link.kind === "estimate") {

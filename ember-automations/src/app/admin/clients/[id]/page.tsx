@@ -16,6 +16,7 @@ import type {
   CatalogueItem,
 } from "@/lib/spine/types";
 import RecordTabs from "./RecordTabs";
+import GenerateReportButton from "./GenerateReportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,9 @@ export default async function AdminClientDetailPage({
           </span>
         </div>
         <p className="text-[#6b6b8a] text-sm">/{client.slug}</p>
+        <div className="mt-3">
+          <GenerateReportButton clientId={client.id} />
+        </div>
       </div>
 
       <div className="glass p-4">

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { serviceClient } from "@/lib/supabaseServer";
 import { resolveLink, linkPayload } from "@/lib/spine/links";
 import LinkActions from "./LinkActions";
+import ReportView from "./ReportView";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,9 @@ export default async function Page({ params }: { params: Promise<{ token: string
 
   return (
     <main className="min-h-screen max-w-2xl mx-auto p-6">
-      {payload.kind === "question_batch" ? (
+      {payload.kind === "report" ? (
+        <ReportView body={payload.body} />
+      ) : payload.kind === "question_batch" ? (
         <>
           <p className="uppercase tracking-widest text-xs text-ember-500 font-semibold">
             Ember Automations · A few questions

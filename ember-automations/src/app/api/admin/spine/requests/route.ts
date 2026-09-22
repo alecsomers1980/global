@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { serviceClient } from "@/lib/supabaseServer";
 import { errorResponse, json } from "../_lib";
 import { createRequest } from "@/lib/spine/requests";
-import { triageAndQueue } from "@/lib/spine/triageRun";
+import { triageInBackground } from "@/lib/spine/triageAfter";
 
-export const maxDuration = 60; // AI triage runs inline and can take ~25s
+export const maxDuration = 60; // triage finishes in after(), inside this invocation
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,15 +33,8 @@ export async function POST(req: NextRequest) {
       submitted_by: "alec",
     });
 
-    try {
-      const { outboxId } = await triageAndQueue(db, request.id);
-      return NextResponse.json({ request, outboxId });
-    } catch (e) {
-      return NextResponse.json(
-        { request, triage: "pending", error: (e as Error).message },
-        { status: 202 }
-      );
-    }
+    triageInBackground(db, request.id);
+    return NextResponse.json({ request, triage: "queued" });
   } catch (e) {
     return errorResponse(e);
   }
