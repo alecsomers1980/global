@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import HexagonShowcase from "@/components/HexagonShowcase";
 import NewsletterHeader from "@/components/NewsletterHeader";
-import EventPosterSlider from "@/components/EventPosterSlider";
 import PublicCalendar from "@/components/PublicCalendar";
 import FallbackImage from "@/components/FallbackImage";
 import { createServerSupabase } from "@/lib/supabase-server";
@@ -238,14 +237,8 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
-            <div className="lg:col-span-2 relative">
-              <EventPosterSlider />
-            </div>
-
-            <div className="lg:col-span-3">
-              <PublicCalendar />
-            </div>
+          <div className="grid grid-cols-1 gap-12 items-start">
+            <PublicCalendar />
           </div>
         </div>
       </section>

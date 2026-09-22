@@ -8,22 +8,17 @@ import { usePathname, useRouter } from 'next/navigation';
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: '📊' },
   { name: 'Homepage', href: '/admin/homepage', icon: '🏠' },
-  { name: 'Events', href: '/admin/events', icon: '🎭' },
   { name: 'Calendar', href: '/admin/calendar', icon: '📅' },
   { name: 'Newsletters', href: '/admin/newsletters', icon: '📰' },
   { name: 'Gallery', href: '/admin/gallery', icon: '🖼️' },
   { name: 'Staff', href: '/admin/staff', icon: '👥' },
   { name: 'Admissions', href: '/admin/admissions', icon: '🎓' },
   { name: 'Alumni', href: '/admin/alumni', icon: '🎓' },
-  { name: 'Permission Slips', href: '/admin/permission-slips', icon: '✍️' },
-  { name: 'Enrolments', href: '/admin/enrolments', icon: '🎓' },
-  { name: 'Community Photos', href: '/admin/community-photos', icon: '📸' },
 ];
 
 const secondaryItems = [
   { name: 'Announcements', href: '/admin/announcements', icon: '📢' },
   { name: 'Contact Inbox', href: '/admin/contact', icon: '✉️' },
-  { name: 'Analytics', href: '/admin/analytics', icon: '📈' },
   { name: 'Settings', href: '/admin/settings', icon: '⚙️' },
 ];
 

@@ -12,6 +12,7 @@ interface Newsletter {
   term: string;
   publish_date: string;
   excerpt: string;
+  pdf_url?: string | null;
 }
 
 export default function NewslettersAdminPage() {
@@ -116,7 +117,7 @@ export default function NewslettersAdminPage() {
 
       <div className="page-header">
         <h2 style={{ fontSize: 28, fontWeight: 800, color: '#1a2e1d' }}>Newsletters</h2>
-        <Link href="/admin/newsletters/new" className="btn-primary">+ New Newsletter</Link>
+        <Link href="/admin/newsletters/new-pdf" className="btn-primary">+ New Newsletter</Link>
       </div>
 
       {error ? (
@@ -143,15 +144,27 @@ export default function NewslettersAdminPage() {
               <h3 className="nl-title">{nl.title}</h3>
               <p className="nl-excerpt">{nl.excerpt || 'No excerpt provided.'}</p>
               <div className="nl-actions">
-                <Link href={`/admin/newsletters/edit/${nl.id}`} className="nl-btn nl-btn-edit">Edit</Link>
-                <button onClick={() => handleCopyEmailHtml(nl.slug)} className="nl-btn nl-btn-copy" title="Copy table-based HTML to clipboard for use in an email client">HTML</button>
-                <button
-                  onClick={() => handleSendEmail(nl.slug, nl.title)}
-                  className="nl-btn nl-btn-send"
-                  disabled={sending.has(nl.slug)}
+                <Link
+                  href={nl.pdf_url ? `/admin/newsletters/edit-pdf/${nl.id}` : `/admin/newsletters/edit/${nl.id}`}
+                  className="nl-btn nl-btn-edit"
                 >
-                  {sending.has(nl.slug) ? 'Sending...' : 'Send'}
-                </button>
+                  Edit
+                </Link>
+                {!nl.pdf_url && (
+                  <>
+                    <button onClick={() => handleCopyEmailHtml(nl.slug)} className="nl-btn nl-btn-copy" title="Copy table-based HTML to clipboard for use in an email client">HTML</button>
+                    <button
+                      onClick={() => handleSendEmail(nl.slug, nl.title)}
+                      className="nl-btn nl-btn-send"
+                      disabled={sending.has(nl.slug)}
+                    >
+                      {sending.has(nl.slug) ? 'Sending...' : 'Send'}
+                    </button>
+                  </>
+                )}
+                {nl.pdf_url && (
+                  <a href={nl.pdf_url} target="_blank" rel="noopener noreferrer" className="nl-btn nl-btn-copy">View PDF</a>
+                )}
                 <button onClick={() => handleDelete(nl.id)} className="nl-btn nl-btn-del">Delete</button>
               </div>
               {sentStatus[nl.slug] && (

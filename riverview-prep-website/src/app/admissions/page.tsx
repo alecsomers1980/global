@@ -48,10 +48,10 @@ export default function AdmissionsPage() {
         <div className="container mx-auto px-6 max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="font-bold text-lg">Ready to Apply?</h3>
-            <p className="text-white/60 text-sm">Complete our new online application form — no paper required.</p>
+            <p className="text-white/60 text-sm">Get in touch with our admissions team to start your application.</p>
           </div>
-          <Link href="/admissions/apply" className="inline-flex items-center gap-2 px-8 py-3.5 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all shadow-lg hover:shadow-xl">
-            Apply Now <ArrowRight className="w-4 h-4" />
+          <Link href="/contact" className="inline-flex items-center gap-2 px-8 py-3.5 bg-brand-gold text-white font-bold rounded-full hover:bg-brand-gold/90 transition-all shadow-lg hover:shadow-xl">
+            Enquire Now <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>

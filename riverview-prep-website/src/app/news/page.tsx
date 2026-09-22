@@ -57,6 +57,7 @@ interface Newsletter {
   headline?: string;
   excerpt?: string;
   hero_image?: string;
+  pdf_url?: string | null;
 }
 
 interface Article {
@@ -72,6 +73,7 @@ interface Article {
   image: string;
   tags: string[];
   readTime: string;
+  pdfUrl?: string | null;
 }
 
 export default async function NewsPage() {
@@ -112,6 +114,7 @@ export default async function NewsPage() {
     image: (!nl.hero_image || nl.hero_image.includes('placeholder')) ? "/images/banner.jpg" : nl.hero_image,
     tags: Array.isArray(nl.highlights) ? nl.highlights.slice(0, 3) : [],
     readTime: "4 min read", // Can be dynamic logically
+    pdfUrl: nl.pdf_url || null,
   }));
 
   const [featured, ...rest] = articles;
@@ -131,7 +134,12 @@ export default async function NewsPage() {
             LATEST EDITION
           </div>
 
-          <Link href={`/news/${featured.slug}`} className="group block">
+          <Link
+            href={featured.pdfUrl || `/news/${featured.slug}`}
+            target={featured.pdfUrl ? '_blank' : undefined}
+            rel={featured.pdfUrl ? 'noopener noreferrer' : undefined}
+            className="group block"
+          >
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-[3rem] overflow-hidden border border-brand-green/8 hover:shadow-2xl transition-all duration-700 hover:-translate-y-1">
               {/* Header Banner */}
               <div className="lg:col-span-3 h-full relative min-h-[20rem] lg:min-h-full overflow-hidden">
@@ -174,7 +182,7 @@ export default async function NewsPage() {
                   ))}
                 </div>
                 <div className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-brand-green group-hover:text-brand-gold transition-colors">
-                  Read Full Edition{" "}
+                  {featured.pdfUrl ? 'Download PDF' : 'Read Full Edition'}{" "}
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -194,7 +202,9 @@ export default async function NewsPage() {
               {rest.map((article: Article) => (
                 <Link
                   key={article.slug}
-                  href={`/news/${article.slug}`}
+                  href={article.pdfUrl || `/news/${article.slug}`}
+                  target={article.pdfUrl ? '_blank' : undefined}
+                  rel={article.pdfUrl ? 'noopener noreferrer' : undefined}
                   className="group block h-full"
                 >
                   <article className="h-full rounded-[2rem] overflow-hidden border border-brand-green/8 hover:border-brand-gold/30 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-white flex flex-col">
