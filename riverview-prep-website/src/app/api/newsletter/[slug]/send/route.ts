@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabase } from '@/lib/supabase-server';
+import { requireAdminSession } from '@/lib/admin-auth';
 import { Resend } from 'resend';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  const unauthorized = requireAdminSession(request);
+  if (unauthorized) return unauthorized;
+
   const supabase = await createServerSupabase();
   const slug = params.slug;
-
-  // Verify admin session
-  const cookieStore = request.cookies;
-  const session = cookieStore.get('admin-session')?.value;
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
   // Fetch newsletter
   const { data: newsletter, error: nlErr } = await supabase
