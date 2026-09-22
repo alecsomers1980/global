@@ -1,11 +1,11 @@
 import { Resend } from "resend";
 
-export type ClientEmailKind = "questions" | "estimate" | "status" | "invite";
+export type ClientEmailKind = "questions" | "estimate" | "status" | "invite" | "report";
 
 export async function sendClientEmail(
   to: string,
   kind: ClientEmailKind,
-  vars: { clientName: string; link: string; title?: string }
+  vars: { clientName: string; link: string; title?: string; extra?: string[] }
 ): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
@@ -17,6 +17,7 @@ export async function sendClientEmail(
       case "estimate": return `Your estimate from Ember: ${vars.title ?? "your request"}`;
       case "status": return `Update from Ember: ${vars.title ?? "your request"}`;
       case "invite": return "Connect with Ember Automations";
+      case "report": return `Your Ember report — ${vars.title ?? "this month"}`;
     }
   })();
 
@@ -26,12 +27,14 @@ export async function sendClientEmail(
       case "estimate": return "Your estimate is ready. Review the details and let us know if you'd like to proceed:";
       case "status": return "There is an update on your request. Please review the details here:";
       case "invite": return "You have been invited to connect with Ember Automations. Use this private link to get started:";
+      case "report": return "Here is what we did last month, and what we would suggest next:";
     }
   })();
 
   const text = [
     `Hi ${vars.clientName},`,
     sentence,
+    ...(vars.extra?.length ? ["", ...vars.extra] : []),
     "",
     vars.link,
     "",

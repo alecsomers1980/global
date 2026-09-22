@@ -4,7 +4,8 @@ import { shadowB } from "@/lib/spine/outboxRules";
 import { setFactStatus, primaryPerson, getClient } from "@/lib/spine/record";
 import { getRequest, transition } from "@/lib/spine/requests";
 import { mintLink } from "@/lib/spine/links";
-import { sendClientEmail } from "@/lib/spine/email";
+import { sendClientEmail, type ClientEmailKind } from "@/lib/spine/email";
+import { emailSummary, type ReportBody } from "@/lib/reports/summary";
 
 export async function createOutbox(
   db: SupabaseClient,
@@ -76,6 +77,10 @@ export async function decideOutbox(
         await setFactStatus(db, factId, "rejected");
       }
     }
+    if (row.kind === "report") {
+      const { error: repErr } = await db.from("reports").update({ status: "draft", outbox_id: null }).eq("id", row.ref_id);
+      if (repErr) throw new Error(repErr.message);
+    }
     if (row.kind === "question_batch") {
       const questionIds = (row.draft.question_ids as string[] | undefined) ?? [];
       if (questionIds.length > 0) {
@@ -126,6 +131,14 @@ export async function decideOutbox(
     const mint = await mintLink(db, { kind: "request", ref_id: row.ref_id, client_id: row.client_id }, now);
     link = mint.url;
     tokenId = mint.row.id;
+  } else if (row.kind === "report") {
+    const mint = await mintLink(db, { kind: "report", ref_id: row.ref_id, client_id: row.client_id }, now);
+    link = mint.url;
+    tokenId = mint.row.id;
+    const { error: reportErr } = await db.from("reports")
+      .update({ status: "sent", approved_at: now.toISOString(), sent_at: now.toISOString(), link_token_id: tokenId, body: finalPayload })
+      .eq("id", row.ref_id);
+    if (reportErr) throw new Error(reportErr.message);
   } else if (row.kind === "fact_update") {
     const factIds = (row.draft.fact_ids as string[] | undefined) ?? [];
     for (const factId of factIds) {
@@ -138,12 +151,21 @@ export async function decideOutbox(
     const person = await primaryPerson(db, row.client_id);
     const client = await getClient(db, row.client_id);
     if (person?.email) {
-      const emailKind = row.kind === "question_batch" ? "questions" : row.kind === "estimate" ? "estimate" : "status";
-      const title = (finalPayload.title as string | undefined) ?? (finalPayload.summary as string | undefined);
+      const emailKind: ClientEmailKind =
+        row.kind === "question_batch" ? "questions"
+        : row.kind === "estimate" ? "estimate"
+        : row.kind === "report" ? "report"
+        : "status";
+      const isReport = row.kind === "report";
+      const body = isReport ? (finalPayload as unknown as ReportBody) : null;
+      const title = isReport
+        ? body?.period_label
+        : (finalPayload.title as string | undefined) ?? (finalPayload.summary as string | undefined);
       emailed = await sendClientEmail(person.email, emailKind, {
         clientName: client?.name ?? "there",
         link,
         title,
+        ...(body ? { extra: emailSummary(body) } : {}),
       });
     }
   }

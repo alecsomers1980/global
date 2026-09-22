@@ -4,12 +4,12 @@ export type ClientStatus = "active" | "paused" | "archived";
 export type RequestStatus =
   | "submitted" | "triaged" | "needs_info" | "estimated" | "client_approved"
   | "scheduled" | "in_progress" | "delivered" | "closed" | "declined" | "cancelled";
-export type OutboxKind = "reply" | "question_batch" | "estimate" | "fact_update" | "status_note";
+export type OutboxKind = "reply" | "question_batch" | "estimate" | "fact_update" | "status_note" | "report";
 export type OutboxDecision = "pending" | "approved" | "edited" | "rejected";
 export type FactSource = "alec" | "mcp" | "question" | "intake" | "spec" | "triage";
 export type FactStatus = "proposed" | "confirmed" | "rejected";
 export type QuestionStatus = "draft" | "approved" | "sent" | "answered" | "dropped";
-export type LinkKind = "request" | "question_batch" | "estimate";
+export type LinkKind = "request" | "question_batch" | "estimate" | "report";
 
 export interface Estimate { summary: string; credits: number; due_by: string | null; assumptions: string[]; }
 
