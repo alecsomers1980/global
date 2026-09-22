@@ -41,6 +41,10 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+// DeepSeek spends output tokens on thinking before it writes anything, and a budget that
+// runs out mid-thought comes back as a response with no text block at all. Give it room.
+const MAX_TOKENS: Record<AiProvider, number> = { deepseek: 16384, claude: 8192 };
+
 export function aiClient(provider: AiProvider): { client: Anthropic; model: string } {
   if (provider === "deepseek") {
     const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -81,7 +85,7 @@ export async function completeJson<T>(
   const send = (userMessage: string) =>
     client.messages.create({
       model,
-      max_tokens: 4096,
+      max_tokens: MAX_TOKENS[provider],
       system,
       messages: [{ role: "user", content: userMessage }],
     });
