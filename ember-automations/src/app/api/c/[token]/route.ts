@@ -3,7 +3,7 @@ import { serviceClient } from "@/lib/supabaseServer";
 import { resolveLink } from "@/lib/spine/links";
 import { transition } from "@/lib/spine/requests";
 import { StaleWriteError } from "@/lib/spine/types";
-import { triageAndQueue } from "@/lib/spine/triageRun";
+import { triageInBackground } from "@/lib/spine/triageAfter";
 import { answerQuestions, cleanAnswers } from "@/lib/spine/questions";
 
 export const maxDuration = 60; // AI triage runs inline and can take ~25s
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
       const { answered, retriageId } = await answerQuestions(db, link.client_id, cleaned, "link", link.ref_id);
       if (retriageId) {
-        void triageAndQueue(db, retriageId).catch((e) => console.error("retriage failed:", e));
+        triageInBackground(db, retriageId);
       }
 
       return NextResponse.json({ ok: true, answered });

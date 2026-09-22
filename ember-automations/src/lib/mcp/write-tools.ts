@@ -6,7 +6,7 @@ import { answerQuestions, cleanAnswers } from "@/lib/spine/questions";
 import { proposeFacts } from "@/lib/spine/record";
 import { createRequest, getRequest, listRequests, transition } from "@/lib/spine/requests";
 import { queuePosition } from "@/lib/spine/state";
-import { triageAndQueue } from "@/lib/spine/triageRun";
+import { triageInBackground } from "@/lib/spine/triageAfter";
 import { StaleWriteError } from "@/lib/spine/types";
 import { logMcpAudit } from "./audit";
 import type { Identity } from "./tools";
@@ -64,13 +64,7 @@ export function registerWriteTools(server: McpServer, db: SupabaseClient, identi
           submitted_by: identity.email,
         });
 
-        try {
-          await triageAndQueue(db, row.id);
-        } catch (error) {
-          console.error(error);
-        }
-        // Triage moves it to "triaged"; report the status Claude will see on get_request.
-        const status = (await getRequest(db, row.id))?.status ?? row.status;
+        triageInBackground(db, row.id);
 
         await logMcpAudit(db, {
           userId: identity.userId,
@@ -84,7 +78,7 @@ export function registerWriteTools(server: McpServer, db: SupabaseClient, identi
         return respond(
           {
             id: row.id,
-            status,
+            status: row.status,
             message: "Ember will review this and come back to you with an estimate or a few questions.",
           },
           []
@@ -270,11 +264,7 @@ export function registerWriteTools(server: McpServer, db: SupabaseClient, identi
         const result = await answerQuestions(db, client.id, cleaned, "mcp");
 
         if (result.retriageId) {
-          try {
-            await triageAndQueue(db, result.retriageId);
-          } catch (error) {
-            console.error(error);
-          }
+          triageInBackground(db, result.retriageId);
         }
 
         await logMcpAudit(db, {
