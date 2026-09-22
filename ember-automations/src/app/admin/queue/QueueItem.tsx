@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { OutboxRow } from "@/lib/spine/types";
+import ReportDraftEditor from "./ReportDraftEditor";
+import type { ReportBody } from "@/lib/reports/summary";
 
 type Draft = Record<string, unknown>;
 
@@ -120,6 +122,9 @@ export default function QueueItem({
   const [copied, setCopied] = useState(false);
 
   const statements = useMemo(() => parseStatements(draft), [draft]);
+  const [reportBody, setReportBody] = useState<ReportBody | null>(
+    item.kind === "report" ? (draft as unknown as ReportBody) : null,
+  );
 
   const edited = useMemo(() => {
     switch (item.kind) {
@@ -136,10 +141,12 @@ export default function QueueItem({
       case "status_note":
       case "reply":
         return title !== initial.title || text !== initial.text;
+      case "report":
+        return JSON.stringify(reportBody) !== JSON.stringify(draft);
       default:
         return false;
     }
-  }, [assumptions, credits, dueBy, initial, item.kind, questions, size, summary, text, title]);
+  }, [assumptions, credits, draft, dueBy, initial, item.kind, questions, reportBody, size, summary, text, title]);
 
   function updateQuestionText(index: number, value: string) {
     setQuestions((prev) => prev.map((question, i) => (i === index ? { ...question, text: value } : question)));
@@ -172,6 +179,8 @@ export default function QueueItem({
         break;
       case "fact_update":
         break;
+      case "report":
+        return (reportBody ?? draft) as unknown as Draft;
     }
 
     return final;
@@ -346,6 +355,10 @@ export default function QueueItem({
             />
           </div>
         </div>
+      ) : null}
+
+      {item.kind === "report" && reportBody ? (
+        <ReportDraftEditor body={reportBody} onChange={setReportBody} />
       ) : null}
 
       {item.kind === "fact_update" ? (
