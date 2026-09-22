@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { createClient } from '@/lib/supabase-client';
 
 interface StaffMember {
@@ -13,6 +16,41 @@ interface StaffMember {
   sort_order: number;
 }
 
+interface SortableStaffCardProps {
+  member: StaffMember;
+  onEdit: (member: StaffMember) => void;
+  onDelete: (member: StaffMember) => void | Promise<void>;
+}
+
+function SortableStaffCard({ member, onEdit, onDelete }: SortableStaffCardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: member.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    position: 'relative',
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="staff-card">
+      <div className="drag-handle" {...attributes} {...listeners} title="Drag to reorder">⠿</div>
+      {member.image_url ? (
+        <img src={member.image_url} alt={member.name} className="staff-avatar" style={{ objectFit: 'cover' }} />
+      ) : (
+        <div className="staff-avatar">{member.name.charAt(0)}</div>
+      )}
+      <div className="staff-name">{member.name}</div>
+      <div className="staff-role">{member.role}</div>
+      <span className="staff-category">{member.category}</span>
+      <div className="staff-actions">
+        <button className="btn-sm" onClick={() => onEdit(member)}>Edit</button>
+        <button className="btn-sm del" onClick={() => void onDelete(member)}>Remove</button>
+      </div>
+    </div>
+  );
+}
+
 export default function StaffAdminPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +59,16 @@ export default function StaffAdminPage() {
   const [originalImageUrl, setOriginalImageUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [reorderError, setReorderError] = useState<string | null>(null);
   const supabase = createClient();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
 
   const [formData, setFormData] = useState({
     name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0,
@@ -48,11 +95,12 @@ export default function StaffAdminPage() {
     } else {
       await supabase.from('staff').insert([formData]);
     }
-    
+
     setShowForm(false);
     setEditingId(null);
     setOriginalImageUrl('');
     setFormData({ name: '', role: '', category: 'Administration', bio: '', image_url: '', sort_order: 0 });
+    setReorderError(null);
     fetchStaff();
   }
 
@@ -103,24 +151,24 @@ export default function StaffAdminPage() {
     if (!e.target.files || e.target.files.length === 0) return;
     const originalFile = e.target.files[0];
     setIsUploading(true);
-    
+
     try {
       const file = await compressImage(originalFile);
       const uploadData = new FormData();
       uploadData.append('file', file);
-      
+
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: uploadData
       });
-      
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upload failed');
-      
+
       if (formData.image_url && formData.image_url !== originalImageUrl && formData.image_url.includes('/images/')) {
         await fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: formData.image_url }) });
       }
-      
+
       setFormData({ ...formData, image_url: data.publicUrl });
     } catch (err: any) {
       alert('Error uploading image: ' + err.message);
@@ -142,6 +190,7 @@ export default function StaffAdminPage() {
       await fetch('/api/delete-image', { method: 'POST', body: JSON.stringify({ imageUrl: member.image_url }) });
     }
     await supabase.from('staff').delete().eq('id', member.id);
+    setReorderError(null);
     fetchStaff();
   }
 
@@ -175,6 +224,9 @@ export default function StaffAdminPage() {
         .btn-save { padding: 10px 20px; background: #c4a459; border: none; border-radius: 10px; color: #0c1a0f; cursor: pointer; font-weight: 700; font-size: 13px; flex: 1; }
         .empty-state { padding: 60px; text-align: center; color: rgba(0,0,0,0.3); background: #ffffff; border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; }
         .error-state { padding: 32px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.1); border-radius: 12px; color: #ef4444; }
+        .drag-handle { position: absolute; top: 12px; right: 12px; cursor: grab; color: rgba(0,0,0,0.25); font-size: 18px; user-select: none; touch-action: none; z-index: 2; padding: 4px; line-height: 1; }
+        .drag-handle:hover { color: #164e24; }
+        .drag-handle:active { cursor: grabbing; }
       `}</style>
 
       <div className="page-header">
@@ -191,24 +243,70 @@ export default function StaffAdminPage() {
       ) : staff.length === 0 ? (
         <div className="empty-state"><p style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>No staff members yet</p></div>
       ) : (
-        <div className="staff-grid">
-          {staff.map(member => (
-            <div key={member.id} className="staff-card">
-              {member.image_url ? (
-                <img src={member.image_url} alt={member.name} className="staff-avatar" style={{ objectFit: 'cover' }} />
-              ) : (
-                <div className="staff-avatar">{member.name.charAt(0)}</div>
-              )}
-              <div className="staff-name">{member.name}</div>
-              <div className="staff-role">{member.role}</div>
-              <span className="staff-category">{member.category}</span>
-              <div className="staff-actions">
-                <button className="btn-sm" onClick={() => startEdit(member)}>Edit</button>
-                <button className="btn-sm del" onClick={() => handleDelete(member)}>Remove</button>
-              </div>
+        <>
+          {reorderError && (
+            <div className="error-state" style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+              <span>{reorderError}</span>
+              <button
+                onClick={() => setReorderError(null)}
+                style={{ border: 'none', background: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}
+              >
+                Dismiss
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={async ({ active, over }) => {
+              if (!over || active.id === over.id) return;
+
+              const oldIndex = staff.findIndex((s) => s.id === String(active.id));
+              const newIndex = staff.findIndex((s) => s.id === String(over.id));
+
+              if (oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return;
+
+              const reordered = arrayMove(staff, oldIndex, newIndex).map((s, index) => ({
+                ...s,
+                sort_order: index,
+              }));
+
+              setStaff(reordered);
+              setReorderError(null);
+
+              try {
+                const res = await fetch('/api/staff/reorder', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({
+                    order: reordered.map(({ id, sort_order }) => ({ id, sort_order })),
+                  }),
+                });
+
+                if (!res.ok) throw new Error(`Failed to save order: ${res.status}`);
+                setReorderError(null);
+              } catch {
+                setReorderError('Could not save new order. Reverting...');
+                fetchStaff();
+              }
+            }}
+          >
+            <SortableContext items={staff.map(s => s.id)} strategy={rectSortingStrategy}>
+              <div className="staff-grid">
+                {staff.map(member => (
+                  <SortableStaffCard
+                    key={member.id}
+                    member={member}
+                    onEdit={startEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </>
       )}
 
       {showForm && (
