@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { isAdminEmail } from "@/lib/admin";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -20,7 +21,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     data: { user }
   } = await supabase.auth.getUser();
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) redirect("/login");
+  if (!isAdminEmail(user?.email)) redirect("/login");
 
   return (
     <div className="min-h-screen max-w-5xl mx-auto p-6">
