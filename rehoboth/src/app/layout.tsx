@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Marcellus, Karla } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -18,6 +19,10 @@ const karla = Karla({
   variable: "--font-karla",
   display: "swap",
 });
+
+// Google Analytics 4. Production only, so local dev and preview deploys never
+// count as visitors in the monthly report.
+const GA_ID = process.env.VERCEL_ENV === "production" ? "G-EJT0RG67HP" : null;
 
 const TITLE = "Rehoboth Herbal Co. — grown, dried and packed in Mpumalanga";
 const DESCRIPTION =
@@ -63,6 +68,14 @@ export default function RootLayout({
             question. It reads its link in the browser, so no page is pushed
             off static generation to render it. */}
         <FloatingWhatsApp />
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

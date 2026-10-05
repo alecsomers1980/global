@@ -16,6 +16,8 @@ import {
 import { VARIANT_FORMATS } from "@/lib/variant-formats";
 import { plainText } from "@/lib/news";
 import { optimiseArticle } from "@/lib/news-optimizer";
+import { monthFromKey, previousMonth } from "@/lib/reports/period";
+import { REPORTS_BUCKET, runReport, sendStoredReport, storagePath, type RunResult } from "@/lib/reports/build";
 
 export type ProductCopy = {
   name: string;
@@ -937,5 +939,72 @@ export async function uploadNewsImage(token: string, form: FormData): Promise<Ac
       throw new RefusedError("That photo is too big. Anything under 6MB is fine.");
     }
     return putImage(NEWS_BUCKET, await file.arrayBuffer(), file.name, file.type);
+  });
+}
+
+/* ------------------------------------------------------------- reports */
+
+export type AdminReport = {
+  month: string;
+  generated_at: string;
+  emailed_to: string[];
+  email_error: string | null;
+  ga_available: boolean;
+  ai_included: boolean;
+};
+
+export async function listReports(token: string): Promise<ActionResult<AdminReport[]>> {
+  return asAdmin(token, async () => {
+    const { data, error } = await getServerClient()
+      .from("monthly_reports")
+      .select("month, generated_at, emailed_to, email_error, ga_available, ai_included")
+      .order("month", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as AdminReport[];
+  });
+}
+
+function reportMonth(month: string) {
+  try {
+    return monthFromKey(month);
+  } catch {
+    throw new RefusedError("Pick a month to report on.");
+  }
+}
+
+/**
+ * Builds and stores a month without emailing it, so a look at the figures
+ * never lands in the client's inbox. Send is a separate, deliberate step.
+ */
+export async function generateReport(token: string, month: string): Promise<ActionResult<RunResult>> {
+  return asAdmin(token, async () => {
+    const period = reportMonth(month);
+    if (period.key > previousMonth().key) {
+      throw new RefusedError("That month has not finished yet.");
+    }
+    return runReport(period, { ai: process.env.REPORT_AI_SUMMARY === "on", email: false });
+  });
+}
+
+/** A one-minute link to the private PDF. */
+export async function reportDownloadUrl(token: string, month: string): Promise<ActionResult<string>> {
+  return asAdmin(token, async () => {
+    const period = reportMonth(month);
+    const { data, error } = await getServerClient()
+      .storage.from(REPORTS_BUCKET)
+      .createSignedUrl(storagePath(period.key), 60, { download: `Rehoboth-Report-${period.key}.pdf` });
+    if (error || !data) throw new RefusedError("That report's file is missing. Generate it again.");
+    return data.signedUrl;
+  });
+}
+
+export async function sendReport(token: string, month: string): Promise<ActionResult<string[]>> {
+  return asAdmin(token, async () => {
+    try {
+      return await sendStoredReport(reportMonth(month));
+    } catch (e) {
+      if (e instanceof RefusedError) throw e;
+      throw new RefusedError(e instanceof Error ? e.message : "The email did not send.");
+    }
   });
 }

@@ -40,7 +40,13 @@ const GROUPS: NavGroup[] = [
       { href: "/admin/stockists", label: "Stockists" },
     ],
   },
-  { heading: "Setup", items: [{ href: "/admin/settings", label: "Settings" }] },
+  {
+    heading: "Setup",
+    items: [
+      { href: "/admin/settings", label: "Settings" },
+      { href: "/admin/reports", label: "Reports" },
+    ],
+  },
 ];
 
 export function AdminNav({ email }: { email: string }) {

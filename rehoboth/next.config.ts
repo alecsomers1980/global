@@ -28,13 +28,17 @@ const isDev = process.env.NODE_ENV === "development";
  * to — the meaningful protections (blocking other-origin scripts/frames/
  * form targets) all still hold.
  */
+// Google Analytics: the tag loads from googletagmanager.com and beacons to
+// the regional *.google-analytics.com hosts.
+const GA = "https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com";
+
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' data: ${supabaseOrigin}`,
+  `img-src 'self' data: ${supabaseOrigin} ${GA}`,
   `font-src 'self'`,
-  `connect-src 'self' ${supabaseOrigin}`,
+  `connect-src 'self' ${supabaseOrigin} ${GA}`,
   `form-action 'self' https://sandbox.payfast.co.za https://www.payfast.co.za`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
@@ -52,6 +56,13 @@ const nextConfig: NextConfig = {
     // ~200KB — but the default 1MB ceiling would reject the occasional large
     // one from a browser that could not re-encode.
     serverActions: { bodySizeLimit: "6mb" },
+  },
+  // The report PDF reads its fonts and logo from public/ at runtime; a
+  // serverless function only ships the files it is told about.
+  outputFileTracingIncludes: {
+    "/api/cron/monthly-report": ["./public/fonts/**", "./public/brand/wordmark-light.png"],
+    "/api/admin/reports/[month]": ["./public/fonts/**", "./public/brand/wordmark-light.png"],
+    "/admin/reports": ["./public/fonts/**", "./public/brand/wordmark-light.png"],
   },
   images: {
     remotePatterns: supabaseHost
