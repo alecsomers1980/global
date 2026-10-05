@@ -177,8 +177,10 @@ export const PRODUCTS: SeedProduct[] = [
     // shots. Only one Lip Balm barcode exists (6006010600012) — see open
     // question in docs: does each scent need its own?
     variants: [
-      { format: "balm", size_label: "Marula · 10 g",    price_retail: 52, price_trade: 40, barcode: null, sort_order: 1, image_url: "/products/lip-balm-marula" },
-      { format: "balm", size_label: "Spearmint · 10 g", price_retail: 52, price_trade: 40, barcode: null,            sort_order: 2, image_url: "/products/lip-balm-spearmint" },
+      { format: "balm", size_label: "Marula · 10 g",    price_retail: 52, price_trade: 40, barcode: null, sort_order: 1, image_url: "/products/lip-balm-marula",
+        summary: "Handmade lip balm infused with Amarula fruit, known for its rich natural oils. Moisturises and protects dry or chapped lips, with natural antioxidants and vitamins from the fruit, for softness, elasticity and long-lasting hydration." },
+      { format: "balm", size_label: "Spearmint · 10 g", price_retail: 52, price_trade: 40, barcode: null,            sort_order: 2, image_url: "/products/lip-balm-spearmint",
+        summary: "Handmade lip balm infused with cooling spearmint. Moisturises and protects dry or chapped lips, with a refreshing sensation from natural spearmint oil and long-lasting hydration for soft, smooth lips." },
     ],
   },
   {
