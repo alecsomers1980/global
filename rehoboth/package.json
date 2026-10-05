@@ -12,6 +12,7 @@
     "seed": "node --env-file=.env.local scripts/seed-catalog.mjs",
     "compliance:scan": "node --no-warnings scripts/compliance-scan.mjs",
     "optimise-media": "node scripts/optimise-media.mjs",
+    "optimise-renders": "node scripts/optimise-renders.mjs",
     "cut-video": "node scripts/cut-video.mjs",
     "migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs"
   },

@@ -1,5 +1,5 @@
 /**
- * Seed the Rehoboth catalogue: 9 products, 24 variants.
+ * Seed the Rehoboth catalogue: 9 products, 33 variants.
  * Data lives in src/lib/catalog-data.ts.
  *
  * Run: npm run seed
@@ -42,8 +42,8 @@ async function main() {
   }
 
   console.log(`seeded ${products} products, ${variants} variants`);
-  if (variants !== 24) {
-    console.error(`expected 24 variants, wrote ${variants}`);
+  if (variants !== 33) {
+    console.error(`expected 33 variants, wrote ${variants}`);
     process.exit(1);
   }
 }

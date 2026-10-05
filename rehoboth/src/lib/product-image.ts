@@ -29,13 +29,12 @@ export function isUploaded(value: string | null | undefined): boolean {
  * has a photo" silently pointed every new product at a file that does not
  * exist, giving a broken image until someone uploaded one.
  *
- * Artemisia Afra and the tinctures are absent for a different reason: every
- * artemisia shot in the library is ANNUA A3 (verified by reading the bottle
- * labels) and the tinctures were never shot. They render a brand panel rather
- * than borrowing another product's bottle, which would misrepresent what is
- * being sold.
+ * The tinctures are absent: they were never shot, so they render a brand panel
+ * rather than borrowing another product's bottle, which would misrepresent what
+ * is being sold. Afra was in the same position until the client's renders.
  */
 const SHIPPED_PHOTOGRAPH = new Set([
+  "artemisia-afra",
   "artemisia-annua-a3",
   "boerseep",
   "lip-balm",

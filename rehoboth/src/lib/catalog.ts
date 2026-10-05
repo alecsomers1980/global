@@ -62,7 +62,7 @@ function fromSeed(p: SeedProduct): Product {
       barcode: v.barcode,
       priceRetail: v.price_retail,
       stock: 0,
-      imageUrl: null,
+      imageUrl: v.image_url ?? null,
       // The seed catalogue carries one set of words per product; per-size
       // wording is entered in the admin, so every size inherits here.
       summary: null,
