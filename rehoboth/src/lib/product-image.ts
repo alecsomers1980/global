@@ -20,32 +20,32 @@ export function isUploaded(value: string | null | undefined): boolean {
 }
 
 /**
- * The seven products photographed in the client's shoot, which ship as
- * optimised webp in public/products.
+ * The photo each product shows on the shop grid and homepage, from the client's
+ * product renders (scripts/optimise-renders.mjs), keyed by product slug.
  *
- * An allowlist rather than a list of exceptions. The exceptions version was
- * right for a fixed catalogue of nine, but the admin can now add products, and
- * a new one has no repo asset — so "everything except Afra and the tinctures
- * has a photo" silently pointed every new product at a file that does not
- * exist, giving a broken image until someone uploaded one.
+ * A map rather than a list of exceptions: the admin can add products, and a
+ * new one has no repo asset, so an unlisted slug must fall through to the
+ * brand panel instead of pointing at a file that does not exist.
  *
- * The tinctures are absent: they were never shot, so they render a brand panel
- * rather than borrowing another product's bottle, which would misrepresent what
- * is being sold. Afra was in the same position until the client's renders.
+ * Every product now has a render, tinctures included. The old shoot's stems
+ * (/products/rosemary, /products/boerseep, ...) are still in public/products
+ * but no longer referenced from here.
  */
-const SHIPPED_PHOTOGRAPH = new Set([
-  "artemisia-afra",
-  "artemisia-annua-a3",
-  "boerseep",
-  "lip-balm",
-  "moringa-oleifera",
-  "neem",
-  "rosemary",
-  "turmeric-with-pepper",
-]);
+const SHIPPED_PHOTOGRAPH: Record<string, string> = {
+  "artemisia-annua-a3": "capsules-a3",
+  "artemisia-afra": "capsules-afra",
+  "moringa-oleifera": "capsules-moringa",
+  "turmeric-with-pepper": "capsules-turmeric",
+  rosemary: "capsules-rosemary",
+  neem: "ointment-neem",
+  "lip-balm": "lip-balm-marula",
+  boerseep: "boerseep-charcoal",
+  tinctures: "tincture-artemisia",
+};
 
 /** The photo a product shows: an upload first, the shipped asset behind it. */
 export function heroFor(slug: string, heroImage: string | null): string | null {
   if (heroImage) return heroImage;
-  return SHIPPED_PHOTOGRAPH.has(slug) ? `/products/${slug}` : null;
+  const stem = SHIPPED_PHOTOGRAPH[slug];
+  return stem ? `/products/${stem}` : null;
 }
