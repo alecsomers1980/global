@@ -16,4 +16,5 @@ Set-Location $repo
 $code = $LASTEXITCODE
 
 "=== finished $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') exit=$code ===" | Tee-Object -FilePath $log -Append
+& (Join-Path $repo 'scripts\send-digest-email.ps1') -Subject ('Learning digest {0} (exit {1})' -f (Get-Date -Format 'yyyy-MM-dd'), $code) -LogPath $log
 exit $code
